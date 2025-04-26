@@ -1,0 +1,7 @@
+package presentation
+
+class PlanMateConsoleUI(
+
+) {
+
+}
