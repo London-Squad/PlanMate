@@ -32,7 +32,7 @@ class MD5HashingAlgorithmTest {
     fun `when calling hashData with empty string should throw exception`() {
         val data = listOf(""," ")
 
-        assertThrows<HashingException.InvalidDataException> {
+        assertThrows<HashingException.BlankDataException> {
             data.forEach(md5HashingAlgorithm::hashData)
         }
     }
