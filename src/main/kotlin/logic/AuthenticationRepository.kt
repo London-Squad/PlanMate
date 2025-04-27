@@ -1,6 +1,6 @@
 package logic
 
-import model.User
+import logic.entity.User
 
 interface AuthenticationRepository {
 

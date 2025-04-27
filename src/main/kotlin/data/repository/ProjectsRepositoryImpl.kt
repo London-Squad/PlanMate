@@ -1,9 +1,9 @@
 package data.repository
 
 import logic.ProjectsRepository
-import model.Project
+import logic.entity.Project
 
-class FakeProjectsRepositoryImpl: ProjectsRepository {
+class ProjectsRepositoryImpl: ProjectsRepository {
     override fun getAllProjects(): List<Project> {
         TODO("Not yet implemented")
     }

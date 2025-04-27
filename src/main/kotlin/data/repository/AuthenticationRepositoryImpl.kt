@@ -1,10 +1,9 @@
 package data.repository
 
 import logic.AuthenticationRepository
-import model.User
-import java.security.MessageDigest
+import logic.entity.User
 
-class FakeAuthenticationRepository: AuthenticationRepository {
+class AuthenticationRepositoryImpl: AuthenticationRepository {
     override fun login(userName: String, password: String): User {
         TODO("Not yet implemented")
     }

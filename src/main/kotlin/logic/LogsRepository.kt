@@ -1,6 +1,6 @@
 package logic
 
-import model.Log
+import logic.entity.Log
 
 interface LogsRepository {
     fun getAllLogs(): List<Log>

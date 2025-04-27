@@ -1,4 +1,4 @@
-package model
+package logic.entity
 
 import java.util.*
 

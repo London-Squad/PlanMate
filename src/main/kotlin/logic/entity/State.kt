@@ -1,4 +1,4 @@
-package model
+package logic.entity
 
 import java.util.*
 
@@ -6,5 +6,6 @@ data class State (
     val id: UUID,
     val title: String,
     val description: String,
-    val deleted: Boolean = false
+    val tasks: List<Task>,
+    val isDeleted: Boolean = false,
 )
