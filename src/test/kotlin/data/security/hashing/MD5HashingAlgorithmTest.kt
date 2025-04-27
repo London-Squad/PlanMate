@@ -1,8 +1,6 @@
-package logic.security.hashing
+package data.security.hashing
 
 import com.google.common.truth.Truth.assertThat
-import data.security.hashing.MD5HashingAlgorithm
-import logic.security.exceprion.HashingException
 import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Test
 import org.junit.jupiter.api.assertThrows
@@ -30,10 +28,19 @@ class MD5HashingAlgorithmTest {
 
     @Test
     fun `when calling hashData with empty string should throw exception`() {
-        val data = listOf(""," ")
+        val data = ""
 
         assertThrows<HashingException.BlankDataException> {
-            data.forEach(md5HashingAlgorithm::hashData)
+            md5HashingAlgorithm.hashData(data)
+        }
+    }
+
+    @Test
+    fun `when calling hashData with white spaces string should throw exception`() {
+        val data = "      "
+
+        assertThrows<HashingException.BlankDataException> {
+            md5HashingAlgorithm.hashData(data)
         }
     }
 }
