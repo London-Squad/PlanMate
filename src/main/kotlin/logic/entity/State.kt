@@ -1,11 +1,9 @@
 package logic.entity
 
-import java.util.*
+import java.util.UUID
 
-data class State (
-    val id: UUID,
-    val title: String,
-    val description: String,
-    val tasks: List<Task>,
-    val isDeleted: Boolean = false,
-)
+data class State(
+    override val id: UUID = UUID.randomUUID(),
+    override val title: String,
+    override val description: String,
+): PlanEntity
