@@ -1,4 +1,4 @@
-package security.hashing
+package logic.security.hashing
 
 interface HashingAlgorithm {
     fun hashData(data: String): String

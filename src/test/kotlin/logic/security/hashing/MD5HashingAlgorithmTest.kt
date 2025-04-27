@@ -1,7 +1,11 @@
-package security.hashing
+package logic.security.hashing
 
 import com.google.common.truth.Truth.assertThat
+import data.security.hashing.MD5HashingAlgorithm
+import logic.security.exceprion.HashingException
 import org.junit.jupiter.api.BeforeEach
+import org.junit.jupiter.api.Test
+import org.junit.jupiter.api.assertThrows
 import org.junit.jupiter.params.ParameterizedTest
 import org.junit.jupiter.params.provider.CsvSource
 
@@ -19,9 +23,17 @@ class MD5HashingAlgorithmTest {
         "Poula\$1^0@2,3f4a27bb6db572a798e15c9bad58d43c",
         "paSSowrd(TesT),ad08543fe0405c02df55bca8a7dbefad",
     )
-    fun `when calling hashData should return md5 hashed data`(data: String, expectedHashedData: String) {
+    fun `when calling hashData with data should return md5 hashed data`(data: String, expectedHashedData: String) {
         val actualHashedData = md5HashingAlgorithm.hashData(data)
         assertThat(actualHashedData).isEqualTo(expectedHashedData)
     }
 
+    @Test
+    fun `when calling hashData with empty string should throw exception`() {
+        val data = listOf(""," ")
+
+        assertThrows<HashingException.InvalidDataException> {
+            data.forEach(md5HashingAlgorithm::hashData)
+        }
+    }
 }
