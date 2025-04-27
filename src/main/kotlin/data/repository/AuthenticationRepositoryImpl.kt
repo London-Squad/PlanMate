@@ -11,8 +11,4 @@ class AuthenticationRepositoryImpl: AuthenticationRepository {
     override fun createMateAccount(userName: String, password: String): User {
         TODO("Not yet implemented")
     }
-
-    private fun hashPasswordWithMD5(password: String): String {
-        TODO("Not yet implemented")
-    }
 }
