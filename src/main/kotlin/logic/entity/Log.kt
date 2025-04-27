@@ -8,22 +8,38 @@ sealed class Log (
     val project: Project,
 )
 
-class CreateTaskLog(
+class TaskCreationLog(
     user: User,
     time: Date,
     project: Project,
     val createdTask: Task
     ): Log(user = user, time = time, project = project)
 
-class CreateProjectLog(
+class ProjectCreationLog(
     user: User,
     time: Date,
     project: Project,
+    val projectTask: Task
     ): Log(user = user, time = time, project = project)
 
-class deleteTaskLog(
+class TaskDeletionLog(
     user: User,
     time: Date,
     project: Project,
     val deletedTask: Task
     ): Log(user = user, time = time, project = project)
+
+class ProjectDeletionLog(
+    user: User,
+    time: Date,
+    project: Project,
+    deletedProject: Project
+    ): Log(user = user, time = time, project = project)
+
+// user zainab changed task (init project #22) state from InProgress to InDevReview at 2025/05/24 8:00 PM
+// user zainab changed task (init project #22) name from (init project) to (init project structure) at 2025/05/24 8:00 PM
+// user zainab changed task (init project #22) from created to TO-DO at 2025/05/24 8:00 PM
+
+// user zainab created task (init project #22) at 2025/05/24 8:00 PM
+// user zainab deleted task (init project #22) at 2025/05/24 8:00 PM
+// user zainab created project (PlanMateV1.0) at 2025/05/24 8:00 PM
