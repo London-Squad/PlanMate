@@ -8,6 +8,9 @@ data class State(
     override val description: String,
 ): PlanEntity {
     companion object {
-        val NoState = State(UUID.randomUUID(), "No State", "this is the default state for tasks with no state")
+        val NoState = State(
+            UUID.fromString("07fa94e1-8030-41ad-8342-fefa210461ce"),
+            "No State",
+            "this is the default state for tasks with no state")
     }
 }
