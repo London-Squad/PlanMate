@@ -1,4 +1,4 @@
-package logic.entity
+package logic.entities
 import java.time.LocalDateTime
 import java.util.UUID
 
