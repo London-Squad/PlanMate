@@ -1,7 +1,0 @@
-package ui
-
-class PlanMateConsoleUI(
-
-) {
-
-}

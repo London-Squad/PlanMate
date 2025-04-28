@@ -1,14 +1,19 @@
 package data.repository
 
-import logic.AuthenticationRepository
-import logic.entity.User
+import logic.entities.User
+import logic.repositories.AuthenticationRepository
+import java.util.*
 
 class AuthenticationRepositoryImpl: AuthenticationRepository {
     override fun login(userName: String, password: String): User {
         TODO("Not yet implemented")
     }
 
-    override fun createMateAccount(userName: String, password: String): User {
+    override fun register(userName: String, password: String): User {
+        TODO("Not yet implemented")
+    }
+
+    override fun changePassword(userId: UUID, currentPassword: String, newPassword: String) {
         TODO("Not yet implemented")
     }
 }

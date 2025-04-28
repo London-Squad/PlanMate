@@ -1,6 +1,7 @@
 package data.security.hashing
 
 import com.google.common.truth.Truth.assertThat
+import data.security.hashing.exceptions.BlankDataException
 import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Test
 import org.junit.jupiter.api.assertThrows
@@ -30,7 +31,7 @@ class MD5HashingAlgorithmTest {
     fun `when calling hashData with empty string should throw exception`() {
         val data = ""
 
-        assertThrows<HashingException.BlankDataException> {
+        assertThrows<BlankDataException> {
             md5HashingAlgorithm.hashData(data)
         }
     }
@@ -39,7 +40,7 @@ class MD5HashingAlgorithmTest {
     fun `when calling hashData with white spaces string should throw exception`() {
         val data = "      "
 
-        assertThrows<HashingException.BlankDataException> {
+        assertThrows<BlankDataException> {
             md5HashingAlgorithm.hashData(data)
         }
     }
