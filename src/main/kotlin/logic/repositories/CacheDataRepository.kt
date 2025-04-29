@@ -5,7 +5,7 @@ import logic.entities.State
 import logic.entities.Task
 import logic.entities.User
 
-interface CatchDataRepository {
+interface CacheDataRepository {
 
     fun getLoggedInUser(): User?
 

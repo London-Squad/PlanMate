@@ -1,12 +1,12 @@
-package data.catchData
+package data.cacheData
 
 import logic.entities.Project
 import logic.entities.State
 import logic.entities.Task
 import logic.entities.User
-import logic.repositories.CatchDataRepository
+import logic.repositories.CacheDataRepository
 
-class CatchDataMemoryRepository : CatchDataRepository {
+class CacheDataRepositoryImpl : CacheDataRepository {
 
     private var loggedInUser: User? = null
     private var selectedProject: Project? = null

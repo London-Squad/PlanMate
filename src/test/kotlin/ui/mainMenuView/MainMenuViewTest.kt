@@ -4,7 +4,7 @@ import io.mockk.every
 import io.mockk.mockk
 import io.mockk.verify
 import logic.entities.User
-import logic.repositories.CatchDataRepository
+import logic.repositories.CacheDataRepository
 import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Test
 import org.junit.jupiter.api.TestInstance
@@ -22,7 +22,7 @@ class MainMenuViewTest {
 
     private lateinit var cliPrinter: CLIPrinter
     private lateinit var cliReader: CLIReader
-    private lateinit var catchDataRepository: CatchDataRepository
+    private lateinit var cacheDataRepository: CacheDataRepository
     private lateinit var loginView: LoginView
     private lateinit var projectsView: ProjectsView
     private lateinit var matesManagementView: MatesManagementView
@@ -31,7 +31,7 @@ class MainMenuViewTest {
     fun setup() {
         cliPrinter = mockk(relaxed = true)
         cliReader = mockk(relaxed = true)
-        catchDataRepository = mockk(relaxed = true)
+        cacheDataRepository = mockk(relaxed = true)
         loginView = mockk(relaxed = true)
         projectsView = mockk(relaxed = true)
         matesManagementView = mockk(relaxed = true)
@@ -39,7 +39,7 @@ class MainMenuViewTest {
         mainMenuView = MainMenuView(
             cliPrinter,
             cliReader,
-            catchDataRepository,
+            cacheDataRepository,
             loginView,
             projectsView,
             matesManagementView
@@ -49,7 +49,7 @@ class MainMenuViewTest {
     @Test
     fun `start should tell the user to login when user didn't login`() {
         // Given
-        every { catchDataRepository.getLoggedInUser() } returns null
+        every { cacheDataRepository.getLoggedInUser() } returns null
 
         // When
         mainMenuView.start()
@@ -61,7 +61,7 @@ class MainMenuViewTest {
     @Test
     fun `start should go to login when user didn't login`() {
         // Given
-        every { catchDataRepository.getLoggedInUser() } returns null
+        every { cacheDataRepository.getLoggedInUser() } returns null
 
         // When
         mainMenuView.start()
@@ -73,7 +73,7 @@ class MainMenuViewTest {
     @Test
     fun `start should print Mates management option when user is admin`() {
         // Given
-        every { catchDataRepository.getLoggedInUser() } returns fakeAdminUser
+        every { cacheDataRepository.getLoggedInUser() } returns fakeAdminUser
         every { cliReader.getUserInput(any()) } returns "0"
 
         // When
@@ -86,7 +86,7 @@ class MainMenuViewTest {
     @Test
     fun `start should not print Mates management option when user is mate`() {
         // Given
-        every { catchDataRepository.getLoggedInUser() } returns fakeMateUser
+        every { cacheDataRepository.getLoggedInUser() } returns fakeMateUser
         every { cliReader.getUserInput(any()) } returns "0"
 
         // When
@@ -100,7 +100,7 @@ class MainMenuViewTest {
     @MethodSource("getUsersList")
     fun `start should go to login when user input is 0`(user: User?) {
         // Given
-        every { catchDataRepository.getLoggedInUser() } returns user
+        every { cacheDataRepository.getLoggedInUser() } returns user
         every { cliReader.getUserInput(any()) } returns "0"
 
         // When
@@ -114,7 +114,7 @@ class MainMenuViewTest {
     @MethodSource("getUsersList")
     fun `start should go to projectsView when user input is 1`(user: User?) {
         // Given
-        every { catchDataRepository.getLoggedInUser() } returns user
+        every { cacheDataRepository.getLoggedInUser() } returns user
         every { cliReader.getUserInput(any()) } returns "1"
 
         // When
@@ -127,7 +127,7 @@ class MainMenuViewTest {
     @Test
     fun `start should go to matesManagementView when user input is 1 and user is admin`() {
         // Given
-        every { catchDataRepository.getLoggedInUser() } returns fakeAdminUser
+        every { cacheDataRepository.getLoggedInUser() } returns fakeAdminUser
         every { cliReader.getUserInput(any()) } returns "2"
 
         // When
@@ -140,7 +140,7 @@ class MainMenuViewTest {
     @Test
     fun `start should reject the user input when user input is 2 and user is mate`() {
         // Given
-        every { catchDataRepository.getLoggedInUser() } returns fakeMateUser
+        every { cacheDataRepository.getLoggedInUser() } returns fakeMateUser
         every { cliReader.getUserInput(any()) } answers { "2" } andThenAnswer { "1" }
 
         // When
