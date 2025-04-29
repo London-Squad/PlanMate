@@ -1,7 +1,7 @@
 package ui.mainMenuView
 
 import logic.entities.User
-import logic.useCases.getUserTypeUseCase.GetActiveUserTypeUseCase
+import logic.repositories.AuthenticationRepository
 import ui.CLIPrintersAndReaders.CLIPrinter
 import ui.CLIPrintersAndReaders.CLIReader
 import ui.View
@@ -12,7 +12,7 @@ import ui.projectsView.ProjectsView
 class MainMenuView(
     private val cliPrinter: CLIPrinter,
     private val cliReader: CLIReader,
-    private val getActiveUserTypeUseCase: GetActiveUserTypeUseCase,
+    private val authenticationRepository: AuthenticationRepository,
     private val loginView: LoginView,
     private val projectsView: ProjectsView,
     private val matesManagementView: MatesManagementView
@@ -36,7 +36,7 @@ class MainMenuView(
     }
 
     private fun saveUserType() {
-        userActiveType = getActiveUserTypeUseCase.getActiveUserType()
+        userActiveType = authenticationRepository.getActiveUser()?.type
     }
 
     private fun printMainMenuTitle() {
@@ -50,19 +50,19 @@ class MainMenuView(
     }
 
     private fun goToNextUI() {
-        when (getValidUser()) {
+        when (getValidUserInput()) {
             "1" -> projectsView.start()
             "2" -> matesManagementView.start()
             "0" -> loginView.start()
         }
     }
 
-    private fun getValidUser(): String {
+    private fun getValidUserInput(): String {
         val validInputs = listOf("0", "1", "2").takeIf { userActiveType == User.Type.ADMIN } ?: listOf("0", "1")
         val userInput = cliReader.getUserInput("choose an option").trim()
         if (userInput in validInputs) return userInput
         cliPrinter.cliPrintLn("invalid option, try again ...")
-        return getValidUser()
+        return getValidUserInput()
 
     }
 
