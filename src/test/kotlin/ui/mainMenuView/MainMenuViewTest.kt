@@ -4,23 +4,25 @@ import io.mockk.every
 import io.mockk.mockk
 import io.mockk.verify
 import logic.entities.User
-import logic.useCases.getUserTypeUseCase.GetActiveUserTypeUseCase
+import logic.repositories.AuthenticationRepository
 import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Test
+import org.junit.jupiter.api.TestInstance
 import org.junit.jupiter.params.ParameterizedTest
-import org.junit.jupiter.params.provider.CsvSource
+import org.junit.jupiter.params.provider.MethodSource
 import ui.CLIPrintersAndReaders.CLIPrinter
 import ui.CLIPrintersAndReaders.CLIReader
 import ui.loginView.LoginView
 import ui.matesManagementView.MatesManagementView
 import ui.projectsView.ProjectsView
 
+@TestInstance(TestInstance.Lifecycle.PER_CLASS)
 class MainMenuViewTest {
     private lateinit var mainMenuView: MainMenuView
 
     private lateinit var cliPrinter: CLIPrinter
     private lateinit var cliReader: CLIReader
-    private lateinit var getUserTypeUseCase: GetActiveUserTypeUseCase
+    private lateinit var authenticationRepository: AuthenticationRepository
     private lateinit var loginView: LoginView
     private lateinit var projectsView: ProjectsView
     private lateinit var matesManagementView: MatesManagementView
@@ -29,7 +31,7 @@ class MainMenuViewTest {
     fun setup() {
         cliPrinter = mockk(relaxed = true)
         cliReader = mockk(relaxed = true)
-        getUserTypeUseCase = mockk(relaxed = true)
+        authenticationRepository = mockk(relaxed = true)
         loginView = mockk(relaxed = true)
         projectsView = mockk(relaxed = true)
         matesManagementView = mockk(relaxed = true)
@@ -37,7 +39,7 @@ class MainMenuViewTest {
         mainMenuView = MainMenuView(
             cliPrinter,
             cliReader,
-            getUserTypeUseCase,
+            authenticationRepository,
             loginView,
             projectsView,
             matesManagementView
@@ -47,8 +49,7 @@ class MainMenuViewTest {
     @Test
     fun `start should tell the user to login when user didn't login`() {
         // Given
-        every { getUserTypeUseCase.getActiveUserType() } returns null
-        every { loginView.start() } returns Unit
+        every { authenticationRepository.getActiveUser() } returns null
 
         // When
         mainMenuView.start()
@@ -60,7 +61,7 @@ class MainMenuViewTest {
     @Test
     fun `start should go to login when user didn't login`() {
         // Given
-        every { getUserTypeUseCase.getActiveUserType() } returns null
+        every { authenticationRepository.getActiveUser() } returns null
 
         // When
         mainMenuView.start()
@@ -72,7 +73,7 @@ class MainMenuViewTest {
     @Test
     fun `start should print Mates management option when user is admin`() {
         // Given
-        every { getUserTypeUseCase.getActiveUserType() } returns User.Type.ADMIN
+        every { authenticationRepository.getActiveUser() } returns fakeAdminUser
         every { cliReader.getUserInput(any()) } returns "0"
 
         // When
@@ -85,7 +86,7 @@ class MainMenuViewTest {
     @Test
     fun `start should not print Mates management option when user is mate`() {
         // Given
-        every { getUserTypeUseCase.getActiveUserType() } returns User.Type.MATE
+        every { authenticationRepository.getActiveUser() } returns fakeMateUser
         every { cliReader.getUserInput(any()) } returns "0"
 
         // When
@@ -96,10 +97,10 @@ class MainMenuViewTest {
     }
 
     @ParameterizedTest
-    @CsvSource("MATE", "ADMIN")
-    fun `start should go to login when user input is 0`(userType: User.Type?) {
+    @MethodSource("getUsersList")
+    fun `start should go to login when user input is 0`(user: User?) {
         // Given
-        every { getUserTypeUseCase.getActiveUserType() } returns userType
+        every { authenticationRepository.getActiveUser() } returns user
         every { cliReader.getUserInput(any()) } returns "0"
 
         // When
@@ -110,10 +111,10 @@ class MainMenuViewTest {
     }
 
     @ParameterizedTest
-    @CsvSource("MATE", "ADMIN")
-    fun `start should go to projectsView when user input is 1`(userType: User.Type?) {
+    @MethodSource("getUsersList")
+    fun `start should go to projectsView when user input is 1`(user: User?) {
         // Given
-        every { getUserTypeUseCase.getActiveUserType() } returns userType
+        every { authenticationRepository.getActiveUser() } returns user
         every { cliReader.getUserInput(any()) } returns "1"
 
         // When
@@ -126,7 +127,7 @@ class MainMenuViewTest {
     @Test
     fun `start should go to matesManagementView when user input is 1 and user is admin`() {
         // Given
-        every { getUserTypeUseCase.getActiveUserType() } returns User.Type.ADMIN
+        every { authenticationRepository.getActiveUser() } returns fakeAdminUser
         every { cliReader.getUserInput(any()) } returns "2"
 
         // When
@@ -139,7 +140,7 @@ class MainMenuViewTest {
     @Test
     fun `start should reject the user input when user input is 2 and user is mate`() {
         // Given
-        every { getUserTypeUseCase.getActiveUserType() } returns User.Type.MATE
+        every { authenticationRepository.getActiveUser() } returns fakeMateUser
         every { cliReader.getUserInput(any()) } answers { "2" } andThenAnswer { "1" }
 
         // When
@@ -148,4 +149,12 @@ class MainMenuViewTest {
         // Then
         verify (exactly = 0) { matesManagementView.start() }
     }
+
+    private companion object {
+        val fakeAdminUser = User(userName = "fake admin user", type = User.Type.ADMIN)
+        val fakeMateUser = User(userName = "fake mate user", type = User.Type.MATE)
+        @JvmStatic
+        fun getUsersList(): List<User> = listOf(fakeAdminUser, fakeMateUser)
+    }
+
 }
