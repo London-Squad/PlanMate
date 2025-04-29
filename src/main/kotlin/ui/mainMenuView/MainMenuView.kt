@@ -1,7 +1,7 @@
 package ui.mainMenuView
 
 import logic.entities.User
-import logic.repositories.AuthenticationRepository
+import logic.repositories.CatchDataRepository
 import ui.CLIPrintersAndReaders.CLIPrinter
 import ui.CLIPrintersAndReaders.CLIReader
 import ui.View
@@ -12,7 +12,7 @@ import ui.projectsView.ProjectsView
 class MainMenuView(
     private val cliPrinter: CLIPrinter,
     private val cliReader: CLIReader,
-    private val authenticationRepository: AuthenticationRepository,
+    private val catchDataRepository: CatchDataRepository,
     private val loginView: LoginView,
     private val projectsView: ProjectsView,
     private val matesManagementView: MatesManagementView
@@ -36,7 +36,7 @@ class MainMenuView(
     }
 
     private fun saveUserType() {
-        userActiveType = authenticationRepository.getActiveUser()?.type
+        userActiveType = catchDataRepository.getLoggedInUser()?.type
     }
 
     private fun printMainMenuTitle() {
