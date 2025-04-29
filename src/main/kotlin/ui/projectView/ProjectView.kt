@@ -2,34 +2,82 @@ package ui.projectView
 
 import logic.entities.Project
 
+import logic.entities.User
+import logic.useCases.ProjectUseCases
+import main.logic.useCases.LogUseCases
+import main.logic.useCases.StateUseCases
+import main.logic.useCases.TaskUseCases
 import ui.View
 import ui.cLIPrintersAndReaders.CLIPrinter
 import ui.cLIPrintersAndReaders.CLIReader
-import java.util.UUID
 
 class ProjectView(
     private val project: Project,
     private val cliPrinter: CLIPrinter,
-    private val cliReader: CLIReader
+    private val cliReader: CLIReader,
+    private val projectUseCases: ProjectUseCases,
+    private val taskUseCases: TaskUseCases,
+    private val stateUseCases: StateUseCases,
+    private val logUseCases: LogUseCases,
+    private val currentUser: User
 ) : View {
 
     override fun start() {
-        displaySwimlanes()
+        printProjectMenu()
+        handleUserInput()
+    }
+
+    private fun printProjectMenu() {
+        cliPrinter.printHeader("Project: ${project.title}")
+        cliPrinter.cliPrintLn("1. View all tasks in swimlanes")
+        cliPrinter.cliPrintLn("2. Add new task")
+        cliPrinter.cliPrintLn("3. Select task")
+        cliPrinter.cliPrintLn("4. View project logs")
+        if (currentUser.type == User.Type.ADMIN) {
+            cliPrinter.cliPrintLn("5. Edit project")
+            cliPrinter.cliPrintLn("6. Delete project")
+        }
+        cliPrinter.cliPrintLn("0. Back to projects")
+    }
+
+    private fun handleUserInput() {
+        val validInputs =
+            if (currentUser.type == User.Type.ADMIN) listOf("0", "1", "2", "3", "4", "5", "6") else listOf(
+                "0",
+                "1",
+                "2",
+                "3",
+                "4"
+            )
+        val input = cliReader.getValidUserInput(
+            isValidInput = { it in validInputs },
+            message = "Choose an option: ",
+            invalidInputMessage = "Invalid option, try again ..."
+        )
+        when (input) {
+            "1" -> displaySwimlanes()
+            "2" -> addNewTask()
+            "3" -> selectTask()
+            "4" -> viewProjectLogs()
+            "5" -> if (currentUser.type == User.Type.ADMIN) editProject() else return
+            "6" -> if (currentUser.type == User.Type.ADMIN) deleteProject() else return
+            "0" -> return
+        }
+        start()
     }
 
     private fun displaySwimlanes() {
-        cliPrinter.printHeader("Project: ${project.title}")
+        cliPrinter.printHeader("Swimlanes: ${project.title}")
         if (project.states.isEmpty()) {
             cliPrinter.cliPrintLn("No states defined for this project.")
             return
         }
 
         val tasksByState = project.states.associateWith { state ->
-            project.tasks.filter { it.state == state }
+            project.tasks.filter { it.state.id == state.id }
         }
 
         val maxTasks = tasksByState.values.maxOfOrNull { it.size } ?: 0
-        //companion
         val columnWidth = 30
         val separator = "|"
 
@@ -57,25 +105,72 @@ class ProjectView(
             }
             cliPrinter.cliPrintLn("")
         }
+    }
 
-        cliPrinter.cliPrintLn("\nSelect a task to view details (enter task ID or 'back' to return): ")
-        val input = cliReader.getUserInput("Task ID: ").trim()
-        if (input.lowercase() == "back") return
 
-        val taskId = UUID.fromString(input)
-        val task = project.tasks.find { it.id == taskId }
-        if (task != null) {
-            cliPrinter.cliPrintLn("\nTask Details:")
-            cliPrinter.cliPrintLn("ID: ${task.id}")
-            cliPrinter.cliPrintLn("Title: ${task.title}")
-            cliPrinter.cliPrintLn("Description: ${task.description}")
-            cliPrinter.cliPrintLn("State: ${task.state.title}")
-        } else {
-            cliPrinter.cliPrintLn("Task not found.")
+    private fun editProject() {
+        cliPrinter.printHeader("Edit Project")
+        cliPrinter.cliPrintLn("1. Edit title")
+        cliPrinter.cliPrintLn("2. Edit description")
+        cliPrinter.cliPrintLn("3. States management")
+        cliPrinter.cliPrintLn("0. Back to project")
+
+        val input = cliReader.getValidUserInput(
+            isValidInput = { it in listOf("0", "1", "2", "3") },
+            message = "Choose an option: ",
+            invalidInputMessage = "Invalid option, try again ..."
+        )
+
+        when (input) {
+            "1" -> editProjectTitle()
+            "2" -> editProjectDescription()
+            "3" -> statesManagement()
+            "0" -> return
         }
+        editProject()
+    }
 
+    private fun editProjectTitle() {
+        val newTitle = cliReader.getValidUserInput(
+            message = "Enter new project title: ",
+            invalidInputMessage = "Title cannot be empty",
+            isValidInput = { it.isNotBlank() }
+        )
+        projectUseCases.editProjectTitle(project.id, newTitle)
+        cliPrinter.cliPrintLn("Project title updated.")
+    }
+
+    private fun editProjectDescription() {
+        val newDescription = cliReader.getValidUserInput(
+            message = "Enter new project description: ",
+            invalidInputMessage = "Description cannot be empty",
+            isValidInput = { it.isNotBlank() }
+        )
+        projectUseCases.editProjectDescription(project.id, newDescription)
+        cliPrinter.cliPrintLn("Project description updated.")
+    }
+
+    private fun deleteProject() {
+        projectUseCases.deleteProject(project.id)
+        cliPrinter.cliPrintLn("Project deleted.")
     }
 
     private fun String.duplicate(numberOfDuplication: Int) =
         List(numberOfDuplication) { this }.joinToString(separator = "")
+
+    private fun addNewTask() {
+        /**To Do**/
+    }
+
+    private fun selectTask() {
+        /**To Do**/
+    }
+
+    private fun viewProjectLogs() {
+        /**To Do**/
+    }
+
+    private fun statesManagement() {
+        /**To Do**/
+    }
 }
