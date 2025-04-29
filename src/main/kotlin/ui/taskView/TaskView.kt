@@ -1,9 +1,8 @@
 package ui.taskView
 
-import ui.View
+import java.util.UUID
 
-class TaskView: View {
-    override fun start() {
-
+class TaskView {
+    fun start(taskId: UUID) {
     }
 }

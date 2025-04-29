@@ -1,8 +1,8 @@
 package ui.projectView
 
-import ui.View
+import java.util.UUID
 
-class ProjectView: View {
-    override fun start() {
+class ProjectView() {
+    fun start(projectId: UUID) {
     }
 }
