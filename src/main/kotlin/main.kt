@@ -6,7 +6,6 @@ import di.uiModule
 import di.useCaseModule
 import logic.entities.User
 import org.koin.core.context.startKoin
-import org.koin.core.parameter.parametersOf
 import org.koin.java.KoinJavaComponent.getKoin
 import ui.projectsView.ProjectsView
 
@@ -19,7 +18,7 @@ fun main() {
         type = User.Type.ADMIN
     )
 
-    val projectsView: ProjectsView = getKoin().get { parametersOf(usser) }
+    val projectsView: ProjectsView = getKoin().get()
 
     projectsView.start()
 }

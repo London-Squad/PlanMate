@@ -1,8 +1,6 @@
 package ui.projectView
 
-import logic.entities.Project
-
-import logic.entities.User
+import logic.repositories.CacheDataRepository
 import logic.useCases.ProjectUseCases
 import main.logic.useCases.LogUseCases
 import main.logic.useCases.StateUseCases
@@ -12,28 +10,35 @@ import ui.cLIPrintersAndReaders.CLIPrinter
 import ui.cLIPrintersAndReaders.CLIReader
 
 class ProjectView(
-    private val project: Project,
     private val cliPrinter: CLIPrinter,
     private val cliReader: CLIReader,
     private val projectUseCases: ProjectUseCases,
     private val taskUseCases: TaskUseCases,
     private val stateUseCases: StateUseCases,
     private val logUseCases: LogUseCases,
-    private val currentUser: User
+    private val cacheDataRepository: CacheDataRepository
 ) : View {
 
     override fun start() {
+        val project = cacheDataRepository.getSelectedProject()
+        val currentUser = cacheDataRepository.getLoggedInUser()
+        if (project == null || currentUser == null) {
+            cliPrinter.cliPrintLn("Error: No project selected or user not logged in.")
+            return
+        }
         printProjectMenu()
         handleUserInput()
     }
 
     private fun printProjectMenu() {
+        val project = cacheDataRepository.getSelectedProject() ?: return
+        val currentUser = cacheDataRepository.getLoggedInUser() ?: return
         cliPrinter.printHeader("Project: ${project.title}")
         cliPrinter.cliPrintLn("1. View all tasks in swimlanes")
         cliPrinter.cliPrintLn("2. Add new task")
         cliPrinter.cliPrintLn("3. Select task")
         cliPrinter.cliPrintLn("4. View project logs")
-        if (currentUser.type == User.Type.ADMIN) {
+        if (currentUser.type == logic.entities.User.Type.ADMIN) {
             cliPrinter.cliPrintLn("5. Edit project")
             cliPrinter.cliPrintLn("6. Delete project")
         }
@@ -41,32 +46,44 @@ class ProjectView(
     }
 
     private fun handleUserInput() {
-        val validInputs =
-            if (currentUser.type == User.Type.ADMIN) listOf("0", "1", "2", "3", "4", "5", "6") else listOf(
-                "0",
-                "1",
-                "2",
-                "3",
-                "4"
-            )
+        val currentUser = cacheDataRepository.getLoggedInUser() ?: return
+        val validInputs = if (currentUser.type == logic.entities.User.Type.ADMIN) listOf(
+            "0",
+            "1",
+            "2",
+            "3",
+            "4",
+            "5",
+            "6"
+        ) else listOf("0", "1", "2", "3", "4")
         val input = cliReader.getValidUserInput(
             isValidInput = { it in validInputs },
             message = "Choose an option: ",
             invalidInputMessage = "Invalid option, try again ..."
         )
         when (input) {
-            "1" -> displaySwimlanes()
+            "1" -> {
+                val project = cacheDataRepository.getSelectedProject() ?: return
+                displaySwimlanes(project)
+            }
+
             "2" -> addNewTask()
             "3" -> selectTask()
             "4" -> viewProjectLogs()
-            "5" -> if (currentUser.type == User.Type.ADMIN) editProject() else return
-            "6" -> if (currentUser.type == User.Type.ADMIN) deleteProject() else return
+            "5" -> if (currentUser.type == logic.entities.User.Type.ADMIN) editProject() else return
+            "6" -> {
+                if (currentUser.type == logic.entities.User.Type.ADMIN) {
+                    val project = cacheDataRepository.getSelectedProject() ?: return
+                    deleteProject(project)
+                } else return
+            }
+
             "0" -> return
         }
         start()
     }
 
-    private fun displaySwimlanes() {
+    private fun displaySwimlanes(project: logic.entities.Project) {
         cliPrinter.printHeader("Swimlanes: ${project.title}")
         if (project.states.isEmpty()) {
             cliPrinter.cliPrintLn("No states defined for this project.")
@@ -107,7 +124,6 @@ class ProjectView(
         }
     }
 
-
     private fun editProject() {
         cliPrinter.printHeader("Edit Project")
         cliPrinter.cliPrintLn("1. Edit title")
@@ -131,27 +147,40 @@ class ProjectView(
     }
 
     private fun editProjectTitle() {
+        val project = cacheDataRepository.getSelectedProject() ?: return
         val newTitle = cliReader.getValidUserInput(
             message = "Enter new project title: ",
             invalidInputMessage = "Title cannot be empty",
             isValidInput = { it.isNotBlank() }
         )
         projectUseCases.editProjectTitle(project.id, newTitle)
+
+        val updatedProject = projectUseCases.getProjectById(project.id)
+        if (updatedProject != null) {
+            cacheDataRepository.setSelectedProject(updatedProject)
+        }
         cliPrinter.cliPrintLn("Project title updated.")
     }
 
     private fun editProjectDescription() {
+        val project = cacheDataRepository.getSelectedProject() ?: return
         val newDescription = cliReader.getValidUserInput(
             message = "Enter new project description: ",
             invalidInputMessage = "Description cannot be empty",
             isValidInput = { it.isNotBlank() }
         )
         projectUseCases.editProjectDescription(project.id, newDescription)
+
+        val updatedProject = projectUseCases.getProjectById(project.id)
+        if (updatedProject != null) {
+            cacheDataRepository.setSelectedProject(updatedProject)
+        }
         cliPrinter.cliPrintLn("Project description updated.")
     }
 
-    private fun deleteProject() {
+    private fun deleteProject(project: logic.entities.Project) {
         projectUseCases.deleteProject(project.id)
+        cacheDataRepository.clearSelectedProjectFromCatch()
         cliPrinter.cliPrintLn("Project deleted.")
     }
 
@@ -159,18 +188,26 @@ class ProjectView(
         List(numberOfDuplication) { this }.joinToString(separator = "")
 
     private fun addNewTask() {
-        /**To Do**/
+        /**
+         * To-Do
+         */
     }
 
     private fun selectTask() {
-        /**To Do**/
+        /**
+         * To-Do
+         */
     }
 
     private fun viewProjectLogs() {
-        /**To Do**/
+        /**
+         * To-Do
+         **/
     }
 
     private fun statesManagement() {
-        /**To Do**/
+        /**
+         * To-Do
+         **/
     }
 }

@@ -1,18 +1,15 @@
 package ui.projectsView
 
-import logic.entities.User
+import logic.repositories.CacheDataRepository
 import logic.useCases.ProjectUseCases
 import main.logic.useCases.LogUseCases
 import main.logic.useCases.StateUseCases
 import main.logic.useCases.TaskUseCases
-import org.koin.core.parameter.parametersOf
-
-import org.koin.java.KoinJavaComponent.getKoin
 import ui.View
 import ui.cLIPrintersAndReaders.CLIPrinter
 import ui.cLIPrintersAndReaders.CLIReader
 import ui.projectView.ProjectView
-import java.util.UUID
+import org.koin.java.KoinJavaComponent.getKoin
 
 class ProjectsView(
     private val cliPrinter: CLIPrinter,
@@ -21,25 +18,30 @@ class ProjectsView(
     private val taskUseCases: TaskUseCases,
     private val stateUseCases: StateUseCases,
     private val logUseCases: LogUseCases,
-    private val currentUser: User
+    private val cacheDataRepository: CacheDataRepository
 ) : View {
 
     override fun start() {
-        printProjectsMenu()
-        handleUserInput()
+        val currentUser = cacheDataRepository.getLoggedInUser()
+        if (currentUser == null) {
+            cliPrinter.cliPrintLn("Error: No user logged in. Please log in first.")
+            return
+        }
+        printProjectsMenu(currentUser)
+        handleUserInput(currentUser)
     }
 
-    private fun printProjectsMenu() {
+    private fun printProjectsMenu(currentUser: logic.entities.User) {
         cliPrinter.printHeader("Projects Menu")
         cliPrinter.cliPrintLn("1. View projects")
-        if (currentUser.type == User.Type.ADMIN) {
+        if (currentUser.type == logic.entities.User.Type.ADMIN) {
             cliPrinter.cliPrintLn("2. Create new project")
         }
         cliPrinter.cliPrintLn("0. Back to main menu")
     }
 
-    private fun handleUserInput() {
-        val validInputs = if (currentUser.type == User.Type.ADMIN) listOf("0", "1", "2") else listOf("0", "1")
+    private fun handleUserInput(currentUser: logic.entities.User) {
+        val validInputs = if (currentUser.type == logic.entities.User.Type.ADMIN) listOf("0", "1", "2") else listOf("0", "1")
         val input = cliReader.getValidUserInput(
             isValidInput = { it in validInputs },
             message = "Choose an option: ",
@@ -47,7 +49,7 @@ class ProjectsView(
         )
         when (input) {
             "1" -> viewProjects()
-            "2" -> if (currentUser.type == User.Type.ADMIN) createProject() else return
+            "2" -> if (currentUser.type == logic.entities.User.Type.ADMIN) createProject() else return
             "0" -> return
         }
         start()
@@ -61,31 +63,35 @@ class ProjectsView(
         }
 
         cliPrinter.printHeader("Available Projects")
-        projects.forEach { project ->
-            cliPrinter.cliPrintLn("ID: ${project.id}")
+
+        projects.forEachIndexed { index, project ->
+            val displayIndex = index + 1
+            cliPrinter.cliPrintLn("Project: $displayIndex")
             cliPrinter.cliPrintLn("Title: ${project.title}")
             cliPrinter.cliPrintLn("Description: ${project.description}")
             cliPrinter.cliPrintLn(cliPrinter.getThinHorizontal())
         }
 
-        cliPrinter.cliPrintLn("Enter the ID of the project to select (or 'back' to return):")
-        val input = cliReader.getUserInput("Project ID: ").trim()
+        cliPrinter.cliPrintLn("Enter the project number to select (or 'back' to return):")
+        val input = cliReader.getUserInput("Project number: ").trim()
         if (input.lowercase() == "back") return
 
-        val projectId = try {
-            UUID.fromString(input)
-        } catch (e: IllegalArgumentException) {
-            cliPrinter.cliPrintLn("Invalid UUID format.")
+        val projectIndex = try {
+            val number = input.toInt()
+            if (number in 1..projects.size) number - 1 else null
+        } catch (e: NumberFormatException) {
+            null
+        }
+
+        if (projectIndex == null) {
+            cliPrinter.cliPrintLn("Invalid project number. Please enter a number between 1 and ${projects.size}.")
             return
         }
 
-        val project = projectUseCases.getProjectById(projectId)
-        if (project == null) {
-            cliPrinter.cliPrintLn("Project not found.")
-            return
-        }
+        val project = projects[projectIndex]
+        cacheDataRepository.setSelectedProject(project)
 
-        val projectView: ProjectView = getKoin().get { parametersOf(project, currentUser) }
+        val projectView: ProjectView = getKoin().get()
         projectView.start()
     }
 
