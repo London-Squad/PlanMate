@@ -10,19 +10,8 @@ class CLIPrinter {
         cliPrint(message + "\n")
     }
 
-    private fun String.duplicate(numberOfDuplication: Int) =
-        List(numberOfDuplication) { this }.joinToString(separator = "")
-
-    fun getThickHorizontal() =
-        THICK_HORIZONTAL_ELEMENT.duplicate(VIEW_WIDTH)
-
-    fun getThinHorizontal() =
-        THIN_HORIZONTAL_ELEMENT.duplicate(VIEW_WIDTH)
-
-    private fun String.center(): String {
-        val emptySpaceOnEachSide = (VIEW_WIDTH - this.length) / 2
-        if (emptySpaceOnEachSide <= 0) return this
-        return " ".duplicate(emptySpaceOnEachSide) + this + " ".duplicate(emptySpaceOnEachSide)
+    fun printPleaseLoginMessage() {
+        cliPrintLn(pleaseLoginMessage)
     }
 
     fun printHeader(headerText: String) {
@@ -30,6 +19,12 @@ class CLIPrinter {
         cliPrintLn(headerText.center())
         cliPrintLn(getThickHorizontal() + "\n")
     }
+
+    fun getThickHorizontal() =
+        THICK_HORIZONTAL_ELEMENT.duplicate(VIEW_WIDTH)
+
+    fun getThinHorizontal() =
+        THIN_HORIZONTAL_ELEMENT.duplicate(VIEW_WIDTH)
 
     fun printTextWithinWidth(text: String, indent: Int = 0) {
         text.chunked(VIEW_WIDTH - indent).forEach {
@@ -39,9 +34,19 @@ class CLIPrinter {
         }
     }
 
+    private fun String.duplicate(numberOfDuplication: Int) =
+        List(numberOfDuplication) { this }.joinToString(separator = "")
+
+    private fun String.center(): String {
+        val numberOfEmptySpaceOnEachSide = (VIEW_WIDTH - this.length) / 2
+        if (numberOfEmptySpaceOnEachSide <= 0) return this
+        return " ".duplicate(numberOfEmptySpaceOnEachSide) + this + " ".duplicate(numberOfEmptySpaceOnEachSide)
+    }
+
     companion object {
         const val VIEW_WIDTH = 70
         const val THICK_HORIZONTAL_ELEMENT = "="
         const val THIN_HORIZONTAL_ELEMENT = "-"
+        const val pleaseLoginMessage = "please login to continue ..."
     }
 }
