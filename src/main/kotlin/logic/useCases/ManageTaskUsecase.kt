@@ -1,6 +1,7 @@
 package logic.useCases
 
 import logic.entities.*
+import logic.repositories.AuthenticationRepository
 import logic.repositories.TaskRepository
 import logic.repositories.LogsRepository
 import java.time.LocalDateTime
@@ -8,13 +9,7 @@ import java.util.UUID
 
 class ManageTaskUsecase(
     private val taskRepository: TaskRepository,
-    private val logsRepository: LogsRepository,
-    private val user: User
 ) {
-
-    fun addTask(task: Task, projectID: UUID) {
-        taskRepository.addNewTask(task, projectID)
-    }
 
     fun editTaskTitle(taskID: UUID, newTitle: String) {
         taskRepository.editTaskTitle(taskID, newTitle)
