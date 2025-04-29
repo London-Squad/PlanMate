@@ -2,8 +2,8 @@ package ui.mainMenuView
 
 import logic.entities.User
 import logic.repositories.AuthenticationRepository
-import ui.CLIPrintersAndReaders.CLIPrinter
-import ui.CLIPrintersAndReaders.CLIReader
+import ui.cLIPrintersAndReaders.CLIPrinter
+import ui.cLIPrintersAndReaders.CLIReader
 import ui.View
 import ui.loginView.LoginView
 import ui.matesManagementView.MatesManagementView

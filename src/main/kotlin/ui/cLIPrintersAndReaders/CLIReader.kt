@@ -1,4 +1,4 @@
-package ui.CLIPrintersAndReaders
+package ui.cLIPrintersAndReaders
 
 class CLIReader(
     private val cliPrinter: CLIPrinter
