@@ -2,9 +2,9 @@ package ui.mainMenuView
 
 import logic.entities.User
 import logic.repositories.CacheDataRepository
-import ui.CLIPrintersAndReaders.CLIPrinter
-import ui.CLIPrintersAndReaders.CLIReader
 import ui.View
+import ui.cLIPrintersAndReaders.CLIPrinter
+import ui.cLIPrintersAndReaders.CLIReader
 import ui.loginView.LoginView
 import ui.matesManagementView.MatesManagementView
 import ui.projectsView.ProjectsView
