@@ -1,0 +1,57 @@
+UI:
+    Login
+        Main menu
+            View Projects
+                ================================
+                view projects
+                --------------------------------
+                Select project
+                    ================================
+                    view all tasks in swimlanes
+                    --------------------------------
+                    Add new task
+                    Select task
+                        ================================
+                        view task title, description
+                        --------------------------------
+                        view task logs
+                        Edit task
+                            edit title
+                            edit description
+                            change state of task
+                        Delete task
+                        back to project
+                        ================================
+                    View project logs (this include the state logs)
+                    Edit project (for admins only)
+                        ================================
+                        edit title
+                        edit description
+                        States management
+                            ================================
+                            view states
+                            --------------------------------
+                            Add new state
+                            Select state
+                                Edit
+                                Delete
+                                back
+                            Back
+                            ================================
+                        back to project
+                        ================================
+                    Delete project (for admins only)
+                    back to projects
+                    ================================
+                Create new project (for admins only)
+                back to main menu
+                ================================
+            Mates management (for admins only)
+                ================================
+                view mates
+                --------------------------------
+                create new mate account
+                back to main menu
+                ================================
+            Logout
+    Exit
