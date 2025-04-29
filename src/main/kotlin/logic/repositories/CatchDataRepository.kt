@@ -13,12 +13,6 @@ interface CatchDataRepository {
 
     fun clearLoggedInUserFromCatch()
 
-    fun getSelectedUser(): User?
-
-    fun setSelectedUser(user: User)
-
-    fun clearSelectedUserFromCatch()
-
 
     fun getSelectedProject(): Project?
 

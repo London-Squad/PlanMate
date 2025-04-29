@@ -9,7 +9,6 @@ import logic.repositories.CatchDataRepository
 class CatchDataMemoryRepository : CatchDataRepository {
 
     private var loggedInUser: User? = null
-    private var selectedUser: User? = null
     private var selectedProject: Project? = null
     private var selectedState: State? = null
     private var selectedTask: Task? = null
@@ -22,16 +21,6 @@ class CatchDataMemoryRepository : CatchDataRepository {
 
     override fun clearLoggedInUserFromCatch() {
         loggedInUser = null
-    }
-
-    override fun getSelectedUser(): User? = selectedUser
-
-    override fun setSelectedUser(user: User) {
-        selectedUser = user
-    }
-
-    override fun clearSelectedUserFromCatch(){
-        selectedUser = null
     }
 
 
