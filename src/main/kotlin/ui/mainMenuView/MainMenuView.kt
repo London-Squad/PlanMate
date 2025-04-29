@@ -1,9 +1,9 @@
 package ui.mainMenuView
 
 import logic.entities.User
-import logic.repositories.AuthenticationRepository
-import ui.cLIPrintersAndReaders.CLIPrinter
-import ui.cLIPrintersAndReaders.CLIReader
+import logic.repositories.CacheDataRepository
+import ui.CLIPrintersAndReaders.CLIPrinter
+import ui.CLIPrintersAndReaders.CLIReader
 import ui.View
 import ui.loginView.LoginView
 import ui.matesManagementView.MatesManagementView
@@ -12,7 +12,7 @@ import ui.projectsView.ProjectsView
 class MainMenuView(
     private val cliPrinter: CLIPrinter,
     private val cliReader: CLIReader,
-    private val authenticationRepository: AuthenticationRepository,
+    private val cacheDataRepository: CacheDataRepository,
     private val loginView: LoginView,
     private val projectsView: ProjectsView,
     private val matesManagementView: MatesManagementView
@@ -36,7 +36,7 @@ class MainMenuView(
     }
 
     private fun saveUserType() {
-        userActiveType = authenticationRepository.getActiveUser()?.type
+        userActiveType = cacheDataRepository.getLoggedInUser()?.type
     }
 
     private fun printMainMenuTitle() {
