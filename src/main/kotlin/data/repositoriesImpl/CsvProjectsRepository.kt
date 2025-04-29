@@ -8,9 +8,14 @@ import java.io.File
 
 class CsvProjectsRepository : ProjectsRepository {
 
-    private val file = File("projects.csv")
+    private val directory = File("csvFiles")
+    private val file = File(directory, "projects.csv")
 
     init {
+        if (!directory.exists()) {
+            directory.mkdir()
+        }
+
         if (!file.exists()) {
             file.createNewFile()
             file.writeText("id,title,description\n")

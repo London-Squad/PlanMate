@@ -5,7 +5,7 @@ import logic.repositories.CacheDataRepository
 
 class CacheDataRepositoryImpl : CacheDataRepository {
 
-    private var loggedInUser: User? = null
+    private var loggedInUser: User? = User(userName = "admin", type = User.Type.ADMIN)
 
     override fun getLoggedInUser(): User? = loggedInUser
 
