@@ -13,7 +13,7 @@ class CacheDataRepositoryImpl : CacheDataRepository {
     private var selectedState: State? = null
     private var selectedTask: Task? = null
 
-    override fun getLoggedInUser(): User = User(userName = "admin", type = User.Type.ADMIN)
+    override fun getLoggedInUser(): User? = loggedInUser
 
     override fun setLoggedInUser(user: User) {
         loggedInUser = user
