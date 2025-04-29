@@ -1,13 +1,13 @@
 package ui.projectView
 
+import logic.entities.Project
 import logic.repositories.CacheDataRepository
 import logic.useCases.ProjectUseCases
 import main.logic.useCases.LogUseCases
 import main.logic.useCases.StateUseCases
 import main.logic.useCases.TaskUseCases
-import ui.View
-import ui.cLIPrintersAndReaders.CLIPrinter
-import ui.cLIPrintersAndReaders.CLIReader
+import ui.cliPrintersAndReaders.CLIPrinter
+import ui.cliPrintersAndReaders.CLIReader
 
 class ProjectView(
     private val cliPrinter: CLIPrinter,
@@ -17,10 +17,12 @@ class ProjectView(
     private val stateUseCases: StateUseCases,
     private val logUseCases: LogUseCases,
     private val cacheDataRepository: CacheDataRepository
-) : View {
+) {
 
-    override fun start() {
-        val project = cacheDataRepository.getSelectedProject()
+    var currentProject: Project? = null
+
+    fun start(project: Project) {
+        currentProject = project
         val currentUser = cacheDataRepository.getLoggedInUser()
         if (project == null || currentUser == null) {
             cliPrinter.cliPrintLn("Error: No project selected or user not logged in.")
@@ -31,9 +33,8 @@ class ProjectView(
     }
 
     private fun printProjectMenu() {
-        val project = cacheDataRepository.getSelectedProject() ?: return
         val currentUser = cacheDataRepository.getLoggedInUser() ?: return
-        cliPrinter.printHeader("Project: ${project.title}")
+        cliPrinter.printHeader("Project: ${currentProject!!.title}")
         cliPrinter.cliPrintLn("1. View all tasks in swimlanes")
         cliPrinter.cliPrintLn("2. Add new task")
         cliPrinter.cliPrintLn("3. Select task")
@@ -63,8 +64,7 @@ class ProjectView(
         )
         when (input) {
             "1" -> {
-                val project = cacheDataRepository.getSelectedProject() ?: return
-                displaySwimlanes(project)
+                displaySwimlanes(currentProject ?: return)
             }
 
             "2" -> addNewTask()
@@ -73,14 +73,13 @@ class ProjectView(
             "5" -> if (currentUser.type == logic.entities.User.Type.ADMIN) editProject() else return
             "6" -> {
                 if (currentUser.type == logic.entities.User.Type.ADMIN) {
-                    val project = cacheDataRepository.getSelectedProject() ?: return
-                    deleteProject(project)
+                    deleteProject(currentProject ?: return)
                 } else return
             }
 
             "0" -> return
         }
-        start()
+        start(currentProject ?: return)
     }
 
     private fun displaySwimlanes(project: logic.entities.Project) {
@@ -147,40 +146,29 @@ class ProjectView(
     }
 
     private fun editProjectTitle() {
-        val project = cacheDataRepository.getSelectedProject() ?: return
         val newTitle = cliReader.getValidUserInput(
             message = "Enter new project title: ",
             invalidInputMessage = "Title cannot be empty",
             isValidInput = { it.isNotBlank() }
         )
-        projectUseCases.editProjectTitle(project.id, newTitle)
+        projectUseCases.editProjectTitle(currentProject!!.id, newTitle)
 
-        val updatedProject = projectUseCases.getProjectById(project.id)
-        if (updatedProject != null) {
-            cacheDataRepository.setSelectedProject(updatedProject)
-        }
         cliPrinter.cliPrintLn("Project title updated.")
     }
 
     private fun editProjectDescription() {
-        val project = cacheDataRepository.getSelectedProject() ?: return
         val newDescription = cliReader.getValidUserInput(
             message = "Enter new project description: ",
             invalidInputMessage = "Description cannot be empty",
             isValidInput = { it.isNotBlank() }
         )
-        projectUseCases.editProjectDescription(project.id, newDescription)
+        projectUseCases.editProjectDescription(currentProject!!.id, newDescription)
 
-        val updatedProject = projectUseCases.getProjectById(project.id)
-        if (updatedProject != null) {
-            cacheDataRepository.setSelectedProject(updatedProject)
-        }
         cliPrinter.cliPrintLn("Project description updated.")
     }
 
     private fun deleteProject(project: logic.entities.Project) {
         projectUseCases.deleteProject(project.id)
-        cacheDataRepository.clearSelectedProjectFromCatch()
         cliPrinter.cliPrintLn("Project deleted.")
     }
 

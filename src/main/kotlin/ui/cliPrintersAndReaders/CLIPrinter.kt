@@ -1,4 +1,4 @@
-package ui.cLIPrintersAndReaders
+package ui.cliPrintersAndReaders
 
 class CLIPrinter {
 

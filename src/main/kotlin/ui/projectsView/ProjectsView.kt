@@ -5,9 +5,8 @@ import logic.useCases.ProjectUseCases
 import main.logic.useCases.LogUseCases
 import main.logic.useCases.StateUseCases
 import main.logic.useCases.TaskUseCases
-import ui.View
-import ui.cLIPrintersAndReaders.CLIPrinter
-import ui.cLIPrintersAndReaders.CLIReader
+import ui.cliPrintersAndReaders.CLIPrinter
+import ui.cliPrintersAndReaders.CLIReader
 import ui.projectView.ProjectView
 import org.koin.java.KoinJavaComponent.getKoin
 
@@ -19,9 +18,9 @@ class ProjectsView(
     private val stateUseCases: StateUseCases,
     private val logUseCases: LogUseCases,
     private val cacheDataRepository: CacheDataRepository
-) : View {
+){
 
-    override fun start() {
+     fun start() {
         val currentUser = cacheDataRepository.getLoggedInUser()
         if (currentUser == null) {
             cliPrinter.cliPrintLn("Error: No user logged in. Please log in first.")
@@ -89,10 +88,9 @@ class ProjectsView(
         }
 
         val project = projects[projectIndex]
-        cacheDataRepository.setSelectedProject(project)
 
         val projectView: ProjectView = getKoin().get()
-        projectView.start()
+        projectView.start(project)
     }
 
     private fun createProject() {

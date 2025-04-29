@@ -2,9 +2,8 @@ package ui.mainMenuView
 
 import logic.entities.User
 import logic.repositories.CacheDataRepository
-import ui.View
-import ui.cLIPrintersAndReaders.CLIPrinter
-import ui.cLIPrintersAndReaders.CLIReader
+import ui.cliPrintersAndReaders.CLIPrinter
+import ui.cliPrintersAndReaders.CLIReader
 import ui.loginView.LoginView
 import ui.matesManagementView.MatesManagementView
 import ui.projectsView.ProjectsView
@@ -16,16 +15,16 @@ class MainMenuView(
     private val loginView: LoginView,
     private val projectsView: ProjectsView,
     private val matesManagementView: MatesManagementView
-) : View {
+) {
 
-    private var userActiveType: User.Type? = null
+    private var loggedInUserType: User.Type? = null
 
-    override fun start() {
+    fun start() {
 
         saveUserType()
         printMainMenuTitle()
 
-        if (userActiveType == null) {
+        if (loggedInUserType == null) {
             cliPrinter.printPleaseLoginMessage()
             loginView.start()
             return
@@ -36,7 +35,7 @@ class MainMenuView(
     }
 
     private fun saveUserType() {
-        userActiveType = cacheDataRepository.getLoggedInUser()?.type
+        loggedInUserType = cacheDataRepository.getLoggedInUser()?.type
     }
 
     private fun printMainMenuTitle() {
@@ -45,7 +44,7 @@ class MainMenuView(
 
     private fun printOptions() {
         printLn("1. View all project")
-        if (userActiveType == User.Type.ADMIN) printLn("2. Mates management")
+        if (loggedInUserType == User.Type.ADMIN) printLn("2. Mates management")
         printLn("0. Logout")
     }
 
@@ -58,12 +57,11 @@ class MainMenuView(
     }
 
     private fun getValidUserInput(): String {
-        val validInputs = listOf("0", "1", "2").takeIf { userActiveType == User.Type.ADMIN } ?: listOf("0", "1")
+        val validInputs = listOf("0", "1", "2").takeIf { loggedInUserType == User.Type.ADMIN } ?: listOf("0", "1")
         val userInput = cliReader.getUserInput("choose an option").trim()
         if (userInput in validInputs) return userInput
         cliPrinter.cliPrintLn("invalid option, try again ...")
         return getValidUserInput()
-
     }
 
     private fun printLn(message: String) {

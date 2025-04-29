@@ -10,8 +10,8 @@ import org.junit.jupiter.api.Test
 import org.junit.jupiter.api.TestInstance
 import org.junit.jupiter.params.ParameterizedTest
 import org.junit.jupiter.params.provider.MethodSource
-import ui.cLIPrintersAndReaders.CLIPrinter
-import ui.cLIPrintersAndReaders.CLIReader
+import ui.cliPrintersAndReaders.CLIPrinter
+import ui.cliPrintersAndReaders.CLIReader
 import ui.loginView.LoginView
 import ui.matesManagementView.MatesManagementView
 import ui.projectsView.ProjectsView
