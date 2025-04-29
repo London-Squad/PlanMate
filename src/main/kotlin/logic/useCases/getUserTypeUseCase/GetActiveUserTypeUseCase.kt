@@ -3,10 +3,10 @@ package logic.useCases.getUserTypeUseCase
 import logic.entities.User
 import logic.repositories.AuthenticationRepository
 
-class GetUserTypeUseCase(
+class GetActiveUserTypeUseCase(
     private val authenticationRepository: AuthenticationRepository
 ) {
-    fun getUserType(): User.Type? {
+    fun getActiveUserType(): User.Type? {
         return authenticationRepository.getActiveUser()?.type
     }
 }

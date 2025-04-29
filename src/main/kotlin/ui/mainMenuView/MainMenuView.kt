@@ -1,7 +1,7 @@
 package ui.mainMenuView
 
 import logic.entities.User
-import logic.useCases.getUserTypeUseCase.GetUserTypeUseCase
+import logic.useCases.getUserTypeUseCase.GetActiveUserTypeUseCase
 import ui.CLIPrintersAndReaders.CLIPrinter
 import ui.CLIPrintersAndReaders.CLIReader
 import ui.View
@@ -12,20 +12,20 @@ import ui.projectsView.ProjectsView
 class MainMenuView(
     private val cliPrinter: CLIPrinter,
     private val cliReader: CLIReader,
-    private val getUserTypeUseCase: GetUserTypeUseCase,
+    private val getActiveUserTypeUseCase: GetActiveUserTypeUseCase,
     private val loginView: LoginView,
     private val projectsView: ProjectsView,
     private val matesManagementView: MatesManagementView
 ) : View {
 
-    private var userType: User.Type? = null
+    private var userActiveType: User.Type? = null
 
     override fun start() {
 
         saveUserType()
         printMainMenuTitle()
 
-        if (userType == null) {
+        if (userActiveType == null) {
             cliPrinter.printPleaseLoginMessage()
             loginView.start()
             return
@@ -36,7 +36,7 @@ class MainMenuView(
     }
 
     private fun saveUserType() {
-        userType = getUserTypeUseCase.getUserType()
+        userActiveType = getActiveUserTypeUseCase.getActiveUserType()
     }
 
     private fun printMainMenuTitle() {
@@ -45,8 +45,8 @@ class MainMenuView(
 
     private fun printOptions() {
         printLn("1. View all project")
-        if (userType == User.Type.ADMIN) printLn("2. Mates management")
-        printLn("0. view all project")
+        if (userActiveType == User.Type.ADMIN) printLn("2. Mates management")
+        printLn("0. Logout")
     }
 
     private fun goToNextUI() {
@@ -58,7 +58,7 @@ class MainMenuView(
     }
 
     private fun getValidUser(): String {
-        val validInputs = listOf("0", "1", "2").takeIf { userType == User.Type.ADMIN } ?: listOf("0", "1")
+        val validInputs = listOf("0", "1", "2").takeIf { userActiveType == User.Type.ADMIN } ?: listOf("0", "1")
         val userInput = cliReader.getUserInput("choose an option").trim()
         if (userInput in validInputs) return userInput
         cliPrinter.cliPrintLn("invalid option, try again ...")
