@@ -1,5 +1,6 @@
 package data.security.hashing
 
+import data.security.hashing.exceptions.HashingException
 import java.security.MessageDigest
 
 class MD5HashingAlgorithm : HashingAlgorithm {

@@ -1,4 +1,4 @@
-package logic.entity
+package logic.entities
 
 sealed class Action
 

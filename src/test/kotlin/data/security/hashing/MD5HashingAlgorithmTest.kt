@@ -1,6 +1,7 @@
 package data.security.hashing
 
 import com.google.common.truth.Truth.assertThat
+import data.security.hashing.exceptions.HashingException
 import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Test
 import org.junit.jupiter.api.assertThrows

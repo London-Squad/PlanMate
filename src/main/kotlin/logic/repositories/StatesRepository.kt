@@ -1,0 +1,15 @@
+package logic.repositories
+
+import logic.entities.State
+import java.util.UUID
+
+interface StatesRepository {
+
+    fun addNewState(state: State, projectId: UUID)
+
+    fun editStateTitle(stateId: UUID, newTitle: String)
+
+    fun editStateDescription(stateId: UUID, newDescription: String)
+
+    fun deleteState(stateId: UUID)
+}
