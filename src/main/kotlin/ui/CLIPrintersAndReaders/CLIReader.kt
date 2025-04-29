@@ -10,9 +10,9 @@ class CLIReader(
         }
 
         fun getValidUserInput(
-            isValidInput: (String)->Boolean,
-            message: String,
-            invalidInputMessage: String
+            isValidInput: (String)->Boolean = { true },
+            message: String = "your input: ",
+            invalidInputMessage: String = "invalid input, try again ..."
         ): String {
             val userInput = getUserInput(message).trim()
             if (isValidInput(userInput)) return userInput
