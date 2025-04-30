@@ -1,11 +1,10 @@
-package logic.usecases.loginUseCase
+package logic.useCases.loginUseCase
 
 import logic.entities.User
 import logic.repositories.AuthenticationRepository
 
 class LoginUseCase(private val authRepository: AuthenticationRepository) {
-    fun login(username: String, password: String): User? {
-
+    fun login(username: String, password: String): User {
         return authRepository.login(username, password)
     }
 }
