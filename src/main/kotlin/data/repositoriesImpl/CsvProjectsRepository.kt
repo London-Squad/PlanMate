@@ -6,12 +6,12 @@ import logic.repositories.ProjectsRepository
 import java.util.UUID
 import java.io.File
 
-class CsvProjectsRepository : ProjectsRepository {
-
-    private val directory = File("csvFiles")
-    private val file = File(directory, "projects.csv")
+class CsvProjectsRepository(
+    private val file: File
+) : ProjectsRepository {
 
     init {
+        val directory = file.parentFile
         if (!directory.exists()) {
             directory.mkdir()
         }
