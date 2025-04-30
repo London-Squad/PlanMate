@@ -7,5 +7,5 @@ import logic.repositories.ProjectsRepository
 
 val appModule = module {
     single { CsvProjectHandler(filePath = "projects.csv") }
-    single<ProjectsRepository> { ProjectRepositoryImpl(csvHandler = get()) }
+    single<ProjectsRepository> { ProjectRepositoryImpl(get()) }
 }

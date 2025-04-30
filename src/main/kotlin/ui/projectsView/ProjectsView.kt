@@ -1,7 +1,7 @@
 package ui.projectsView
 
 import logic.entities.Project
-import usecases.ManageProjectUseCase
+import logic.usecases.ManageProjectUseCase
 
 class ProjectsView(
     private val manageProjectUseCases: ManageProjectUseCase
