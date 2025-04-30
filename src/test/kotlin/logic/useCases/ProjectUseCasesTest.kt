@@ -22,7 +22,7 @@ class ProjectUseCasesTest {
     }
 
     @Test
-    fun `getAllProjects returns empty list when repository has no projects`() {
+    fun `should return empty list when repository has no projects`() {
         // Given
         every { projectsRepository.getAllProjects() } returns emptyList()
 
@@ -34,7 +34,7 @@ class ProjectUseCasesTest {
     }
 
     @Test
-    fun `getAllProjects returns projects from repository`() {
+    fun `should return projects from repository`() {
         // Given
         val project = mockk<Project>()
         every { projectsRepository.getAllProjects() } returns listOf(project)
@@ -47,7 +47,7 @@ class ProjectUseCasesTest {
     }
 
     @Test
-    fun `getProjectById returns project when it exists`() {
+    fun `should return project when it exists`() {
         // Given
         val projectId = UUID.randomUUID()
         val project = mockk<Project> {
@@ -63,7 +63,7 @@ class ProjectUseCasesTest {
     }
 
     @Test
-    fun `getProjectById returns null when project does not exist`() {
+    fun `should return null when project does not exist`() {
         // Given
         val projectId = UUID.randomUUID()
         every { projectsRepository.getAllProjects() } returns emptyList()
@@ -76,7 +76,7 @@ class ProjectUseCasesTest {
     }
 
     @Test
-    fun `createProject adds project with default states to repository`() {
+    fun `should add project with default states to repository`() {
         // Given
         val title = "Test Project"
         val description = "Test Description"
@@ -90,7 +90,7 @@ class ProjectUseCasesTest {
     }
 
     @Test
-    fun `createProject sets three default states with correct titles`() {
+    fun `should set three default states with correct titles`() {
         // Given
         val title = "Test Project"
         val description = "Test Description"
@@ -104,7 +104,7 @@ class ProjectUseCasesTest {
     }
 
     @Test
-    fun `editProjectTitle calls repository with correct parameters`() {
+    fun `should call repository with correct parameters when editing project title`() {
         // Given
         val projectId = UUID.randomUUID()
         val newTitle = "New Title"
@@ -118,7 +118,7 @@ class ProjectUseCasesTest {
     }
 
     @Test
-    fun `editProjectDescription calls repository with correct parameters`() {
+    fun `should call repository with correct parameters when editing project description`() {
         // Given
         val projectId = UUID.randomUUID()
         val newDescription = "New Description"
@@ -132,7 +132,7 @@ class ProjectUseCasesTest {
     }
 
     @Test
-    fun `deleteProject calls repository with correct project ID`() {
+    fun `should call repository with correct project ID when deleting project`() {
         // Given
         val projectId = UUID.randomUUID()
         every { projectsRepository.deleteProject(projectId) } returns Unit
@@ -145,7 +145,7 @@ class ProjectUseCasesTest {
     }
 
     @Test
-    fun `getProjectById returns null when project ID does not match any project`() {
+    fun `should return null when project ID does not match any project`() {
         // Given
         val projectId = UUID.randomUUID()
         val differentId = UUID.randomUUID()

@@ -55,7 +55,7 @@ class ProjectViewTest {
     }
 
     @Test
-    fun `start exits when no user is logged in`() {
+    fun `should exit when no user is logged in`() {
         // Given
         every { cacheDataRepository.getLoggedInUser() } returns null
 
@@ -67,7 +67,7 @@ class ProjectViewTest {
     }
 
     @Test
-    fun `start displays swimlanes and menu when user is logged in`() {
+    fun `should display swimlanes and menu when user is logged in`() {
         // Given
         val user = mockk<User> {
             every { type } returns User.Type.MATE
@@ -83,7 +83,7 @@ class ProjectViewTest {
     }
 
     @Test
-    fun `printProjectMenu shows all options for admin user`() {
+    fun `should show all options for admin user`() {
         // Given
         projectView.currentProject = project
         val user = mockk<User> {
@@ -103,7 +103,7 @@ class ProjectViewTest {
     }
 
     @Test
-    fun `printProjectMenu hides admin options for non-admin user`() {
+    fun `should hide admin options for non-admin user`() {
         // Given
         projectView.currentProject = project
         val user = mockk<User> {
@@ -122,9 +122,8 @@ class ProjectViewTest {
         verify(exactly = 0) { cliPrinter.cliPrintLn("4. Edit project") }
     }
 
-
     @Test
-    fun `handleUserInput returns on option 0`() {
+    fun `should return on option 0`() {
         // Given
         val user = mockk<User> {
             every { type } returns User.Type.MATE
@@ -143,7 +142,7 @@ class ProjectViewTest {
     }
 
     @Test
-    fun `displaySwimlanes shows message when states are empty`() {
+    fun `should show message when states are empty`() {
         // Given
         every { project.states } returns emptyList()
         every { project.title } returns "Test Project"
@@ -158,9 +157,8 @@ class ProjectViewTest {
         verify { cliPrinter.cliPrintLn("No states defined for this project.") }
     }
 
-
     @Test
-    fun `editProject returns on option 0`() {
+    fun `should return on edit project option 0`() {
         // Given
         every { cliReader.getValidUserInput(any(), any(), any()) } returns "0"
 
@@ -174,9 +172,8 @@ class ProjectViewTest {
         verify { cliReader.getValidUserInput(any(), any(), any()) }
     }
 
-
     @Test
-    fun `deleteProject deletes project`() {
+    fun `should delete project`() {
         // Given
         every { projectUseCases.deleteProject(project.id) } returns Unit
 
