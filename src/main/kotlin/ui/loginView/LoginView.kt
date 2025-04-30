@@ -1,5 +1,6 @@
 package ui.loginView
 
+import logic.entities.User
 import logic.usecases.loginUseCase.LoginUseCase
 import ui.cliPrintersAndReaders.CLIPrinter
 import ui.cliPrintersAndReaders.CLIReader
@@ -22,6 +23,8 @@ class LoginView(
             handleEmptyPassword()
             return
         }
+
+        processLogin(username, password)
     }
 
     private fun readUsername(): String {
@@ -38,5 +41,22 @@ class LoginView(
 
     private fun handleEmptyPassword() {
         cliPrinter.cliPrintLn("Password is empty. Please try again.")
+    }
+
+    private fun processLogin(username: String, password: String) {
+        val user = loginUseCase.login(username, password)
+        if (user != null) {
+            handleSuccessfulLogin(user)
+        } else {
+            handleInvalidCredentials()
+        }
+    }
+
+    private fun handleSuccessfulLogin(user: User) {
+        cliPrinter.cliPrintLn("Login successful")
+    }
+
+    private fun handleInvalidCredentials() {
+        cliPrinter.cliPrintLn("Invalid username or password")
     }
 }

@@ -56,20 +56,20 @@ class LoginViewTest {
 
     @Test
     fun `start should print success for valid credentials`() {
-        every { reader.getUserInput("username: ") } returns "admin"
-        every { reader.getUserInput("password: ") } returns "123456"
-        every { useCase.login("admin", "123456") } returns User("admin", User.Type.ADMIN)
+        every { cliReader.getUserInput("username: ") } returns "admin"
+        every { cliReader.getUserInput("password: ") } returns "123456"
+        every { loginUseCase.login("admin", "123456") } returns User(userName = "admin", type = User.Type.ADMIN)
 
         loginView.start()
 
-        verify { printer.cliPrintLn("Login successful") }
+        verify { cliPrinter.cliPrintLn("Login successful") }
     }
 
     @Test
     fun `start should print error for invalid credentials`() {
         every { cliReader.getUserInput("username: ") } returns "admin"
         every { cliReader.getUserInput("password: ") } returns "123456"
-        every { loginUseCase.login("admin", "12345678") } returns null
+        every { loginUseCase.login("admin", "123456") } returns null
 
         loginView.start()
 
