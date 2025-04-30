@@ -4,9 +4,6 @@ import logic.entities.Project
 import logic.entities.User
 import logic.repositories.CacheDataRepository
 import logic.useCases.ProjectUseCases
-import main.logic.useCases.LogUseCases
-import main.logic.useCases.StateUseCases
-import main.logic.useCases.TaskUseCases
 import ui.cliPrintersAndReaders.CLIPrinter
 import ui.cliPrintersAndReaders.CLIReader
 import ui.projectView.ProjectView
@@ -15,9 +12,6 @@ class ProjectsView(
     private val cliPrinter: CLIPrinter,
     private val cliReader: CLIReader,
     private val projectUseCases: ProjectUseCases,
-    private val taskUseCases: TaskUseCases,
-    private val stateUseCases: StateUseCases,
-    private val logUseCases: LogUseCases,
     private val cacheDataRepository: CacheDataRepository,
     private val projectView: ProjectView
 ) {
