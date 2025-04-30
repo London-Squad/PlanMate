@@ -1,4 +1,4 @@
-package logic.useCase
+package logic.useCases
 
 import logic.repositories.AuthenticationRepository
 import logic.validation.takeIfValidPasswordOrThrowException

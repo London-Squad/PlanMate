@@ -17,9 +17,8 @@ class CacheDataRepositoryImpl(
     }
 
     override fun getLoggedInUser(): User? {
-        if (loggedInUser != null) return loggedInUser
-        if (canLoadUser) return loadUserFromLocalFile()
-        return null
+        if (canLoadUser) loggedInUser = loadUserFromLocalFile()
+        return loggedInUser
     }
 
     override fun setLoggedInUser(user: User) {
@@ -33,10 +32,11 @@ class CacheDataRepositoryImpl(
         loggedInUser = null
     }
 
-    private fun loadUserFromLocalFile(): User {
+    private fun loadUserFromLocalFile(): User? {
         canLoadUser = false
-        return activeUserFile.readText().trim()
-            .split(",")
+        val text = activeUserFile.readText().trim()
+        if (text.isEmpty()) return null
+        return text.split(",")
             .run { User(this[0].toUUID(), this[1], User.Type.MATE) }
     }
 
