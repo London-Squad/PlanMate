@@ -1,12 +1,21 @@
 package data.repositories
 
+import data.csv.CsvProjectHandler
 import logic.entities.Project
 import logic.repositories.ProjectsRepository
-import java.util.UUID
+import java.util.*
 
-class ProjectRepositoryImpl: ProjectsRepository {
+class ProjectRepositoryImpl(private val projectHandler: CsvProjectHandler) : ProjectsRepository {
+    private val projectsInMemory: MutableList<Project> = mutableListOf()
+
+    init {
+        projectsInMemory.addAll(projectHandler.loadProjects())
+    }
+
     override fun getAllProjects(): List<Project> {
-        TODO("Not yet implemented")
+        projectsInMemory.clear()
+        projectsInMemory.addAll(projectHandler.loadProjects())
+        return projectsInMemory.toList()
     }
 
     override fun addNewProject(project: Project) {
