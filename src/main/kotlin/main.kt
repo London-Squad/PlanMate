@@ -13,12 +13,4 @@ fun main() {
     startKoin {
         modules(appModule, repoModules, uiModule, useCaseModule)
     }
-    val usser = User(
-        userName = "admin",
-        type = User.Type.ADMIN
-    )
-
-    val projectsView: ProjectsView = getKoin().get()
-
-    projectsView.start()
 }
