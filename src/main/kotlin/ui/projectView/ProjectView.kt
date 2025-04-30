@@ -68,6 +68,7 @@ class ProjectView(
                     deleteProject(currentProject)
                 } else return
             }
+
             "0" -> return
         }
         start(currentProject)
@@ -131,6 +132,7 @@ class ProjectView(
             "1" -> editProjectTitle()
             "2" -> editProjectDescription()
             "3" -> statesManagement()
+            "4" -> taskManagement()
             "0" -> return
         }
         editProject()
@@ -143,7 +145,6 @@ class ProjectView(
             isValidInput = { it.isNotBlank() }
         )
         projectUseCases.editProjectTitle(currentProject.id, newTitle)
-        // Update the currentProject with the new title
         currentProject = currentProject.copy(title = newTitle)
         cliPrinter.cliPrintLn("Project title updated.")
     }
@@ -155,7 +156,6 @@ class ProjectView(
             isValidInput = { it.isNotBlank() }
         )
         projectUseCases.editProjectDescription(currentProject.id, newDescription)
-        // Update the currentProject with the new description
         currentProject = currentProject.copy(description = newDescription)
         cliPrinter.cliPrintLn("Project description updated.")
     }
@@ -169,26 +169,24 @@ class ProjectView(
         List(numberOfDuplication) { this }.joinToString(separator = "")
 
     private fun addNewTask() {
-        /**
-         * To-Do
-         */
+        TODO("Not yet implemented")
     }
 
     private fun selectTask() {
-        /**
-         * To-Do
-         */
+        TODO("Not yet implemented")
     }
 
     private fun viewProjectLogs() {
-        /**
-         * To-Do
-         */
+        TODO("Not yet implemented")
+
     }
 
     private fun statesManagement() {
-        /**
-         * To-Do
-         */
+        TODO("Not yet implemented")
+
+    }
+
+    private fun taskManagement() {
+        TODO("Not yet implemented")
     }
 }
