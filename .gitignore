@@ -46,7 +46,7 @@ bin/
 
 ### DataBase ###
 csvFiles/*
-
+projects.csv
+*.csv
 ### .idea ###
 .idea
-projects.csv
