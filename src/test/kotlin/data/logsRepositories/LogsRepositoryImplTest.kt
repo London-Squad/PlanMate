@@ -70,28 +70,61 @@ class LogsRepositoryImplTest {
 
         assertThat(logs).isEmpty()  // Single assertion
     }
-
     @Test
-    fun `parseLog handles exceptions`() {
-        val invalidLine = "invalid,log,line,with,exception"
-        val result = logsRepository.parseLog(invalidLine)
+    fun `getAllLogs returns parsed log from valid line`() {
+        val validLine = "123e4567-e89b-12d3-a456-426614174000,987e6543-e21b-32d3-c456-426614174111,2025-04-30T12:00:00,987e6543-e21b-32d3-c456-426614174222,Task,Create"
+        every { csvReader.readLines(any()) } returns listOf(validLine)
 
-        assertThat(result).isNull()  // Single assertion
+        val logs = logsRepository.getAllLogs()
+
+        assertThat(logs).hasSize(1)
     }
 
-    @Test
-    fun `getEntityByType returns correct entity`() {
-        val taskEntity = logsRepository.getEntityByType("Task", UUID.randomUUID())
-
-        assertThat(taskEntity).isInstanceOf(Task::class.java)  // Single assertion
-    }
 
     @Test
-    fun `getActionByType returns correct action`() {
-        val task = Task(UUID.randomUUID(), "Task", "Description")
+    fun `getAllLogs skips log when parseLog fails`() {
+        val badLine = "bad,line,data,missing,columns"
+        every { csvReader.readLines(any()) } returns listOf(badLine)
 
-        val createAction = logsRepository.getActionByType("Create", task)
+        val logs = logsRepository.getAllLogs()
 
-        assertThat(createAction).isInstanceOf(Create::class.java)  // Single assertion
+        assertThat(logs).isEmpty()
     }
+    @Test
+    fun `getAllLogs skips log when entity type is unknown`() {
+        val line = "id1,id2,2025-04-30T12:00:00,id4,Unknown,Create"
+        every { csvReader.readLines(any()) } returns listOf(line)
+
+        val logs = logsRepository.getAllLogs()
+
+        assertThat(logs).isEmpty()
+    }
+    @Test
+    fun `getAllLogs skips log when action type is unknown`() {
+        val line = "id1,id2,2025-04-30T12:00:00,id4,Task,UnknownAction"
+        every { csvReader.readLines(any()) } returns listOf(line)
+
+        val logs = logsRepository.getAllLogs()
+
+        assertThat(logs).isEmpty()
+    }
+    @Test
+    fun `addLog formats line correctly and calls writer`() {
+        val log = Log(
+            UUID.randomUUID(),
+            User(UUID.randomUUID(), "Ali", User.Type.MATE),
+            LocalDateTime.of(2025, 4, 30, 12, 0),
+            Create(Task(UUID.randomUUID(), "task", "desc"))
+        )
+        every { csvWriter.appendLine(any(), any()) } just Runs
+
+        logsRepository.addLog(log)
+
+        verify {
+            csvWriter.appendLine(match { it.endsWith(".csv") }, match {
+                it.contains("Task") && it.contains("Create")
+            })
+        }
+    }
+
 }

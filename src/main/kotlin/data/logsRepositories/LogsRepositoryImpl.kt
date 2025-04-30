@@ -57,7 +57,7 @@ class LogsRepositoryImpl(
         ).joinToString(",")
     }
 
-    internal  fun parseLog(line: String): Log? {
+    private  fun parseLog(line: String): Log? {
         val parts = line.split(",")
         if (parts.size < EXPECTED_COLUMNS) {
             println("Invalid log line, skipping: $line")
@@ -86,7 +86,7 @@ class LogsRepositoryImpl(
         }
     }
 
-    internal  fun getEntityByType(entityType: String, entityId: UUID): PlanEntity? {
+    private  fun getEntityByType(entityType: String, entityId: UUID): PlanEntity? {
         return when (entityType) {
             "Task" -> Task(entityId, "unknown", "unknown")
             "Project" -> Project(entityId, "unknown", "unknown", emptyList(), emptyList())
@@ -95,7 +95,7 @@ class LogsRepositoryImpl(
         }
     }
 
-    internal  fun getActionByType(actionType: String, entity: PlanEntity): Action? {
+    private  fun getActionByType(actionType: String, entity: PlanEntity): Action? {
         return when (actionType) {
             "Create" -> Create(entity)
             "Delete" -> Delete(entity)
