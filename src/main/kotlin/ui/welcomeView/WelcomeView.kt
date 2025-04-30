@@ -1,21 +1,18 @@
 package ui.welcomeView
 
-import logic.repositories.CacheDataRepository
+import logic.useCases.GetActiveUserUseCase
 import ui.cliPrintersAndReaders.CLIPrinter
-import ui.loginView.LoginView
 import ui.mainMenuView.MainMenuView
 
 class WelcomeView(
     private val cliPrinter: CLIPrinter,
-    private val loginView: LoginView,
     private val mainMenuView: MainMenuView,
-    private val cacheDataRepository: CacheDataRepository,
-    ){
+    private val getActiveUserUseCase: GetActiveUserUseCase
+){
 
     fun start() {
-        val loggedInUser = cacheDataRepository.getLoggedInUser() ?: run{
+        val loggedInUser = getActiveUserUseCase.getLoggedInUser() ?: run{
             cliPrinter.printPleaseLoginMessage()
-            loginView.start()
             return
         }
 
