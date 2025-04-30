@@ -33,13 +33,13 @@ class ProjectView(
     }
 
     private fun printProjectMenu() {
-        val currentUser = cacheDataRepository.getLoggedInUser() ?: return
+        val currentUser = cacheDataRepository.getLoggedInUser()
         cliPrinter.printHeader("Project: ${currentProject.title}")
         cliPrinter.cliPrintLn("1. View all tasks in swimlanes")
         cliPrinter.cliPrintLn("2. Add new task")
         cliPrinter.cliPrintLn("3. Select task")
         cliPrinter.cliPrintLn("4. View project logs")
-        if (currentUser.type == logic.entities.User.Type.ADMIN) {
+        if (currentUser?.type == logic.entities.User.Type.ADMIN) {
             cliPrinter.cliPrintLn("5. Edit project")
             cliPrinter.cliPrintLn("6. Delete project")
         }
@@ -47,8 +47,8 @@ class ProjectView(
     }
 
     private fun handleUserInput() {
-        val currentUser = cacheDataRepository.getLoggedInUser() ?: return
-        val validInputs = if (currentUser.type == logic.entities.User.Type.ADMIN) listOf(
+        val currentUser = cacheDataRepository.getLoggedInUser()
+        val validInputs = if (currentUser?.type == logic.entities.User.Type.ADMIN) listOf(
             "0",
             "1",
             "2",
@@ -64,22 +64,22 @@ class ProjectView(
         )
         when (input) {
             "1" -> {
-                displaySwimlanes(currentProject ?: return)
+                displaySwimlanes(currentProject)
             }
 
             "2" -> addNewTask()
             "3" -> selectTask()
             "4" -> viewProjectLogs()
-            "5" -> if (currentUser.type == logic.entities.User.Type.ADMIN) editProject() else return
+            "5" -> if (currentUser?.type == logic.entities.User.Type.ADMIN) editProject() else return
             "6" -> {
-                if (currentUser.type == logic.entities.User.Type.ADMIN) {
-                    deleteProject(currentProject ?: return)
+                if (currentUser?.type == logic.entities.User.Type.ADMIN) {
+                    deleteProject(currentProject)
                 } else return
             }
 
             "0" -> return
         }
-        start(currentProject ?: return)
+        start(currentProject)
     }
 
     private fun displaySwimlanes(project: logic.entities.Project) {
