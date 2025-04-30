@@ -19,12 +19,12 @@ class ProjectView(
     private val cacheDataRepository: CacheDataRepository
 ) {
 
-    var currentProject: Project? = null
+    private lateinit var currentProject: Project
 
     fun start(project: Project) {
         currentProject = project
         val currentUser = cacheDataRepository.getLoggedInUser()
-        if (project == null || currentUser == null) {
+        if (currentUser == null) {
             cliPrinter.cliPrintLn("Error: No project selected or user not logged in.")
             return
         }
@@ -34,7 +34,7 @@ class ProjectView(
 
     private fun printProjectMenu() {
         val currentUser = cacheDataRepository.getLoggedInUser() ?: return
-        cliPrinter.printHeader("Project: ${currentProject!!.title}")
+        cliPrinter.printHeader("Project: ${currentProject.title}")
         cliPrinter.cliPrintLn("1. View all tasks in swimlanes")
         cliPrinter.cliPrintLn("2. Add new task")
         cliPrinter.cliPrintLn("3. Select task")
@@ -151,7 +151,7 @@ class ProjectView(
             invalidInputMessage = "Title cannot be empty",
             isValidInput = { it.isNotBlank() }
         )
-        projectUseCases.editProjectTitle(currentProject!!.id, newTitle)
+        projectUseCases.editProjectTitle(currentProject.id, newTitle)
 
         cliPrinter.cliPrintLn("Project title updated.")
     }
@@ -162,7 +162,7 @@ class ProjectView(
             invalidInputMessage = "Description cannot be empty",
             isValidInput = { it.isNotBlank() }
         )
-        projectUseCases.editProjectDescription(currentProject!!.id, newDescription)
+        projectUseCases.editProjectDescription(currentProject.id, newDescription)
 
         cliPrinter.cliPrintLn("Project description updated.")
     }
