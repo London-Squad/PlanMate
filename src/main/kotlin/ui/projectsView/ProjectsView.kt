@@ -38,7 +38,7 @@ class ProjectsView(
         cliPrinter.cliPrintLn("0. Back to main menu")
     }
 
-     fun handleMenuInput(): Boolean {
+     private fun handleMenuInput(): Boolean {
         val validInputs = listOf("0")
         val input = cliReader.getValidUserInput(
             isValidInput = { it in validInputs },
