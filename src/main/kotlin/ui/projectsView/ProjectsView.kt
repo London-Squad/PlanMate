@@ -10,7 +10,6 @@ import main.logic.useCases.TaskUseCases
 import ui.cliPrintersAndReaders.CLIPrinter
 import ui.cliPrintersAndReaders.CLIReader
 import ui.projectView.ProjectView
-import org.koin.java.KoinJavaComponent.getKoin
 
 class ProjectsView(
     private val cliPrinter: CLIPrinter,
@@ -19,7 +18,8 @@ class ProjectsView(
     private val taskUseCases: TaskUseCases,
     private val stateUseCases: StateUseCases,
     private val logUseCases: LogUseCases,
-    private val cacheDataRepository: CacheDataRepository
+    private val cacheDataRepository: CacheDataRepository,
+    private val projectView: ProjectView
 ) {
 
     fun start() {
@@ -101,7 +101,6 @@ class ProjectsView(
                 }
 
                 val project = projects[projectIndex]
-                val projectView: ProjectView = getKoin().get()
                 projectView.start(project)
             }
         }
