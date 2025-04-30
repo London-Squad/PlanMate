@@ -1,26 +1,26 @@
 package ui.welcomeView
 
-import logic.useCases.GetActiveUserUseCase
 import ui.cliPrintersAndReaders.CLIPrinter
-import ui.mainMenuView.MainMenuView
+import ui.cliPrintersAndReaders.CLIReader
+import ui.loginView.LoginView
 
 class WelcomeView(
     private val cliPrinter: CLIPrinter,
-    private val mainMenuView: MainMenuView,
-    private val getActiveUserUseCase: GetActiveUserUseCase
+    private val cliReader: CLIReader,
+    private val loginView: LoginView
 ){
 
-    fun start() {
-        val loggedInUser = getActiveUserUseCase.getLoggedInUser() ?: run{
-            cliPrinter.printPleaseLoginMessage()
-            return
+    fun startWelcome() {
+
+        cliPrinter.printHeader("Welcome to PlanMate v1.0")
+
+        println("1. Login")
+        println("0. Exit the app")
+        if (cliReader.getValidUserInput({ it in listOf("1", "0") }, "\nenter your option: ") == "1") {
+            loginView.start()
+            startWelcome()
         }
-
-        printWelcomeMessage(loggedInUser.userName)
-        mainMenuView.start()
     }
 
-    private fun printWelcomeMessage(userName: String) {
-        cliPrinter.cliPrintLn("welcome $userName to PlanMate V1.0")
-    }
+    private fun println(message: String) = cliPrinter.cliPrintLn(message)
 }
