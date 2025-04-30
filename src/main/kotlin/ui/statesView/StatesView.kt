@@ -1,9 +1,9 @@
 package ui.statesView
 
-import ui.View
+import java.util.UUID
 
-class StatesView: View {
-    override fun start() {
+class StatesView {
+    fun start(projectId: UUID) {
 
     }
 }

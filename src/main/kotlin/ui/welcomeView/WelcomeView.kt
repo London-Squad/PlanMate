@@ -1,9 +1,7 @@
 package ui.welcomeView
 
-import ui.View
-
-class WelcomeView: View {
-    override fun start() {
+class WelcomeView {
+    fun start() {
 
     }
 }
