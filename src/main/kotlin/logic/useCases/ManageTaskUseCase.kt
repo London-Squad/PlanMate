@@ -1,13 +1,9 @@
 package logic.useCases
 
-import logic.entities.*
-import logic.repositories.AuthenticationRepository
 import logic.repositories.TaskRepository
-import logic.repositories.LogsRepository
-import java.time.LocalDateTime
 import java.util.UUID
 
-class ManageTaskUsecase(
+class ManageTaskUseCase(
     private val taskRepository: TaskRepository,
 ) {
 

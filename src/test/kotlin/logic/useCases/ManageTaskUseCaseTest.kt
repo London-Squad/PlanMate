@@ -8,15 +8,15 @@ import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Test
 import java.util.UUID
 
-class ManageTaskUsecaseTest {
+class ManageTaskUseCaseTest {
 
     private lateinit var taskRepository: TaskRepository
-    private lateinit var manageTaskUsecase: ManageTaskUsecase
+    private lateinit var manageTaskUsecase: ManageTaskUseCase
 
     @BeforeEach
     fun setup() {
         taskRepository = mockk(relaxed = true)
-        manageTaskUsecase = ManageTaskUsecase(taskRepository)
+        manageTaskUsecase = ManageTaskUseCase(taskRepository)
     }
 
     private val task = Task(UUID.randomUUID(), "test", description = "description")
