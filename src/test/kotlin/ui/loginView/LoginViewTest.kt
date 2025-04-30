@@ -3,7 +3,7 @@ package ui.loginView
 import io.mockk.every
 import io.mockk.mockk
 import io.mockk.verify
-import logic.usecases.login_usecase.LoginUseCase
+import logic.usecases.loginUseCase.LoginUseCase
 import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Test
 import ui.cliPrintersAndReaders.CLIPrinter
@@ -18,10 +18,11 @@ class LoginViewTest {
 
     @BeforeEach
     fun setup() {
-        loginView = mockk(relaxed = true)
         loginUseCase = mockk(relaxed = true)
         cliPrinter = mockk(relaxed = true)
         cliReader = mockk(relaxed = true)
+
+        loginView = LoginView(cliPrinter, cliReader, loginUseCase)
     }
 
     @Test
@@ -35,20 +36,20 @@ class LoginViewTest {
     @Test
     fun `start should print error if username is empty`() {
         every { cliReader.getUserInput("username: ") } returns ""
-        every { cliReader.getUserInput("password: ") } returns "pass"
+        every { cliReader.getUserInput("password: ") } returns "password"
 
         loginView.start()
 
-        verify { cliPrinter.cliPrintLn("Empty credentials, please try again.") }
+        verify(exactly = 1) { cliPrinter.cliPrintLn("Username is empty. Please try again.") }
     }
 
     @Test
     fun `start should print error if password is empty`() {
-        every { cliReader.getUserInput("username: ") } returns "user"
+        every { cliReader.getUserInput("username: ") } returns "username"
         every { cliReader.getUserInput("password: ") } returns ""
 
         loginView.start()
 
-        verify { cliPrinter.cliPrintLn("Empty credentials, please try again.") }
+        verify { cliPrinter.cliPrintLn("Password is empty. Please try again.") }
     }
 }
