@@ -20,7 +20,7 @@ class ProjectView(
     private val cacheDataRepository: CacheDataRepository
 ) {
 
-    private lateinit var currentProject: Project
+     lateinit var currentProject: Project
 
     fun start(project: Project) {
         currentProject = project
