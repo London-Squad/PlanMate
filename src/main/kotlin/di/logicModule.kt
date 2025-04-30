@@ -1,8 +1,10 @@
 package di
 
-import logic.useCases.loginUseCase.LoginUseCase
+import logic.useCases.LoginUseCase
+import logic.useCases.SignupUseCase
 import org.koin.dsl.module
 
 val logicModule = module {
-    single { LoginUseCase(get()) }
+    single { LoginUseCase(get(),get()) }
+    single { SignupUseCase(get()) }
 }
