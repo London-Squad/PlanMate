@@ -49,3 +49,5 @@ csvFiles/*
 
 ### .idea ###
 .idea
+/active_user.csv
+/user.csv

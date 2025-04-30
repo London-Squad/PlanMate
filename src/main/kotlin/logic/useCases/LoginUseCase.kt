@@ -1,4 +1,4 @@
-package logic.useCase
+package logic.useCases
 
 import logic.entities.User
 import logic.repositories.AuthenticationRepository

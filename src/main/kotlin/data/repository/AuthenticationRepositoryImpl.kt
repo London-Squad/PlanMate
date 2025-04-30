@@ -17,7 +17,11 @@ class AuthenticationRepositoryImpl(
         userFile.createFileIfNotExist("id,userName,password,type\n")
     }
 
-    override fun getMates() = userFile.readLines().map(::lineToUser)
+    override fun getMates(): List<User> {
+        val users = userFile.readLines().toMutableList()
+        users.removeFirst()
+        return users.map(::lineToUser)
+    }
 
     override fun deleteUser(userId: UUID) {
         val newFileData = userFile.readLines().toMutableList()
@@ -30,9 +34,7 @@ class AuthenticationRepositoryImpl(
         return userFile.readUserOrNull(userName, hashedPassword) ?: throw UserNotFoundException()
     }
 
-    override fun logout() {
-        return
-    }
+    override fun logout() = true
 
     override fun register(userName: String, password: String): Boolean {
         val hashedPassword = hashingAlgorithm.hashData(password)
@@ -41,7 +43,7 @@ class AuthenticationRepositoryImpl(
         return userFile.writeUser(id, userName, hashedPassword)
     }
 
-    override fun changePassword(userName: String, currentPassword: String, newPassword: String) {
+    override fun changePassword(userName: String, currentPassword: String, newPassword: String): Boolean {
         if (!userFile.isUserExistInFile(userName, currentPassword)) throw UserNotFoundException()
         val newFileData = userFile.readLines().map { line ->
             if (line.contains("$userName,$currentPassword", ignoreCase = true)) {
@@ -49,5 +51,6 @@ class AuthenticationRepositoryImpl(
             } else line
         }
         userFile.clearAndWriteNewData(newFileData)
+        return true
     }
 }
