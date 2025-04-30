@@ -6,7 +6,7 @@ import logic.repositories.CacheDataRepository
 import java.io.File
 import java.util.*
 
-class CacheDataRepositoryImpl(
+class CacheDataSource(
     private val activeUserFile: File
 ) : CacheDataRepository {
     private var loggedInUser: User? = null
