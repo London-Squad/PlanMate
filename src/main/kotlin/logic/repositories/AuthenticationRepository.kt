@@ -13,8 +13,7 @@ interface AuthenticationRepository {
 
     fun logout()
 
-    fun register(userName: String, password: String): User
+    fun register(userName: String, password: String): Boolean
 
-    fun changePassword(userId: UUID, currentPassword: String, newPassword: String)
-
+    fun changePassword(userName: String, currentPassword: String, newPassword: String)
 }

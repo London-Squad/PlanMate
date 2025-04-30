@@ -1,0 +1,20 @@
+package logic.useCase
+
+import logic.entities.User
+import logic.repositories.AuthenticationRepository
+import logic.repositories.CacheDataRepository
+import logic.validation.takeIfValidPasswordOrThrowException
+import logic.validation.takeIfValidNameOrThrowException
+
+class LoginUseCase(
+    private val authenticationRepository: AuthenticationRepository,
+    private val cacheDataRepository: CacheDataRepository
+) {
+    operator fun invoke(userName: String, password: String): User {
+        userName.takeIfValidNameOrThrowException()
+        password.takeIfValidPasswordOrThrowException()
+        val user = authenticationRepository.login(userName, password)
+        cacheDataRepository.setLoggedInUser(user)
+        return user
+    }
+}

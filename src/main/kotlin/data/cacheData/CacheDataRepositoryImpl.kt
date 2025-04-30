@@ -1,19 +1,46 @@
 package data.cacheData
 
+import data.fileIO.createFileIfNotExist
 import logic.entities.User
 import logic.repositories.CacheDataRepository
+import java.io.File
+import java.util.*
 
-class CacheDataRepositoryImpl : CacheDataRepository {
-
+class CacheDataRepositoryImpl(
+    private val activeUserFile: File
+) : CacheDataRepository {
     private var loggedInUser: User? = null
+    private var canLoadUser: Boolean = true
 
-    override fun getLoggedInUser(): User? = loggedInUser
+    init {
+        activeUserFile.createFileIfNotExist("")
+    }
+
+    override fun getLoggedInUser(): User? {
+        if (loggedInUser != null) return loggedInUser
+        if (canLoadUser) return loadUserFromLocalFile()
+        return null
+    }
 
     override fun setLoggedInUser(user: User) {
+        canLoadUser = false
+        activeUserFile.writeText("${user.id},${user.userName},${user.type}")
         loggedInUser = user
     }
 
     override fun clearLoggedInUserFromCatch() {
+        activeUserFile.writeText("")
         loggedInUser = null
+    }
+
+    private fun loadUserFromLocalFile(): User {
+        canLoadUser = false
+        return activeUserFile.readText().trim()
+            .split(",")
+            .run { User(this[0].toUUID(), this[1], User.Type.MATE) }
+    }
+
+    private fun String.toUUID(): UUID {
+        return UUID.fromString(this)
     }
 }
