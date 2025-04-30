@@ -8,7 +8,7 @@ import logic.repositories.AuthenticationRepository
 import java.io.File
 import java.util.*
 
-class AuthenticationRepositoryImpl(
+class AuthenticationDataSource(
     private val userFile: File,
     private val hashingAlgorithm: HashingAlgorithm
 ) : AuthenticationRepository {
@@ -30,6 +30,7 @@ class AuthenticationRepositoryImpl(
     }
 
     override fun login(userName: String, password: String): User {
+        if (userName == ADMIN.userName && password == ADMIN_PASSWORD) return ADMIN
         val hashedPassword = hashingAlgorithm.hashData(password)
         return userFile.readUserOrNull(userName, hashedPassword) ?: throw UserNotFoundException()
     }
@@ -52,5 +53,14 @@ class AuthenticationRepositoryImpl(
         }
         userFile.clearAndWriteNewData(newFileData)
         return true
+    }
+
+    private companion object {
+        val ADMIN = User(
+            id = UUID.fromString("5750f82c-c1b6-454d-b160-5b14857bc9dc"),
+            userName = "admin",
+            type = User.Type.ADMIN
+        )
+        const val ADMIN_PASSWORD = "Admin12"
     }
 }
