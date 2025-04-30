@@ -12,6 +12,8 @@ class LoginView(
 ) {
 
     fun start() {
+        printLoginTitle()
+
         val username = readUsername()
         if (username.isBlank()) {
             handleEmptyUsername()
@@ -25,6 +27,11 @@ class LoginView(
         }
 
         processLogin(username, password)
+    }
+
+    private fun printLoginTitle() {
+        cliPrinter.printHeader("Login")
+        cliPrinter.cliPrintLn("Please enter your username and password.")
     }
 
     private fun readUsername(): String {
