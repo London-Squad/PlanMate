@@ -17,7 +17,7 @@ class WelcomeView(
         println("1. Login")
         println("0. Exit the app")
         if (cliReader.getValidUserInput({ it in listOf("1", "0") }, "\nenter your option: ") == "1") {
-            loginView.start()
+            loginView.startLogin()
             startWelcome()
         }
     }
