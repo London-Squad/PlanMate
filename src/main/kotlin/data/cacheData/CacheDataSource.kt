@@ -23,7 +23,7 @@ class CacheDataSource(
 
     override fun setLoggedInUser(user: User) {
         canLoadUser = false
-        activeUserFile.writeText("${user.id},${user.userName},${user.type}")
+        if (user.type == User.Type.MATE) activeUserFile.writeText("${user.id},${user.userName},${user.type}")
         loggedInUser = user
     }
 

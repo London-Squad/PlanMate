@@ -1,5 +1,6 @@
 package ui.loginView
 
+import logic.exception.AuthenticationException
 import logic.repositories.CacheDataRepository
 import logic.useCases.LoginUseCase
 import ui.cliPrintersAndReaders.CLIPrinter
@@ -30,9 +31,10 @@ class LoginView(
             cacheDataRepository.setLoggedInUser(user)
             println("Login successful")
             mainMenuView.startMainMenu()
+        } catch (e: AuthenticationException) {
+            println(e.message)
         } catch (e: Exception) {
-            throw e
-//            println("Invalid username or password")
+            println("Invalid username or password")
         }
     }
 
