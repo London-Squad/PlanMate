@@ -26,7 +26,7 @@ class ProjectView(
         currentProject = project
         val currentUser = cacheDataRepository.getLoggedInUser()
         if (currentUser == null) {
-            cliPrinter.cliPrintLn("Error: No project selected or user not logged in.")
+            cliPrinter.cliPrintLn(ERROR_MESSAGE)
             return
         }
 
@@ -188,5 +188,9 @@ class ProjectView(
 
     private fun taskManagement() {
         TODO("Not yet implemented")
+    }
+
+    companion object {
+        const val ERROR_MESSAGE = "Error: No project selected or user not logged in."
     }
 }
