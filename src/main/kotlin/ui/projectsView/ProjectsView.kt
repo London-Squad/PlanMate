@@ -5,6 +5,7 @@ import logic.useCases.ProjectUseCases
 import main.logic.useCases.LogUseCases
 import main.logic.useCases.StateUseCases
 import main.logic.useCases.TaskUseCases
+
 import ui.cliPrintersAndReaders.CLIPrinter
 import ui.cliPrintersAndReaders.CLIReader
 import ui.projectView.ProjectView
@@ -18,37 +19,38 @@ class ProjectsView(
     private val stateUseCases: StateUseCases,
     private val logUseCases: LogUseCases,
     private val cacheDataRepository: CacheDataRepository
-){
+) {
 
-     fun start() {
+    fun start() {
         val currentUser = cacheDataRepository.getLoggedInUser()
         if (currentUser == null) {
             cliPrinter.cliPrintLn("Error: No user logged in. Please log in first.")
             return
         }
+        viewProjects()
         printProjectsMenu(currentUser)
         handleUserInput(currentUser)
     }
 
     private fun printProjectsMenu(currentUser: logic.entities.User) {
         cliPrinter.printHeader("Projects Menu")
-        cliPrinter.cliPrintLn("1. View projects")
         if (currentUser.type == logic.entities.User.Type.ADMIN) {
-            cliPrinter.cliPrintLn("2. Create new project")
+            cliPrinter.cliPrintLn("1. Create new project")
+            cliPrinter.cliPrintLn("0. Back to main menu")
+        } else {
+            cliPrinter.cliPrintLn("0. Back to main menu")
         }
-        cliPrinter.cliPrintLn("0. Back to main menu")
     }
 
     private fun handleUserInput(currentUser: logic.entities.User) {
-        val validInputs = if (currentUser.type == logic.entities.User.Type.ADMIN) listOf("0", "1", "2") else listOf("0", "1")
+        val validInputs = if (currentUser.type == logic.entities.User.Type.ADMIN) listOf("0", "1") else listOf("0")
         val input = cliReader.getValidUserInput(
             isValidInput = { it in validInputs },
             message = "Choose an option: ",
             invalidInputMessage = "Invalid option, try again ..."
         )
         when (input) {
-            "1" -> viewProjects()
-            "2" -> if (currentUser.type == logic.entities.User.Type.ADMIN) createProject() else return
+            "1" -> if (currentUser.type == logic.entities.User.Type.ADMIN) createProject() else return
             "0" -> return
         }
         start()
@@ -62,7 +64,6 @@ class ProjectsView(
         }
 
         cliPrinter.printHeader("Available Projects")
-
         projects.forEachIndexed { index, project ->
             val displayIndex = index + 1
             cliPrinter.cliPrintLn("Project: $displayIndex")
@@ -88,7 +89,6 @@ class ProjectsView(
         }
 
         val project = projects[projectIndex]
-
         val projectView: ProjectView = getKoin().get()
         projectView.start(project)
     }
