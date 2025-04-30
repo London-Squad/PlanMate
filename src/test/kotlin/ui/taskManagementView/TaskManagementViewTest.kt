@@ -1,66 +1,81 @@
 package ui.taskManagementView
 
-import data.catchData.CatchDataMemoryRepository
 import io.mockk.every
 import io.mockk.mockk
 import io.mockk.verify
+import logic.entities.Project
+import logic.entities.State
 import logic.entities.Task
-import logic.useCases.ManageTaskUseCase
 import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Test
-import ui.CLIPrintersAndReaders.CLIPrinter
-import ui.CLIPrintersAndReaders.CLIReader
+import org.junit.jupiter.params.ParameterizedTest
+import org.junit.jupiter.params.provider.CsvSource
+import ui.cliPrintersAndReaders.CLIPrinter
+import ui.cliPrintersAndReaders.CLIReader
 import java.util.*
 
 class TaskManagementViewTest {
 
     private lateinit var taskManagementView: TaskManagementView
-    private lateinit var manageTaskUseCase: ManageTaskUseCase
-    private lateinit var catchDataMemoryRepository: CatchDataMemoryRepository
+    private lateinit var editTitleView: EditTitleView
+    private lateinit var editDescriptionView: EditDescriptionView
+    private lateinit var editTaskStateView: EditTaskStateView
+    private lateinit var deleteTaskView: DeleteTaskView
     private lateinit var cliPrinter: CLIPrinter
     private lateinit var cliReader: CLIReader
 
     @BeforeEach
     fun setup() {
-        manageTaskUseCase = mockk(relaxed = true)
-        catchDataMemoryRepository = mockk(relaxed = true)
+        editTitleView = mockk(relaxed = true)
+        editDescriptionView = mockk(relaxed = true)
+        editTaskStateView = mockk(relaxed = true)
+        deleteTaskView = mockk(relaxed = true)
         cliPrinter = mockk(relaxed = true)
         cliReader = mockk(relaxed = true)
-        taskManagementView = TaskManagementView(manageTaskUseCase, catchDataMemoryRepository, cliPrinter, cliReader)
+
+        taskManagementView = TaskManagementView(
+            cliReader,
+            cliPrinter,
+            editTitleView,
+            editDescriptionView,
+            editTaskStateView,
+            deleteTaskView
+        )
     }
 
-    private val task = Task(UUID.randomUUID(), "test", description = "description")
+    private val statesList = listOf(
+        State(UUID.randomUUID(), "Todo", "Todo description"),
+        State(UUID.randomUUID(), "Done", "Done description"),
+        State(UUID.randomUUID(), "In-progress", "In-progress description"),
+    )
 
-    @Test
-    fun `start should tell the user to select task when there is no selected task`() {
-        every { catchDataMemoryRepository.getSelectedTask() } returns null
-
-        taskManagementView.start()
-
-        verify(exactly = 1) {
-            printLn("please select task first")
-        }
-    }
+    private val tasks = listOf(
+        Task(UUID.randomUUID(), "Fake Task 1", description = "description1", statesList[0]),
+        Task(UUID.randomUUID(), "Fake Task 2", description = "description2", statesList[1]),
+        Task(UUID.randomUUID(), "Fake Task 3", description = "description3", statesList[2]),
+    )
+    private val project = Project(
+        UUID.randomUUID(), "Fake Project", "description",
+        tasks = tasks, states = statesList
+    )
 
     @Test
     fun `start should print task when there is selected task`() {
-        every { catchDataMemoryRepository.getSelectedTask() } returns task
         every { cliReader.getUserInput(any()) } returns "0"
 
-        taskManagementView.start()
+        taskManagementView.start(tasks[0], project)
 
         verify(exactly = 1) {
-            printLn("Task: ${task.title}")
-            printLn("Description: ${task.description}")
+            printLn("Task: ${tasks[0].title}")
+            printLn("Description: ${tasks[0].description}")
         }
     }
 
     @Test
     fun `start should print task management options title option when there is selected task`() {
-        every { catchDataMemoryRepository.getSelectedTask() } returns task
         every { cliReader.getUserInput(any()) } returns "0"
 
-        taskManagementView.start()
+        taskManagementView.start(tasks[0], project)
 
         verify(exactly = 1) {
             printLn("1. Edit Title")
@@ -72,18 +87,66 @@ class TaskManagementViewTest {
     }
 
     @Test
-    fun `start should go to projectsView when user input is 1`() {
-        every { catchDataMemoryRepository.getSelectedTask() } returns task
-        every { cliReader.getUserInput(any()) } answers { "1" } andThenAnswer { "0" }
+    fun `start should ask for user option`() {
+        every { cliReader.getUserInput(any()) } returns "0"
 
-        taskManagementView.start()
+        taskManagementView.start(tasks[0], project)
 
-        verify (exactly = 1) {  cliReader.getUserInput("New Title: ") }
+        verify(exactly = 1) { cliReader.getUserInput("your option:") }
     }
 
+    @Test
+    fun `start should go to editTitleView when user input is 1`() {
+        every { cliReader.getUserInput(any()) } answers { "1" } andThenAnswer { "0" }
+
+        taskManagementView.start(tasks[0], project)
+
+        verify(exactly = 1) { editTitleView.editTitle(tasks[0]) }
+    }
+
+    @Test
+    fun `start should go to editDescriptionView when user input is 2`() {
+        every { cliReader.getUserInput(any()) } answers { "2" } andThenAnswer { "0" }
+
+        taskManagementView.start(tasks[0], project)
+
+        verify(exactly = 1) { editDescriptionView.editDescription(tasks[0]) }
+    }
+
+    @Test
+    fun `start should go to editTaskStateView when user input is 3`() {
+        every { cliReader.getUserInput(any()) } answers { "3" } andThenAnswer { "0" }
+
+        taskManagementView.start(tasks[0], project)
+
+        verify(exactly = 1) { editTaskStateView.editState(tasks[0], project.states) }
+    }
+
+    @Test
+    fun `start should go to deleteTaskView when user input is 4`() {
+        every { cliReader.getUserInput(any()) } answers { "4" } andThenAnswer { "0" }
+
+        taskManagementView.start(tasks[0], project)
+
+        verify(exactly = 1) { deleteTaskView.deleteTask(tasks[0]) }
+    }
+
+
+    @ParameterizedTest
+    @CsvSource(
+        "5, 6", "srg, m ", "6576, 55", " y,  n  "
+    )
+    fun `start should print invalid input when user input is not an option`(firstInput: String, secondInput: String) {
+        every { cliReader.getUserInput(any()) } answers { firstInput } andThenAnswer { secondInput } andThenAnswer { "0" }
+
+        taskManagementView.start(tasks[0], project)
+
+        verify(exactly = 2) {
+            printLn("Invalid option")
+        }
+    }
 
     private fun printLn(message: String) {
         cliPrinter.cliPrintLn(message)
     }
-
 }

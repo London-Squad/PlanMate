@@ -1,32 +1,23 @@
 package ui.taskManagementView
 
-import data.catchData.CatchDataMemoryRepository
-import logic.entities.State
+import logic.entities.Project
 import logic.entities.Task
-import logic.useCases.ManageTaskUseCase
-import ui.CLIPrintersAndReaders.CLIPrinter
-import ui.CLIPrintersAndReaders.CLIReader
-import ui.View
+import ui.cliPrintersAndReaders.CLIPrinter
+import ui.cliPrintersAndReaders.CLIReader
 
 class TaskManagementView(
-    private val manageTaskUseCase: ManageTaskUseCase,
-    private val catchDataMemoryRepository: CatchDataMemoryRepository,
-    private val cliPrinter: CLIPrinter,
     private val cliReader: CLIReader,
-) : View {
+    private val cliPrinter: CLIPrinter,
+    private val editTitleView: EditTitleView,
+    private val editDescriptionView: EditDescriptionView,
+    private val editTaskStateView: EditTaskStateView,
+    private val deleteTaskView: DeleteTaskView,
+) {
 
-    override fun start() {
-
-        val currentTask = catchDataMemoryRepository.getSelectedTask() ?: run {
-            cliPrinter.cliPrintLn("please select task first")
-
-            return
-        }
-
-        printTask(currentTask)
+    fun start(task: Task, project: Project) {
+        printTask(task)
         printOptions()
-
-        selectNextUI(currentTask)
+        selectNextUI(task, project)
     }
 
 
@@ -43,107 +34,23 @@ class TaskManagementView(
         printLn("0. back")
     }
 
-    private fun selectNextUI(task: Task) {
-        when (getValidUserInput(OPTIONS_LIST).toIntOrNull()) {
-            1 -> editTitle(task)
-            2 -> editDescription(task)
-            3 -> editState(task)
-            4 -> deleteTask(task)
-            0 -> return
-            else -> {
-                printLn("Invalid option")
-            }
+    private fun selectNextUI(task: Task, project: Project) {
+        when (getValidUserInput()) {
+            "1" -> editTitleView.editTitle(task)
+            "2" -> editDescriptionView.editDescription(task)
+            "3" -> editTaskStateView.editState(task, project.states)
+            "4" -> deleteTaskView.deleteTask(task)
+            "0" -> return
         }
+        start(task, project)
     }
 
-    private fun getValidUserInput(options: List<String>): String {
-        val userInput = cliReader.getUserInput("your choice:")
-        if (userInput in options) return userInput
+    private fun getValidUserInput(): String {
+        val userInput = cliReader.getUserInput("your option:")
+        if (userInput in OPTIONS_LIST) return userInput
         else {
             printLn("Invalid option")
-            return getValidUserInput(options)
-        }
-    }
-
-    private fun editTitle(task: Task) {
-        val newTitle = getValidTitle()
-        manageTaskUseCase.editTaskTitle(task.id, newTitle)
-        start()
-    }
-
-    private fun getValidTitle(): String {
-        val userInput = cliReader.getUserInput("New Title: ")
-        if (userInput.isNotBlank() && userInput.length <= MAX_TITLE_LENGTH) return userInput
-        else {
-            printLn("Invalid Title")
-            return getValidTitle()
-        }
-    }
-
-    private fun editDescription(task: Task) {
-        val newDescription = getValidDescription()
-        manageTaskUseCase.editTaskDescription(task.id, newDescription)
-    }
-
-    private fun getValidDescription(): String {
-        val userInput = cliReader.getUserInput("New Description: ")
-        if (userInput.isNotBlank() && userInput.length <= MAX_DESCRIPTION_LENGTH) return userInput
-        else {
-            printLn("Invalid description")
-            return getValidDescription()
-        }
-    }
-
-    private fun editState(task: Task) {
-
-        val currentProjectStates = catchDataMemoryRepository.getSelectedProject()?.states ?: run {
-            printLn("no project selected")
-            return
-        }
-
-        if (currentProjectStates.isEmpty()) {
-            printLn("no states available")
-            return
-        }
-
-        printProjectState(currentProjectStates)
-        val newState = getValidState(currentProjectStates)
-
-        manageTaskUseCase.editTaskState(task.id, newState.id)
-    }
-
-    private fun printProjectState(states: List<State>) {
-        states.forEachIndexed { index, state ->
-            printLn("${index + 1}. ${state.title}")
-        }
-    }
-
-    private fun getValidState(states: List<State>): State {
-        val userInput = cliReader.getUserInput("Your choice: ").toIntOrNull()
-        if (userInput in 1..states.size)
-            return states[userInput!! - 1]
-        else {
-            printLn("Invalid input")
-            return getValidState(states)
-        }
-    }
-
-    private fun deleteTask(task: Task) {
-        if (isCancelDelete()) return
-
-        manageTaskUseCase.deleteTask(task.id)
-    }
-
-    private fun isCancelDelete(): Boolean {
-        printLn(")")
-
-        return when (cliReader.getUserInput("Are you sure to delete the task? (y/n): ")) {
-            "y" -> false
-            "n" -> true
-            else -> {
-                printLn("Invalid input")
-                isCancelDelete()
-            }
+            return getValidUserInput()
         }
     }
 
@@ -153,7 +60,5 @@ class TaskManagementView(
 
     private companion object {
         val OPTIONS_LIST = listOf("0", "1", "2", "3", "4")
-        const val MAX_TITLE_LENGTH = 20
-        const val MAX_DESCRIPTION_LENGTH = 150
     }
 }
