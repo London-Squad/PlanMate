@@ -16,4 +16,5 @@ interface StatesRepository {
     fun editStateDescription(stateId: UUID, newDescription: String)
 
     fun deleteState(stateId: UUID)
+    fun getStateById(stateId: UUID): State?
 }
