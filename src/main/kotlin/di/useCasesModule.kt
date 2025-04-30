@@ -1,9 +1,8 @@
 package di
 
-import logic.repositories.ProjectsRepository
-import logic.usecases.ManageProjectUseCase
 import org.koin.dsl.module
+import logic.usecases.ManageProjectUseCase
 
 val useCasesModule = module {
-    single { ManageProjectUseCase(projectRepository = get()) }
+    factory { ManageProjectUseCase(projectRepository = get()) }
 }

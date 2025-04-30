@@ -2,8 +2,12 @@ package di
 
 import org.koin.dsl.module
 import ui.projectsView.ProjectsView
-import logic.usecases.ManageProjectUseCase
+import ui.projectsView.ProjectsViewHandler
 
 val presentationModule = module {
-    factory { ProjectsView(manageProjectUseCases = get<ManageProjectUseCase>()) }
+    factory { ProjectsView(handler = get()) }
+    factory { ProjectsViewHandler(
+        manageProjectUseCases = get(),
+    ) }
+
 }
