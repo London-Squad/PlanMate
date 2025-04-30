@@ -1,5 +1,6 @@
 package ui.loginView
 
+import io.mockk.every
 import io.mockk.mockk
 import io.mockk.verify
 import logic.usecases.login_usecase.LoginUseCase
@@ -29,5 +30,25 @@ class LoginViewTest {
         loginView.start()
 
         verify(exactly = 1) { loginView.start() }
+    }
+
+    @Test
+    fun `start should print error if username is empty`() {
+        every { cliReader.getUserInput("username: ") } returns ""
+        every { cliReader.getUserInput("password: ") } returns "pass"
+
+        loginView.start()
+
+        verify { cliPrinter.cliPrintLn("Empty credentials, please try again.") }
+    }
+
+    @Test
+    fun `start should print error if password is empty`() {
+        every { cliReader.getUserInput("username: ") } returns "user"
+        every { cliReader.getUserInput("password: ") } returns ""
+
+        loginView.start()
+
+        verify { cliPrinter.cliPrintLn("Empty credentials, please try again.") }
     }
 }
