@@ -1,6 +1,7 @@
 package logic.useCases
 
 import logic.entities.Project
+import logic.entities.State
 import logic.repositories.ProjectsRepository
 import java.util.UUID
 
@@ -15,12 +16,22 @@ class ProjectUseCases(private val projectsRepository: ProjectsRepository) {
     }
 
     fun createProject(title: String, description: String): Project {
+        val defaultStates = listOf(
+            State(
+                id = UUID.randomUUID(),
+                title = "TODO",
+                description = "TO DO TASKS"
+            ),
+            State(id = UUID.randomUUID(), title = "InProgress", description = "INPROGRESS TASKS"),
+            State(id = UUID.randomUUID(), title = "Done", description = "FINISHED TASKS")
+        )
+
         val project = Project(
             id = UUID.randomUUID(),
             title = title,
             description = description,
             tasks = emptyList(),
-            states = emptyList()
+            states = defaultStates
         )
         projectsRepository.addNewProject(project)
         return project
