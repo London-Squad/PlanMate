@@ -1,18 +1,18 @@
 package ui.loginView
 
-import io.mockk.every
-import io.mockk.mockk
-import io.mockk.verify
-import logic.entities.User
-import logic.useCases.loginUseCase.LoginUseCase
-import org.junit.jupiter.api.BeforeEach
-import org.junit.jupiter.api.Test
-import ui.cliPrintersAndReaders.CLIPrinter
-import ui.cliPrintersAndReaders.CLIReader
-import ui.welcomeView.WelcomeView
+//import io.mockk.every
+//import io.mockk.mockk
+//import io.mockk.verify
+//import logic.entities.User
+//import logic.useCases.loginUseCase.LoginUseCase
+//import org.junit.jupiter.api.BeforeEach
+//import org.junit.jupiter.api.Test
+//import ui.cliPrintersAndReaders.CLIPrinter
+//import ui.cliPrintersAndReaders.CLIReader
+//import ui.welcomeView.WelcomeView
 
 
-class LoginViewTest {
+//class LoginViewTest {
 //    private lateinit var loginView: LoginView
 //    private lateinit var welcomeView: WelcomeView
 //    private lateinit var loginUseCase: LoginUseCase
@@ -78,4 +78,4 @@ class LoginViewTest {
 //
 //        verify(exactly = 1) { cliPrinter.cliPrintLn("Invalid username or password") }
 //    }
-}
+//}

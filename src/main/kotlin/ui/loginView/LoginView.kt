@@ -15,7 +15,8 @@ class LoginView(
 ) {
 
     fun startLogin() {
-        printLoginTitle()
+        cliPrinter.printHeader("Login")
+        println("Please enter your username and password\n")
 
         val username = cliReader.getValidUserInput({ it.isNotBlank() && it.length < 30 }, "username: ")
         val password = cliReader.getValidUserInput({ it.isNotBlank() && it.length < 30 }, "password: ")
@@ -23,18 +24,13 @@ class LoginView(
         processLogin(username, password)
     }
 
-    private fun printLoginTitle() {
-        println("Login")
-        println("Please enter your username and password\n")
-    }
-
     private fun processLogin(username: String, password: String) {
-        val user = loginUseCase.login(username, password)
-        if (user != null) {
+        try {
+            val user = loginUseCase.login(username, password)
             cacheDataRepository.setLoggedInUser(user)
             println("Login successful")
             mainMenuView.startMainMenu()
-        } else {
+        } catch (_: Exception) {
             println("Invalid username or password")
         }
     }
