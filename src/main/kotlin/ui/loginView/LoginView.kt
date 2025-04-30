@@ -4,11 +4,13 @@ import logic.entities.User
 import logic.usecases.loginUseCase.LoginUseCase
 import ui.cliPrintersAndReaders.CLIPrinter
 import ui.cliPrintersAndReaders.CLIReader
+import ui.welcomeView.WelcomeView
 
 class LoginView(
     private val cliPrinter: CLIPrinter,
     private val cliReader: CLIReader,
-    private val loginUseCase: LoginUseCase
+    private val loginUseCase: LoginUseCase,
+    private val welcomeView: WelcomeView,
 ) {
 
     fun start() {
@@ -54,6 +56,7 @@ class LoginView(
         val user = loginUseCase.login(username, password)
         if (user != null) {
             handleSuccessfulLogin(user)
+            welcomeView.start()
         } else {
             handleInvalidCredentials()
         }

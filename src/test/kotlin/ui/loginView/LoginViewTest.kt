@@ -9,21 +9,24 @@ import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Test
 import ui.cliPrintersAndReaders.CLIPrinter
 import ui.cliPrintersAndReaders.CLIReader
+import ui.welcomeView.WelcomeView
 
 
 class LoginViewTest {
     private lateinit var loginView: LoginView
+    private lateinit var welcomeView: WelcomeView
     private lateinit var loginUseCase: LoginUseCase
     private lateinit var cliPrinter: CLIPrinter
     private lateinit var cliReader: CLIReader
 
     @BeforeEach
     fun setup() {
+        welcomeView = mockk(relaxed = true)
         loginUseCase = mockk(relaxed = true)
         cliPrinter = mockk(relaxed = true)
         cliReader = mockk(relaxed = true)
 
-        loginView = LoginView(cliPrinter, cliReader, loginUseCase)
+        loginView = LoginView(cliPrinter, cliReader, loginUseCase, welcomeView)
     }
 
     @Test
