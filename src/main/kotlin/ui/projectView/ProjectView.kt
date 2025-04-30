@@ -29,6 +29,8 @@ class ProjectView(
             cliPrinter.cliPrintLn("Error: No project selected or user not logged in.")
             return
         }
+
+        displaySwimlanes(currentProject)
         printProjectMenu()
         handleUserInput()
     }
@@ -36,13 +38,12 @@ class ProjectView(
     private fun printProjectMenu() {
         val currentUser = cacheDataRepository.getLoggedInUser()
         cliPrinter.printHeader("Project: ${currentProject.title}")
-        cliPrinter.cliPrintLn("1. View all tasks in swimlanes")
-        cliPrinter.cliPrintLn("2. Add new task")
-        cliPrinter.cliPrintLn("3. Select task")
-        cliPrinter.cliPrintLn("4. View project logs")
+        cliPrinter.cliPrintLn("1. Add new task")
+        cliPrinter.cliPrintLn("2. Select task")
+        cliPrinter.cliPrintLn("3. View project logs")
         if (currentUser?.type == User.Type.ADMIN) {
-            cliPrinter.cliPrintLn("5. Edit project")
-            cliPrinter.cliPrintLn("6. Delete project")
+            cliPrinter.cliPrintLn("4. Edit project")
+            cliPrinter.cliPrintLn("5. Delete project")
         }
         cliPrinter.cliPrintLn("0. Back to projects")
     }
@@ -50,34 +51,23 @@ class ProjectView(
     private fun handleUserInput() {
         val currentUser = cacheDataRepository.getLoggedInUser()
         val validInputs = if (currentUser?.type == User.Type.ADMIN) listOf(
-            "0",
-            "1",
-            "2",
-            "3",
-            "4",
-            "5",
-            "6"
-        ) else listOf("0", "1", "2", "3", "4")
+            "0", "1", "2", "3", "4", "5",
+        ) else listOf("0", "1", "2", "3")
         val input = cliReader.getValidUserInput(
             isValidInput = { it in validInputs },
             message = "Choose an option: ",
             invalidInputMessage = "Invalid option, try again ..."
         )
         when (input) {
-            "1" -> {
-                displaySwimlanes(currentProject)
-            }
-
-            "2" -> addNewTask()
-            "3" -> selectTask()
-            "4" -> viewProjectLogs()
-            "5" -> if (currentUser?.type == User.Type.ADMIN) editProject() else return
-            "6" -> {
+            "1" -> addNewTask()
+            "2" -> selectTask()
+            "3" -> viewProjectLogs()
+            "4" -> if (currentUser?.type == User.Type.ADMIN) editProject() else return
+            "5" -> {
                 if (currentUser?.type == User.Type.ADMIN) {
                     deleteProject(currentProject)
                 } else return
             }
-
             "0" -> return
         }
         start(currentProject)
@@ -153,7 +143,8 @@ class ProjectView(
             isValidInput = { it.isNotBlank() }
         )
         projectUseCases.editProjectTitle(currentProject.id, newTitle)
-
+        // Update the currentProject with the new title
+        currentProject = currentProject.copy(title = newTitle)
         cliPrinter.cliPrintLn("Project title updated.")
     }
 
@@ -164,7 +155,8 @@ class ProjectView(
             isValidInput = { it.isNotBlank() }
         )
         projectUseCases.editProjectDescription(currentProject.id, newDescription)
-
+        // Update the currentProject with the new description
+        currentProject = currentProject.copy(description = newDescription)
         cliPrinter.cliPrintLn("Project description updated.")
     }
 
@@ -191,12 +183,12 @@ class ProjectView(
     private fun viewProjectLogs() {
         /**
          * To-Do
-         **/
+         */
     }
 
     private fun statesManagement() {
         /**
          * To-Do
-         **/
+         */
     }
 }
