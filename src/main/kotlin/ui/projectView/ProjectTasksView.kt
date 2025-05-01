@@ -31,20 +31,33 @@ class ProjectTasksView(
         }
         cliPrinter.cliPrintLn("")
 
-        cliPrinter.cliPrintLn("1. Add new task")
-        cliPrinter.cliPrintLn("2. Select task")
-        cliPrinter.cliPrintLn("0. Back to project")
+        if (tasks.isEmpty()) {
+            cliPrinter.cliPrintLn("Type 'add' to add a new task")
+        } else {
+            cliPrinter.cliPrintLn("Enter a task number to select (1-${tasks.size}), 'add' to add a new task")
+        }
+        cliPrinter.cliPrintLn("Type '0' to return to project")
+
+        val validInputs = if (tasks.isEmpty()) {
+            listOf("add", "0")
+        } else {
+            (0..tasks.size).map { it.toString() } + "add"
+        }
 
         val input = cliReader.getValidUserInput(
-            isValidInput = { it in listOf("0", "1", "2") },
-            message = "Choose an option: ",
+            isValidInput = { it in validInputs },
+            message = "Enter your choice: ",
             invalidInputMessage = "Invalid option, try again ..."
         )
 
         when (input) {
-            "1" -> addNewTask()
-            "2" -> selectTask()
+            "add" -> addNewTask()
             "0" -> return currentProject
+            else -> {
+                val taskIndex = input.toInt() - 1
+                val selectedTask = tasks[taskIndex]
+                taskManagementView.start(selectedTask, currentProject)
+            }
         }
         return currentProject
     }
@@ -62,31 +75,10 @@ class ProjectTasksView(
             description = "Default description",
             state = defaultState
         )
+
         currentProject = currentProject.copy(tasks = currentProject.tasks + newTask)
 
         cliPrinter.cliPrintLn("Task created. You can now edit it.")
         taskManagementView.start(newTask, currentProject)
-    }
-
-    private fun selectTask() {
-        val tasks = currentProject.tasks
-        if (tasks.isEmpty()) {
-            cliPrinter.cliPrintLn("No tasks available to select.")
-            return
-        }
-
-        cliPrinter.cliPrintLn("Available tasks:")
-        tasks.forEachIndexed { index, task ->
-            cliPrinter.cliPrintLn("${index + 1}. ${task.title} (State: ${task.state.title})")
-        }
-
-        val taskIndex = cliReader.getValidUserInput(
-            message = "Select a task (1-${tasks.size}): ",
-            invalidInputMessage = "Invalid task selection",
-            isValidInput = { it.toIntOrNull() != null && it.toInt() in 1..tasks.size }
-        ).toInt() - 1
-
-        val selectedTask = tasks[taskIndex]
-        taskManagementView.start(selectedTask, currentProject)
     }
 }
