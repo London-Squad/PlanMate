@@ -66,7 +66,6 @@ class ProjectView(
             }
             "0" -> return
         }
-        start(currentProject)
     }
 
     private fun viewProjectLogs() {
