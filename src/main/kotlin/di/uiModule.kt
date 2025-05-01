@@ -11,12 +11,10 @@ import ui.projectsView.ProjectsView
 import ui.welcomeView.WelcomeView
 
 val uiModule = module {
-    single { ProjectsView(get(), get(), get(), get(), get()) }
-    single { ProjectView(get(), get(), get(), get()) }
-    single { CLIPrinter() }
-    single { CLIReader(get()) }
 
-    single { ProjectsView() }
+    single { CLIPrinter() }
+
+    single { CLIReader(get()) }
 
     single { MatesManagementView() }
 
@@ -25,4 +23,8 @@ val uiModule = module {
     single { LoginView(get(), get(), get(), get(), get()) }
 
     single { WelcomeView(get(), get(), get()) }
+
+    single { ProjectsView(get(), get(), get(), get(), get()) }
+
+    single { ProjectView(get(), get(), get(), get()) }
 }

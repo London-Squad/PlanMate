@@ -1,6 +1,6 @@
 package di
 
-import data.cacheData.CacheDataRepositoryImpl
+import data.cacheData.CacheDataSource
 import data.repositoriesImpl.CsvProjectsRepository
 import logic.repositories.CacheDataRepository
 import logic.repositories.ProjectsRepository
@@ -14,5 +14,5 @@ val repoModules = module {
     }
 
     single<ProjectsRepository> { CsvProjectsRepository(get()) }
-    single<CacheDataRepository> { CacheDataRepositoryImpl() }
+    single<CacheDataRepository> { CacheDataSource() }
 }
