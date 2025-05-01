@@ -1,7 +1,9 @@
 package di
 
+import data.AuthenticationDataSource
 import data.cacheData.CacheDataSource
-import data.repositoriesImpl.CsvProjectsRepository
+import data.dataSource.CsvProjectsDataSource
+import logic.repositories.AuthenticationRepository
 import logic.repositories.CacheDataRepository
 import logic.repositories.ProjectsRepository
 import org.koin.dsl.module
@@ -13,6 +15,8 @@ val repoModules = module {
         File(directory, "projects.csv")
     }
 
-    single<ProjectsRepository> { CsvProjectsRepository(get()) }
+    single<ProjectsRepository> { CsvProjectsDataSource(get()) }
+    single<CacheDataRepository> { CacheDataSource() }
+    single<AuthenticationRepository> { AuthenticationDataSource() }
     single<CacheDataRepository> { CacheDataSource() }
 }

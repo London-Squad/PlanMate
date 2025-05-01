@@ -1,4 +1,4 @@
-package data.repositoriesImpl
+package data.dataSource
 
 import com.google.common.truth.Truth.assertThat
 import io.mockk.every
@@ -11,15 +11,15 @@ import org.junit.jupiter.api.Test
 import java.io.File
 import java.util.UUID
 
-class CsvProjectsRepositoryTest {
+class CsvProjectsDataSourceTest {
 
     private lateinit var tempFile: File
-    private lateinit var repository: CsvProjectsRepository
+    private lateinit var repository: CsvProjectsDataSource
 
     @BeforeEach
     fun setUp() {
         tempFile = File.createTempFile("projects", ".csv")
-        repository = CsvProjectsRepository(tempFile)
+        repository = CsvProjectsDataSource(tempFile)
     }
 
     @AfterEach
@@ -34,7 +34,7 @@ class CsvProjectsRepositoryTest {
         val newFile = File(tempDir, "projects.csv")
 
         // When
-        val newRepository = CsvProjectsRepository(newFile)
+        val newRepository = CsvProjectsDataSource(newFile)
 
         // Then
         assertThat(newFile.readText()).isEqualTo("id,title,description\n")
@@ -46,7 +46,7 @@ class CsvProjectsRepositoryTest {
         tempFile.writeText("id,title,description\n123e4567-e89b-12d3-a456-426614174000,Old Title,Old Description\n")
 
         // When
-        val newRepository = CsvProjectsRepository(tempFile)
+        val newRepository = CsvProjectsDataSource(tempFile)
 
         // Then
         assertThat(tempFile.readText()).isEqualTo("id,title,description\n123e4567-e89b-12d3-a456-426614174000,Old Title,Old Description\n")

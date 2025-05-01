@@ -1,4 +1,4 @@
-package data.repositoriesImpl
+package data.dataSource
 
 import logic.entities.Project
 import logic.entities.State
@@ -6,7 +6,7 @@ import logic.repositories.ProjectsRepository
 import java.util.UUID
 import java.io.File
 
-class CsvProjectsRepository(
+class CsvProjectsDataSource(
     private val file: File
 ) : ProjectsRepository {
 
