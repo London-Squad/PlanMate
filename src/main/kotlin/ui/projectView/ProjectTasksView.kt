@@ -1,11 +1,9 @@
 package ui.projectView
 
 import logic.entities.Project
-import logic.entities.Task
 import ui.cliPrintersAndReaders.CLIPrinter
 import ui.cliPrintersAndReaders.CLIReader
 import ui.taskManagementView.TaskManagementView
-import java.util.UUID
 
 class ProjectTasksView(
     private val cliPrinter: CLIPrinter,
@@ -46,24 +44,11 @@ class ProjectTasksView(
             "2" -> selectTask()
             "0" -> return
         }
-        manageTasks(currentProject)
     }
 
     private fun addNewTask() {
-        if (currentProject.states.isEmpty()) {
-            cliPrinter.cliPrintLn("No states available for this project. Cannot create task.")
-            return
-        }
+        TODO("Not yet implemented")
 
-        val defaultState = currentProject.states.first()
-        val task = Task(
-            id = UUID.randomUUID(),
-            title = "New Task",
-            description = "Default description",
-            state = defaultState
-        )
-
-        cliPrinter.cliPrintLn("Task created.")
     }
 
     private fun selectTask() {
