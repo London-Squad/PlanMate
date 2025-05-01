@@ -6,7 +6,7 @@ import logic.repositories.CacheDataRepository
 class GetActiveUserUseCase(
     private val cacheDataRepository: CacheDataRepository
 ) {
-    fun getLoggedInUser(): User?{
+    fun getLoggedInUser(): User? {
         return cacheDataRepository.getLoggedInUser()
     }
 }
