@@ -1,12 +1,9 @@
 package di
 
 import org.koin.dsl.module
-import ui.cliPrintersAndReaders.CLIPrinter
-import ui.cliPrintersAndReaders.CLIReader
 import ui.projectView.ProjectView
 import ui.loginView.LoginView
 import ui.mainMenuView.MainMenuView
-import ui.matesManagementView.MateCreationView
 import ui.matesManagementView.MatesManagementView
 import ui.projectView.DeleteProjectView
 import ui.projectView.EditProjectView
@@ -17,9 +14,6 @@ import ui.welcomeView.WelcomeView
 
 val uiModule = module {
 
-    single { CLIPrinter() }
-    single { CLIReader(get()) }
-
     single { TaskTitleEditionView(get(), get(), get()) }
     single { TaskDescriptionEditionView(get(), get(), get()) }
     single { TaskStateEditionView(get(), get(), get()) }
@@ -27,8 +21,8 @@ val uiModule = module {
     single { TaskManagementView(get(), get(), get(), get(), get(), get()) }
 
 
-    single { MateCreationView(get(), get(), get()) }
-    single { MatesManagementView(get(), get(), get(), get()) }
+    single { MatesManagementView() }
+
     single { MainMenuView(get(), get(), get(), get(), get()) }
 
     single { LoginView(get(), get(), get(), get(), get()) }
