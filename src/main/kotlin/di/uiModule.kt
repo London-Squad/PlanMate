@@ -1,13 +1,10 @@
 package di
 
 import org.koin.dsl.module
-import ui.projectView.ProjectView
 import ui.loginView.LoginView
 import ui.mainMenuView.MainMenuView
 import ui.matesManagementView.MatesManagementView
-import ui.projectView.DeleteProjectView
-import ui.projectView.EditProjectView
-import ui.projectView.SwimlanesView
+import ui.projectView.*
 import ui.projectsView.ProjectsView
 import ui.taskManagementView.*
 import ui.welcomeView.WelcomeView
@@ -35,4 +32,6 @@ val uiModule = module {
     single { SwimlanesView(get()) }
     single { EditProjectView(get(), get(), get()) }
     single { DeleteProjectView(get(), get()) }
+    single { ProjectTasksView(get(), get(), get()) }
+
 }
