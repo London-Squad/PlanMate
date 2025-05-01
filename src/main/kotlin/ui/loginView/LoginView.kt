@@ -14,12 +14,12 @@ class LoginView(
     private val cacheDataRepository: CacheDataRepository,
 ) {
 
-    fun startLogin() {
+    fun start() {
         cliPrinter.printHeader("Login")
         println("Please enter your username and password\n")
 
-        val username = cliReader.getValidUserInput({ it.isNotBlank() && it.length < 30 }, "username: ")
-        val password = cliReader.getValidUserInput({ it.isNotBlank() && it.length < 30 }, "password: ")
+        val username = cliReader.getUserInput("username: ")
+        val password = cliReader.getUserInput("password: ")
 
         processLogin(username, password)
     }
@@ -29,7 +29,7 @@ class LoginView(
             val user = loginUseCase.login(username, password)
             cacheDataRepository.setLoggedInUser(user)
             println("Login successful")
-            mainMenuView.startMainMenu()
+            mainMenuView.start()
         } catch (_: Exception) {
             println("Invalid username or password")
         }

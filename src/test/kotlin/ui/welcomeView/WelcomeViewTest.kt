@@ -10,58 +10,50 @@ import org.junit.jupiter.api.Test
 import org.junit.jupiter.params.ParameterizedTest
 import org.junit.jupiter.params.provider.MethodSource
 import ui.cliPrintersAndReaders.CLIPrinter
+import ui.cliPrintersAndReaders.CLIReader
+import ui.loginView.LoginView
 import ui.mainMenuView.MainMenuView
 
 class WelcomeViewTest {
 
     private lateinit var cliPrinter: CLIPrinter
-    private lateinit var mainMenuView: MainMenuView
-    private lateinit var getActiveUserUseCase: GetActiveUserUseCase
+    private lateinit var cliReader: CLIReader
+    private lateinit var loginView: LoginView
     private lateinit var welcomeView: WelcomeView
 
     @BeforeEach
     fun setup() {
         cliPrinter = mockk(relaxed = true)
-        getActiveUserUseCase = mockk(relaxed = true)
-        mainMenuView = mockk(relaxed = true)
+        cliReader = mockk(relaxed = true)
+        loginView = mockk(relaxed = true)
 
-        welcomeView = WelcomeView(cliPrinter, mainMenuView, getActiveUserUseCase)
+        welcomeView = WelcomeView(cliPrinter, cliReader, loginView)
     }
-
 
     @Test
-    fun `start should tell the user to login when no user is logged in`() {
-        every { getActiveUserUseCase.getLoggedInUser() } returns null
+    fun `start should go to exit the app when user input is 0`() {
+        every { cliReader.getValidUserInput(any(), any(), any()) } returns "0"
 
         welcomeView.start()
 
-        verify (exactly = 1) { cliPrinter.printPleaseLoginMessage() }
+        verify(exactly = 1) { cliPrinter.cliPrintLn("Exiting the app...") }
     }
 
-    @ParameterizedTest
-    @MethodSource("getUsersList")
-    fun `start should print welcome user message when user is logged in`(user: User) {
-        every { getActiveUserUseCase.getLoggedInUser() } returns user
+    @Test
+    fun `start should go to login view when user input is 1`() {
+        every { cliReader.getValidUserInput(any(), any(), any()) } answers { "1" } andThenAnswer { "0" }
 
         welcomeView.start()
 
-        verify (exactly = 1) { cliPrinter.cliPrintLn("welcome ${user.userName} to PlanMate V1.0") }
+        verify(exactly = 1) { loginView.start() }
     }
 
-    @ParameterizedTest
-    @MethodSource("getUsersList")
-    fun `start should go to main menu when user is logged in`(user: User) {
-        every { getActiveUserUseCase.getLoggedInUser() } returns user
+    @Test
+    fun `start should reject user input when user input is not 0 or 1`() {
+        every { cliReader.getValidUserInput(any(), any(), any()) } answers { "-1" } andThenAnswer { "0" }
 
         welcomeView.start()
 
-        verify (exactly = 1) { mainMenuView.start() }
-    }
-
-    private companion object {
-        val fakeAdminUser = User(userName = "fakeAdminUser", type = User.Type.ADMIN)
-        val fakeMateUser = User(userName = "fakeMateUser", type = User.Type.MATE)
-        @JvmStatic
-        fun getUsersList(): List<User> = listOf(fakeAdminUser, fakeMateUser)
+        verify(exactly = 2) { cliReader.getValidUserInput(any(), any(), any()) }
     }
 }

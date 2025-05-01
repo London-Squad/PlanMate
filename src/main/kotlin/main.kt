@@ -9,5 +9,5 @@ fun main() {
 
     }
     val ui: WelcomeView = getKoin().get()
-    ui.startWelcome()
+    ui.start()
 }
