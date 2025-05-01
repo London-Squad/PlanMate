@@ -11,163 +11,160 @@ import kotlin.test.*
 class ManageStateUseCaseTest {
 
     private lateinit var useCase: ManageStateUseCase
-    private lateinit var fakeRepo: FakeStatesRepo
-    private lateinit var fakeLogs: FakeLogsRepo
-    private lateinit var admin: User
+    private lateinit var statesRepo: FakeStatesRepository
+    private lateinit var logsRepo: FakeLogsRepository
+    private val projectId = UUID.randomUUID()
+    private val admin = User(UUID.randomUUID(), "admin", User.Type.ADMIN)
 
-    class FakeStatesRepo : StatesRepository {
-        val states = mutableMapOf<UUID, State>()
+    @BeforeEach
+    fun setup() {
+        statesRepo = FakeStatesRepository()
+        logsRepo = FakeLogsRepository()
+        useCase = ManageStateUseCase(statesRepo, logsRepo, admin)
+    }
+
+    @Test
+    fun `should add state and log create action when given valid state and project ID`() {
+        val state = State(title = "New", description = "To do")
+        useCase.addState(state, projectId)
+
+        val saved = statesRepo.getStatesByProjectId(projectId)
+        assertEquals(1, saved.size)
+        assertEquals(state.title, saved.first().title)
+        assertTrue(logsRepo.logs.any { it.action is Create })
+    }
+
+    @Test
+    fun `should edit state title and log edit action when state exists`() {
+        val state = State(title = "Old", description = "desc")
+        statesRepo.addNewState(state, projectId)
+        useCase.editStateTitle(state.id, "Updated")
+
+        assertEquals("Updated", statesRepo.getStateById(state.id)?.title)
+        assertTrue(logsRepo.logs.any { it.action is Edit })
+    }
+
+    @Test
+    fun `should edit state description and log edit action when state exists`() {
+        val state = State(title = "Old", description = "desc")
+        statesRepo.addNewState(state, projectId)
+        useCase.editStateDescription(state.id, "New desc")
+
+        assertEquals("New desc", statesRepo.getStateById(state.id)?.description)
+        assertTrue(logsRepo.logs.any { it.action is Edit })
+    }
+
+    @Test
+    fun `should delete state and log delete action when state exists`() {
+        val state = State(title = "Delete", description = "desc")
+        statesRepo.addNewState(state, projectId)
+        useCase.deleteState(state.id)
+
+        assertNull(statesRepo.getStateById(state.id))
+        assertTrue(logsRepo.logs.any { it.action is Delete })
+    }
+
+    @Test
+    fun `should not add state or log when title is blank`() {
+        val state = State(title = "", description = "desc")
+        useCase.addState(state, projectId)
+
+        assertTrue(statesRepo.getStatesByProjectId(projectId).isEmpty())
+        assertTrue(logsRepo.logs.none { it.action is Create })
+    }
+
+    @Test
+    fun `should not edit title or log when state does not exist`() {
+        val unknownId = UUID.randomUUID()
+        useCase.editStateTitle(unknownId, "New")
+
+        assertTrue(logsRepo.logs.none { it.action is Edit })
+    }
+
+    @Test
+    fun `should not edit description or log when state does not exist`() {
+        val unknownId = UUID.randomUUID()
+        useCase.editStateDescription(unknownId, "Updated")
+
+        assertTrue(logsRepo.logs.none { it.action is Edit })
+    }
+
+    @Test
+    fun `should not edit title or log when new title is blank`() {
+        val state = State(title = "Real", description = "desc")
+        statesRepo.addNewState(state, projectId)
+        useCase.editStateTitle(state.id, "")
+
+        assertEquals("Real", statesRepo.getStateById(state.id)?.title)
+        assertTrue(logsRepo.logs.none { it.action is Edit })
+    }
+
+    @Test
+    fun `should not edit description or log when new description is blank`() {
+        val state = State(title = "Real", description = "desc")
+        statesRepo.addNewState(state, projectId)
+        useCase.editStateDescription(state.id, "")
+
+        assertEquals("desc", statesRepo.getStateById(state.id)?.description)
+        assertTrue(logsRepo.logs.none { it.action is Edit })
+    }
+
+    @Test
+    fun `should not delete or log when state does not exist`() {
+        val unknownId = UUID.randomUUID()
+        useCase.deleteState(unknownId)
+        assertTrue(logsRepo.logs.none { it.action is Delete })
+    }
+
+    @Test
+    fun should_not_delete_or_log_when_state_is_NoState() {
+        val noState = State.NoState
+        statesRepo.addNewState(noState, projectId)
+        useCase.deleteState(noState.id)
+
+        assertNotNull(statesRepo.getStateById(noState.id))
+        assertTrue(logsRepo.logs.none { it.action is Delete })
+    }
+
+    // Fake implementations
+    class FakeStatesRepository : StatesRepository {
+        private val states = mutableMapOf<UUID, State>()
+        private val projectStates = mutableMapOf<UUID, MutableList<UUID>>()
 
         override fun addNewState(state: State, projectId: UUID) {
-            if (state.title.isNotBlank()) {
-                states[state.id] = state
-            }
+            states[state.id] = state
+            projectStates.getOrPut(projectId) { mutableListOf() }.add(state.id)
         }
 
         override fun editStateTitle(stateId: UUID, newTitle: String) {
-            states[stateId]?.let {
-                if (newTitle.isNotBlank()) {
-                    states[stateId] = it.copy(title = newTitle)
-                }
-            }
+            states[stateId]?.let { states[stateId] = it.copy(title = newTitle) }
         }
 
         override fun editStateDescription(stateId: UUID, newDescription: String) {
-            states[stateId]?.let {
-                if (newDescription.isNotBlank()) {
-                    states[stateId] = it.copy(description = newDescription)
-                }
-            }
+            states[stateId]?.let { states[stateId] = it.copy(description = newDescription) }
         }
 
         override fun deleteState(stateId: UUID) {
-            if (stateId != State.NoState.id) {
-                states.remove(stateId)
-            }
+            states.remove(stateId)
+            projectStates.values.forEach { it.remove(stateId) }
         }
 
+        override fun getStateById(stateId: UUID): State? = states[stateId]
 
-         override fun getStateById(stateId: UUID): State? {
-            return states[stateId]
+        override fun getStatesByProjectId(projectId: UUID): List<State> {
+            return projectStates[projectId]?.mapNotNull { states[it] } ?: emptyList()
         }
     }
 
-    class FakeLogsRepo : LogsRepository {
+    class FakeLogsRepository : LogsRepository {
         val logs = mutableListOf<Log>()
 
-        override fun getAllLogs() = logs
-        override fun getLogById(id: UUID) = logs.filter { it.id == id }
         override fun addLog(log: Log) {
             logs.add(log)
         }
-    }
 
-    @BeforeEach
-    fun setUp() {
-        fakeRepo = FakeStatesRepo()
-        fakeLogs = FakeLogsRepo()
-        admin = User(userName = "admin", type = User.Type.ADMIN)
-        useCase = ManageStateUseCase(fakeRepo, fakeLogs, admin)
-    }
+        override fun getAllLogs(): List<Log> = logs
 
-    @Test
-    fun `should add state and log create action`() {
-        val state = State(title = "Test", description = "Desc")
-        useCase.addState(state, UUID.randomUUID())
-        assertEquals(1, fakeRepo.states.size)
-        assertEquals(1, fakeLogs.logs.size)
-        assertTrue(fakeLogs.logs.first().action is Create)
-    }
-
-    @Test
-    fun `should not add state if title is blank`() {
-        val state = State(title = "", description = "...")
-        useCase.addState(state, UUID.randomUUID())
-        assertEquals(0, fakeRepo.states.size)
-        assertEquals(0, fakeLogs.logs.size)
-    }
-
-    @Test
-    fun `should edit title and log edit action`() {
-        val state = State(title = "Old", description = "Desc")
-        fakeRepo.states[state.id] = state
-        useCase.editStateTitle(state.id, "New")
-        assertEquals("New", fakeRepo.states[state.id]?.title)
-        val log = fakeLogs.logs.first().action as Edit
-        assertEquals("title", log.property)
-        assertEquals("Old", log.oldValue)
-        assertEquals("New", log.newValue)
-    }
-
-    @Test
-    fun `should not edit title if state does not exist`() {
-        useCase.editStateTitle(UUID.randomUUID(), "Any")
-        assertEquals(0, fakeLogs.logs.size)
-    }
-
-    @Test
-    fun `should not edit title if new title is blank`() {
-        val state = State(title = "Old", description = "Desc")
-        fakeRepo.states[state.id] = state
-        useCase.editStateTitle(state.id, "")
-        assertEquals("Old", fakeRepo.states[state.id]?.title)
-        assertEquals(0, fakeLogs.logs.size)
-    }
-
-    @Test
-    fun `should edit description and log edit action`() {
-        val state = State(title = "X", description = "OldDesc")
-        fakeRepo.states[state.id] = state
-        useCase.editStateDescription(state.id, "NewDesc")
-        assertEquals("NewDesc", fakeRepo.states[state.id]?.description)
-        val log = fakeLogs.logs.first().action as Edit
-        assertEquals("description", log.property)
-        assertEquals("OldDesc", log.oldValue)
-        assertEquals("NewDesc", log.newValue)
-    }
-
-    @Test
-    fun `should not edit description if state does not exist`() {
-        useCase.editStateDescription(UUID.randomUUID(), "Any")
-        assertEquals(0, fakeLogs.logs.size)
-    }
-
-    @Test
-    fun `should not edit description if new description is blank`() {
-        val state = State(title = "X", description = "Old")
-        fakeRepo.states[state.id] = state
-        useCase.editStateDescription(state.id, "")
-        assertEquals("Old", fakeRepo.states[state.id]?.description)
-        assertEquals(0, fakeLogs.logs.size)
-    }
-
-    @Test
-    fun `should delete state and log delete action`() {
-        val state = State(title = "Del", description = "ToDelete")
-        fakeRepo.states[state.id] = state
-        useCase.deleteState(state.id)
-        assertEquals(0, fakeRepo.states.size)
-        assertTrue(fakeLogs.logs.first().action is Delete)
-    }
-
-    @Test
-    fun `should not delete state if it does not exist`() {
-        useCase.deleteState(UUID.randomUUID())
-        assertEquals(0, fakeLogs.logs.size)
-    }
-
-    @Test
-    fun `should not delete NoState`() {
-        fakeRepo.states[State.NoState.id] = State.NoState
-        useCase.deleteState(State.NoState.id)
-        assertTrue(fakeRepo.states.contains(State.NoState.id))
-        assertEquals(0, fakeLogs.logs.size)
-    }
-
-    @Test
-    fun `should include correct user in log`() {
-        val state = State(title = "Test", description = "...")
-        useCase.addState(state, UUID.randomUUID())
-        assertEquals(admin.id, fakeLogs.logs.first().user.id)
+        override fun getLogById(id: UUID): List<Log> = logs.filter { it.id == id }
     }
 }

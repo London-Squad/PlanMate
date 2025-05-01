@@ -1,18 +1,10 @@
 package logic.useCases
 
-import logic.entities.Action
-import logic.entities.Create
-import logic.entities.Delete
-import logic.entities.Edit
-import  logic.entities.State
-import  logic.entities.User
-import  logic.repositories.LogsRepository
+import logic.entities.*
+import logic.repositories.LogsRepository
 import logic.repositories.StatesRepository
-import java.util.*
-import logic.entities.Log
 import java.time.LocalDateTime
-
-
+import java.util.*
 
 class ManageStateUseCase(
     private val statesRepository: StatesRepository,
@@ -61,15 +53,17 @@ class ManageStateUseCase(
         logAction(Delete(oldState))
     }
 
+    fun getStates(projectId: UUID): List<State> {
+        return statesRepository.getStatesByProjectId(projectId)
+    }
+
     private fun logAction(action: Action) {
         logsRepository.addLog(
             Log(
                 user = activeUser,
-                time = java.time.LocalDateTime.now(),
+                time = LocalDateTime.now(),
                 action = action
             )
         )
     }
 }
-
-
