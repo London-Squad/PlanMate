@@ -47,8 +47,8 @@ class ProjectTasksView(
     }
 
     private fun addNewTask() {
-        TODO("Not yet implemented")
-
+        cliPrinter.cliPrintLn("ADD NEW TASK IS NOT IMPLEMENTED YET")
+//        TODO("Not yet implemented")
     }
 
     private fun selectTask() {

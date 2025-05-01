@@ -24,7 +24,6 @@ class DeleteProjectViewTest {
         project = mockk()
         deleteProjectView = DeleteProjectView(cliPrinter, projectUseCases)
 
-        // Mock project ID
         every { project.id } returns UUID.randomUUID()
     }
 

@@ -46,14 +46,11 @@ class ProjectViewTest {
             projectTasksView
         )
 
-        // Mock project properties
         every { project.title } returns "Test Project"
 
-        // Mock user and repository
         every { cacheDataRepository.getLoggedInUser() } returns user
         every { user.type } returns User.Type.ADMIN
 
-        // Mock swimlanesView
         every { swimlanesView.displaySwimlanes(project) } returns Unit
     }
 
