@@ -39,8 +39,8 @@ class AuthenticationDataSource(
 
     override fun register(userName: String, password: String): Boolean {
         val hashedPassword = hashingAlgorithm.hashData(password)
-        val id = UUID.randomUUID()
         if (userFile.isUserExistInFile(userName, password)) throw UserAlreadyExistException()
+        val id = UUID.randomUUID()
         return userFile.writeUser(id, userName, hashedPassword)
     }
 

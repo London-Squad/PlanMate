@@ -40,8 +40,9 @@ private fun FileLines.searchForUser(
     userName: String,
     password: String
 ): User? {
-    filter { it.contains("$userName,$password") }
+    val user = filter { it.contains("$userName,$password", ignoreCase = true) }
         .firstOrNull()
-        ?.let { return User(userName = userName, type = User.Type.MATE) }
-    return null
+
+    if (user == null) return null
+    return User(userName = userName, type = User.Type.MATE)
 }
