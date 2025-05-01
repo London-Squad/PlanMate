@@ -14,9 +14,9 @@ import ui.cliPrintersAndReaders.CLIPrinter
 import ui.cliPrintersAndReaders.CLIReader
 import java.util.*
 
-class EditTaskStateViewTest {
+class TaskStateEditionViewTest {
 
-    private lateinit var editTaskStateView: EditTaskStateView
+    private lateinit var taskStateEditionView: TaskStateEditionView
     private lateinit var cliPrinter: CLIPrinter
     private lateinit var cliReader: CLIReader
     private lateinit var manageTaskUseCase: ManageTaskUseCase
@@ -28,7 +28,7 @@ class EditTaskStateViewTest {
         cliPrinter = mockk(relaxed = true)
         cliReader = mockk(relaxed = true)
 
-        editTaskStateView = EditTaskStateView(cliReader, cliPrinter, manageTaskUseCase)
+        taskStateEditionView = TaskStateEditionView(cliReader, cliPrinter, manageTaskUseCase)
 
     }
 
@@ -42,7 +42,7 @@ class EditTaskStateViewTest {
     @Test
     fun `editState should return when no state are available`() {
 
-        editTaskStateView.editState(task, emptyList())
+        taskStateEditionView.editState(task, emptyList())
 
         verify(exactly = 1) {
             printLn("no states available")
@@ -53,7 +53,7 @@ class EditTaskStateViewTest {
     fun `editState should print states when available`() {
         every { cliReader.getUserInput(any()) } returns "1"
 
-        editTaskStateView.editState(task, statesList)
+        taskStateEditionView.editState(task, statesList)
 
         verify(exactly = 1) {
             statesList.forEachIndexed { index, state ->
@@ -70,7 +70,7 @@ class EditTaskStateViewTest {
         every { cliReader.getUserInput(any()) } returns input
         val stateID = statesList[input.toInt() - 1].id
 
-        editTaskStateView.editState(task, statesList)
+        taskStateEditionView.editState(task, statesList)
 
         verify(exactly = 1) {
             manageTaskUseCase.editTaskState(task.id, stateID)
@@ -84,7 +84,7 @@ class EditTaskStateViewTest {
     fun `editState should ask for another input when input is not valid`(input: String) {
         every { cliReader.getUserInput(any()) } answers { input } andThenAnswer { "1" }
 
-        editTaskStateView.editState(task, statesList)
+        taskStateEditionView.editState(task, statesList)
 
         verify(exactly = 1) {
             printLn("Invalid input")

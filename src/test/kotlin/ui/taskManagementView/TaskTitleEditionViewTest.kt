@@ -11,9 +11,9 @@ import ui.cliPrintersAndReaders.CLIPrinter
 import ui.cliPrintersAndReaders.CLIReader
 import java.util.*
 
-class EditTitleViewTest {
+class TaskTitleEditionViewTest {
 
-    private lateinit var editTitleView: EditTitleView
+    private lateinit var taskTitleEditionView: TaskTitleEditionView
     private lateinit var cliPrinter: CLIPrinter
     private lateinit var cliReader: CLIReader
     private lateinit var manageTaskUseCase: ManageTaskUseCase
@@ -25,7 +25,7 @@ class EditTitleViewTest {
         cliPrinter = mockk(relaxed = true)
         cliReader = mockk(relaxed = true)
 
-        editTitleView = EditTitleView(cliReader, cliPrinter, manageTaskUseCase)
+        taskTitleEditionView = TaskTitleEditionView(cliReader, cliPrinter, manageTaskUseCase)
 
     }
 
@@ -35,7 +35,7 @@ class EditTitleViewTest {
     fun `editTaskTitle should ask for new title`() {
         every { cliReader.getUserInput(any()) } returns "task new title"
 
-        editTitleView.editTitle(task)
+        taskTitleEditionView.editTitle(task)
 
         verify(exactly = 1) {
             cliReader.getUserInput("New Title (30 character or less): ")
@@ -47,7 +47,7 @@ class EditTitleViewTest {
         val newTitle = "task new title"
         every { cliReader.getUserInput(any()) } returns newTitle
 
-        editTitleView.editTitle(task)
+        taskTitleEditionView.editTitle(task)
 
         verify(exactly = 1) {
             manageTaskUseCase.editTaskTitle(task.id, newTitle)
@@ -60,7 +60,7 @@ class EditTitleViewTest {
         val validTitleWith30Char = "a".repeat(30)
         every { cliReader.getUserInput(any()) } answers { longTitleExceed30Char } andThenAnswer { validTitleWith30Char }
 
-        editTitleView.editTitle(task)
+        taskTitleEditionView.editTitle(task)
 
         verify(exactly = 1) {
             cliPrinter.cliPrintLn("Invalid Title")
@@ -71,7 +71,7 @@ class EditTitleViewTest {
     fun `title should not be blank`() {
         every { cliReader.getUserInput(any()) } answers { "    " } andThenAnswer { "not blank title" }
 
-        editTitleView.editTitle(task)
+        taskTitleEditionView.editTitle(task)
 
         verify(exactly = 1) {
             cliPrinter.cliPrintLn("Invalid Title")

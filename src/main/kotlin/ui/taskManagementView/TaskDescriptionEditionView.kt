@@ -5,7 +5,7 @@ import logic.useCases.ManageTaskUseCase
 import ui.cliPrintersAndReaders.CLIPrinter
 import ui.cliPrintersAndReaders.CLIReader
 
-class EditDescriptionView(
+class TaskDescriptionEditionView(
     private val cliReader: CLIReader,
     private val cliPrinter: CLIPrinter,
     private val manageTaskUseCase: ManageTaskUseCase

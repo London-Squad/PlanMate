@@ -11,9 +11,9 @@ import ui.cliPrintersAndReaders.CLIPrinter
 import ui.cliPrintersAndReaders.CLIReader
 import java.util.*
 
-class EditDescriptionViewTest {
+class TaskDescriptionEditionViewTest {
 
-    private lateinit var editDescriptionView: EditDescriptionView
+    private lateinit var taskDescriptionEditionView: TaskDescriptionEditionView
     private lateinit var cliPrinter: CLIPrinter
     private lateinit var cliReader: CLIReader
     private lateinit var manageTaskUseCase: ManageTaskUseCase
@@ -25,7 +25,7 @@ class EditDescriptionViewTest {
         cliPrinter = mockk(relaxed = true)
         cliReader = mockk(relaxed = true)
 
-        editDescriptionView = EditDescriptionView(cliReader, cliPrinter, manageTaskUseCase)
+        taskDescriptionEditionView = TaskDescriptionEditionView(cliReader, cliPrinter, manageTaskUseCase)
 
     }
 
@@ -35,7 +35,7 @@ class EditDescriptionViewTest {
     fun `editDescription should ask for new description`() {
         every { cliReader.getUserInput(any()) } returns "task new description"
 
-        editDescriptionView.editDescription(task)
+        taskDescriptionEditionView.editDescription(task)
 
         verify(exactly = 1) {
             cliReader.getUserInput("New Description (150 character or less): ")
@@ -47,7 +47,7 @@ class EditDescriptionViewTest {
         val newDescription = "task new description"
         every { cliReader.getUserInput(any()) } returns newDescription
 
-        editDescriptionView.editDescription(task)
+        taskDescriptionEditionView.editDescription(task)
 
         verify(exactly = 1) {
             manageTaskUseCase.editTaskDescription(task.id, newDescription)
@@ -60,7 +60,7 @@ class EditDescriptionViewTest {
         val validDescriptionWith30Char = "a".repeat(150)
         every { cliReader.getUserInput(any()) } answers { longDescriptionExceed30Char } andThenAnswer { validDescriptionWith30Char }
 
-        editDescriptionView.editDescription(task)
+        taskDescriptionEditionView.editDescription(task)
 
         verify(exactly = 1) {
             cliPrinter.cliPrintLn("Invalid description")
@@ -71,7 +71,7 @@ class EditDescriptionViewTest {
     fun `description can be blank`() {
         every { cliReader.getUserInput(any()) } answers { "    " }
 
-        editDescriptionView.editDescription(task)
+        taskDescriptionEditionView.editDescription(task)
 
         verify(exactly = 1) {
             manageTaskUseCase.editTaskDescription(task.id, "")

@@ -17,29 +17,29 @@ import java.util.*
 class TaskManagementViewTest {
 
     private lateinit var taskManagementView: TaskManagementView
-    private lateinit var editTitleView: EditTitleView
-    private lateinit var editDescriptionView: EditDescriptionView
-    private lateinit var editTaskStateView: EditTaskStateView
-    private lateinit var deleteTaskView: DeleteTaskView
+    private lateinit var taskTitleEditionView: TaskTitleEditionView
+    private lateinit var taskDescriptionEditionView: TaskDescriptionEditionView
+    private lateinit var taskStateEditionView: TaskStateEditionView
+    private lateinit var taskDeletionView: TaskDeletionView
     private lateinit var cliPrinter: CLIPrinter
     private lateinit var cliReader: CLIReader
 
     @BeforeEach
     fun setup() {
-        editTitleView = mockk(relaxed = true)
-        editDescriptionView = mockk(relaxed = true)
-        editTaskStateView = mockk(relaxed = true)
-        deleteTaskView = mockk(relaxed = true)
+        taskTitleEditionView = mockk(relaxed = true)
+        taskDescriptionEditionView = mockk(relaxed = true)
+        taskStateEditionView = mockk(relaxed = true)
+        taskDeletionView = mockk(relaxed = true)
         cliPrinter = mockk(relaxed = true)
         cliReader = mockk(relaxed = true)
 
         taskManagementView = TaskManagementView(
             cliReader,
             cliPrinter,
-            editTitleView,
-            editDescriptionView,
-            editTaskStateView,
-            deleteTaskView
+            taskTitleEditionView,
+            taskDescriptionEditionView,
+            taskStateEditionView,
+            taskDeletionView
         )
     }
 
@@ -68,6 +68,7 @@ class TaskManagementViewTest {
         verify(exactly = 1) {
             printLn("Task: ${tasks[0].title}")
             printLn("Description: ${tasks[0].description}")
+            printLn("State: ${tasks[0].state.title}")
         }
     }
 
@@ -101,7 +102,7 @@ class TaskManagementViewTest {
 
         taskManagementView.start(tasks[0], project)
 
-        verify(exactly = 1) { editTitleView.editTitle(tasks[0]) }
+        verify(exactly = 1) { taskTitleEditionView.editTitle(tasks[0]) }
     }
 
     @Test
@@ -110,7 +111,7 @@ class TaskManagementViewTest {
 
         taskManagementView.start(tasks[0], project)
 
-        verify(exactly = 1) { editDescriptionView.editDescription(tasks[0]) }
+        verify(exactly = 1) { taskDescriptionEditionView.editDescription(tasks[0]) }
     }
 
     @Test
@@ -119,7 +120,7 @@ class TaskManagementViewTest {
 
         taskManagementView.start(tasks[0], project)
 
-        verify(exactly = 1) { editTaskStateView.editState(tasks[0], project.states) }
+        verify(exactly = 1) { taskStateEditionView.editState(tasks[0], project.states) }
     }
 
     @Test
@@ -128,7 +129,7 @@ class TaskManagementViewTest {
 
         taskManagementView.start(tasks[0], project)
 
-        verify(exactly = 1) { deleteTaskView.deleteTask(tasks[0]) }
+        verify(exactly = 1) { taskDeletionView.deleteTask(tasks[0]) }
     }
 
 

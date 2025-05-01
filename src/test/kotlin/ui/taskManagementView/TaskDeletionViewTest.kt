@@ -13,9 +13,9 @@ import ui.cliPrintersAndReaders.CLIPrinter
 import ui.cliPrintersAndReaders.CLIReader
 import java.util.*
 
-class DeleteTaskViewTest {
+class TaskDeletionViewTest {
 
-    private lateinit var deleteTaskView: DeleteTaskView
+    private lateinit var taskDeletionView: TaskDeletionView
     private lateinit var cliPrinter: CLIPrinter
     private lateinit var cliReader: CLIReader
     private lateinit var manageTaskUseCase: ManageTaskUseCase
@@ -27,7 +27,7 @@ class DeleteTaskViewTest {
         cliPrinter = mockk(relaxed = true)
         cliReader = mockk(relaxed = true)
 
-        deleteTaskView = DeleteTaskView(cliReader, cliPrinter, manageTaskUseCase)
+        taskDeletionView = TaskDeletionView(cliReader, cliPrinter, manageTaskUseCase)
     }
 
     private val task = Task(UUID.randomUUID(), "Fake Task 1", description = "description1")
@@ -36,7 +36,7 @@ class DeleteTaskViewTest {
     fun `deleteTask should ask for delete confirmation`() {
         every { cliReader.getUserInput(any()) } returns "n"
 
-        deleteTaskView.deleteTask(task)
+        taskDeletionView.deleteTask(task)
 
         verify(exactly = 1) {
             cliReader.getUserInput("Are you sure to delete the task? (y/n): ")
@@ -47,7 +47,7 @@ class DeleteTaskViewTest {
     fun `deleteTask should cancel deletion when answer is n`() {
         every { cliReader.getUserInput(any()) } returns "n"
 
-        deleteTaskView.deleteTask(task)
+        taskDeletionView.deleteTask(task)
 
         verify(exactly = 1) {
             cliPrinter.cliPrintLn("deletion canceled")        }
@@ -57,7 +57,7 @@ class DeleteTaskViewTest {
     fun `deleteTask should delete task when answer is y`() {
         every { cliReader.getUserInput(any()) } returns "y"
 
-        deleteTaskView.deleteTask(task)
+        taskDeletionView.deleteTask(task)
 
         verify(exactly = 1) {
             manageTaskUseCase.deleteTask(task.id)
@@ -72,7 +72,7 @@ class DeleteTaskViewTest {
     fun `deleteTask should print invalid input when user input is not an option`(input: String) {
         every { cliReader.getUserInput(any()) } answers { input } andThenAnswer { "n" }
 
-        deleteTaskView.deleteTask(task)
+        taskDeletionView.deleteTask(task)
 
         verify(exactly = 1) {
             cliPrinter.cliPrintLn("Invalid input")

@@ -8,10 +8,10 @@ import ui.cliPrintersAndReaders.CLIReader
 class TaskManagementView(
     private val cliReader: CLIReader,
     private val cliPrinter: CLIPrinter,
-    private val editTitleView: EditTitleView,
-    private val editDescriptionView: EditDescriptionView,
-    private val editTaskStateView: EditTaskStateView,
-    private val deleteTaskView: DeleteTaskView,
+    private val taskTitleEditionView: TaskTitleEditionView,
+    private val taskDescriptionEditionView: TaskDescriptionEditionView,
+    private val taskStateEditionView: TaskStateEditionView,
+    private val taskDeletionView: TaskDeletionView,
 ) {
 
     fun start(task: Task, project: Project) {
@@ -24,6 +24,7 @@ class TaskManagementView(
     private fun printTask(task: Task) {
         printLn("Task: ${task.title}")
         printLn("Description: ${task.description}")
+        printLn("State: ${task.state.title}")
     }
 
     private fun printOptions() {
@@ -36,10 +37,10 @@ class TaskManagementView(
 
     private fun selectNextUI(task: Task, project: Project) {
         when (getValidUserInput()) {
-            "1" -> editTitleView.editTitle(task)
-            "2" -> editDescriptionView.editDescription(task)
-            "3" -> editTaskStateView.editState(task, project.states)
-            "4" -> deleteTaskView.deleteTask(task)
+            "1" -> taskTitleEditionView.editTitle(task)
+            "2" -> taskDescriptionEditionView.editDescription(task)
+            "3" -> taskStateEditionView.editState(task, project.states)
+            "4" -> taskDeletionView.deleteTask(task)
             "0" -> return
         }
         start(task, project)
