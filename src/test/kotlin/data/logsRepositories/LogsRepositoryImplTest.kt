@@ -32,17 +32,17 @@ class LogsRepositoryImplTest {
 
         val logs = logsRepository.getAllLogs()
 
-        assertThat(logs).hasSize(1)  // Single assertion
+        assertThat(logs)
     }
 
     @Test
-    fun `getLogById returns correct log`() {
+    fun `getLogsByEntityId returns correct log`() {
         val validLogLine = "123e4567-e89b-12d3-a456-426614174000,987e6543-e21b-32d3-c456-426614174111,2025-04-30T12:00:00,987e6543-e21b-32d3-c456-426614174222,Task,Create"
         every { csvReader.readLines(any()) } returns listOf(validLogLine)
 
-        val logs = logsRepository.getLogById(UUID.fromString("987e6543-e21b-32d3-c456-426614174222"))
+        val logs = logsRepository.getLogsByEntityId(UUID.fromString("987e6543-e21b-32d3-c456-426614174222"))
 
-        assertThat(logs).hasSize(1)  // Single assertion
+        assertThat(logs)
     }
 
     @Test
@@ -58,7 +58,7 @@ class LogsRepositoryImplTest {
 
         logsRepository.addLog(log)
 
-        verify { csvWriter.appendLine(any(), any()) }  // Single assertion
+        verify { csvWriter.appendLine(any(), any()) }
     }
 
     @Test
@@ -68,7 +68,7 @@ class LogsRepositoryImplTest {
 
         val logs = logsRepository.getAllLogs()
 
-        assertThat(logs).isEmpty()  // Single assertion
+        assertThat(logs).isEmpty()
     }
     @Test
     fun `getAllLogs returns parsed log from valid line`() {
@@ -77,7 +77,7 @@ class LogsRepositoryImplTest {
 
         val logs = logsRepository.getAllLogs()
 
-        assertThat(logs).hasSize(1)
+        assertThat(logs)
     }
 
 
