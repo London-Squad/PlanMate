@@ -25,7 +25,7 @@ class WelcomeViewTest {
         getActiveUserUseCase = mockk(relaxed = true)
         mainMenuView = mockk(relaxed = true)
 
-//        welcomeView = WelcomeView(cliPrinter, mainMenuView, getActiveUserUseCase)
+        welcomeView = WelcomeView(cliPrinter, mainMenuView, getActiveUserUseCase)
     }
 
 
@@ -33,7 +33,7 @@ class WelcomeViewTest {
     fun `start should tell the user to login when no user is logged in`() {
         every { getActiveUserUseCase.getLoggedInUser() } returns null
 
-//        welcomeView.start()
+        welcomeView.start()
 
         verify (exactly = 1) { cliPrinter.printPleaseLoginMessage() }
     }
@@ -43,7 +43,7 @@ class WelcomeViewTest {
     fun `start should print welcome user message when user is logged in`(user: User) {
         every { getActiveUserUseCase.getLoggedInUser() } returns user
 
-//        welcomeView.start()
+        welcomeView.start()
 
         verify (exactly = 1) { cliPrinter.cliPrintLn("welcome ${user.userName} to PlanMate V1.0") }
     }
@@ -53,9 +53,9 @@ class WelcomeViewTest {
     fun `start should go to main menu when user is logged in`(user: User) {
         every { getActiveUserUseCase.getLoggedInUser() } returns user
 
-//        welcomeView.start()
+        welcomeView.start()
 
-//        verify (exactly = 1) { mainMenuView.start() }
+        verify (exactly = 1) { mainMenuView.start() }
     }
 
     private companion object {

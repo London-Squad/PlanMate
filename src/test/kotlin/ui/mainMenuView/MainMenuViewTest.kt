@@ -40,6 +40,7 @@ class MainMenuViewTest {
             cliPrinter,
             cliReader,
             cacheDataRepository,
+            loginView,
             projectsView,
             matesManagementView
         )
@@ -51,7 +52,7 @@ class MainMenuViewTest {
         every { cacheDataRepository.getLoggedInUser() } returns null
 
         // When
-//        mainMenuView.start()
+        mainMenuView.start()
 
         // Then
         verify (exactly = 1) { cliPrinter.printPleaseLoginMessage() }
@@ -63,10 +64,10 @@ class MainMenuViewTest {
         every { cacheDataRepository.getLoggedInUser() } returns null
 
         // When
-//        mainMenuView.start()
+        mainMenuView.start()
 
         // Then
-//        verify (exactly = 1) { loginView.start() }
+        verify (exactly = 1) { loginView.start() }
     }
 
     @Test
@@ -76,7 +77,7 @@ class MainMenuViewTest {
         every { cliReader.getUserInput(any()) } returns "0"
 
         // When
-//        mainMenuView.start()
+        mainMenuView.start()
 
         // Then
         verify (exactly = 1) { cliPrinter.cliPrintLn("2. Mates management") }
@@ -89,7 +90,7 @@ class MainMenuViewTest {
         every { cliReader.getUserInput(any()) } returns "0"
 
         // When
-//        mainMenuView.start()
+        mainMenuView.start()
 
         // Then
         verify (exactly = 0) { cliPrinter.cliPrintLn("2. Mates management") }
@@ -103,10 +104,10 @@ class MainMenuViewTest {
         every { cliReader.getUserInput(any()) } returns "0"
 
         // When
-//        mainMenuView.start()
+        mainMenuView.start()
 
         // Then
-//        verify (exactly = 1) { loginView.start() }
+        verify (exactly = 1) { loginView.start() }
     }
 
     @ParameterizedTest
@@ -117,7 +118,7 @@ class MainMenuViewTest {
         every { cliReader.getUserInput(any()) } returns "1"
 
         // When
-//        mainMenuView.start()
+        mainMenuView.start()
 
         // Then
         verify (exactly = 1) { projectsView.start() }
@@ -130,7 +131,7 @@ class MainMenuViewTest {
         every { cliReader.getUserInput(any()) } returns "2"
 
         // When
-//        mainMenuView.start()
+        mainMenuView.start()
 
         // Then
         verify (exactly = 1) { matesManagementView.start() }
@@ -143,7 +144,7 @@ class MainMenuViewTest {
         every { cliReader.getUserInput(any()) } answers { "2" } andThenAnswer { "1" }
 
         // When
-//        mainMenuView.start()
+        mainMenuView.start()
 
         // Then
         verify (exactly = 0) { matesManagementView.start() }

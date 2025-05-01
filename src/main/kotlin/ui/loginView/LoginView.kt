@@ -1,8 +1,7 @@
 package ui.loginView
 
-import logic.exception.AuthenticationException
 import logic.repositories.CacheDataRepository
-import logic.useCases.LoginUseCase
+import logic.useCases.loginUseCase.LoginUseCase
 import ui.cliPrintersAndReaders.CLIPrinter
 import ui.cliPrintersAndReaders.CLIReader
 import ui.mainMenuView.MainMenuView
@@ -27,13 +26,11 @@ class LoginView(
 
     private fun processLogin(username: String, password: String) {
         try {
-            val user = loginUseCase(username, password)
+            val user = loginUseCase.login(username, password)
             cacheDataRepository.setLoggedInUser(user)
             println("Login successful")
             mainMenuView.startMainMenu()
-        } catch (e: AuthenticationException) {
-            println(e.message)
-        } catch (e: Exception) {
+        } catch (_: Exception) {
             println("Invalid username or password")
         }
     }

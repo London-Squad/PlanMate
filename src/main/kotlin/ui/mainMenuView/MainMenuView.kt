@@ -15,19 +15,17 @@ class MainMenuView(
     private val matesManagementView: MatesManagementView
 ) {
 
-    private var loggedInUserType: User.Type? = null
+    private lateinit var loggedInUserType: User.Type
 
-    fun startMainMenu() {
-
+    fun start() {
         saveUserType()
         printMainMenuTitle()
-
         printOptions()
         goToNextUI()
     }
 
     private fun saveUserType() {
-        loggedInUserType = cacheDataRepository.getLoggedInUser()?.type
+        loggedInUserType = cacheDataRepository.getLoggedInUser()!!.type
     }
 
     private fun printMainMenuTitle() {
@@ -47,19 +45,18 @@ class MainMenuView(
             "0" -> {
                 println("\nLogging out ...")
                 cacheDataRepository.clearLoggedInUserFromCatch()
-                return
-            } // exit main menu
+                return // exit main menu
+            }
         }
-        startMainMenu()
+        start() // start main menu again after going back from options
     }
 
     private fun getValidUserInput(): String {
         val validInputs = validInputsForAdmin.takeIf { loggedInUserType == User.Type.ADMIN } ?: validInputsForMate
-        return cliReader.getValidUserInput(
-            { it in validInputs },
-            "\nchoose an option: ",
-            "invalid option, try again ..."
-        ).trim()
+        val userInput = cliReader.getUserInput("\nchoose an option: ").trim()
+        if (userInput in validInputs) return userInput
+        cliPrinter.cliPrintLn("invalid option, try again ...")
+        return getValidUserInput()
     }
 
     private fun println(message: String) = cliPrinter.cliPrintLn(message)
