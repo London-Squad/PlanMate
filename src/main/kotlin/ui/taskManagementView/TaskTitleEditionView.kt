@@ -11,7 +11,7 @@ class TaskTitleEditionView(
     private val manageTaskUseCase: ManageTaskUseCase
 ) {
 
-     fun editTitle(task: Task) {
+    fun editTitle(task: Task) {
         val newTitle = getValidTitle()
         manageTaskUseCase.editTaskTitle(task.id, newTitle)
     }

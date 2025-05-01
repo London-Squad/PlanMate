@@ -10,7 +10,7 @@ class TaskStateEditionView(
     private val cliReader: CLIReader,
     private val cliPrinter: CLIPrinter,
     private val manageTaskUseCase: ManageTaskUseCase
-    ) {
+) {
 
     fun editState(task: Task, projectStates: List<State>) {
 

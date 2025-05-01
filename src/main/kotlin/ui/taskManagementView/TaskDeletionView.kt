@@ -10,7 +10,7 @@ class TaskDeletionView(
     private val cliPrinter: CLIPrinter,
     private val manageTaskUseCase: ManageTaskUseCase
 ) {
-     fun deleteTask(task: Task) {
+    fun deleteTask(task: Task) {
         if (isCancelDelete()) {
             cliPrinter.cliPrintLn("deletion canceled")
             return

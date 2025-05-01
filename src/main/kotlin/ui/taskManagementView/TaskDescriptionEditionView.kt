@@ -9,9 +9,9 @@ class TaskDescriptionEditionView(
     private val cliReader: CLIReader,
     private val cliPrinter: CLIPrinter,
     private val manageTaskUseCase: ManageTaskUseCase
-)  {
+) {
 
-     fun editDescription(task: Task) {
+    fun editDescription(task: Task) {
         val newDescription = getValidDescription()
         manageTaskUseCase.editTaskDescription(task.id, newDescription)
     }

@@ -4,7 +4,7 @@ import logic.entities.Task
 import logic.repositories.TaskRepository
 import java.util.*
 
-class TaskDataSource(): TaskRepository {
+class TaskDataSource() : TaskRepository {
     override fun addNewTask(task: Task, projectId: UUID) {
         TODO("Not yet implemented")
     }
