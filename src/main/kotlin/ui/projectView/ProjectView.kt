@@ -56,7 +56,9 @@ class ProjectView(
         when (input) {
             "1" -> projectTasksView.manageTasks(currentProject)
             "2" -> viewProjectLogs()
-            "3" -> if (currentUser?.type == User.Type.ADMIN) editProjectView.editProject(currentProject) else return
+            "3" -> if (currentUser?.type == User.Type.ADMIN) {
+                currentProject = editProjectView.editProject(currentProject)
+            } else return
             "4" -> {
                 if (currentUser?.type == User.Type.ADMIN) {
                     deleteProjectView.deleteProject(currentProject)
