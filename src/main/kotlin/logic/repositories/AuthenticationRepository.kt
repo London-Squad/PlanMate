@@ -17,6 +17,4 @@ interface AuthenticationRepository {
 
     fun changePassword(userId: UUID, currentPassword: String, newPassword: String)
 
-    fun getActiveUser(): User?
-
 }
