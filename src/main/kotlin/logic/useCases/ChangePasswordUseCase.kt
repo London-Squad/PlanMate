@@ -7,10 +7,10 @@ import logic.validation.takeIfValidNameOrThrowException
 class ChangePasswordUseCase(
     private val authenticationRepository: AuthenticationRepository
 ) {
-    operator fun invoke(username: String, oldPassword: String, newPassword: String) {
+    operator fun invoke(username: String, oldPassword: String, newPassword: String): Boolean {
         username.takeIfValidNameOrThrowException()
         oldPassword.takeIfValidPasswordOrThrowException()
         newPassword.takeIfValidPasswordOrThrowException()
-        authenticationRepository.changePassword(username, oldPassword, newPassword)
+        return authenticationRepository.changePassword(username, oldPassword, newPassword)
     }
 }

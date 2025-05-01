@@ -27,6 +27,10 @@ fun File.isUserExistInFile(userName: String, password: String): Boolean {
     return readUserOrNull(userName, password) != null
 }
 
+fun File.isUserNameExistInFile(userName: String): Boolean {
+    return useLines { lines -> lines.searchForUserName(userName) } != null
+}
+
 fun File.writeUser(id: UUID, userName: String, password: String): Boolean {
     appendText("$id,$userName,$password\n")
     return true
@@ -34,6 +38,12 @@ fun File.writeUser(id: UUID, userName: String, password: String): Boolean {
 
 fun File.clearAndWriteNewData(lines: List<String>) {
     writeText(lines.joinToString("\n"))
+}
+
+private fun FileLines.searchForUserName(userName: String): User? {
+    val user = filter { it.contains(userName, ignoreCase = true) }.firstOrNull()
+    if (user == null) return null
+    return User(userName = userName, type = User.Type.MATE)
 }
 
 private fun FileLines.searchForUser(
