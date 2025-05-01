@@ -1,16 +1,14 @@
-package main
-
-import di.appModule
-import di.repoModules
-import di.uiModule
-import di.useCaseModule
-import logic.entities.User
+import di.*
 import org.koin.core.context.startKoin
 import org.koin.java.KoinJavaComponent.getKoin
-import ui.projectsView.ProjectsView
+import ui.welcomeView.WelcomeView
 
 fun main() {
     startKoin {
+        modules(dataModule, logicModule, uiModule)
         modules(appModule, repoModules, uiModule, useCaseModule)
+
     }
+    val ui: WelcomeView = getKoin().get()
+    ui.startWelcome()
 }
