@@ -9,7 +9,7 @@ import logic.repositories.ProjectsRepository
 import org.koin.dsl.module
 import java.io.File
 
-val repoModules = module {
+val dataModule = module {
     single {
         val directory = File("csvFiles")
         File(directory, "projects.csv")
