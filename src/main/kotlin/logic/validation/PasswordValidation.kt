@@ -7,6 +7,6 @@ fun String.takeIfValidPasswordOrThrowException() {
 }
 
 private fun String.isValidPassword(): Boolean {
-    val passwordRegex = "(?=.*[a-z])(?=.*[A-Z])".toRegex()
-    return isBlank() || length in 6..12 || matches(passwordRegex)
+    val passwordRegex = "^(?=.*[a-z])(?=.*[A-Z]).+\$".toRegex()
+    return isNotBlank() && length in 6..12 && matches(passwordRegex)
 }
