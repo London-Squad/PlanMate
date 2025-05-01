@@ -54,7 +54,9 @@ class ProjectView(
             invalidInputMessage = "Invalid option, try again ..."
         )
         when (input) {
-            "1" -> projectTasksView.manageTasks(currentProject)
+            "1" -> {
+                currentProject = projectTasksView.manageTasks(currentProject)
+            }
             "2" -> viewProjectLogs()
             "3" -> if (currentUser?.type == User.Type.ADMIN) {
                 currentProject = editProjectView.editProject(currentProject)

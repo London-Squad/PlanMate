@@ -125,7 +125,7 @@ class ProjectViewTest {
         // Given
         every { user.type } returns User.Type.MATE
         every { cliReader.getValidUserInput(any(), any(), any()) } returns "1"
-        every { projectTasksView.manageTasks(project) } returns Unit
+        every { projectTasksView.manageTasks(project) } returns project
 
         // When
         projectView.start(project)
@@ -165,7 +165,7 @@ class ProjectViewTest {
         // Given
         every { user.type } returns User.Type.ADMIN
         every { cliReader.getValidUserInput(any(), any(), any()) } returns "1"
-        every { projectTasksView.manageTasks(project) } returns Unit
+        every { projectTasksView.manageTasks(project) } returns project
 
         // When
         projectView.start(project)
