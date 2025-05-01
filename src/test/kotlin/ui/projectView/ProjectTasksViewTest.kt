@@ -33,11 +33,9 @@ class ProjectTasksViewTest {
 
         projectTasksView = ProjectTasksView(cliPrinter, cliReader, taskManagementView)
 
-        // Mock project properties
         every { project.title } returns "Test Project"
         every { project.tasks } returns emptyList()
 
-        // Mock task and state for selectTask tests
         every { task.title } returns "Test Task"
         every { task.description } returns "Test Description"
         every { task.state } returns state
