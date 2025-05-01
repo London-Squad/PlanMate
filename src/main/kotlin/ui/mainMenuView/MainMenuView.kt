@@ -4,7 +4,6 @@ import logic.entities.User
 import logic.repositories.CacheDataRepository
 import ui.cliPrintersAndReaders.CLIPrinter
 import ui.cliPrintersAndReaders.CLIReader
-import ui.loginView.LoginView
 import ui.matesManagementView.MatesManagementView
 import ui.projectsView.ProjectsView
 
@@ -12,23 +11,16 @@ class MainMenuView(
     private val cliPrinter: CLIPrinter,
     private val cliReader: CLIReader,
     private val cacheDataRepository: CacheDataRepository,
-    private val loginView: LoginView,
     private val projectsView: ProjectsView,
     private val matesManagementView: MatesManagementView
 ) {
 
     private var loggedInUserType: User.Type? = null
 
-    fun start() {
+    fun startMainMenu() {
 
         saveUserType()
         printMainMenuTitle()
-
-        if (loggedInUserType == null) {
-            cliPrinter.printPleaseLoginMessage()
-            loginView.start()
-            return
-        }
 
         printOptions()
         goToNextUI()
@@ -43,28 +35,37 @@ class MainMenuView(
     }
 
     private fun printOptions() {
-        printLn("1. View all project")
-        if (loggedInUserType == User.Type.ADMIN) printLn("2. Mates management")
-        printLn("0. Logout")
+        println("1. View all project")
+        if (loggedInUserType == User.Type.ADMIN) println("2. Mates management")
+        println("0. Logout")
     }
 
     private fun goToNextUI() {
         when (getValidUserInput()) {
             "1" -> projectsView.start()
             "2" -> matesManagementView.start()
-            "0" -> loginView.start()
+            "0" -> {
+                println("\nLogging out ...")
+                cacheDataRepository.clearLoggedInUserFromCatch()
+                return
+            } // exit main menu
         }
+        startMainMenu()
     }
 
     private fun getValidUserInput(): String {
-        val validInputs = listOf("0", "1", "2").takeIf { loggedInUserType == User.Type.ADMIN } ?: listOf("0", "1")
-        val userInput = cliReader.getUserInput("choose an option").trim()
-        if (userInput in validInputs) return userInput
-        cliPrinter.cliPrintLn("invalid option, try again ...")
-        return getValidUserInput()
+        val validInputs = validInputsForAdmin.takeIf { loggedInUserType == User.Type.ADMIN } ?: validInputsForMate
+        return cliReader.getValidUserInput(
+            { it in validInputs },
+            "\nchoose an option: ",
+            "invalid option, try again ..."
+        ).trim()
     }
 
-    private fun printLn(message: String) {
-        cliPrinter.cliPrintLn(message)
+    private fun println(message: String) = cliPrinter.cliPrintLn(message)
+
+    private companion object {
+        val validInputsForAdmin = listOf("0", "1", "2")
+        val validInputsForMate = listOf("0", "1")
     }
 }

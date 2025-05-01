@@ -3,7 +3,7 @@ package data.cacheData
 import logic.entities.User
 import logic.repositories.CacheDataRepository
 
-class CacheDataRepositoryImpl : CacheDataRepository {
+class CacheDataSource : CacheDataRepository {
 
     private var loggedInUser: User? = null
 
