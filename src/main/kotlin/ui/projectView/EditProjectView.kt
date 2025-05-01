@@ -11,11 +11,11 @@ class EditProjectView(
     private val projectUseCases: ProjectUseCases
 ) {
 
-    private lateinit var currentProject: Project
+    lateinit var currentProject: Project
 
-    fun editProject(project: Project) {
+    fun editProject(project: Project): Project {
         currentProject = project
-        cliPrinter.printHeader("Edit Project")
+        cliPrinter.printHeader("Edit Project: ${currentProject.title}")
         cliPrinter.cliPrintLn("1. Edit title")
         cliPrinter.cliPrintLn("2. Edit description")
         cliPrinter.cliPrintLn("3. States management")
@@ -31,9 +31,9 @@ class EditProjectView(
             "1" -> editProjectTitle()
             "2" -> editProjectDescription()
             "3" -> statesManagement()
-            "0" -> return
+            "0" -> return currentProject
         }
-        editProject(currentProject)
+        return currentProject
     }
 
     private fun editProjectTitle() {
@@ -45,6 +45,7 @@ class EditProjectView(
         projectUseCases.editProjectTitle(currentProject.id, newTitle)
         currentProject = currentProject.copy(title = newTitle)
         cliPrinter.cliPrintLn("Project title updated.")
+        cliPrinter.printHeader("Edit Project: ${currentProject.title}") // Show updated header
     }
 
     private fun editProjectDescription() {
