@@ -1,9 +1,70 @@
 package ui.mainMenuView
 
-import ui.View
+import logic.entities.User
+import logic.repositories.CacheDataRepository
+import ui.cliPrintersAndReaders.CLIPrinter
+import ui.cliPrintersAndReaders.CLIReader
+import ui.loginView.LoginView
+import ui.matesManagementView.MatesManagementView
+import ui.projectsView.ProjectsView
 
-class MainMenuView: View {
-    override fun start() {
+class MainMenuView(
+    private val cliPrinter: CLIPrinter,
+    private val cliReader: CLIReader,
+    private val cacheDataRepository: CacheDataRepository,
+    private val loginView: LoginView,
+    private val projectsView: ProjectsView,
+    private val matesManagementView: MatesManagementView
+) {
 
+    private var loggedInUserType: User.Type? = null
+
+    fun start() {
+
+        saveUserType()
+        printMainMenuTitle()
+
+        if (loggedInUserType == null) {
+            cliPrinter.printPleaseLoginMessage()
+            loginView.start()
+            return
+        }
+
+        printOptions()
+        goToNextUI()
+    }
+
+    private fun saveUserType() {
+        loggedInUserType = cacheDataRepository.getLoggedInUser()?.type
+    }
+
+    private fun printMainMenuTitle() {
+        cliPrinter.printHeader("Main Menu")
+    }
+
+    private fun printOptions() {
+        printLn("1. View all project")
+        if (loggedInUserType == User.Type.ADMIN) printLn("2. Mates management")
+        printLn("0. Logout")
+    }
+
+    private fun goToNextUI() {
+        when (getValidUserInput()) {
+            "1" -> projectsView.start()
+            "2" -> matesManagementView.start()
+            "0" -> loginView.start()
+        }
+    }
+
+    private fun getValidUserInput(): String {
+        val validInputs = listOf("0", "1", "2").takeIf { loggedInUserType == User.Type.ADMIN } ?: listOf("0", "1")
+        val userInput = cliReader.getUserInput("choose an option").trim()
+        if (userInput in validInputs) return userInput
+        cliPrinter.cliPrintLn("invalid option, try again ...")
+        return getValidUserInput()
+    }
+
+    private fun printLn(message: String) {
+        cliPrinter.cliPrintLn(message)
     }
 }

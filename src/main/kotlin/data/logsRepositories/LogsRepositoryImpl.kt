@@ -18,8 +18,8 @@ class LogsRepositoryImpl(
         return csvReader.readLines(filePath).mapNotNull { parseLog(it) }
     }
 
-    override fun getLogById(id: UUID): List<Log> {
-        return getAllLogs().filter { it.action.entity.id == id }
+    override fun getLogById(entityId: UUID): List<Log> {
+        return getAllLogs().filter { it.action.entity.id == entityId }
     }
 
     override fun addLog(log: Log) {
@@ -34,7 +34,8 @@ class LogsRepositoryImpl(
             is Task -> "Task"
             is Project -> "Project"
             is State -> "State"
-            else -> "Unknown"
+            else -> throw IllegalArgumentException("Unsupported entity type: ${entity::class.simpleName}")
+
         }
     }
 
