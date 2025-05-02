@@ -2,6 +2,7 @@ package ui.taskManagementView
 
 import logic.entities.Project
 import logic.entities.Task
+import logic.repositories.TaskRepository
 import ui.cliPrintersAndReaders.CLIPrinter
 import ui.cliPrintersAndReaders.CLIReader
 
@@ -12,6 +13,7 @@ class TaskManagementView(
     private val taskDescriptionEditionView: TaskDescriptionEditionView,
     private val taskStateEditionView: TaskStateEditionView,
     private val taskDeletionView: TaskDeletionView,
+    private val taskRepository: TaskRepository
 ) {
 
     fun start(task: Task, project: Project) {
@@ -19,7 +21,6 @@ class TaskManagementView(
         printOptions()
         selectNextUI(task, project)
     }
-
 
     private fun printTask(task: Task) {
         printLn("Task: ${task.title}")
@@ -37,13 +38,27 @@ class TaskManagementView(
 
     private fun selectNextUI(task: Task, project: Project) {
         when (getValidUserInput()) {
-            "1" -> taskTitleEditionView.editTitle(task)
-            "2" -> taskDescriptionEditionView.editDescription(task)
-            "3" -> taskStateEditionView.editState(task, project.states)
-            "4" -> taskDeletionView.deleteTask(task)
+            "1" -> {
+                taskTitleEditionView.editTitle(task)
+                val updatedTask = taskRepository.getTaskByID(task.id) ?: task
+                start(updatedTask, project)
+            }
+            "2" -> {
+                taskDescriptionEditionView.editDescription(task)
+                val updatedTask = taskRepository.getTaskByID(task.id) ?: task
+                start(updatedTask, project)
+            }
+            "3" -> {
+                taskStateEditionView.editState(task, project.states)
+                val updatedTask = taskRepository.getTaskByID(task.id) ?: task
+                start(updatedTask, project)
+            }
+            "4" -> {
+                taskDeletionView.deleteTask(task)
+                return
+            }
             "0" -> return
         }
-        start(task, project)
     }
 
     private fun getValidUserInput(): String {
