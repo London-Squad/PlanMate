@@ -6,37 +6,27 @@ import io.mockk.mockk
 import logic.entities.User
 import logic.repositories.CacheDataRepository
 import org.junit.jupiter.api.BeforeEach
-import org.junit.jupiter.api.Test
 import org.junit.jupiter.params.ParameterizedTest
 import org.junit.jupiter.params.provider.MethodSource
 
-class GetActiveUserUseCaseTest{
+class GetLoggedInUserUseCaseTest {
 
-     private lateinit var getActiveUserUseCase: GetActiveUserUseCase
+    private lateinit var getLoggedInUserUseCase: GetLoggedInUserUseCase
      private lateinit var cacheDataRepository: CacheDataRepository
 
      @BeforeEach
      fun setup() {
          cacheDataRepository = mockk(relaxed = true)
 
-         getActiveUserUseCase = GetActiveUserUseCase(cacheDataRepository)
+         getLoggedInUserUseCase = GetLoggedInUserUseCase(cacheDataRepository)
      }
-
-    @Test
-    fun `getLoggedInUser should return null when no user is logged in`() {
-        every { cacheDataRepository.getLoggedInUser() } returns null
-
-        val result = getActiveUserUseCase.getLoggedInUser()
-
-        assertThat(result).isNull()
-    }
 
     @ParameterizedTest
     @MethodSource("getUsersList")
-    fun `getLoggedInUser should return active user when user is logged in`(user:User) {
+    fun `getLoggedInUser should return logged in user when user is logged in`(user: User) {
         every { cacheDataRepository.getLoggedInUser() } returns user
 
-        val result = getActiveUserUseCase.getLoggedInUser()
+        val result = getLoggedInUserUseCase.getLoggedInUser()
 
         assertThat(result).isEqualTo(user)
     }
