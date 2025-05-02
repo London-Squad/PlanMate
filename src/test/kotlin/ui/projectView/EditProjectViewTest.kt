@@ -9,6 +9,7 @@ import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Test
 import ui.cliPrintersAndReaders.CLIPrinter
 import ui.cliPrintersAndReaders.CLIReader
+import ui.statesView.StatesView
 import java.util.UUID
 
 class EditProjectViewTest {
@@ -17,6 +18,7 @@ class EditProjectViewTest {
     private lateinit var cliReader: CLIReader
     private lateinit var projectUseCases: ProjectUseCases
     private lateinit var editProjectView: EditProjectView
+    private lateinit var statesView: StatesView
     private lateinit var project: Project
 
     @BeforeEach
@@ -25,7 +27,8 @@ class EditProjectViewTest {
         cliReader = mockk()
         projectUseCases = mockk()
         project = mockk()
-        editProjectView = EditProjectView(cliPrinter, cliReader, projectUseCases)
+        statesView = mockk()
+        editProjectView = EditProjectView(cliPrinter, cliReader, projectUseCases, statesView)
 
         every { project.id } returns UUID.randomUUID()
         every { project.title } returns "Test Project"

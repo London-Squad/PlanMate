@@ -9,6 +9,7 @@ import ui.mainMenuView.MainMenuView
 import ui.matesManagementView.MatesManagementView
 import ui.projectView.*
 import ui.projectsView.ProjectsView
+import ui.statesView.StatesView
 import ui.taskManagementView.*
 import ui.welcomeView.WelcomeView
 
@@ -36,7 +37,8 @@ val uiModule = module {
 
     single { ProjectView(get(), get(), get(), get(), get(), get(), get()) }
     single { SwimlanesView(get()) }
-    single { EditProjectView(get(), get(), get()) }
+    single { StatesView(get(), get(), get()) }
+    single { EditProjectView(get(), get(), get(), get()) }
     single { DeleteProjectView(get(), get()) }
     single { ProjectTasksView(get(), get(), get()) }
 

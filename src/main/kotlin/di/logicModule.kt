@@ -1,10 +1,6 @@
 package di
 
-import logic.useCases.ClearLoggedInUserFromCacheUseCase
-import logic.useCases.GetLoggedInUserUseCase
-import logic.useCases.ManageTaskUseCase
-import logic.useCases.ProjectUseCases
-import logic.useCases.LoginUseCase
+import logic.useCases.*
 import org.koin.dsl.module
 
 val logicModule = module {
@@ -13,4 +9,5 @@ val logicModule = module {
     single { ProjectUseCases(get()) }
     single { LoginUseCase(get(), get()) }
     single { ManageTaskUseCase(get()) }
+    single { ManageStateUseCase(get(), get(), get()) }
 }
