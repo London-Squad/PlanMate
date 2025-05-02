@@ -19,23 +19,20 @@ class SwimlanesView(
         }
 
         val maxTasks = tasksByState.values.maxOfOrNull { it.size } ?: 0
-        val columnWidth = 25 // Adjust width to fit your terminal nicely
+        val columnWidth = 25
         val separator = "|"
 
-        // Print header
         project.states.forEach { state ->
             val stateHeader = state.title.take(columnWidth - 1).padEnd(columnWidth)
             cliPrinter.cliPrint("$stateHeader$separator")
         }
         cliPrinter.cliPrintLn("")
 
-        // Print separator row
         project.states.forEach { _ ->
             cliPrinter.cliPrint("-".repeat(columnWidth) + separator)
         }
         cliPrinter.cliPrintLn("")
 
-        // Print task rows
         for (row in 0 until maxTasks) {
             project.states.forEach { state ->
                 val tasks = tasksByState[state] ?: emptyList()
