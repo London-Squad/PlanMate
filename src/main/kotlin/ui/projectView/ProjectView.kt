@@ -17,7 +17,7 @@ class ProjectView(
     private val projectTasksView: ProjectTasksView
 ) {
 
-     lateinit var currentProject: Project
+    private lateinit var currentProject: Project
 
     fun start(project: Project) {
         currentProject = project
@@ -48,7 +48,7 @@ class ProjectView(
 
     private fun handleUserInput() {
         val currentUser = cacheDataRepository.getLoggedInUser()
-        val validInputs = if (currentUser?.type == User.Type.ADMIN) listOf(
+        val validInputs = if (currentUser.type == User.Type.ADMIN) listOf(
             "0", "1", "2", "3", "4",
         ) else listOf("0", "1", "2")
         val input = cliReader.getValidUserInput(

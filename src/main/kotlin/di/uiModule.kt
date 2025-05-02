@@ -26,7 +26,7 @@ val uiModule = module {
 
     single { MatesManagementView() }
 
-    single { MainMenuView(get(), get(), get(), get(), get()) }
+    single { MainMenuView(get(), get(), get(), get(), get(), get()) }
 
     single { LoginView(get(), get(), get(), get(), get()) }
 
