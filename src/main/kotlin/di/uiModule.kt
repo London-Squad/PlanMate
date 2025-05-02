@@ -41,7 +41,7 @@ val uiModule = module {
     single { StatesView(get(), get(), get()) }
     single { EditProjectView(get(), get(), get(), get()) }
     single { DeleteProjectView(get(), get()) }
-    single { ProjectTasksView(get(), get(), get()) }
+    single { ProjectTasksView(get(), get(), get(), get()) }
 
     single { CreateMateUseCase(get(), get()) }
 

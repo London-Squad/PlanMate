@@ -2,6 +2,7 @@ package ui.projectView
 
 import logic.entities.Project
 import logic.entities.Task
+import logic.useCases.ManageTaskUseCase
 import ui.cliPrintersAndReaders.CLIPrinter
 import ui.cliPrintersAndReaders.CLIReader
 import ui.taskManagementView.TaskManagementView
@@ -10,6 +11,7 @@ import java.util.UUID
 class ProjectTasksView(
     private val cliPrinter: CLIPrinter,
     private val cliReader: CLIReader,
+    private val manageTaskUseCase: ManageTaskUseCase,
     private val taskManagementView: TaskManagementView
 ) {
 
@@ -76,7 +78,7 @@ class ProjectTasksView(
             state = defaultState
         )
 
-        currentProject = currentProject.copy(tasks = currentProject.tasks + newTask)
+        manageTaskUseCase.addNewTask(newTask, currentProject.id)
 
         cliPrinter.cliPrintLn("Task created. You can now edit it.")
         taskManagementView.start(newTask, currentProject)
