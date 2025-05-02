@@ -33,7 +33,7 @@ class CsvTasksDataSource(
                     id = UUID.fromString(id),
                     title = title,
                     description = description,
-                    state = statesRepository.getStateById(UUID.fromString(stateId)) ?: State.NoState
+                    state = statesRepository.getStateById(UUID.fromString(stateId))
                 )
             )
         }
@@ -43,6 +43,12 @@ class CsvTasksDataSource(
         return getAllTasksPairedWithProjectID()
             .filter { it.first == projectId }
             .map { it.second }
+    }
+
+    override fun getTaskByID(taskId: UUID): Task? {
+        return getAllTasksPairedWithProjectID()
+            .filter { it.second.id == taskId }
+            .map { it.second }.firstOrNull()
     }
 
     override fun addNewTask(task: Task, projectId: UUID) {

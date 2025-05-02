@@ -8,6 +8,8 @@ interface TaskRepository {
 
     fun getAllTasksByProjectID(projectId: UUID): List<Task>
 
+    fun getTaskByID(taskId: UUID): Task?
+
     fun addNewTask(task: Task, projectId: UUID)
 
     fun editTaskTitle(taskId: UUID, newTitle: String)
