@@ -23,7 +23,8 @@ class CacheDataSource(
     }
 
     override fun setLoggedInUser(user: User) {
-        if (user.type == User.Type.MATE) activeUserFile.writeText("${user.id},${user.userName},${user.type}")
+//        if (user.type == User.Type.MATE)
+            activeUserFile.writeText("${user.id},${user.userName},${user.type}")
         loggedInUser = user
     }
 
@@ -36,10 +37,17 @@ class CacheDataSource(
         val text = activeUserFile.readText().trim()
         if (text.isEmpty()) return null
         return text.split(",")
-            .run { User(this[0].toUUID(), this[1], User.Type.MATE) }
+            .run { User(this[0].toUUID(), this[1], getUserTypeFromString(this[2])) }
     }
 
     private fun String.toUUID(): UUID {
         return UUID.fromString(this)
+    }
+
+    private fun getUserTypeFromString(type:String): User.Type {
+        return when(type.lowercase()) {
+            "admin" -> User.Type.ADMIN
+            else -> User.Type.MATE
+        }
     }
 }

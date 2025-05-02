@@ -1,16 +1,28 @@
 package ui.welcomeView
 
+import logic.exceptions.NoLoggedInUserIsSavedInCacheException
+import logic.useCases.GetLoggedInUserUseCase
 import ui.cliPrintersAndReaders.CLIPrinter
 import ui.cliPrintersAndReaders.CLIReader
 import ui.loginView.LoginView
+import ui.mainMenuView.MainMenuView
 
 class WelcomeView(
     private val cliPrinter: CLIPrinter,
     private val cliReader: CLIReader,
-    private val loginView: LoginView
+    private val loginView: LoginView,
+    private val mainMenuView: MainMenuView,
+    private val getLoggedInUserUseCase: GetLoggedInUserUseCase
 ) {
 
     fun start() {
+        try {
+            getLoggedInUserUseCase.getLoggedInUser()
+            mainMenuView.start()
+            start()
+            return
+        } catch (_: NoLoggedInUserIsSavedInCacheException) { }
+
         printWelcomeMessage()
         printOptions()
         goToNextView()

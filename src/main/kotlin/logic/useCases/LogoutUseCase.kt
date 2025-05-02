@@ -9,7 +9,7 @@ class LogoutUseCase(
 ) {
     operator fun invoke(): Boolean {
         if (!authenticationRepository.logout()) return false
-        cacheDataRepository.clearLoggedInUserFromCatch()
+        cacheDataRepository.clearLoggedInUserFromCache()
         return true
     }
 }

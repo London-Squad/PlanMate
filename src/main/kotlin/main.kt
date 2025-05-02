@@ -6,7 +6,7 @@ import java.io.File
 
 fun main() {
     startKoin {
-        modules(uiModule, dataModule, useCaseModule)
+        modules(uiModule, dataModule, logicModule)
 
     }
     initFilesDirectory()

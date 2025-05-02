@@ -30,7 +30,7 @@ val uiModule = module {
 
     single { LoginView(get(), get(), get(), get(), get()) }
 
-    single { WelcomeView(get(), get(), get()) }
+    single { WelcomeView(get(), get(), get(),get(),get()) }
 
     single { ProjectsView(get(), get(), get(), get(), get()) }
 
