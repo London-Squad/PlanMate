@@ -31,15 +31,15 @@ val uiModule = module {
 
     single { LoginView(get(), get(), get(), get(), get()) }
 
-    single { WelcomeView(get(), get(), get(),get(),get()) }
+    single { WelcomeView(get(), get(), get(), get(), get()) }
 
     single { ProjectsView(get(), get(), get(), get(), get()) }
 
-    single { ProjectView(get(), get(), get(), get(), get(), get(), get()) }
+    single { ProjectView(get(), get(), get(), get(), get(), get(), get(), get()) }
     single { SwimlanesView(get()) }
     single { StatesView(get(), get(), get()) }
     single { EditProjectView(get(), get(), get(), get()) }
     single { DeleteProjectView(get(), get()) }
-    single { ProjectTasksView(get(), get(), get()) }
+    single { ProjectTasksView(get(), get(), get(), get()) }
 
 }

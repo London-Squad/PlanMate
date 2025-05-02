@@ -2,6 +2,7 @@ package ui.projectView
 
 import logic.entities.Project
 import logic.entities.Task
+import logic.useCases.ProjectUseCases
 import ui.cliPrintersAndReaders.CLIPrinter
 import ui.cliPrintersAndReaders.CLIReader
 import ui.taskManagementView.TaskManagementView
@@ -10,7 +11,8 @@ import java.util.UUID
 class ProjectTasksView(
     private val cliPrinter: CLIPrinter,
     private val cliReader: CLIReader,
-    private val taskManagementView: TaskManagementView
+    private val taskManagementView: TaskManagementView,
+    private val projectUseCases: ProjectUseCases
 ) {
 
     private lateinit var currentProject: Project
@@ -69,14 +71,26 @@ class ProjectTasksView(
         }
 
         val defaultState = currentProject.states.first()
+        val title = cliReader.getValidUserInput(
+            message = "Enter task title: ",
+            invalidInputMessage = "Title cannot be empty",
+            isValidInput = { it.isNotBlank() }
+        )
+        val description = cliReader.getValidUserInput(
+            message = "Enter task description: ",
+            invalidInputMessage = "Description cannot be empty",
+            isValidInput = { it.isNotBlank() }
+        )
+
         val newTask = Task(
             id = UUID.randomUUID(),
-            title = "New Task",
-            description = "Default description",
+            title = title,
+            description = description,
             state = defaultState
         )
 
         currentProject = currentProject.copy(tasks = currentProject.tasks + newTask)
+        projectUseCases.updateProject(currentProject)
 
         cliPrinter.cliPrintLn("Task created. You can now edit it.")
         taskManagementView.start(newTask, currentProject)
