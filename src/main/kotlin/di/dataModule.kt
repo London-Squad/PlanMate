@@ -20,6 +20,5 @@ val dataModule = module {
     single<ProjectsRepository> { CsvProjectsDataSource(get()) }
     single<CacheDataRepository> { CacheDataSource() }
     single<AuthenticationRepository> { AuthenticationDataSource() }
-    single<CacheDataRepository> { CacheDataSource() }
     single<TaskRepository> { TaskDataSource() }
 }
