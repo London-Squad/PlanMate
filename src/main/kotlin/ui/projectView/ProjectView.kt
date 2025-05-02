@@ -2,6 +2,7 @@ package ui.projectView
 
 import logic.entities.Project
 import logic.entities.User
+import logic.exceptions.NoLoggedInUserIsSavedInCacheException
 import logic.repositories.CacheDataRepository
 import ui.cliPrintersAndReaders.CLIPrinter
 import ui.cliPrintersAndReaders.CLIReader
@@ -20,8 +21,10 @@ class ProjectView(
 
     fun start(project: Project) {
         currentProject = project
-        val currentUser = cacheDataRepository.getLoggedInUser()
-        if (currentUser == null) {
+
+        try {
+            cacheDataRepository.getLoggedInUser()
+        } catch (e: NoLoggedInUserIsSavedInCacheException) {
             cliPrinter.cliPrintLn(ERROR_MESSAGE)
             return
         }
@@ -36,7 +39,7 @@ class ProjectView(
         cliPrinter.printHeader("Project: ${currentProject.title}")
         cliPrinter.cliPrintLn("1. Manage tasks")
         cliPrinter.cliPrintLn("2. View project logs")
-        if (currentUser?.type == User.Type.ADMIN) {
+        if (currentUser.type == User.Type.ADMIN) {
             cliPrinter.cliPrintLn("3. Edit project")
             cliPrinter.cliPrintLn("4. Delete project")
         }
@@ -45,7 +48,7 @@ class ProjectView(
 
     private fun handleUserInput() {
         val currentUser = cacheDataRepository.getLoggedInUser()
-        val validInputs = if (currentUser?.type == User.Type.ADMIN) listOf(
+        val validInputs = if (currentUser.type == User.Type.ADMIN) listOf(
             "0", "1", "2", "3", "4",
         ) else listOf("0", "1", "2")
         val input = cliReader.getValidUserInput(
@@ -58,11 +61,11 @@ class ProjectView(
                 currentProject = projectTasksView.manageTasks(currentProject)
             }
             "2" -> viewProjectLogs()
-            "3" -> if (currentUser?.type == User.Type.ADMIN) {
+            "3" -> if (currentUser.type == User.Type.ADMIN) {
                 currentProject = editProjectView.editProject(currentProject)
             } else return
             "4" -> {
-                if (currentUser?.type == User.Type.ADMIN) {
+                if (currentUser.type == User.Type.ADMIN) {
                     deleteProjectView.deleteProject(currentProject)
                 } else return
             }

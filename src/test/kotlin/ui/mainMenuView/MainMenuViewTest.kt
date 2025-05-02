@@ -4,7 +4,9 @@ import io.mockk.every
 import io.mockk.mockk
 import io.mockk.verify
 import logic.entities.User
-import logic.repositories.CacheDataRepository
+import logic.exceptions.NoLoggedInUserIsSavedInCacheException
+import logic.useCases.ClearLoggedInUserFromCacheUseCase
+import logic.useCases.GetLoggedInUserUseCase
 import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Test
 import org.junit.jupiter.api.TestInstance
@@ -12,7 +14,6 @@ import org.junit.jupiter.params.ParameterizedTest
 import org.junit.jupiter.params.provider.MethodSource
 import ui.cliPrintersAndReaders.CLIPrinter
 import ui.cliPrintersAndReaders.CLIReader
-import ui.loginView.LoginView
 import ui.matesManagementView.MatesManagementView
 import ui.projectsView.ProjectsView
 
@@ -22,8 +23,8 @@ class MainMenuViewTest {
 
     private lateinit var cliPrinter: CLIPrinter
     private lateinit var cliReader: CLIReader
-    private lateinit var cacheDataRepository: CacheDataRepository
-    private lateinit var loginView: LoginView
+    private lateinit var getLoggedInUserUseCase: GetLoggedInUserUseCase
+    private lateinit var clearLoggedInUserFromCacheUseCase: ClearLoggedInUserFromCacheUseCase
     private lateinit var projectsView: ProjectsView
     private lateinit var matesManagementView: MatesManagementView
 
@@ -31,49 +32,25 @@ class MainMenuViewTest {
     fun setup() {
         cliPrinter = mockk(relaxed = true)
         cliReader = mockk(relaxed = true)
-        cacheDataRepository = mockk(relaxed = true)
-        loginView = mockk(relaxed = true)
+        getLoggedInUserUseCase = mockk(relaxed = true)
+        clearLoggedInUserFromCacheUseCase = mockk(relaxed = true)
         projectsView = mockk(relaxed = true)
         matesManagementView = mockk(relaxed = true)
 
         mainMenuView = MainMenuView(
             cliPrinter,
             cliReader,
-            cacheDataRepository,
-            loginView,
+            getLoggedInUserUseCase,
+            clearLoggedInUserFromCacheUseCase,
             projectsView,
             matesManagementView
         )
     }
 
     @Test
-    fun `start should tell the user to login when user didn't login`() {
+    fun `should print Mates management option when user is admin`() {
         // Given
-        every { cacheDataRepository.getLoggedInUser() } returns null
-
-        // When
-        mainMenuView.start()
-
-        // Then
-        verify (exactly = 1) { cliPrinter.printPleaseLoginMessage() }
-    }
-
-    @Test
-    fun `start should go to login when user didn't login`() {
-        // Given
-        every { cacheDataRepository.getLoggedInUser() } returns null
-
-        // When
-        mainMenuView.start()
-
-        // Then
-        verify (exactly = 1) { loginView.start() }
-    }
-
-    @Test
-    fun `start should print Mates management option when user is admin`() {
-        // Given
-        every { cacheDataRepository.getLoggedInUser() } returns fakeAdminUser
+        every { getLoggedInUserUseCase.getLoggedInUser() } returns fakeAdminUser
         every { cliReader.getUserInput(any()) } returns "0"
 
         // When
@@ -84,9 +61,9 @@ class MainMenuViewTest {
     }
 
     @Test
-    fun `start should not print Mates management option when user is mate`() {
+    fun `should not print Mates management option when user is mate`() {
         // Given
-        every { cacheDataRepository.getLoggedInUser() } returns fakeMateUser
+        every { getLoggedInUserUseCase.getLoggedInUser() } returns fakeMateUser
         every { cliReader.getUserInput(any()) } returns "0"
 
         // When
@@ -98,24 +75,24 @@ class MainMenuViewTest {
 
     @ParameterizedTest
     @MethodSource("getUsersList")
-    fun `start should go to login when user input is 0`(user: User?) {
+    fun `should logout when user input is 0`(user: User) {
         // Given
-        every { cacheDataRepository.getLoggedInUser() } returns user
+        every { getLoggedInUserUseCase.getLoggedInUser() } returns user
         every { cliReader.getUserInput(any()) } returns "0"
 
         // When
         mainMenuView.start()
 
         // Then
-        verify (exactly = 1) { loginView.start() }
+        verify(exactly = 1) { clearLoggedInUserFromCacheUseCase.clearLoggedInUserFromCache() }
     }
 
     @ParameterizedTest
     @MethodSource("getUsersList")
-    fun `start should go to projectsView when user input is 1`(user: User?) {
+    fun `should go to projectsView when user input is 1`(user: User) {
         // Given
-        every { cacheDataRepository.getLoggedInUser() } returns user
-        every { cliReader.getUserInput(any()) } returns "1"
+        every { getLoggedInUserUseCase.getLoggedInUser() } returns user
+        every { cliReader.getUserInput(any()) } answers { "1" } andThenAnswer { "0" }
 
         // When
         mainMenuView.start()
@@ -124,11 +101,25 @@ class MainMenuViewTest {
         verify (exactly = 1) { projectsView.start() }
     }
 
-    @Test
-    fun `start should go to matesManagementView when user input is 1 and user is admin`() {
+    @ParameterizedTest
+    @MethodSource("getUsersList")
+    fun `should reject the user input when user input not 0, 1, or 2`(user: User) {
         // Given
-        every { cacheDataRepository.getLoggedInUser() } returns fakeAdminUser
-        every { cliReader.getUserInput(any()) } returns "2"
+        every { getLoggedInUserUseCase.getLoggedInUser() } returns user
+        every { cliReader.getUserInput(any()) } answers { "-1" } andThenAnswer { "0" }
+
+        // When
+        mainMenuView.start()
+
+        // Then
+        verify(exactly = 2) { cliReader.getUserInput(any()) }
+    }
+
+    @Test
+    fun `should go to matesManagementView when user input is 2 and user is admin`() {
+        // Given
+        every { getLoggedInUserUseCase.getLoggedInUser() } returns fakeAdminUser
+        every { cliReader.getUserInput(any()) } answers { "2" } andThenAnswer { "0" }
 
         // When
         mainMenuView.start()
@@ -138,10 +129,10 @@ class MainMenuViewTest {
     }
 
     @Test
-    fun `start should reject the user input when user input is 2 and user is mate`() {
+    fun `should reject the user input when user input is 2 and user is mate`() {
         // Given
-        every { cacheDataRepository.getLoggedInUser() } returns fakeMateUser
-        every { cliReader.getUserInput(any()) } answers { "2" } andThenAnswer { "1" }
+        every { getLoggedInUserUseCase.getLoggedInUser() } returns fakeMateUser
+        every { cliReader.getUserInput(any()) } answers { "2" } andThenAnswer { "0" }
 
         // When
         mainMenuView.start()
@@ -150,9 +141,20 @@ class MainMenuViewTest {
         verify (exactly = 0) { matesManagementView.start() }
     }
 
+    @Test
+    fun `should end if there is no logged in user`() {
+        // Given
+        every { getLoggedInUserUseCase.getLoggedInUser() } throws NoLoggedInUserIsSavedInCacheException()
+        // When
+        mainMenuView.start()
+
+        // Then
+        verify(exactly = 1) { cliPrinter.cliPrintLn("please login to continue") }
+    }
+
     private companion object {
-        val fakeAdminUser = User(userName = "fake admin user", type = User.Type.ADMIN)
-        val fakeMateUser = User(userName = "fake mate user", type = User.Type.MATE)
+        val fakeAdminUser = User(userName = "fakeAdminUser", type = User.Type.ADMIN)
+        val fakeMateUser = User(userName = "fakeMateUser", type = User.Type.MATE)
         @JvmStatic
         fun getUsersList(): List<User> = listOf(fakeAdminUser, fakeMateUser)
     }

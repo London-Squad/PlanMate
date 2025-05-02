@@ -5,6 +5,7 @@ import io.mockk.mockk
 import io.mockk.verify
 import logic.entities.Project
 import logic.entities.User
+import logic.exceptions.NoLoggedInUserIsSavedInCacheException
 import logic.repositories.CacheDataRepository
 import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Test
@@ -57,7 +58,7 @@ class ProjectViewTest {
     @Test
     fun `should display error message when user is not logged in`() {
         // Given
-        every { cacheDataRepository.getLoggedInUser() } returns null
+        every { cacheDataRepository.getLoggedInUser() } throws NoLoggedInUserIsSavedInCacheException()
 
         // When
         projectView.start(project)
