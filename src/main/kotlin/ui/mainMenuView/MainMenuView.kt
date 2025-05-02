@@ -1,7 +1,9 @@
 package ui.mainMenuView
 
 import logic.entities.User
-import logic.repositories.CacheDataRepository
+import logic.exceptions.NoLoggedInUserIsSavedInCacheException
+import logic.useCases.ClearLoggedInUserFromCacheUseCase
+import logic.useCases.GetLoggedInUserUseCase
 import ui.cliPrintersAndReaders.CLIPrinter
 import ui.cliPrintersAndReaders.CLIReader
 import ui.matesManagementView.MatesManagementView
@@ -10,7 +12,8 @@ import ui.projectsView.ProjectsView
 class MainMenuView(
     private val cliPrinter: CLIPrinter,
     private val cliReader: CLIReader,
-    private val cacheDataRepository: CacheDataRepository,
+    private val getLoggedInUserUseCase: GetLoggedInUserUseCase,
+    private val clearLoggedInUserFromCacheUseCase: ClearLoggedInUserFromCacheUseCase,
     private val projectsView: ProjectsView,
     private val matesManagementView: MatesManagementView
 ) {
@@ -18,14 +21,20 @@ class MainMenuView(
     private lateinit var loggedInUserType: User.Type
 
     fun start() {
-        saveUserType()
         printMainMenuTitle()
+        if (!saveUserType()) return
         printOptions()
         goToNextUI()
     }
 
-    private fun saveUserType() {
-        loggedInUserType = cacheDataRepository.getLoggedInUser()!!.type
+    private fun saveUserType(): Boolean {
+        return try {
+            loggedInUserType = getLoggedInUserUseCase.getLoggedInUser().type
+            true
+        } catch (e: NoLoggedInUserIsSavedInCacheException) {
+            printLn("please login to continue")
+            false
+        }
     }
 
     private fun printMainMenuTitle() {
@@ -33,9 +42,9 @@ class MainMenuView(
     }
 
     private fun printOptions() {
-        println("1. View all project")
-        if (loggedInUserType == User.Type.ADMIN) println("2. Mates management")
-        println("0. Logout")
+        printLn("1. View all project")
+        if (loggedInUserType == User.Type.ADMIN) printLn("2. Mates management")
+        printLn("0. Logout")
     }
 
     private fun goToNextUI() {
@@ -43,8 +52,8 @@ class MainMenuView(
             "1" -> projectsView.start()
             "2" -> matesManagementView.start()
             "0" -> {
-                println("\nLogging out ...")
-                cacheDataRepository.clearLoggedInUserFromCatch()
+                printLn("\nLogging out ...")
+                clearLoggedInUserFromCacheUseCase.clearLoggedInUserFromCache()
                 return // exit main menu
             }
         }
@@ -59,7 +68,7 @@ class MainMenuView(
         return getValidUserInput()
     }
 
-    private fun println(message: String) = cliPrinter.cliPrintLn(message)
+    private fun printLn(message: String) = cliPrinter.cliPrintLn(message)
 
     private companion object {
         val validInputsForAdmin = listOf("0", "1", "2")

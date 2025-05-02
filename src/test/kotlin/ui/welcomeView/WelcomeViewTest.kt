@@ -3,16 +3,11 @@ package ui.welcomeView
 import io.mockk.every
 import io.mockk.mockk
 import io.mockk.verify
-import logic.entities.User
-import logic.useCases.GetActiveUserUseCase
 import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Test
-import org.junit.jupiter.params.ParameterizedTest
-import org.junit.jupiter.params.provider.MethodSource
 import ui.cliPrintersAndReaders.CLIPrinter
 import ui.cliPrintersAndReaders.CLIReader
 import ui.loginView.LoginView
-import ui.mainMenuView.MainMenuView
 
 class WelcomeViewTest {
 
@@ -31,7 +26,7 @@ class WelcomeViewTest {
     }
 
     @Test
-    fun `start should go to exit the app when user input is 0`() {
+    fun `start should exit the app when user input is 0`() {
         every { cliReader.getValidUserInput(any(), any(), any()) } returns "0"
 
         welcomeView.start()

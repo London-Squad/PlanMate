@@ -2,6 +2,7 @@ package ui.projectView
 
 import logic.entities.Project
 import logic.entities.User
+import logic.exceptions.NoLoggedInUserIsSavedInCacheException
 import logic.repositories.CacheDataRepository
 import logic.useCases.ProjectUseCases
 import ui.cliPrintersAndReaders.CLIPrinter
@@ -14,12 +15,14 @@ class ProjectView(
     private val cacheDataRepository: CacheDataRepository
 ) {
 
-     lateinit var currentProject: Project
+    lateinit var currentProject: Project
 
     fun start(project: Project) {
         currentProject = project
-        val currentUser = cacheDataRepository.getLoggedInUser()
-        if (currentUser == null) {
+
+        try {
+            cacheDataRepository.getLoggedInUser()
+        } catch (e: NoLoggedInUserIsSavedInCacheException) {
             cliPrinter.cliPrintLn(ERROR_MESSAGE)
             return
         }
@@ -35,7 +38,7 @@ class ProjectView(
         cliPrinter.cliPrintLn("1. Add new task")
         cliPrinter.cliPrintLn("2. Select task")
         cliPrinter.cliPrintLn("3. View project logs")
-        if (currentUser?.type == User.Type.ADMIN) {
+        if (currentUser.type == User.Type.ADMIN) {
             cliPrinter.cliPrintLn("4. Edit project")
             cliPrinter.cliPrintLn("5. Delete project")
         }
@@ -44,7 +47,7 @@ class ProjectView(
 
     private fun handleUserInput() {
         val currentUser = cacheDataRepository.getLoggedInUser()
-        val validInputs = if (currentUser?.type == User.Type.ADMIN) listOf(
+        val validInputs = if (currentUser.type == User.Type.ADMIN) listOf(
             "0", "1", "2", "3", "4", "5",
         ) else listOf("0", "1", "2", "3")
         val input = cliReader.getValidUserInput(
@@ -56,9 +59,9 @@ class ProjectView(
             "1" -> addNewTask()
             "2" -> selectTask()
             "3" -> viewProjectLogs()
-            "4" -> if (currentUser?.type == User.Type.ADMIN) editProject() else return
+            "4" -> if (currentUser.type == User.Type.ADMIN) editProject() else return
             "5" -> {
-                if (currentUser?.type == User.Type.ADMIN) {
+                if (currentUser.type == User.Type.ADMIN) {
                     deleteProject(currentProject)
                 } else return
             }
