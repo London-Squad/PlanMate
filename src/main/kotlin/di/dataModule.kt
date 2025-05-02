@@ -1,15 +1,15 @@
 package di
 
-import data.cacheData.CacheDataSource
-import data.dataSource.CsvProjectsDataSource
-import data.dataSource.CsvStatesDataSource
-import data.dataSource.CsvTasksDataSource
+import data.CacheDataSource
+import data.CsvProjectsDataSource
+import data.CsvStatesDataSource
+import data.CsvTasksDataSource
 import logic.repositories.*
 import data.fileIO.FilePath
-import data.logsRepositories.csvFilesHandler.LogsDataSource
-import data.logsRepositories.cvsFilesHandler.LogsCsvReader
-import data.logsRepositories.cvsFilesHandler.LogsCsvWriter
-import data.repository.AuthenticationDataSource
+import data.LogsDataSource
+import data.fileIO.cvsLogsFileHandler.LogsCsvReader
+import data.fileIO.cvsLogsFileHandler.LogsCsvWriter
+import data.AuthenticationDataSource
 import data.security.hashing.MD5HashingAlgorithm
 import logic.repositories.AuthenticationRepository
 import logic.repositories.CacheDataRepository
@@ -46,12 +46,10 @@ val dataModule = module {
     single<StatesRepository> { CsvStatesDataSource(get(named("statesFile"))) }
     single<ProjectsRepository> { CsvProjectsDataSource(get(named("projectsFile"))) }
 
-    single<ProjectsRepository> { CsvProjectsDataSource(get()) }
-
     single { LogsCsvReader(get(named("LogsFile"))) }
     single { LogsCsvWriter(get(named("LogsFile"))) }
 
-    single<LogsRepository> { LogsDataSource(get(), get(), get(), get(), get()) }
+    single<LogsRepository> { LogsDataSource(get(), get(), get(), get(), get(), get()) }
 
     single<CacheDataRepository> { CacheDataSource(File(FilePath.ACTIVE_USER_FILE)) }
 

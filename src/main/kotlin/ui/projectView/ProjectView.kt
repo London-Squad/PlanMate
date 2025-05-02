@@ -6,6 +6,7 @@ import logic.exceptions.NoLoggedInUserIsSavedInCacheException
 import logic.repositories.CacheDataRepository
 import ui.cliPrintersAndReaders.CLIPrinter
 import ui.cliPrintersAndReaders.CLIReader
+import ui.logsView.LogsView
 
 class ProjectView(
     private val cliPrinter: CLIPrinter,
@@ -14,7 +15,8 @@ class ProjectView(
     private val swimlanesView: SwimlanesView,
     private val editProjectView: EditProjectView,
     private val deleteProjectView: DeleteProjectView,
-    private val projectTasksView: ProjectTasksView
+    private val projectTasksView: ProjectTasksView,
+    private val logsView: LogsView
 ) {
 
     private lateinit var currentProject: Project
@@ -36,7 +38,6 @@ class ProjectView(
 
     private fun printProjectMenu() {
         val currentUser = cacheDataRepository.getLoggedInUser()
-        cliPrinter.printHeader("Project: ${currentProject.title}")
         cliPrinter.cliPrintLn("1. Manage tasks")
         cliPrinter.cliPrintLn("2. View project logs")
         if (currentUser.type == User.Type.ADMIN) {
@@ -71,10 +72,11 @@ class ProjectView(
             }
             "0" -> return
         }
+        start(currentProject)
     }
 
     private fun viewProjectLogs() {
-        TODO("Not yet implemented")
+        logsView.printLogsByEntityId(currentProject.id)
     }
 
     companion object {

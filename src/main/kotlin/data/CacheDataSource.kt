@@ -1,4 +1,4 @@
-package data.cacheData
+package data
 
 import data.fileIO.createFileIfNotExist
 import logic.entities.User

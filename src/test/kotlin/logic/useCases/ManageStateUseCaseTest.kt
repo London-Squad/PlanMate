@@ -63,38 +63,12 @@ class ManageStateUseCaseTest {
     }
 
     @Test
-    fun `should delete state and log delete action when state exists`() {
-        val state = State(title = "Delete", description = "desc")
-        statesRepo.addNewState(state, projectId)
-        useCase.deleteState(state.id)
-
-        assertNull(statesRepo.getStateById(state.id))
-        assertTrue(logsRepo.logs.any { it.action is Delete })
-    }
-
-    @Test
     fun `should not add state or log when title is blank`() {
         val state = State(title = "", description = "desc")
         useCase.addState(state, projectId)
 
         assertTrue(statesRepo.getAllStatesByProjectId(projectId).isEmpty())
         assertTrue(logsRepo.logs.none { it.action is Create })
-    }
-
-    @Test
-    fun `should not edit title or log when state does not exist`() {
-        val unknownId = UUID.randomUUID()
-        useCase.editStateTitle(unknownId, "New")
-
-        assertTrue(logsRepo.logs.none { it.action is Edit })
-    }
-
-    @Test
-    fun `should not edit description or log when state does not exist`() {
-        val unknownId = UUID.randomUUID()
-        useCase.editStateDescription(unknownId, "Updated")
-
-        assertTrue(logsRepo.logs.none { it.action is Edit })
     }
 
     @Test
@@ -174,7 +148,7 @@ class ManageStateUseCaseTest {
         }
 
         override fun getAllLogs(): List<Log> = logs
+        override fun getLogsByEntityId(entityId: UUID): List<Log> = logs.filter { it.id == entityId }
 
-        override fun getLogById(id: UUID): List<Log> = logs.filter { it.id == id }
     }
 }

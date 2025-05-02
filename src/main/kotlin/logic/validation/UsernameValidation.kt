@@ -1,7 +1,6 @@
 package logic.validation
 
-import logic.exception.AuthenticationException
-
+import logic.exceptions.AuthenticationException
 
 fun String.takeIfValidNameOrThrowException(){
     if (!isValidUserName()) throw AuthenticationException.InvalidUserNameLengthException()

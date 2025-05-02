@@ -1,8 +1,8 @@
-package data.logsRepositories.cvsFilesHandler
+package data.fileIO.cvsLogsFileHandler
 
 import java.io.File
 
-class LogsCsvReader(
+class LogsCsvWriter(
     private val logsFile: File
 ) {
 
@@ -18,14 +18,7 @@ class LogsCsvReader(
         }
     }
 
-    fun readRows(): List<String> {
-        return logsFile
-            .readLines()
-            .drop(1)
-            .filter { it.split(",").size == EXPECTED_COLUMNS }
-    }
-
-    companion object {
-        private const val EXPECTED_COLUMNS = 9
+    fun appendLine(csvRow: String) {
+        logsFile.appendText(csvRow + "\n")
     }
 }

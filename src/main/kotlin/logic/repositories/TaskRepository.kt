@@ -19,6 +19,4 @@ interface TaskRepository {
     fun editTaskState(taskId: UUID, newState: State)
 
     fun deleteTask(taskId: UUID)
-
-    fun getTaskById(taskId: UUID): Task?
 }

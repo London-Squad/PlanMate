@@ -1,4 +1,4 @@
-package data.dataSource
+package data
 
 import logic.entities.Project
 import logic.entities.State

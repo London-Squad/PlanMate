@@ -1,13 +1,14 @@
 package data.repository
 
 import com.google.common.truth.Truth.assertThat
+import data.AuthenticationDataSource
 import data.fileIO.UserFileHelper
 import data.fileIO.createFileIfNotExist
 import data.security.hashing.HashingAlgorithm
 import io.mockk.every
 import io.mockk.mockk
 import logic.entities.User
-import logic.exception.AuthenticationException
+import logic.exceptions.AuthenticationException
 import logic.repositories.AuthenticationRepository
 import logic.repository.DummyAuthData
 import org.junit.jupiter.api.BeforeEach

@@ -1,18 +1,16 @@
-package data.logsRepositories.csvFilesHandler
+package data
 
-import data.logsRepositories.cvsFilesHandler.LogsCsvReader
-import data.logsRepositories.cvsFilesHandler.LogsCsvWriter
+import data.fileIO.cvsLogsFileHandler.LogsCsvReader
+import data.fileIO.cvsLogsFileHandler.LogsCsvWriter
 import logic.entities.*
-import logic.repositories.LogsRepository
-import logic.repositories.ProjectsRepository
-import logic.repositories.StatesRepository
-import logic.repositories.TaskRepository
+import logic.repositories.*
 import java.time.LocalDateTime
 import java.util.UUID
 
 class LogsDataSource(
     private val logsCsvReader: LogsCsvReader,
     private val logsCsvWriter: LogsCsvWriter,
+    private val authenticationRepository: AuthenticationRepository,
     private val projectsRepository: ProjectsRepository,
     private val statesRepository: StatesRepository,
     private val tasksRepository: TaskRepository,
@@ -31,8 +29,8 @@ class LogsDataSource(
                 (log.action.entity as Project).tasks.forEach { task ->
                     result = result + getLogsByEntityId(task.id)
                 }
-                (log.action.entity as Project).tasks.forEach { task ->
-                    result = result + getLogsByEntityId(task.id)
+                (log.action.entity as Project).states.forEach { state ->
+                    result = result + getLogsByEntityId(state.id)
                 }
             }
         }
@@ -101,7 +99,7 @@ class LogsDataSource(
         val oldValue = parts[7]
         val newValue = parts[8]
 
-        val user = User(userId, "unknown", User.Type.MATE)
+        val user = getUserById(userId)
         val entity: PlanEntity = getEntityByType(entityType, entityId)
 
         val action: Action = getActionByType(
@@ -124,6 +122,12 @@ class LogsDataSource(
         }
     }
 
+    private fun getUserById(userId: UUID): User {
+        if (userId == AuthenticationDataSource.ADMIN.id) return AuthenticationDataSource.ADMIN
+        return authenticationRepository.getMates().firstOrNull { it.id == userId }
+            ?: User(userName = "Unknown", type = User.Type.MATE)
+    }
+
     private fun getProjectById(projectId: UUID): Project {
         return projectsRepository.getAllProjects().first { it.id == projectId }
     }
@@ -133,7 +137,7 @@ class LogsDataSource(
     }
 
     private fun getTaskById(taskId: UUID): Task {
-        return tasksRepository.getTaskById(taskId)!!
+        return tasksRepository.getTaskByID(taskId)!!
     }
 
     private fun getActionByType(

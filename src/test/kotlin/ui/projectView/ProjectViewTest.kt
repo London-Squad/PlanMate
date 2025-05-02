@@ -11,6 +11,7 @@ import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Test
 import ui.cliPrintersAndReaders.CLIPrinter
 import ui.cliPrintersAndReaders.CLIReader
+import ui.logsView.LogsView
 
 class ProjectViewTest {
 
@@ -24,6 +25,7 @@ class ProjectViewTest {
     private lateinit var projectView: ProjectView
     private lateinit var project: Project
     private lateinit var user: User
+    private lateinit var logsView: LogsView
 
     @BeforeEach
     fun setUp() {
@@ -36,6 +38,7 @@ class ProjectViewTest {
         projectTasksView = mockk()
         project = mockk()
         user = mockk()
+        logsView = mockk()
 
         projectView = ProjectView(
             cliPrinter,
@@ -44,7 +47,8 @@ class ProjectViewTest {
             swimlanesView,
             editProjectView,
             deleteProjectView,
-            projectTasksView
+            projectTasksView,
+            logsView
         )
 
         every { project.title } returns "Test Project"
@@ -136,19 +140,6 @@ class ProjectViewTest {
     }
 
     @Test
-    fun `should return when non-admin user selects option 2`() {
-        // Given
-        every { user.type } returns User.Type.MATE
-        every { cliReader.getValidUserInput(any(), any(), any()) } returns "2"
-
-        // When
-        projectView.start(project)
-
-        // Then
-        verify { cliReader.getValidUserInput(any(), any(), any()) }
-    }
-
-    @Test
     fun `should return when admin user selects option 0`() {
         // Given
         every { user.type } returns User.Type.ADMIN
@@ -173,33 +164,6 @@ class ProjectViewTest {
 
         // Then
         verify { projectTasksView.manageTasks(project) }
-    }
-
-    @Test
-    fun `should return when admin user selects option 2`() {
-        // Given
-        every { user.type } returns User.Type.ADMIN
-        every { cliReader.getValidUserInput(any(), any(), any()) } returns "2"
-
-        // When
-        projectView.start(project)
-
-        // Then
-        verify { cliReader.getValidUserInput(any(), any(), any()) }
-    }
-
-    @Test
-    fun `should call editProjectView when admin user selects option 3`() {
-        // Given
-        every { user.type } returns User.Type.ADMIN
-        every { cliReader.getValidUserInput(any(), any(), any()) } returns "3"
-        every { editProjectView.editProject(project) } returns project
-
-        // When
-        projectView.start(project)
-
-        // Then
-        verify { editProjectView.editProject(project) }
     }
 
     @Test

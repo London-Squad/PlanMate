@@ -1,5 +1,5 @@
 //import com.google.common.truth.Truth.assertThat
-//import data.logsRepositories.csvFilesHandler.LogsDataSource
+//import data.LogsDataSource
 //import data.logsRepositories.cvsFilesHandler.LogsCsvReader
 //import data.logsRepositories.cvsFilesHandler.LogsCsvWriter
 //import logic.entities.*

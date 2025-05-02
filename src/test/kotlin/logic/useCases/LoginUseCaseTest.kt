@@ -3,7 +3,7 @@ package logic.useCases
 import com.google.common.truth.Truth.assertThat
 import io.mockk.every
 import io.mockk.mockk
-import logic.exception.AuthenticationException
+import logic.exceptions.AuthenticationException
 import logic.repositories.AuthenticationRepository
 import logic.repositories.CacheDataRepository
 import logic.repository.DummyAuthData
