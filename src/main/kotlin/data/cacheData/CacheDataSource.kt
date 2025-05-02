@@ -10,19 +10,17 @@ class CacheDataSource(
     private val activeUserFile: File
 ) : CacheDataRepository {
     private var loggedInUser: User? = null
-    private var canLoadUser: Boolean = true
 
     init {
         activeUserFile.createFileIfNotExist("")
+        loggedInUser = loadUserFromLocalFile()
     }
 
     override fun getLoggedInUser(): User? {
-        if (canLoadUser) loggedInUser = loadUserFromLocalFile()
         return loggedInUser
     }
 
     override fun setLoggedInUser(user: User) {
-        canLoadUser = false
         if (user.type == User.Type.MATE) activeUserFile.writeText("${user.id},${user.userName},${user.type}")
         loggedInUser = user
     }
@@ -33,7 +31,6 @@ class CacheDataSource(
     }
 
     private fun loadUserFromLocalFile(): User? {
-        canLoadUser = false
         val text = activeUserFile.readText().trim()
         if (text.isEmpty()) return null
         return text.split(",")
