@@ -22,7 +22,7 @@ val uiModule = module {
     single { TaskDescriptionEditionView(get(), get(), get()) }
     single { TaskStateEditionView(get(), get(), get()) }
     single { TaskDeletionView(get(), get(), get()) }
-    single { TaskManagementView(get(), get(), get(), get(), get(), get()) }
+    single { TaskManagementView(get(), get(), get(), get(), get(), get(), get()) }
 
 
     single { MatesManagementView() }
