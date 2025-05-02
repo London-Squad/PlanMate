@@ -22,17 +22,22 @@ class LogsDataSource(
 
     override fun getLogsByEntityId(entityId: UUID): List<Log> {
         var result: List<Log> = listOf()
-        result = result + getAllLogs().filter { it.action.entity.id == entityId }
 
-        result.forEach { log ->
-            if (log.action.entity is Project) {
-                (log.action.entity as Project).tasks.forEach { task ->
-                    result = result + getLogsByEntityId(task.id)
-                }
-                (log.action.entity as Project).states.forEach { state ->
-                    result = result + getLogsByEntityId(state.id)
+        try {
+            result = result + getAllLogs().filter { it.action.entity.id == entityId }
+
+            result.forEach { log ->
+                if (log.action.entity is Project) {
+                    (log.action.entity as Project).tasks.forEach { task ->
+                        result = result + getLogsByEntityId(task.id)
+                    }
+                    (log.action.entity as Project).states.forEach { state ->
+                        result = result + getLogsByEntityId(state.id)
+                    }
                 }
             }
+        } catch (_: Exception) {
+            return listOf()
         }
 
         result = result.toSet().toList()
