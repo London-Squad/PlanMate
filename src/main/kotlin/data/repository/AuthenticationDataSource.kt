@@ -10,48 +10,49 @@ import java.util.*
 
 class AuthenticationDataSource(
     private val userFile: File,
-    private val hashingAlgorithm: HashingAlgorithm
+    private val hashingAlgorithm: HashingAlgorithm,
 ) : AuthenticationRepository {
 
     init {
-        userFile.createFileIfNotExist("id,userName,password,type\n")
+//        if (userFile.name == FilePath.USER_FILE) throw
+        userFile.createFileIfNotExist( "id,userName,password,type\n")
     }
 
     override fun getMates(): List<User> {
         val users = userFile.readLines().toMutableList()
         users.removeFirst()
-        return users.map(::lineToUser)
+        return users.map(UserFileHelper::lineToUser)
     }
 
     override fun deleteUser(userId: UUID) {
         val newFileData = userFile.readLines().toMutableList()
         newFileData.removeIf { it.contains("$userId", ignoreCase = true) }
-        userFile.clearAndWriteNewData(newFileData)
+        UserFileHelper.clearAndWriteNewData(userFile, newFileData)
     }
 
     override fun login(userName: String, password: String): User {
         if (userName == ADMIN.userName && password == ADMIN_PASSWORD) return ADMIN
         val hashedPassword = hashingAlgorithm.hashData(password)
-        return userFile.readUserOrNull(userName, hashedPassword) ?: throw UserNotFoundException()
+        return UserFileHelper.readUserOrNull(userFile, userName, hashedPassword) ?: throw UserNotFoundException()
     }
 
     override fun logout() = true
 
     override fun register(userName: String, password: String): Boolean {
         val hashedPassword = hashingAlgorithm.hashData(password)
-        if (userFile.isUserNameExistInFile(userName)) throw UserAlreadyExistException()
+        if (UserFileHelper.isUserNameExistInFile(userFile, userName)) throw UserAlreadyExistException()
         val id = UUID.randomUUID()
-        return userFile.writeUser(id, userName, hashedPassword)
+        return UserFileHelper.writeUser(userFile, id, userName, hashedPassword)
     }
 
     override fun changePassword(userName: String, currentPassword: String, newPassword: String): Boolean {
-        if (!userFile.isUserExistInFile(userName, currentPassword)) throw UserNotFoundException()
+        if (!UserFileHelper.isUserExistInFile(userFile, userName, currentPassword)) throw UserNotFoundException()
         val newFileData = userFile.readLines().map { line ->
             if (line.contains("$userName,$currentPassword", ignoreCase = true)) {
                 line.replace("$userName,$currentPassword", "$userName,$newPassword")
             } else line
         }
-        userFile.clearAndWriteNewData(newFileData)
+        UserFileHelper.clearAndWriteNewData(userFile, newFileData)
         return true
     }
 

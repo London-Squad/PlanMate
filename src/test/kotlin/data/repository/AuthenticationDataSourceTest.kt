@@ -1,8 +1,8 @@
 package data.repository
 
 import com.google.common.truth.Truth.assertThat
+import data.fileIO.UserFileHelper
 import data.fileIO.createFileIfNotExist
-import data.fileIO.writeUser
 import data.security.hashing.HashingAlgorithm
 import io.mockk.every
 import io.mockk.mockk
@@ -25,7 +25,7 @@ class AuthenticationDataSourceTest {
     @BeforeTest
     fun preSetup() {
         file = File("test.csv")
-        file.createFileIfNotExist("id,userName,password\n")
+        file.createFileIfNotExist( "id,userName,password\n")
     }
 
     @BeforeEach
@@ -40,7 +40,7 @@ class AuthenticationDataSourceTest {
     @Test
     fun `when call getMates should return list of users`() {
         val expectedUsers = DummyAuthData.users
-        expectedUsers.forEach { file.writeUser(it.id, it.userName, "") }
+        expectedUsers.forEach { UserFileHelper.writeUser(file, it.id, it.userName, "") }
 
         val actualUsers = authenticationRepository.getMates()
 
@@ -59,7 +59,7 @@ class AuthenticationDataSourceTest {
     @Test
     fun `when call deleteUser with valid Id should delete it`() {
         val user = DummyAuthData.users[1]
-        file.writeUser(user.id, user.userName, "")
+        UserFileHelper.writeUser(file, user.id, user.userName, "")
 
         authenticationRepository.deleteUser(user.id)
         val lines = file.readLines()
@@ -70,7 +70,7 @@ class AuthenticationDataSourceTest {
     @Test
     fun `when login with valid credentials of mate should return user`() {
         val user = DummyAuthData.users[1]
-        file.writeUser(user.id, user.userName, "Poula12")
+        UserFileHelper.writeUser(file, user.id, user.userName, "Poula12")
 
         val loggedInUser = authenticationRepository.login(user.userName, "Poula12")
 
@@ -124,7 +124,7 @@ class AuthenticationDataSourceTest {
     @Test
     fun `when we call changePassword with valid user should return true`() {
         val user = DummyAuthData.users[2]
-        file.writeUser(user.id, user.userName, "passworD12")
+        UserFileHelper.writeUser(file, user.id, user.userName, "passworD12")
 
         val isChanged = authenticationRepository.changePassword(user.userName, "passworD12", "Password12")
 
