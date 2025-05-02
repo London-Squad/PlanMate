@@ -29,9 +29,6 @@ class CsvStatesDataSourceTest {
 
     @Test
     fun `should return empty list when no states for project`() {
-        // Given
-        // File is initialized with only header
-
         // When
         val states = csvStatesDataSource.getAllStatesByProjectId(projectId)
 
