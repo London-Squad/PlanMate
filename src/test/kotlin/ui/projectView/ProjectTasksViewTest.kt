@@ -11,6 +11,7 @@ import org.junit.jupiter.api.Test
 import ui.cliPrintersAndReaders.CLIPrinter
 import ui.cliPrintersAndReaders.CLIReader
 import ui.taskManagementView.TaskManagementView
+import java.util.UUID
 
 class ProjectTasksViewTest {
 
@@ -35,11 +36,13 @@ class ProjectTasksViewTest {
 
         every { project.title } returns "Test Project"
         every { project.tasks } returns emptyList()
+        every { project.states } returns listOf(state)
 
         every { task.title } returns "Test Task"
         every { task.description } returns "Test Description"
         every { task.state } returns state
         every { state.title } returns "TODO"
+        every { state.id } returns UUID.randomUUID()
     }
 
     @Test
@@ -71,7 +74,7 @@ class ProjectTasksViewTest {
     }
 
     @Test
-    fun `should return when user selects option 0`() {
+    fun `should return when user enters 0`() {
         // Given
         every { cliReader.getValidUserInput(any(), any(), any()) } returns "0"
 
@@ -83,47 +86,23 @@ class ProjectTasksViewTest {
     }
 
     @Test
-    fun `should call addNewTask when user selects option 1`() {
+    fun `should call addNewTask when user enters add with no states`() {
         // Given
-        every { cliReader.getValidUserInput(any(), any(), any()) } returns "1"
+        every { project.states } returns emptyList()
+        every { cliReader.getValidUserInput(any(), any(), any()) } returns "add"
 
         // When
         projectTasksView.manageTasks(project)
 
         // Then
-        verify { cliReader.getValidUserInput(any(), any(), any()) }
+        verify { cliPrinter.cliPrintLn("No states available for this project. Cannot create task.") }
     }
 
     @Test
-    fun `should call selectTask when user selects option 2`() {
-        // Given
-        every { cliReader.getValidUserInput(any(), any(), any()) } returns "2"
-
-        // When
-        projectTasksView.manageTasks(project)
-
-        // Then
-        verify { cliReader.getValidUserInput(any(), any(), any()) }
-    }
-
-    @Test
-    fun `should display no tasks message in selectTask when project has no tasks`() {
-        // Given
-        every { project.tasks } returns emptyList()
-        every { cliReader.getValidUserInput(any(), any(), any()) } returns "2"
-
-        // When
-        projectTasksView.manageTasks(project)
-
-        // Then
-        verify { cliPrinter.cliPrintLn("No tasks available to select.") }
-    }
-
-    @Test
-    fun `should call taskManagementView when user selects a task`() {
+    fun `should call taskManagementView when user enters valid task number`() {
         // Given
         every { project.tasks } returns listOf(task)
-        every { cliReader.getValidUserInput(any(), any(), any()) } returnsMany listOf("2", "1")
+        every { cliReader.getValidUserInput(any(), any(), any()) } returns "1"
         every { taskManagementView.start(task, project) } returns Unit
 
         // When
@@ -131,5 +110,31 @@ class ProjectTasksViewTest {
 
         // Then
         verify { taskManagementView.start(task, project) }
+    }
+
+    @Test
+    fun `should display prompt for task selection when tasks exist`() {
+        // Given
+        every { project.tasks } returns listOf(task)
+        every { cliReader.getValidUserInput(any(), any(), any()) } returns "0"
+
+        // When
+        projectTasksView.manageTasks(project)
+
+        // Then
+        verify { cliPrinter.cliPrintLn("Enter a task number to select (1-1), 'add' to add a new task") }
+    }
+
+    @Test
+    fun `should display prompt for add only when no tasks exist`() {
+        // Given
+        every { project.tasks } returns emptyList()
+        every { cliReader.getValidUserInput(any(), any(), any()) } returns "0"
+
+        // When
+        projectTasksView.manageTasks(project)
+
+        // Then
+        verify { cliPrinter.cliPrintLn("Type 'add' to add a new task") }
     }
 }

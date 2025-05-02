@@ -80,7 +80,12 @@ class EditProjectViewTest {
         editProjectView.currentProject = project
         every { cliReader.getValidUserInput(any(), any(), any()) } returns "New Title"
         every { projectUseCases.editProjectTitle(project.id, "New Title") } returns Unit
-        every { project.copy(title = "New Title") } returns mockk()
+
+        val updatedProject = mockk<Project>()
+        every { updatedProject.title } returns "New Title"
+        every { updatedProject.id } returns project.id
+        every { updatedProject.copy(title = "New Title") } returns updatedProject
+        every { project.copy(title = "New Title") } returns updatedProject
 
         // When
         editProjectView.javaClass.getDeclaredMethod("editProjectTitle").apply {
@@ -98,7 +103,12 @@ class EditProjectViewTest {
         editProjectView.currentProject = project
         every { cliReader.getValidUserInput(any(), any(), any()) } returns "New Title"
         every { projectUseCases.editProjectTitle(project.id, "New Title") } returns Unit
-        every { project.copy(title = "New Title") } returns mockk()
+
+        val updatedProject = mockk<Project>()
+        every { updatedProject.title } returns "New Title"
+        every { updatedProject.id } returns project.id
+        every { updatedProject.copy(title = "New Title") } returns updatedProject
+        every { project.copy(title = "New Title") } returns updatedProject
 
         // When
         editProjectView.javaClass.getDeclaredMethod("editProjectTitle").apply {
