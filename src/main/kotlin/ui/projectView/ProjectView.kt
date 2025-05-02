@@ -4,6 +4,7 @@ import logic.entities.Project
 import logic.entities.User
 import logic.exceptions.NoLoggedInUserIsSavedInCacheException
 import logic.repositories.CacheDataRepository
+import logic.useCases.ProjectUseCases
 import ui.cliPrintersAndReaders.CLIPrinter
 import ui.cliPrintersAndReaders.CLIReader
 import ui.logsView.LogsView
@@ -16,6 +17,7 @@ class ProjectView(
     private val editProjectView: EditProjectView,
     private val deleteProjectView: DeleteProjectView,
     private val projectTasksView: ProjectTasksView,
+    private val projectUseCases: ProjectUseCases,
     private val logsView: LogsView
 ) {
 
@@ -60,14 +62,25 @@ class ProjectView(
         when (input) {
             "1" -> {
                 currentProject = projectTasksView.manageTasks(currentProject)
+                currentProject = projectUseCases.getProjectById(currentProject.id) ?: currentProject
+                printProjectMenu()
+                handleUserInput()
             }
-            "2" -> viewProjectLogs()
+            "2" -> {
+                viewProjectLogs()
+                printProjectMenu()
+                handleUserInput()
+            }
             "3" -> if (currentUser.type == User.Type.ADMIN) {
                 currentProject = editProjectView.editProject(currentProject)
+                currentProject = projectUseCases.getProjectById(currentProject.id) ?: currentProject
+                printProjectMenu()
+                handleUserInput()
             } else return
             "4" -> {
                 if (currentUser.type == User.Type.ADMIN) {
                     deleteProjectView.deleteProject(currentProject)
+                    return
                 } else return
             }
             "0" -> return

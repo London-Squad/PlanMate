@@ -1,6 +1,7 @@
 package di
 
 import logic.useCases.*
+import logic.useCases.CreateMateUseCase
 import org.koin.dsl.module
 
 val logicModule = module {
@@ -11,4 +12,5 @@ val logicModule = module {
     single { LoginUseCase(get(), get()) }
     single { ManageTaskUseCase(get()) }
     single { ManageStateUseCase(get(), get(), get()) }
+    single { CreateMateUseCase(get(), get()) }
 }

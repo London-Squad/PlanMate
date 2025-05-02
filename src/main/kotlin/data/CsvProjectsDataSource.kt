@@ -1,13 +1,14 @@
 package data
 
 import logic.entities.Project
-import logic.entities.State
 import logic.repositories.ProjectsRepository
-import java.util.UUID
 import java.io.File
+import java.util.UUID
 
 class CsvProjectsDataSource(
-    private val file: File
+    private val file: File,
+    private val csvTasksDataSource: CsvTasksDataSource,
+    private val csvStatesDataSource: CsvStatesDataSource
 ) : ProjectsRepository {
 
     init {
@@ -23,19 +24,32 @@ class CsvProjectsDataSource(
     }
 
     override fun getAllProjects(): List<Project> {
-        return file.readLines().drop(1).map { line ->
-            val (id, title, description) = line.split(",", limit = 3)
-            Project(
-                id = UUID.fromString(id),
-                title = title,
-                description = description,
-                tasks = emptyList(),
-                states = listOf(State.NoState)
-            )
+        return file.readLines().drop(1).mapNotNull { line ->
+            // Split the line into parts, taking only the first 3 fields
+            val parts = line.split(",", limit = 3)
+            if (parts.size < 3) return@mapNotNull null
+            try {
+                val projectId = UUID.fromString(parts[0].trim())
+                Project(
+                    id = projectId,
+                    title = parts[1].trim(),
+                    description = parts[2].trim(),
+                    tasks = csvTasksDataSource.getAllTasksByProjectID(projectId),
+                    states = csvStatesDataSource.getAllStatesByProjectId(projectId)
+                )
+            } catch (e: IllegalArgumentException) {
+                null
+            }
         }
     }
 
     override fun addNewProject(project: Project) {
+        project.states.forEach { state ->
+            csvStatesDataSource.addNewState(state, project.id)
+        }
+        project.tasks.forEach { task ->
+            csvTasksDataSource.addNewTask(task, project.id)
+        }
         file.appendText("${project.id},${project.title},${project.description}\n")
     }
 
@@ -55,6 +69,12 @@ class CsvProjectsDataSource(
 
     override fun deleteProject(projectId: UUID) {
         val projects = getAllProjects().filter { it.id != projectId }
+        csvTasksDataSource.getAllTasksByProjectID(projectId).forEach { task ->
+            csvTasksDataSource.deleteTask(task.id)
+        }
+        csvStatesDataSource.getAllStatesByProjectId(projectId).forEach { state ->
+            csvStatesDataSource.deleteState(state.id)
+        }
         writeProjectsToFile(projects)
     }
 

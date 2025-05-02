@@ -6,20 +6,21 @@ import io.mockk.verify
 import logic.entities.Project
 import logic.entities.State
 import logic.entities.Task
-import logic.useCases.ManageTaskUseCase
+import logic.useCases.ProjectUseCases
 import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Test
 import ui.cliPrintersAndReaders.CLIPrinter
 import ui.cliPrintersAndReaders.CLIReader
 import ui.taskManagementView.TaskManagementView
 import java.util.UUID
+import kotlin.test.assertEquals
 
 class ProjectTasksViewTest {
 
     private lateinit var cliPrinter: CLIPrinter
     private lateinit var cliReader: CLIReader
     private lateinit var taskManagementView: TaskManagementView
-    private lateinit var manageTaskUseCase: ManageTaskUseCase
+    private lateinit var projectUseCases: ProjectUseCases
     private lateinit var projectTasksView: ProjectTasksView
     private lateinit var project: Project
     private lateinit var task: Task
@@ -30,16 +31,18 @@ class ProjectTasksViewTest {
         cliPrinter = mockk(relaxed = true)
         cliReader = mockk()
         taskManagementView = mockk()
-        manageTaskUseCase = mockk()
+        projectUseCases = mockk(relaxed = true)
         project = mockk()
         task = mockk()
         state = mockk()
 
-        projectTasksView = ProjectTasksView(cliPrinter, cliReader,manageTaskUseCase, taskManagementView)
+        projectTasksView =
+            ProjectTasksView(cliPrinter, cliReader, projectUseCases, taskManagementView)
 
         every { project.title } returns "Test Project"
         every { project.tasks } returns emptyList()
         every { project.states } returns listOf(state)
+        every { project.id } returns UUID.randomUUID()
 
         every { task.title } returns "Test Task"
         every { task.description } returns "Test Description"
@@ -139,5 +142,25 @@ class ProjectTasksViewTest {
 
         // Then
         verify { cliPrinter.cliPrintLn("Type 'add' to add a new task") }
+    }
+
+    @Test
+    fun `should create new task with user input and start taskManagementView`() {
+        // Given
+        every { project.tasks } returns emptyList()
+        every { project.states } returns listOf(state)
+        every { cliReader.getValidUserInput(any(), "Enter your choice: ", any()) } returns "add"
+        every { cliReader.getValidUserInput(any(), "Enter task title: ", any()) } returns "New Task"
+        every { cliReader.getValidUserInput(any(), "Enter task description: ", any()) } returns "New Description"
+        every { taskManagementView.start(any(), any()) } returns Unit
+        every { project.copy(tasks = any()) } returns project
+
+        // When
+        projectTasksView.manageTasks(project)
+
+        // Then
+        verify { cliPrinter.cliPrintLn("Task created. You can now edit it.") }
+        verify { taskManagementView.start(any(), project) }
+        verify { projectUseCases.updateProject(project) }
     }
 }

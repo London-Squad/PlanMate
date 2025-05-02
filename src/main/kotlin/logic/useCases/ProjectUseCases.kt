@@ -66,4 +66,9 @@ class ProjectUseCases(
     fun deleteProject(projectId: UUID) {
         projectsRepository.deleteProject(projectId)
     }
+
+    fun updateProject(project: Project) {
+        projectsRepository.deleteProject(project.id)
+        projectsRepository.addNewProject(project)
+    }
 }
