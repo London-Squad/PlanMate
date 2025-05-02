@@ -5,6 +5,10 @@ import java.util.UUID
 
 interface StatesRepository {
 
+    fun getAllStatesByProjectId(projectId: UUID): List<State>
+
+    fun getStateById(stateId: UUID): State
+
     fun addNewState(state: State, projectId: UUID)
 
     fun editStateTitle(stateId: UUID, newTitle: String)
