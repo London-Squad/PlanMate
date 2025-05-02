@@ -7,7 +7,7 @@ interface StatesRepository {
 
     fun getAllStatesByProjectId(projectId: UUID): List<State>
 
-    fun getStateById(stateId: UUID): State?
+    fun getStateById(stateId: UUID): State
 
     fun addNewState(state: State, projectId: UUID)
 

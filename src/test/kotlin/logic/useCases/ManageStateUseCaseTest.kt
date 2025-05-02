@@ -157,10 +157,12 @@ class ManageStateUseCaseTest {
             projectStates.values.forEach { it.remove(stateId) }
         }
 
-        override fun getStateById(stateId: UUID): State? = states[stateId]
-
         override fun getAllStatesByProjectId(projectId: UUID): List<State> {
             return projectStates[projectId]?.mapNotNull { states[it] } ?: emptyList()
+        }
+
+        override fun getStateById(stateId: UUID): State {
+            return states[stateId] ?: State.NoState
         }
     }
 
