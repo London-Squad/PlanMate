@@ -5,6 +5,7 @@ import io.mockk.mockk
 import io.mockk.verify
 import logic.entities.Project
 import logic.entities.User
+import logic.exceptions.NoLoggedInUserIsSavedInCacheException
 import logic.repositories.CacheDataRepository
 import logic.useCases.ProjectUseCases
 import ui.cliPrintersAndReaders.CLIPrinter
@@ -30,7 +31,7 @@ class ProjectsViewTest {
     @Test
     fun shouldPrintErrorAndExitWhenNoUserLoggedIn() {
         // given
-        every { cacheDataRepository.getLoggedInUser() } returns null
+        every { cacheDataRepository.getLoggedInUser() } throws NoLoggedInUserIsSavedInCacheException()
 
         // when
         projectsView.start()

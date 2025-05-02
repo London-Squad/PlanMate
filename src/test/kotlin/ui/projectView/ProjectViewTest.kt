@@ -7,6 +7,7 @@ import logic.entities.Project
 import logic.entities.State
 import logic.entities.Task
 import logic.entities.User
+import logic.exceptions.NoLoggedInUserIsSavedInCacheException
 import logic.repositories.CacheDataRepository
 import logic.useCases.ProjectUseCases
 import org.junit.jupiter.api.BeforeEach
@@ -52,7 +53,7 @@ class ProjectViewTest {
     @Test
     fun `should print error message when no user is logged in`() {
         // Given
-        every { cacheDataRepository.getLoggedInUser() } returns null
+        every { cacheDataRepository.getLoggedInUser() } throws NoLoggedInUserIsSavedInCacheException()
 
         // When
         projectView.start(project)
@@ -64,7 +65,7 @@ class ProjectViewTest {
     @Test
     fun `should not display swimlanes when no user is logged in`() {
         // Given
-        every { cacheDataRepository.getLoggedInUser() } returns null
+        every { cacheDataRepository.getLoggedInUser() } throws NoLoggedInUserIsSavedInCacheException()
 
         // When
         projectView.start(project)
