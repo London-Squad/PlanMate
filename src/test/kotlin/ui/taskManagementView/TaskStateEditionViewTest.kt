@@ -68,12 +68,12 @@ class TaskStateEditionViewTest {
     )
     fun `editState should pass the correct state to manageTaskUseCase editTaskState`(input: String) {
         every { cliReader.getUserInput(any()) } returns input
-        val stateID = statesList[input.toInt() - 1].id
+        val state = statesList[input.toInt() - 1]
 
         taskStateEditionView.editState(task, statesList)
 
         verify(exactly = 1) {
-            manageTaskUseCase.editTaskState(task.id, stateID)
+            manageTaskUseCase.editTaskState(task.id, state)
         }
     }
 

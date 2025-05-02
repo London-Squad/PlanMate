@@ -21,6 +21,7 @@ class ProjectTasksViewTest {
     private lateinit var cliReader: CLIReader
     private lateinit var taskManagementView: TaskManagementView
     private lateinit var projectUseCases: ProjectUseCases
+    private lateinit var manageTaskUseCase: ManageTaskUseCase
     private lateinit var projectTasksView: ProjectTasksView
     private lateinit var project: Project
     private lateinit var task: Task
@@ -32,11 +33,13 @@ class ProjectTasksViewTest {
         cliReader = mockk()
         taskManagementView = mockk()
         projectUseCases = mockk(relaxed = true)
+        manageTaskUseCase = mockk()
         project = mockk()
         task = mockk()
         state = mockk()
 
         projectTasksView = ProjectTasksView(cliPrinter, cliReader, taskManagementView, projectUseCases)
+        projectTasksView = ProjectTasksView(cliPrinter, cliReader,manageTaskUseCase, taskManagementView)
 
         every { project.title } returns "Test Project"
         every { project.tasks } returns emptyList()

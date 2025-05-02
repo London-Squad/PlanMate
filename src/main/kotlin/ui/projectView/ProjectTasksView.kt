@@ -3,6 +3,7 @@ package ui.projectView
 import logic.entities.Project
 import logic.entities.Task
 import logic.useCases.ProjectUseCases
+import logic.useCases.ManageTaskUseCase
 import ui.cliPrintersAndReaders.CLIPrinter
 import ui.cliPrintersAndReaders.CLIReader
 import ui.taskManagementView.TaskManagementView
@@ -11,8 +12,9 @@ import java.util.UUID
 class ProjectTasksView(
     private val cliPrinter: CLIPrinter,
     private val cliReader: CLIReader,
-    private val taskManagementView: TaskManagementView,
-    private val projectUseCases: ProjectUseCases
+    private val projectUseCases: ProjectUseCases,
+    private val manageTaskUseCase: ManageTaskUseCase,
+    private val taskManagementView: TaskManagementView
 ) {
 
     private lateinit var currentProject: Project
