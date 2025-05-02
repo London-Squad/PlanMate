@@ -1,15 +1,16 @@
 package logic.useCases
 
 import logic.entities.*
+import logic.repositories.CacheDataRepository
 import logic.repositories.LogsRepository
 import logic.repositories.StatesRepository
 import java.time.LocalDateTime
-import java.util.*
+import java.util.UUID
 
 class ManageStateUseCase(
     private val statesRepository: StatesRepository,
     private val logsRepository: LogsRepository,
-    private val activeUser: User
+    private val cacheDataRepository: CacheDataRepository
 ) {
 
     fun addState(state: State, projectID: UUID) {
@@ -60,7 +61,7 @@ class ManageStateUseCase(
     private fun logAction(action: Action) {
         logsRepository.addLog(
             Log(
-                user = activeUser,
+                user = cacheDataRepository.getLoggedInUser(),
                 time = LocalDateTime.now(),
                 action = action
             )

@@ -5,8 +5,8 @@ import logic.entities.State
 import logic.useCases.ManageStateUseCase
 import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Test
-import ui.CLIPrintersAndReaders.CLIPrinter
-import ui.CLIPrintersAndReaders.CLIReader
+import ui.cliPrintersAndReaders.CLIPrinter
+import ui.cliPrintersAndReaders.CLIReader
 import java.util.*
 import kotlin.test.assertTrue
 
