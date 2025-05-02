@@ -19,35 +19,34 @@ class SwimlanesView(
         }
 
         val maxTasks = tasksByState.values.maxOfOrNull { it.size } ?: 0
-        val columnWidth = 30
+        val columnWidth = 25 // Adjust width to fit your terminal nicely
         val separator = "|"
 
+        // Print header
         project.states.forEach { state ->
-            val stateHeader = state.title.padEnd(columnWidth - 2).take(columnWidth - 2)
-            cliPrinter.cliPrint(" $stateHeader $separator")
+            val stateHeader = state.title.take(columnWidth - 1).padEnd(columnWidth)
+            cliPrinter.cliPrint("$stateHeader$separator")
         }
         cliPrinter.cliPrintLn("")
 
-        project.states.forEach {
-            cliPrinter.cliPrint("-".duplicate(columnWidth) + separator)
+        // Print separator row
+        project.states.forEach { _ ->
+            cliPrinter.cliPrint("-".repeat(columnWidth) + separator)
         }
         cliPrinter.cliPrintLn("")
 
+        // Print task rows
         for (row in 0 until maxTasks) {
             project.states.forEach { state ->
                 val tasks = tasksByState[state] ?: emptyList()
-                if (row < tasks.size) {
-                    val task = tasks[row]
-                    val taskTitle = task.title.take(columnWidth - 4).padEnd(columnWidth - 4)
-                    cliPrinter.cliPrint(" $taskTitle $separator")
+                val taskTitle = if (row < tasks.size) {
+                    tasks[row].title.take(columnWidth - 1).padEnd(columnWidth)
                 } else {
-                    cliPrinter.cliPrint("".padEnd(columnWidth) + separator)
+                    "".padEnd(columnWidth)
                 }
+                cliPrinter.cliPrint("$taskTitle$separator")
             }
             cliPrinter.cliPrintLn("")
         }
     }
-
-    private fun String.duplicate(numberOfDuplication: Int) =
-        List(numberOfDuplication) { this }.joinToString(separator = "")
 }
