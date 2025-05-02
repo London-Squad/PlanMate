@@ -2,6 +2,7 @@ package logic.useCases
 
 import io.mockk.mockk
 import io.mockk.verify
+import logic.entities.State
 import logic.entities.Task
 import logic.repositories.TaskRepository
 import org.junit.jupiter.api.BeforeEach
@@ -39,11 +40,11 @@ class ManageTaskUseCaseTest {
 
     @Test
     fun `editTaskState should call taskRepository editTaskState`() {
-        val stateID = UUID.randomUUID()
+        val state = State(UUID.randomUUID(), title = "FakeState", description = "")
 
-        manageTaskUsecase.editTaskState(task.id, stateID)
+        manageTaskUsecase.editTaskState(task.id, state)
 
-        verify(exactly = 1) { taskRepository.editTaskState(task.id, stateID) }
+        verify(exactly = 1) { taskRepository.editTaskState(task.id, state) }
     }
 
 

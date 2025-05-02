@@ -22,7 +22,7 @@ class TaskStateEditionView(
         printProjectState(projectStates)
         val newState = getValidState(projectStates)
 
-        manageTaskUseCase.editTaskState(task.id, newState.id)
+        manageTaskUseCase.editTaskState(task.id, newState)
     }
 
     private fun printProjectState(states: List<State>) {
