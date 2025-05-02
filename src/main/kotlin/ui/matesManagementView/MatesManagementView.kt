@@ -1,9 +1,7 @@
 package ui.matesManagementView
 
-import ui.View
-
-class MatesManagementView: View {
-    override fun start() {
-
+class MatesManagementView {
+    fun start() {
+        println("welcome to MatesManagementView, ... and good bye")
     }
 }
