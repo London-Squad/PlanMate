@@ -24,4 +24,8 @@ class TaskDataSource() : TaskRepository {
     override fun deleteTask(taskId: UUID) {
         TODO("Not yet implemented")
     }
+
+    override fun getTaskById(taskId: UUID): Task? {
+        TODO("Not yet implemented")
+    }
 }
