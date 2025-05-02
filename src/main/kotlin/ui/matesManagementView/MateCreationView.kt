@@ -17,13 +17,19 @@ class MateCreationView(
             val username = cliReader.getUserInput("Enter username: ")
             val password = cliReader.getUserInput("Enter password: ")
             val user = createMateUseCase.createMate(username, password)
-            cliPrinter.cliPrintLn("Mate created successfully: ${user.userName}")
+            cliPrinter.cliPrintLn("Mate created successfully: ${username}")
+        } catch (e: AuthenticationException.UserNotFoundException) {
+            cliPrinter.cliPrintLn("Error: No user is logged in.")
+        } catch (e: AuthenticationException.UnauthorizedAccessException) {
+            cliPrinter.cliPrintLn("Error: ${e.message}.")
         } catch (e: AuthenticationException.InvalidUserNameLengthException) {
-            cliPrinter.cliPrintLn("Error: Username must be 4-11 characters.")
+            cliPrinter.cliPrintLn("Error: Username should be at least 4 characters, alphanumeric, no whitespace.")
         } catch (e: AuthenticationException.InvalidPasswordException) {
-            cliPrinter.cliPrintLn("Error: Password must be 6-12 characters and contain at least one uppercase and one lowercase letter.")
+            cliPrinter.cliPrintLn("Error: ${e.message}.")
         } catch (e: AuthenticationException.UsernameTakenException) {
-            cliPrinter.cliPrintLn("Error: Username is already taken.")
+            cliPrinter.cliPrintLn("Error: ${e.message}.")
+        } catch (e: AuthenticationException.RegistrationFailedException) {
+            cliPrinter.cliPrintLn("Error: ${e.message}")
         } catch (e: Exception) {
             cliPrinter.cliPrintLn("Unexpected error: ${e.message}")
         }
