@@ -1,12 +1,10 @@
 package di
 
-import data.TaskDataSource
 import data.cacheData.CacheDataSource
 import data.dataSource.CsvProjectsDataSource
 import data.dataSource.CsvStatesDataSource
 import data.dataSource.CsvTasksDataSource
 import logic.repositories.*
-import data.dataSource.LogsDataSource
 import data.fileIO.FilePath
 import data.logsRepositories.csvFilesHandler.LogsDataSource
 import data.logsRepositories.cvsFilesHandler.LogsCsvReader
@@ -18,8 +16,6 @@ import logic.repositories.CacheDataRepository
 import logic.repositories.ProjectsRepository
 import logic.repositories.StatesRepository
 import logic.repositories.TaskRepository
-import org.koin.core.qualifier.named
-import logic.repositories.*
 import org.koin.core.qualifier.named
 import org.koin.dsl.module
 import java.io.File
@@ -49,9 +45,7 @@ val dataModule = module {
     single<TaskRepository> { CsvTasksDataSource(get(named("tasksFile")), get()) }
     single<StatesRepository> { CsvStatesDataSource(get(named("statesFile"))) }
     single<ProjectsRepository> { CsvProjectsDataSource(get(named("projectsFile"))) }
-    single<LogsRepository> { LogsDataSource() }
 
-    single<StatesRepository> { CsvStatesDataSource() }
     single<ProjectsRepository> { CsvProjectsDataSource(get()) }
 
     single { LogsCsvReader(get(named("LogsFile"))) }
@@ -63,5 +57,4 @@ val dataModule = module {
 
     single<AuthenticationRepository> { AuthenticationDataSource(File(FilePath.USER_FILE), MD5HashingAlgorithm()) }
 
-    single<TaskRepository> { TaskDataSource() }
 }
