@@ -5,7 +5,7 @@ import io.mockk.mockk
 import io.mockk.verify
 import logic.entities.User
 import logic.exception.AuthenticationException
-import logic.usecases.CreateMateUseCase
+import logic.useCases.CreateMateUseCase
 import ui.cliPrintersAndReaders.CLIPrinter
 import ui.cliPrintersAndReaders.CLIReader
 import org.junit.jupiter.api.BeforeEach
@@ -32,7 +32,12 @@ class MateCreationViewTest {
     fun `should create mate successfully`() {
         every { cliReader.getUserInput("Enter username: ") } returns "testuser"
         every { cliReader.getUserInput("Enter password: ") } returns "Password123"
-        every { createMateUseCase.createMate("testuser", "Password123") } returns   cliPrinter.cliPrintLn("Mate created successfully: ${newUser.userName}")
+        every {
+            createMateUseCase.createMate(
+                "testuser",
+                "Password123"
+            )
+        } returns cliPrinter.cliPrintLn("Mate created successfully: ${newUser.userName}")
 
         view.createMate()
 
@@ -48,7 +53,12 @@ class MateCreationViewTest {
     fun `should show error if user not logged in`() {
         every { cliReader.getUserInput("Enter username: ") } returns "testuser"
         every { cliReader.getUserInput("Enter password: ") } returns "Password123"
-        every { createMateUseCase.createMate("testuser", "Password123") } throws AuthenticationException.UserNotFoundException()
+        every {
+            createMateUseCase.createMate(
+                "testuser",
+                "Password123"
+            )
+        } throws AuthenticationException.UserNotFoundException()
 
         view.createMate()
 
@@ -75,15 +85,15 @@ class MateCreationViewTest {
     @Test
     fun `should show error if username is too short`() {
         every { cliReader.getUserInput("Enter username: ") } returns "abc"
-        every { cliReader.getUserInput("Enter password: ") } returns "Password123"
+        every { cliReader.getUserInput("Enter password: ") } returns "Pass123"
         every {
-            createMateUseCase.createMate("abc", "Password123")
+            createMateUseCase.createMate("abc", "Pass123")
         } throws AuthenticationException.InvalidUserNameLengthException()
 
         view.createMate()
 
         verify {
-            cliPrinter.cliPrintLn("Error: Username should be 4 or more characters.")
+            cliPrinter.cliPrintLn("Error: Username should be at least 4 characters, alphanumeric, no whitespace.")
         }
     }
 
@@ -98,11 +108,11 @@ class MateCreationViewTest {
         view.createMate()
 
         verify {
-            cliPrinter.cliPrintLn("Error: Password must be 8 or more characters.")
+            cliPrinter.cliPrintLn("Error: Password should be 6 to 12 character and includes at least 1 lower case and 1 uppercase character.")
         }
     }
 
-   @Test
+    @Test
     fun `should show error if username is already taken`() {
         every { cliReader.getUserInput("Enter username: ") } returns "testuser"
         every { cliReader.getUserInput("Enter password: ") } returns "Password123"

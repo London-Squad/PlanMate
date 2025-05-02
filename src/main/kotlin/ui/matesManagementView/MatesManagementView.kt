@@ -1,20 +1,20 @@
 package ui.matesManagementView
 
 import logic.entities.User
-import logic.repositories.CacheDataRepository
+import logic.useCases.GetLoggedInUserUseCase
 import ui.cliPrintersAndReaders.CLIPrinter
 import ui.cliPrintersAndReaders.CLIReader
 
 class MatesManagementView(
     private val cliReader: CLIReader,
     private val cliPrinter: CLIPrinter,
-    private val cacheDataRepository: CacheDataRepository,
+    private val getLoggedInUserUseCase: GetLoggedInUserUseCase,
     private val mateCreationView: MateCreationView
 ) {
 
     fun start() {
-        val currentUser = cacheDataRepository.getLoggedInUser()
-        if (currentUser == null || currentUser.type != User.Type.ADMIN) {
+        val currentUser = getLoggedInUserUseCase.getLoggedInUser()
+        if (currentUser.type != User.Type.ADMIN) {
             printLn("Error: Only admins can manage mates.")
             return
         }

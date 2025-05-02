@@ -2,7 +2,7 @@ package ui.matesManagementView
 
 import io.mockk.*
 import logic.entities.User
-import logic.repositories.CacheDataRepository
+import logic.useCases.GetLoggedInUserUseCase
 import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Test
 import ui.cliPrintersAndReaders.CLIPrinter
@@ -12,7 +12,7 @@ class MatesManagementViewTest {
 
     private lateinit var cliReader: CLIReader
     private lateinit var cliPrinter: CLIPrinter
-    private lateinit var cacheDataRepository: CacheDataRepository
+    private lateinit var getLoggedInUserUseCase: GetLoggedInUserUseCase
     private lateinit var mateCreationView: MateCreationView
     private lateinit var view: MatesManagementView
 
@@ -23,14 +23,14 @@ class MatesManagementViewTest {
     fun setUp() {
         cliReader = mockk()
         cliPrinter = mockk(relaxed = true)
-        cacheDataRepository = mockk()
+        getLoggedInUserUseCase = mockk()
         mateCreationView = mockk(relaxed = true)
-        view = MatesManagementView(cliReader, cliPrinter, cacheDataRepository, mateCreationView)
+        view = MatesManagementView(cliReader, cliPrinter, getLoggedInUserUseCase, mateCreationView)
     }
 
     @Test
     fun `start should not allow non-admin user`() {
-        every { cacheDataRepository.getLoggedInUser() } returns mateUser
+        every { getLoggedInUserUseCase.getLoggedInUser() } returns mateUser
 
         view.start()
 
@@ -41,7 +41,7 @@ class MatesManagementViewTest {
 
     @Test
     fun `start should call createMate when user selects 1`() {
-        every { cacheDataRepository.getLoggedInUser() } returns adminUser
+        every { getLoggedInUserUseCase.getLoggedInUser() } returns adminUser
         every { cliReader.getUserInput(any()) } returnsMany listOf("1", "0")
 
         view.start()
@@ -61,7 +61,7 @@ class MatesManagementViewTest {
 
     @Test
     fun `start should exit on selecting 0`() {
-        every { cacheDataRepository.getLoggedInUser() } returns adminUser
+        every { getLoggedInUserUseCase.getLoggedInUser() } returns adminUser
         every { cliReader.getUserInput(any()) } returns "0"
 
         view.start()
@@ -77,7 +77,7 @@ class MatesManagementViewTest {
 
     @Test
     fun `start should handle invalid option and re-prompt`() {
-        every { cacheDataRepository.getLoggedInUser() } returns adminUser
+        every { getLoggedInUserUseCase.getLoggedInUser() } returns adminUser
         every { cliReader.getUserInput(any()) } returnsMany listOf("5", "abc", "1", "0")
 
         view.start()

@@ -1,7 +1,7 @@
 package ui.matesManagementView
 
 import logic.exception.AuthenticationException
-import logic.usecases.CreateMateUseCase
+import logic.useCases.CreateMateUseCase
 import ui.cliPrintersAndReaders.CLIPrinter
 import ui.cliPrintersAndReaders.CLIReader
 
@@ -16,7 +16,7 @@ class MateCreationView(
         try {
             val username = cliReader.getUserInput("Enter username: ")
             val password = cliReader.getUserInput("Enter password: ")
-            val user = createMateUseCase.createMate(username, password)
+            createMateUseCase.createMate(username, password)
             cliPrinter.cliPrintLn("Mate created successfully: ${username}")
         } catch (e: AuthenticationException.UserNotFoundException) {
             cliPrinter.cliPrintLn("Error: No user is logged in.")

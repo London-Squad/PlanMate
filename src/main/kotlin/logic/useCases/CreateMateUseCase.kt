@@ -1,4 +1,4 @@
-package logic.usecases
+package logic.useCases
 
 import logic.entities.User
 import logic.exception.AuthenticationException
