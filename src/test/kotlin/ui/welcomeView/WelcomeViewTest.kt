@@ -26,7 +26,7 @@ class WelcomeViewTest {
     }
 
     @Test
-    fun `start should exit the app when user input is 0`() {
+    fun `should exit the app when user input is 0`() {
         every { cliReader.getValidUserInput(any(), any(), any()) } returns "0"
 
         welcomeView.start()
@@ -35,7 +35,7 @@ class WelcomeViewTest {
     }
 
     @Test
-    fun `start should go to login view when user input is 1`() {
+    fun `should go to login view when user input is 1`() {
         every { cliReader.getValidUserInput(any(), any(), any()) } answers { "1" } andThenAnswer { "0" }
 
         welcomeView.start()
@@ -44,7 +44,7 @@ class WelcomeViewTest {
     }
 
     @Test
-    fun `start should reject user input when user input is not 0 or 1`() {
+    fun `should reject user input when user input is not 0 or 1`() {
         every { cliReader.getValidUserInput(any(), any(), any()) } answers { "-1" } andThenAnswer { "0" }
 
         welcomeView.start()

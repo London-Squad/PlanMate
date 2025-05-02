@@ -48,7 +48,7 @@ class MainMenuViewTest {
     }
 
     @Test
-    fun `start should print Mates management option when user is admin`() {
+    fun `should print Mates management option when user is admin`() {
         // Given
         every { getLoggedInUserUseCase.getLoggedInUser() } returns fakeAdminUser
         every { cliReader.getUserInput(any()) } returns "0"
@@ -61,7 +61,7 @@ class MainMenuViewTest {
     }
 
     @Test
-    fun `start should not print Mates management option when user is mate`() {
+    fun `should not print Mates management option when user is mate`() {
         // Given
         every { getLoggedInUserUseCase.getLoggedInUser() } returns fakeMateUser
         every { cliReader.getUserInput(any()) } returns "0"
@@ -75,7 +75,7 @@ class MainMenuViewTest {
 
     @ParameterizedTest
     @MethodSource("getUsersList")
-    fun `start should logout when user input is 0`(user: User) {
+    fun `should logout when user input is 0`(user: User) {
         // Given
         every { getLoggedInUserUseCase.getLoggedInUser() } returns user
         every { cliReader.getUserInput(any()) } returns "0"
@@ -89,7 +89,7 @@ class MainMenuViewTest {
 
     @ParameterizedTest
     @MethodSource("getUsersList")
-    fun `start should go to projectsView when user input is 1`(user: User) {
+    fun `should go to projectsView when user input is 1`(user: User) {
         // Given
         every { getLoggedInUserUseCase.getLoggedInUser() } returns user
         every { cliReader.getUserInput(any()) } answers { "1" } andThenAnswer { "0" }
@@ -103,7 +103,7 @@ class MainMenuViewTest {
 
     @ParameterizedTest
     @MethodSource("getUsersList")
-    fun `start should reject the user input when user input not 0, 1, or 2`(user: User) {
+    fun `should reject the user input when user input not 0, 1, or 2`(user: User) {
         // Given
         every { getLoggedInUserUseCase.getLoggedInUser() } returns user
         every { cliReader.getUserInput(any()) } answers { "-1" } andThenAnswer { "0" }
@@ -116,7 +116,7 @@ class MainMenuViewTest {
     }
 
     @Test
-    fun `start should go to matesManagementView when user input is 2 and user is admin`() {
+    fun `should go to matesManagementView when user input is 2 and user is admin`() {
         // Given
         every { getLoggedInUserUseCase.getLoggedInUser() } returns fakeAdminUser
         every { cliReader.getUserInput(any()) } answers { "2" } andThenAnswer { "0" }
@@ -129,7 +129,7 @@ class MainMenuViewTest {
     }
 
     @Test
-    fun `start should reject the user input when user input is 2 and user is mate`() {
+    fun `should reject the user input when user input is 2 and user is mate`() {
         // Given
         every { getLoggedInUserUseCase.getLoggedInUser() } returns fakeMateUser
         every { cliReader.getUserInput(any()) } answers { "2" } andThenAnswer { "0" }
@@ -142,7 +142,7 @@ class MainMenuViewTest {
     }
 
     @Test
-    fun `start should end if there is no logged in user`() {
+    fun `should end if there is no logged in user`() {
         // Given
         every { getLoggedInUserUseCase.getLoggedInUser() } throws NoLoggedInUserIsSavedInCacheException()
         // When
