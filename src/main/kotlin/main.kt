@@ -5,7 +5,7 @@ import ui.welcomeView.WelcomeView
 
 fun main() {
     startKoin {
-        modules(uiModule, dataModule, useCaseModule)
+        modules(uiModule, dataModule, logicModule)
 
     }
     val ui: WelcomeView = getKoin().get()
