@@ -36,7 +36,7 @@ class ManageStateUseCaseTest {
         val state = State(title = "New", description = "To do")
         useCase.addState(state, projectId)
 
-        val saved = statesRepo.getStatesByProjectId(projectId)
+        val saved = statesRepo.getAllStatesByProjectId(projectId)
         assertEquals(1, saved.size)
         assertEquals(state.title, saved.first().title)
         assertTrue(logsRepo.logs.any { it.action is Create })
@@ -77,7 +77,7 @@ class ManageStateUseCaseTest {
         val state = State(title = "", description = "desc")
         useCase.addState(state, projectId)
 
-        assertTrue(statesRepo.getStatesByProjectId(projectId).isEmpty())
+        assertTrue(statesRepo.getAllStatesByProjectId(projectId).isEmpty())
         assertTrue(logsRepo.logs.none { it.action is Create })
     }
 
@@ -157,10 +157,12 @@ class ManageStateUseCaseTest {
             projectStates.values.forEach { it.remove(stateId) }
         }
 
-        override fun getStateById(stateId: UUID): State? = states[stateId]
-
-        override fun getStatesByProjectId(projectId: UUID): List<State> {
+        override fun getAllStatesByProjectId(projectId: UUID): List<State> {
             return projectStates[projectId]?.mapNotNull { states[it] } ?: emptyList()
+        }
+
+        override fun getStateById(stateId: UUID): State {
+            return states[stateId] ?: State.NoState
         }
     }
 
