@@ -1,5 +1,6 @@
 package di
 
+import logic.usecases.CreateMateUseCase
 import org.koin.dsl.module
 import ui.cliPrintersAndReaders.CLIPrinter
 import ui.cliPrintersAndReaders.CLIReader
@@ -41,5 +42,7 @@ val uiModule = module {
     single { EditProjectView(get(), get(), get(), get()) }
     single { DeleteProjectView(get(), get()) }
     single { ProjectTasksView(get(), get(), get()) }
+
+    single { CreateMateUseCase(get(), get()) }
 
 }
