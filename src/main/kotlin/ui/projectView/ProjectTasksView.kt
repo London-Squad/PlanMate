@@ -13,7 +13,6 @@ class ProjectTasksView(
     private val cliPrinter: CLIPrinter,
     private val cliReader: CLIReader,
     private val projectUseCases: ProjectUseCases,
-    private val manageTaskUseCase: ManageTaskUseCase,
     private val taskManagementView: TaskManagementView
 ) {
 
