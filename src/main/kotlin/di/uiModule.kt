@@ -29,8 +29,6 @@ val uiModule = module {
     single { ProjectTasksView(get(), get(), get(), get()) }
     single { LogsView(get(), get(), get()) }
 
-    single { MatesManagementView() }
-
     single { MainMenuView(get(), get(), get(), get(), get(), get()) }
 
     single { LoginView(get(), get(), get(), get(), get()) }
@@ -39,12 +37,12 @@ val uiModule = module {
 
     single { ProjectsView(get(), get(), get(), get(), get()) }
 
-    single { ProjectView(get(), get(), get(), get(), get(), get(), get(), get()) }
+    single { ProjectView(get(), get(), get(), get(), get(), get(), get(), get(), get()) }
     single { SwimlanesView(get()) }
     single { StatesView(get(), get(), get()) }
     single { EditProjectView(get(), get(), get(), get()) }
     single { DeleteProjectView(get(), get()) }
-    single { ProjectView(get(), get(), get(), get(), get(), get(), get(), get()) }
+    single { ProjectView(get(), get(), get(), get(), get(), get(), get(), get(), get()) }
     single { ProjectsView(get(), get(), get(), get(), get()) }
 
     single { MateCreationView(get(), get(), get()) }

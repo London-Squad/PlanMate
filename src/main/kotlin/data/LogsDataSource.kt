@@ -35,6 +35,10 @@ class LogsDataSource(
             }
         }
 
+        result = result.toSet().toList()
+
+        result = result.sortedBy { it.time }
+
         return result
     }
 

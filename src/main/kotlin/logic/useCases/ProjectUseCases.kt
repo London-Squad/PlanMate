@@ -1,9 +1,6 @@
 package logic.useCases
 
-import logic.entities.Create
-import logic.entities.Log
-import logic.entities.Project
-import logic.entities.State
+import logic.entities.*
 import logic.repositories.CacheDataRepository
 import logic.repositories.LogsRepository
 import logic.repositories.ProjectsRepository
@@ -56,19 +53,63 @@ class ProjectUseCases(
     }
 
     fun editProjectTitle(projectId: UUID, newTitle: String) {
+
+        logsRepository.addLog(
+            Log(
+                user = cacheDataRepository.getLoggedInUser(),
+                action = Edit(
+                    entity = projectsRepository.getAllProjects().first { it.id == projectId },
+                    property = "title",
+                    oldValue = projectsRepository.getAllProjects().first { it.id == projectId }.title,
+                    newValue = newTitle
+                )
+            )
+        )
         projectsRepository.editProjectTitle(projectId, newTitle)
     }
 
     fun editProjectDescription(projectId: UUID, newDescription: String) {
+
+        logsRepository.addLog(
+            Log(
+                user = cacheDataRepository.getLoggedInUser(),
+                action = Edit(
+                    entity = projectsRepository.getAllProjects().first { it.id == projectId },
+                    property = "description",
+                    oldValue = projectsRepository.getAllProjects().first { it.id == projectId }.description,
+                    newValue = newDescription
+                )
+            )
+        )
+
         projectsRepository.editProjectDescription(projectId, newDescription)
     }
 
     fun deleteProject(projectId: UUID) {
+
+        logsRepository.addLog(
+            Log(
+                user = cacheDataRepository.getLoggedInUser(),
+                action = Delete(
+                    entity = projectsRepository.getAllProjects().first { it.id == projectId },
+                )
+            )
+        )
+
         projectsRepository.deleteProject(projectId)
     }
 
     fun updateProject(project: Project) {
         projectsRepository.deleteProject(project.id)
         projectsRepository.addNewProject(project)
+    }
+
+    fun logTaskCreation(task: Task) {
+        logsRepository.addLog(
+            Log(
+                user = cacheDataRepository.getLoggedInUser(),
+                action = Create(task)
+            )
+        )
     }
 }

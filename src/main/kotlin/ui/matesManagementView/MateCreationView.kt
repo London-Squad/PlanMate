@@ -1,6 +1,6 @@
 package ui.matesManagementView
 
-import logic.exception.AuthenticationException
+import logic.exceptions.AuthenticationException
 import logic.useCases.CreateMateUseCase
 import ui.cliPrintersAndReaders.CLIPrinter
 import ui.cliPrintersAndReaders.CLIReader

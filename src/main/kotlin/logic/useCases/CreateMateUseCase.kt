@@ -1,7 +1,7 @@
 package logic.useCases
 
 import logic.entities.User
-import logic.exception.AuthenticationException
+import logic.exceptions.AuthenticationException
 import logic.repositories.AuthenticationRepository
 import logic.repositories.CacheDataRepository
 import logic.validation.takeIfValidNameOrThrowException

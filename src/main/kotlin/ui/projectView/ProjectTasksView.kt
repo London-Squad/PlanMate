@@ -92,8 +92,9 @@ class ProjectTasksView(
 
         currentProject = currentProject.copy(tasks = currentProject.tasks + newTask)
         projectUseCases.updateProject(currentProject)
-
+        projectUseCases.logTaskCreation(newTask)
         cliPrinter.cliPrintLn("Task created. You can now edit it.")
         taskManagementView.start(newTask, currentProject)
+
     }
 }

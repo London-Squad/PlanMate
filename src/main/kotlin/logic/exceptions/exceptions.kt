@@ -12,4 +12,8 @@ sealed class AuthenticationException(message: String) : Exception(message) {
     class UserNotFoundException : AuthenticationException("User Not found")
 
     class UserAlreadyExistException : AuthenticationException("User Already exist")
+
+    class UnauthorizedAccessException : AuthenticationException("UnauthorizedAccessException")
+    class UsernameTakenException : AuthenticationException("UsernameTakenException")
+    class RegistrationFailedException : AuthenticationException("RegistrationFailedException")
 }

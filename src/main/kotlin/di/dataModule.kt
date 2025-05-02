@@ -46,8 +46,6 @@ val dataModule = module {
             get<StatesRepository>() as CsvStatesDataSource
         )
     }
-    single<LogsRepository> { LogsDataSource() }
-    single<ProjectsRepository> { CsvProjectsDataSource(get(named("projectsFile"))) }
 
     single { LogsCsvReader(get(named("LogsFile"))) }
     single { LogsCsvWriter(get(named("LogsFile"))) }

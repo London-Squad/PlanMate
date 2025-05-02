@@ -7,6 +7,7 @@ import logic.entities.Project
 import logic.entities.User
 import logic.exceptions.NoLoggedInUserIsSavedInCacheException
 import logic.repositories.CacheDataRepository
+import logic.useCases.ProjectUseCases
 import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Test
 import ui.cliPrintersAndReaders.CLIPrinter
@@ -26,6 +27,7 @@ class ProjectViewTest {
     private lateinit var project: Project
     private lateinit var user: User
     private lateinit var logsView: LogsView
+    private lateinit var projectUseCases: ProjectUseCases
 
     @BeforeEach
     fun setUp() {
@@ -39,6 +41,7 @@ class ProjectViewTest {
         project = mockk()
         user = mockk()
         logsView = mockk()
+        projectUseCases = mockk()
 
         projectView = ProjectView(
             cliPrinter,
@@ -48,6 +51,7 @@ class ProjectViewTest {
             editProjectView,
             deleteProjectView,
             projectTasksView,
+            projectUseCases,
             logsView
         )
 
