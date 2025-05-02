@@ -2,6 +2,7 @@ package data.cacheData
 
 import data.fileIO.createFileIfNotExist
 import logic.entities.User
+import logic.exceptions.NoLoggedInUserIsSavedInCacheException
 import logic.repositories.CacheDataRepository
 import java.io.File
 import java.util.*
@@ -16,8 +17,9 @@ class CacheDataSource(
         loggedInUser = loadUserFromLocalFile()
     }
 
-    override fun getLoggedInUser(): User? {
-        return loggedInUser
+    override fun getLoggedInUser(): User {
+        if (loggedInUser == null) throw NoLoggedInUserIsSavedInCacheException()
+        return loggedInUser!!
     }
 
     override fun setLoggedInUser(user: User) {
@@ -25,7 +27,7 @@ class CacheDataSource(
         loggedInUser = user
     }
 
-    override fun clearLoggedInUserFromCatch() {
+    override fun clearLoggedInUserFromCache() {
         activeUserFile.writeText("")
         loggedInUser = null
     }

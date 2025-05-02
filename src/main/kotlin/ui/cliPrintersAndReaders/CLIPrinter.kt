@@ -49,5 +49,4 @@ class CLIPrinter {
         const val THIN_HORIZONTAL_ELEMENT = "-"
         const val pleaseLoginMessage = "please login to continue ..."
     }
-
 }
