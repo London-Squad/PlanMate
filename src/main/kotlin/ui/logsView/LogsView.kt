@@ -1,0 +1,66 @@
+package ui.logsView
+
+import logic.entities.*
+import logic.useCases.GetLogsByEntityIdUseCase
+import ui.cliPrintersAndReaders.CLIPrinter
+import ui.cliPrintersAndReaders.CLIReader
+import java.time.LocalDateTime
+import java.time.format.DateTimeFormatter
+import java.util.*
+
+class LogsView(
+    private val cliPrinter: CLIPrinter,
+    private val cliReader: CLIReader,
+    private val getLogsByEntityIdUseCase: GetLogsByEntityIdUseCase
+) {
+    fun printLogsByEntityId(entityId: UUID) {
+
+        printHeader()
+        printLogsTableHeader()
+        printLogs(entityId)
+        cliReader.getUserInput("\npress enter to go back")
+
+    }
+
+    private fun printHeader() {
+        cliPrinter.printHeader("Logs")
+    }
+
+    private fun printLogsTableHeader() {
+        printLn("------------------------------------------------------------------------------------------------------------------------")
+        printLn("Log Id                               | log message                                                                      ")
+        printLn("------------------------------------------------------------------------------------------------------------------------")
+    }
+
+    private fun printLogs(entityId: UUID) {
+        getLogsByEntityIdUseCase.getLogsByEntityId(entityId).forEach(::printLog)
+    }
+
+    private fun printLog(log: Log) {
+        printLn("${log.id} | user (${log.user.userName}) ${actionToString(log.action)} at ${formatedTime(log.time)}")
+    }
+
+    private fun actionToString(action: Action): String {
+        return when (action) {
+            is Create -> "created ${entityName(action.entity)} (${action.entity.title})"
+            is Delete -> "deleted ${entityName(action.entity)} (${action.entity.title})"
+            is Edit -> "edited ${entityName(action.entity)} (${action.entity.title}) ${action.property} from (${action.oldValue}) to (${action.newValue}) "
+        }
+    }
+
+    private fun entityName(entity: PlanEntity): String {
+        return when (entity) {
+            is Project -> "project"
+            is State -> "state"
+            is Task -> "task"
+            else -> "unknown entity"
+        }
+    }
+
+    private fun formatedTime(time: LocalDateTime): String {
+        val formatter = DateTimeFormatter.ofPattern("dd/MM/yyyy HH:mm:ss")
+        return time.format(formatter)
+    }
+
+    private fun printLn(message: String) = cliPrinter.cliPrintLn(message)
+}

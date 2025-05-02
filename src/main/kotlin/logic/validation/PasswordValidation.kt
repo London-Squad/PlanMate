@@ -1,6 +1,7 @@
 package logic.validation
 
-import logic.exception.AuthenticationException
+import logic.exceptions.AuthenticationException
+
 
 fun String.takeIfValidPasswordOrThrowException() {
     if (!isValidPassword()) throw AuthenticationException.InvalidPasswordException()

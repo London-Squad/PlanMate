@@ -8,7 +8,7 @@ class SwimlanesView(
 ) {
 
     fun displaySwimlanes(project: Project) {
-        cliPrinter.printHeader("Swimlanes: ${project.title}")
+        cliPrinter.printHeader("Project: ${project.title}")
         if (project.states.isEmpty()) {
             cliPrinter.cliPrintLn("No states defined for this project.")
             return

@@ -1,9 +1,10 @@
-package data.repository
+package data
 
 import data.fileIO.*
 import data.security.hashing.HashingAlgorithm
 import logic.entities.User
-import logic.exception.AuthenticationException.*
+import logic.exceptions.AuthenticationException.*
+
 import logic.repositories.AuthenticationRepository
 import java.io.File
 import java.util.*
@@ -56,12 +57,12 @@ class AuthenticationDataSource(
         return true
     }
 
-    private companion object {
+    companion object {
         val ADMIN = User(
             id = UUID.fromString("5750f82c-c1b6-454d-b160-5b14857bc9dc"),
             userName = "admin",
             type = User.Type.ADMIN
         )
-        const val ADMIN_PASSWORD = "Admin12"
+        private const val ADMIN_PASSWORD = "Admin12"
     }
 }

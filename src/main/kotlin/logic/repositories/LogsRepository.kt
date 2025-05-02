@@ -7,7 +7,7 @@ interface LogsRepository {
 
     fun getAllLogs(): List<Log>
 
-    fun getLogById(id: UUID): List<Log>
+    fun getLogsByEntityId(entityId: UUID): List<Log>
 
     fun addLog(log: Log)
 

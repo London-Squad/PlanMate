@@ -1,11 +1,16 @@
 package logic.useCases
 
-import logic.entities.Project
-import logic.entities.State
+import logic.entities.*
+import logic.repositories.CacheDataRepository
+import logic.repositories.LogsRepository
 import logic.repositories.ProjectsRepository
 import java.util.UUID
 
-class ProjectUseCases(private val projectsRepository: ProjectsRepository) {
+class ProjectUseCases(
+    private val projectsRepository: ProjectsRepository,
+    private val cacheDataRepository: CacheDataRepository,
+    private val logsRepository: LogsRepository
+) {
 
     fun getAllProjects(): List<Project> {
         return projectsRepository.getAllProjects()
@@ -34,23 +39,77 @@ class ProjectUseCases(private val projectsRepository: ProjectsRepository) {
             states = defaultStates
         )
         projectsRepository.addNewProject(project)
+        logNewProject(project)
         return project
     }
 
+    private fun logNewProject(project: Project) {
+        logsRepository.addLog(
+            Log(
+                user = cacheDataRepository.getLoggedInUser(),
+                action = Create(project)
+            )
+        )
+    }
+
     fun editProjectTitle(projectId: UUID, newTitle: String) {
+
+        logsRepository.addLog(
+            Log(
+                user = cacheDataRepository.getLoggedInUser(),
+                action = Edit(
+                    entity = projectsRepository.getAllProjects().first { it.id == projectId },
+                    property = "title",
+                    oldValue = projectsRepository.getAllProjects().first { it.id == projectId }.title,
+                    newValue = newTitle
+                )
+            )
+        )
         projectsRepository.editProjectTitle(projectId, newTitle)
     }
 
     fun editProjectDescription(projectId: UUID, newDescription: String) {
+
+        logsRepository.addLog(
+            Log(
+                user = cacheDataRepository.getLoggedInUser(),
+                action = Edit(
+                    entity = projectsRepository.getAllProjects().first { it.id == projectId },
+                    property = "description",
+                    oldValue = projectsRepository.getAllProjects().first { it.id == projectId }.description,
+                    newValue = newDescription
+                )
+            )
+        )
+
         projectsRepository.editProjectDescription(projectId, newDescription)
     }
 
     fun deleteProject(projectId: UUID) {
+
+        logsRepository.addLog(
+            Log(
+                user = cacheDataRepository.getLoggedInUser(),
+                action = Delete(
+                    entity = projectsRepository.getAllProjects().first { it.id == projectId },
+                )
+            )
+        )
+
         projectsRepository.deleteProject(projectId)
     }
 
     fun updateProject(project: Project) {
         projectsRepository.deleteProject(project.id)
         projectsRepository.addNewProject(project)
+    }
+
+    fun logTaskCreation(task: Task) {
+        logsRepository.addLog(
+            Log(
+                user = cacheDataRepository.getLoggedInUser(),
+                action = Create(task)
+            )
+        )
     }
 }

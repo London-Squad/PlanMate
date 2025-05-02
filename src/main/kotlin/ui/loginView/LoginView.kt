@@ -1,6 +1,6 @@
 package ui.loginView
 
-import logic.exception.AuthenticationException
+import logic.exceptions.AuthenticationException
 import logic.repositories.CacheDataRepository
 import logic.useCases.LoginUseCase
 import ui.cliPrintersAndReaders.CLIPrinter

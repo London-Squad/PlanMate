@@ -5,6 +5,7 @@ import ui.cliPrintersAndReaders.CLIPrinter
 import ui.cliPrintersAndReaders.CLIReader
 import ui.projectView.ProjectView
 import ui.loginView.LoginView
+import ui.logsView.LogsView
 import ui.mainMenuView.MainMenuView
 import ui.matesManagementView.MateCreationView
 import ui.matesManagementView.MatesManagementView
@@ -26,6 +27,7 @@ val uiModule = module {
     single { TaskManagementView(get(), get(), get(), get(), get(), get(), get()) }
 
     single { ProjectTasksView(get(), get(), get(), get()) }
+    single { LogsView(get(), get(), get()) }
 
     single { MainMenuView(get(), get(), get(), get(), get(), get()) }
 
@@ -35,12 +37,12 @@ val uiModule = module {
 
     single { ProjectsView(get(), get(), get(), get(), get()) }
 
-    single { ProjectView(get(), get(), get(), get(), get(), get(), get(), get()) }
+    single { ProjectView(get(), get(), get(), get(), get(), get(), get(), get(), get()) }
     single { SwimlanesView(get()) }
     single { StatesView(get(), get(), get()) }
     single { EditProjectView(get(), get(), get(), get()) }
     single { DeleteProjectView(get(), get()) }
-    single { ProjectView(get(), get(), get(), get(), get(), get(), get(), get()) }
+    single { ProjectView(get(), get(), get(), get(), get(), get(), get(), get(), get()) }
     single { ProjectsView(get(), get(), get(), get(), get()) }
 
     single { MateCreationView(get(), get(), get()) }

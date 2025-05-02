@@ -4,7 +4,7 @@ import io.mockk.every
 import io.mockk.mockk
 import io.mockk.verify
 import logic.entities.User
-import logic.exception.AuthenticationException
+import logic.exceptions.AuthenticationException
 import logic.useCases.CreateMateUseCase
 import ui.cliPrintersAndReaders.CLIPrinter
 import ui.cliPrintersAndReaders.CLIReader
