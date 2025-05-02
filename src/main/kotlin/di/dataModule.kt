@@ -4,7 +4,6 @@ import data.TaskDataSource
 import data.cacheData.CacheDataSource
 import data.dataSource.CsvProjectsDataSource
 import data.dataSource.CsvStatesDataSource
-import data.dataSource.CsvStatesDataSource
 import data.dataSource.LogsDataSource
 import data.fileIO.FilePath
 import data.repository.AuthenticationDataSource
@@ -32,7 +31,6 @@ val dataModule = module {
 
     single<ProjectsRepository> { CsvProjectsDataSource(get(named("projectsFile"))) }
     single<StatesRepository> { CsvStatesDataSource(get(named("statesFile"))) }
-    single<StatesRepository> { CsvStatesDataSource() }
     single<LogsRepository> { LogsDataSource() }
     single<ProjectsRepository> { CsvProjectsDataSource(get()) }
     single<CacheDataRepository> { CacheDataSource(File(FilePath.ACTIVE_USER_FILE)) }

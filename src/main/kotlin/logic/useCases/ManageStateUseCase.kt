@@ -55,7 +55,7 @@ class ManageStateUseCase(
     }
 
     fun getStates(projectId: UUID): List<State> {
-        return statesRepository.getStatesByProjectId(projectId)
+        return statesRepository.getAllStatesByProjectId(projectId)
     }
 
     private fun logAction(action: Action) {
