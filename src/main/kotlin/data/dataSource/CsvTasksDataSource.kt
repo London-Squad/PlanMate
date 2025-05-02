@@ -33,7 +33,7 @@ class CsvTasksDataSource(
                     id = UUID.fromString(id),
                     title = title,
                     description = description,
-                    state = statesRepository.getStateById(UUID.fromString(stateId))
+                    state = statesRepository.getStateById(UUID.fromString(stateId)) ?: State.NoState
                 )
             )
         }
