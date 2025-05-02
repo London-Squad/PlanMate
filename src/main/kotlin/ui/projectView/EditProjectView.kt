@@ -4,11 +4,13 @@ import logic.entities.Project
 import logic.useCases.ProjectUseCases
 import ui.cliPrintersAndReaders.CLIPrinter
 import ui.cliPrintersAndReaders.CLIReader
+import ui.statesView.StatesView
 
 class EditProjectView(
     private val cliPrinter: CLIPrinter,
     private val cliReader: CLIReader,
-    private val projectUseCases: ProjectUseCases
+    private val projectUseCases: ProjectUseCases,
+    private val statesView: StatesView
 ) {
 
     lateinit var currentProject: Project
@@ -60,6 +62,6 @@ class EditProjectView(
     }
 
     private fun statesManagement() {
-        TODO("Not yet implemented")
+        statesView.start(currentProject.id)
     }
 }
