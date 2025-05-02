@@ -11,10 +11,9 @@ interface AuthenticationRepository {
 
     fun login(userName: String, password: String): User
 
-    fun logout()
+    fun logout(): Boolean
 
-    fun register(userName: String, password: String): User
+    fun register(userName: String, password: String): Boolean
 
-    fun changePassword(userId: UUID, currentPassword: String, newPassword: String)
-
+    fun changePassword(userName: String, currentPassword: String, newPassword: String): Boolean
 }
