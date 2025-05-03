@@ -1,45 +1,45 @@
 package logic.useCases
 
 import logic.entities.User
-import logic.exceptions.AuthenticationException
+import logic.exceptions.*
 import logic.repositories.AuthenticationRepository
 import logic.repositories.CacheDataRepository
-import logic.validation.takeIfValidNameOrThrowException
-import logic.validation.takeIfValidPasswordOrThrowException
+import logic.validation.CredentialValidator
 
 class CreateMateUseCase(
     private val cacheDataRepository: CacheDataRepository,
-    private val authenticationRepository: AuthenticationRepository
+    private val authenticationRepository: AuthenticationRepository,
+    private val credentialValidator: CredentialValidator
 ) {
     fun createMate(username: String, password: String) {
         val loggedInUser = try {
             cacheDataRepository.getLoggedInUser()
         } catch (e: Exception) {
-            throw AuthenticationException.UserNotFoundException()
+            throw UserNotFoundException()
         }
 
         if (loggedInUser.type != User.Type.ADMIN) {
-            throw AuthenticationException.UnauthorizedAccessException()
+            throw UnauthorizedAccessException()
         }
 
-        username.takeIfValidNameOrThrowException()
-        password.takeIfValidPasswordOrThrowException()
+        credentialValidator.takeIfValidNameOrThrowException(username)
+        credentialValidator.takeIfValidPasswordOrThrowException(password)
 
         authenticationRepository.getMates()
             .any { it.userName == username }
             .takeIf { it }?.let {
-                throw AuthenticationException.UsernameTakenException()
+                throw UsernameTakenException()
             }
         val registered = try {
             authenticationRepository.register(username, password)
-        } catch (e: AuthenticationException.UserAlreadyExistException) {
-            throw AuthenticationException.UsernameTakenException()
+        } catch (e: UserAlreadyExistException) {
+            throw UsernameTakenException()
         } catch (e: Exception) {
-            throw AuthenticationException.RegistrationFailedException()
+            throw RegistrationFailedException()
         }
 
         if (!registered) {
-            throw AuthenticationException.RegistrationFailedException()
+            throw RegistrationFailedException()
         }
 
     }

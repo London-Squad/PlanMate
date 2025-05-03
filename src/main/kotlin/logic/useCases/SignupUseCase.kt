@@ -1,15 +1,15 @@
 package logic.useCases
 
 import logic.repositories.AuthenticationRepository
-import logic.validation.takeIfValidPasswordOrThrowException
-import logic.validation.takeIfValidNameOrThrowException
+import logic.validation.CredentialValidator
 
 class SignupUseCase(
-    private val authenticationRepository: AuthenticationRepository
+    private val authenticationRepository: AuthenticationRepository,
+    private val credentialValidator: CredentialValidator
 ) {
     operator fun invoke(userName: String, password: String): Boolean {
-        userName.takeIfValidNameOrThrowException()
-        password.takeIfValidPasswordOrThrowException()
+        credentialValidator.takeIfValidNameOrThrowException(userName)
+        credentialValidator.takeIfValidPasswordOrThrowException(password)
         return authenticationRepository.register(userName, password)
     }
 }

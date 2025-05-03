@@ -1,6 +1,6 @@
 package ui.matesManagementView
 
-import logic.exceptions.AuthenticationException
+import logic.exceptions.*
 import logic.useCases.CreateMateUseCase
 import ui.cliPrintersAndReaders.CLIPrinter
 import ui.cliPrintersAndReaders.CLIReader
@@ -18,17 +18,17 @@ class MateCreationView(
             val password = cliReader.getUserInput("Enter password: ")
             createMateUseCase.createMate(username, password)
             cliPrinter.cliPrintLn("Mate created successfully: ${username}")
-        } catch (e: AuthenticationException.UserNotFoundException) {
+        } catch (e: UserNotFoundException) {
             cliPrinter.cliPrintLn("Error: No user is logged in.")
-        } catch (e: AuthenticationException.UnauthorizedAccessException) {
+        } catch (e: UnauthorizedAccessException) {
             cliPrinter.cliPrintLn("Error: ${e.message}.")
-        } catch (e: AuthenticationException.InvalidUserNameLengthException) {
+        } catch (e: InvalidUserNameLengthException) {
             cliPrinter.cliPrintLn("Error: Username should be at least 4 characters, alphanumeric, no whitespace.")
-        } catch (e: AuthenticationException.InvalidPasswordException) {
+        } catch (e: InvalidPasswordException) {
             cliPrinter.cliPrintLn("Error: ${e.message}.")
-        } catch (e: AuthenticationException.UsernameTakenException) {
+        } catch (e: UsernameTakenException) {
             cliPrinter.cliPrintLn("Error: ${e.message}.")
-        } catch (e: AuthenticationException.RegistrationFailedException) {
+        } catch (e: RegistrationFailedException) {
             cliPrinter.cliPrintLn("Error: ${e.message}")
         } catch (e: Exception) {
             cliPrinter.cliPrintLn("Unexpected error: ${e.message}")
