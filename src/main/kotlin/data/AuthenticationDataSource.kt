@@ -1,21 +1,21 @@
 package data
 
-import data.fileIO.*
+import data.fileIO.UserFileHelper
+import data.fileIO.createFileIfNotExist
 import data.security.hashing.HashingAlgorithm
 import logic.entities.User
-import logic.exceptions.AuthenticationException.*
-
+import logic.exceptions.UserAlreadyExistException
+import logic.exceptions.UserNotFoundException
 import logic.repositories.AuthenticationRepository
 import java.io.File
 import java.util.*
 
 class AuthenticationDataSource(
     private val userFile: File,
-    private val hashingAlgorithm: HashingAlgorithm,
+    private val hashingAlgorithm: HashingAlgorithm
 ) : AuthenticationRepository {
 
     init {
-//        if (userFile.name == FilePath.USER_FILE) throw
         userFile.createFileIfNotExist( "id,userName,password,type\n")
     }
 

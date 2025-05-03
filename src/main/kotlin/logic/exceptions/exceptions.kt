@@ -2,18 +2,18 @@ package logic.exceptions
 
 class NoLoggedInUserIsSavedInCacheException() : Exception("no logged in user is saved in memory")
 
-sealed class AuthenticationException(message: String) : Exception(message) {
-    class InvalidUserNameLengthException : AuthenticationException("Username should be 4 or more characters")
+open class AuthenticationException(message: String) : Exception(message)
 
-    class InvalidPasswordException : AuthenticationException(
-        "Password should be 6 to 12 character and includes at least 1 lower case and 1 uppercase character"
-    )
+class InvalidUserNameLengthException : AuthenticationException("Username should be 4 or more characters")
 
-    class UserNotFoundException : AuthenticationException("User Not found")
+class InvalidPasswordException : AuthenticationException(
+    "Password should be 6 to 12 character and includes at least 1 lower case and 1 uppercase character"
+)
 
-    class UserAlreadyExistException : AuthenticationException("User Already exist")
+class UserNotFoundException : AuthenticationException("User Not found")
 
-    class UnauthorizedAccessException : AuthenticationException("UnauthorizedAccessException")
-    class UsernameTakenException : AuthenticationException("UsernameTakenException")
-    class RegistrationFailedException : AuthenticationException("RegistrationFailedException")
-}
+class UserAlreadyExistException : AuthenticationException("User Already exist")
+
+class UnauthorizedAccessException : AuthenticationException("UnauthorizedAccessException")
+class UsernameTakenException : AuthenticationException("UsernameTakenException")
+class RegistrationFailedException : AuthenticationException("RegistrationFailedException")
