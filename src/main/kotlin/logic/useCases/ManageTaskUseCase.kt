@@ -13,68 +13,68 @@ class ManageTaskUseCase(
 ) {
 
     fun editTaskTitle(taskID: UUID, newTitle: String) {
+            val task = taskRepository.getTaskByID(taskID)
 
-        logsRepository.addLog(
-            Log(
-                user = cacheDataRepository.getLoggedInUser(),
-                action = Edit(
-                    entity = taskRepository.getTaskByID(taskID)!!,
-                    property = "title",
-                    oldValue = taskRepository.getTaskByID(taskID)!!.title,
-                    newValue = newTitle
+            taskRepository.editTaskTitle(taskID, newTitle)
+            logsRepository.addLog(
+                Log(
+                    user = cacheDataRepository.getLoggedInUser(),
+                    action = Edit(
+                        entity = task,
+                        property = "title",
+                        oldValue = task.title,
+                        newValue = newTitle
+                    )
                 )
             )
-        )
-
-        taskRepository.editTaskTitle(taskID, newTitle)
     }
 
     fun editTaskDescription(taskID: UUID, newDescription: String) {
+        val task = taskRepository.getTaskByID(taskID)
 
+        taskRepository.editTaskDescription(taskID, newDescription)
         logsRepository.addLog(
             Log(
                 user = cacheDataRepository.getLoggedInUser(),
                 action = Edit(
-                    entity = taskRepository.getTaskByID(taskID)!!,
+                    entity = task,
                     property = "description",
-                    oldValue = taskRepository.getTaskByID(taskID)!!.description,
+                    oldValue = task.description,
                     newValue = newDescription
                 )
             )
         )
-
-        taskRepository.editTaskDescription(taskID, newDescription)
     }
 
     fun editTaskState(taskID: UUID, newState: State) {
+        val task = taskRepository.getTaskByID(taskID)
 
+        taskRepository.editTaskState(taskID, newState)
         logsRepository.addLog(
             Log(
                 user = cacheDataRepository.getLoggedInUser(),
                 action = Edit(
-                    entity = taskRepository.getTaskByID(taskID)!!,
+                    entity = task,
                     property = "state",
-                    oldValue = taskRepository.getTaskByID(taskID)!!.state.title,
+                    oldValue = task.state.title,
                     newValue = newState.title
                 )
             )
         )
-
-        taskRepository.editTaskState(taskID, newState)
     }
 
     fun deleteTask(taskID: UUID) {
+        val task = taskRepository.getTaskByID(taskID)
 
+        taskRepository.deleteTask(taskID)
         logsRepository.addLog(
             Log(
                 user = cacheDataRepository.getLoggedInUser(),
                 action = Delete(
-                    entity = taskRepository.getTaskByID(taskID)!!,
+                    entity = task,
                 )
             )
         )
-
-        taskRepository.deleteTask(taskID)
     }
 
 }

@@ -2,6 +2,7 @@ package data
 
 import logic.entities.State
 import logic.entities.Task
+import logic.exceptions.NotFoundException
 import logic.repositories.StatesRepository
 import logic.repositories.TaskRepository
 import java.io.File
@@ -45,10 +46,10 @@ class CsvTasksDataSource(
             .map { it.second }
     }
 
-    override fun getTaskByID(taskId: UUID): Task? {
+    override fun getTaskByID(taskId: UUID): Task {
         return getAllTasksPairedWithProjectID()
             .filter { it.second.id == taskId }
-            .map { it.second }.firstOrNull()
+            .map { it.second }.firstOrNull() ?: throw NotFoundException("task not found")
     }
 
     override fun addNewTask(task: Task, projectId: UUID) {

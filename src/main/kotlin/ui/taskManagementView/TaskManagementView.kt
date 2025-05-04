@@ -2,9 +2,11 @@ package ui.taskManagementView
 
 import logic.entities.Project
 import logic.entities.Task
+import logic.exceptions.NotFoundException
 import logic.repositories.TaskRepository
 import ui.cliPrintersAndReaders.CLIPrinter
 import ui.cliPrintersAndReaders.CLIReader
+import java.util.UUID
 
 class TaskManagementView(
     private val cliReader: CLIReader,
@@ -16,10 +18,18 @@ class TaskManagementView(
     private val taskRepository: TaskRepository
 ) {
 
-    fun start(task: Task, project: Project) {
-        printTask(task)
-        printOptions()
-        selectNextUI(task, project)
+    fun start(taskID: UUID, project: Project) {
+
+        try {
+
+            val task = taskRepository.getTaskByID(taskID)
+            printTask(task)
+            printOptions()
+            selectNextUI(task, project)
+
+        } catch (e: NotFoundException) {
+            cliPrinter.cliPrintLn(e.message ?: "task not found")
+        }
     }
 
     private fun printTask(task: Task) {
@@ -40,23 +50,24 @@ class TaskManagementView(
         when (getValidUserInput()) {
             "1" -> {
                 taskTitleEditionView.editTitle(task)
-                val updatedTask = taskRepository.getTaskByID(task.id) ?: task
-                start(updatedTask, project)
+                start(task.id, project)
             }
+
             "2" -> {
                 taskDescriptionEditionView.editDescription(task)
-                val updatedTask = taskRepository.getTaskByID(task.id) ?: task
-                start(updatedTask, project)
+                start(task.id, project)
             }
+
             "3" -> {
                 taskStateEditionView.editState(task, project.states)
-                val updatedTask = taskRepository.getTaskByID(task.id) ?: task
-                start(updatedTask, project)
+                start(task.id, project)
             }
+
             "4" -> {
                 taskDeletionView.deleteTask(task)
                 return
             }
+
             "0" -> return
         }
     }
