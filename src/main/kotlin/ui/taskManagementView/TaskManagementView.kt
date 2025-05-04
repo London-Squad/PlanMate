@@ -6,6 +6,7 @@ import logic.exceptions.NotFoundException
 import logic.repositories.TaskRepository
 import ui.cliPrintersAndReaders.CLIPrinter
 import ui.cliPrintersAndReaders.CLIReader
+import ui.logsView.LogsView
 import java.util.UUID
 
 class TaskManagementView(
@@ -15,7 +16,8 @@ class TaskManagementView(
     private val taskDescriptionEditionView: TaskDescriptionEditionView,
     private val taskStateEditionView: TaskStateEditionView,
     private val taskDeletionView: TaskDeletionView,
-    private val taskRepository: TaskRepository
+    private val taskRepository: TaskRepository,
+    private val logsView: LogsView
 ) {
 
     fun start(taskID: UUID, project: Project) {
@@ -42,8 +44,9 @@ class TaskManagementView(
         printLn("1. Edit Title")
         printLn("2. Edit description")
         printLn("3. Edit state")
-        printLn("4. delete task")
-        printLn("0. back")
+        printLn("4. Delete task")
+        printLn("5. View task logs")
+        printLn("0. Back")
     }
 
     private fun selectNextUI(task: Task, project: Project) {
@@ -68,6 +71,11 @@ class TaskManagementView(
                 return
             }
 
+            "5" -> {
+                logsView.printLogsByEntityId(task.id)
+                start(task.id, project)
+            }
+
             "0" -> return
         }
     }
@@ -86,6 +94,6 @@ class TaskManagementView(
     }
 
     private companion object {
-        val OPTIONS_LIST = listOf("0", "1", "2", "3", "4")
+        val OPTIONS_LIST = listOf("0", "1", "2", "3", "4", "5")
     }
 }
