@@ -1,2 +1,2 @@
 # Plan Mate CLI APP
-developed by London Squad as part of TheChance Program
+developed by London Squad as part of [**The Chance**](https://the-chance.net/) Program
