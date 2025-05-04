@@ -3,7 +3,6 @@ package ui.projectView
 import logic.entities.Project
 import logic.entities.Task
 import logic.useCases.ProjectUseCases
-import logic.useCases.ManageTaskUseCase
 import ui.cliPrintersAndReaders.CLIPrinter
 import ui.cliPrintersAndReaders.CLIReader
 import ui.taskManagementView.TaskManagementView
@@ -72,16 +71,8 @@ class ProjectTasksView(
         }
 
         val defaultState = currentProject.states.first()
-        val title = cliReader.getValidUserInput(
-            message = "Enter task title: ",
-            invalidInputMessage = "Title cannot be empty",
-            isValidInput = { it.isNotBlank() }
-        )
-        val description = cliReader.getValidUserInput(
-            message = "Enter task description: ",
-            invalidInputMessage = "Description cannot be empty",
-            isValidInput = { it.isNotBlank() }
-        )
+        val title = cliReader.getValidTitle()
+        val description = cliReader.getValidDescription()
 
         val newTask = Task(
             id = UUID.randomUUID(),

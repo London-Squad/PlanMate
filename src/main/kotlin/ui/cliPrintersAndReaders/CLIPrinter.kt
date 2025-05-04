@@ -11,7 +11,7 @@ class CLIPrinter {
     }
 
     fun printPleaseLoginMessage() {
-        cliPrintLn(pleaseLoginMessage)
+        cliPrintLn(PLEASE_LOGIN_MESSAGE)
     }
 
     fun printHeader(headerText: String) {
@@ -47,6 +47,6 @@ class CLIPrinter {
         const val VIEW_WIDTH = 70
         const val THICK_HORIZONTAL_ELEMENT = "="
         const val THIN_HORIZONTAL_ELEMENT = "-"
-        const val pleaseLoginMessage = "please login to continue ..."
+        const val PLEASE_LOGIN_MESSAGE = "please login to continue ..."
     }
 }

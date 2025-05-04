@@ -3,6 +3,7 @@ package di
 import logic.useCases.*
 import logic.useCases.CreateMateUseCase
 import logic.validation.CredentialValidator
+import logic.validation.UserInputValidator
 import org.koin.dsl.module
 
 val logicModule = module {
@@ -15,4 +16,5 @@ val logicModule = module {
     single { ManageStateUseCase(get(), get(), get()) }
     single { CreateMateUseCase(get(), get(), get()) }
     single { CredentialValidator() }
+    single { UserInputValidator() }
 }

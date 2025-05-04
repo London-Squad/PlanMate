@@ -7,13 +7,13 @@ import ui.cliPrintersAndReaders.CLIPrinter
 import ui.cliPrintersAndReaders.CLIReader
 
 class TaskManagementView(
-    private val cliReader: CLIReader,
     private val cliPrinter: CLIPrinter,
     private val taskTitleEditionView: TaskTitleEditionView,
     private val taskDescriptionEditionView: TaskDescriptionEditionView,
     private val taskStateEditionView: TaskStateEditionView,
     private val taskDeletionView: TaskDeletionView,
-    private val taskRepository: TaskRepository
+    private val taskRepository: TaskRepository,
+    private val cliReader: CLIReader
 ) {
 
     fun start(task: Task, project: Project) {
@@ -37,44 +37,40 @@ class TaskManagementView(
     }
 
     private fun selectNextUI(task: Task, project: Project) {
-        when (getValidUserInput()) {
+        when (cliReader.getValidUserNumberInRange(MAX_OPTION_NUMBER)) {
             "1" -> {
                 taskTitleEditionView.editTitle(task)
                 val updatedTask = taskRepository.getTaskByID(task.id) ?: task
                 start(updatedTask, project)
             }
+
             "2" -> {
                 taskDescriptionEditionView.editDescription(task)
                 val updatedTask = taskRepository.getTaskByID(task.id) ?: task
                 start(updatedTask, project)
             }
+
             "3" -> {
                 taskStateEditionView.editState(task, project.states)
                 val updatedTask = taskRepository.getTaskByID(task.id) ?: task
                 start(updatedTask, project)
             }
+
             "4" -> {
                 taskDeletionView.deleteTask(task)
                 return
             }
+
             "0" -> return
         }
     }
 
-    private fun getValidUserInput(): String {
-        val userInput = cliReader.getUserInput("your option:")
-        if (userInput in OPTIONS_LIST) return userInput
-        else {
-            printLn("Invalid option")
-            return getValidUserInput()
-        }
-    }
 
     private fun printLn(message: String) {
         cliPrinter.cliPrintLn(message)
     }
 
     private companion object {
-        val OPTIONS_LIST = listOf("0", "1", "2", "3", "4")
+        const val MAX_OPTION_NUMBER = 4
     }
 }
