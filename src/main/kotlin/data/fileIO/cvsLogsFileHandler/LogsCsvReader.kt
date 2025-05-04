@@ -14,7 +14,7 @@ class LogsCsvReader(
 
         if (!logsFile.exists()) {
             logsFile.createNewFile()
-            logsFile.writeText("id,userId,actionType,entityId,entityType,time,property,oldValue,newValue\n")
+            logsFile.writeText("id,time,userId,planEntityId,message,projectId\n")
         }
     }
 
@@ -22,10 +22,5 @@ class LogsCsvReader(
         return logsFile
             .readLines()
             .drop(1)
-            .filter { it.split(",").size == EXPECTED_COLUMNS }
-    }
-
-    companion object {
-        private const val EXPECTED_COLUMNS = 9
     }
 }

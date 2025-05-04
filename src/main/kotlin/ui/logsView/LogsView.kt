@@ -27,9 +27,9 @@ class LogsView(
     }
 
     private fun printLogsTableHeader() {
-        printLn("------------------------------------------------------------------------------------------------------------------------")
-        printLn("Log Id                               | log message                                                                      ")
-        printLn("------------------------------------------------------------------------------------------------------------------------")
+        printLn("----------------------------------------------------------------------------------------------------------------------------------------------")
+        printLn("Log Id                               | time                | log message                                                                      ")
+        printLn("----------------------------------------------------------------------------------------------------------------------------------------------")
     }
 
     private fun printLogs(entityId: UUID) {
@@ -37,24 +37,7 @@ class LogsView(
     }
 
     private fun printLog(log: Log) {
-        printLn("${log.id} | user (${log.user.userName}) ${actionToString(log.action)} at ${formatedTime(log.time)}")
-    }
-
-    private fun actionToString(action: Action): String {
-        return when (action) {
-            is Create -> "created ${entityName(action.entity)} (${action.entity.title})"
-            is Delete -> "deleted ${entityName(action.entity)} (${action.entity.title})"
-            is Edit -> "edited ${entityName(action.entity)} (${action.entity.title}) ${action.property} from (${action.oldValue}) to (${action.newValue}) "
-        }
-    }
-
-    private fun entityName(entity: PlanEntity): String {
-        return when (entity) {
-            is Project -> "project"
-            is State -> "state"
-            is Task -> "task"
-            else -> "unknown entity"
-        }
+        printLn("${log.id} | ${formatedTime(log.time)} | ${log.message} ")
     }
 
     private fun formatedTime(time: LocalDateTime): String {

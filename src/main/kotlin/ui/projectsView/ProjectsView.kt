@@ -1,6 +1,5 @@
 package ui.projectsView
 
-import logic.entities.Project
 import logic.entities.User
 import logic.exceptions.NoLoggedInUserIsSavedInCacheException
 import logic.repositories.CacheDataRepository
@@ -31,10 +30,6 @@ class ProjectsView(
         printHeader()
         printProjects()
         goToNextUi()
-
-    }
-
-    fun handleProjectsView(currentUser: User) {
 
     }
 

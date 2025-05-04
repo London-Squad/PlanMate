@@ -10,162 +10,108 @@ import java.util.UUID
 class LogsDataSource(
     private val logsCsvReader: LogsCsvReader,
     private val logsCsvWriter: LogsCsvWriter,
-    private val authenticationRepository: AuthenticationRepository,
-    private val projectsRepository: ProjectsRepository,
-    private val statesRepository: StatesRepository,
-    private val tasksRepository: TaskRepository,
+    private val cacheDataRepository: CacheDataRepository,
+    private val projectsRepository: ProjectsRepository
 ) : LogsRepository {
 
     override fun getAllLogs(): List<Log> {
-        return logsCsvReader.readRows().mapNotNull { parseLog(it) }
+        return logsCsvReader.readRows().map { parseLogCsvRowToLogProjectIdPair(it).first }
     }
 
     override fun getLogsByEntityId(entityId: UUID): List<Log> {
-        var result: List<Log> = listOf()
-
-        try {
-            result = result + getAllLogs().filter { it.action.entity.id == entityId }
-
-            result.forEach { log ->
-                if (log.action.entity is Project) {
-                    (log.action.entity as Project).tasks.forEach { task ->
-                        result = result + getLogsByEntityId(task.id)
-                    }
-                    (log.action.entity as Project).states.forEach { state ->
-                        result = result + getLogsByEntityId(state.id)
-                    }
-                }
-            }
-        } catch (_: Exception) {
-            return listOf()
-        }
-
-        result = result.toSet().toList()
-
-        result = result.sortedBy { it.time }
-
-        return result
+        return logsCsvReader.readRows()
+            .map(::parseLogCsvRowToLogProjectIdPair)
+            .filter { (log, projectId) -> log.planEntityId == entityId || projectId == entityId }
+            .map { it.first }
     }
 
-    override fun addLog(log: Log) {
-        val entityType = getEntityType(log.action.entity)
-        val actionType = getActionType(log.action)
-        val line = createLogLine(log, entityType, actionType)
-        logsCsvWriter.appendLine(line)
+    override fun addCreationLog(planEntity: PlanEntity) {
+        val loggerInUser = cacheDataRepository.getLoggedInUser()
+        addLog(
+            Log(
+                userId = loggerInUser.id,
+                planEntityId = planEntity.id,
+                message = "${loggerInUser.userName} created ${getEntityType(planEntity)} (${planEntity.title})"
+            )
+        )
     }
 
-    private fun getEntityType(entity: PlanEntity): String {
-        return when (entity) {
-            is Task -> "Task"
-            is Project -> "Project"
-            is State -> "State"
-            else -> throw (IllegalArgumentException("Unsupported entity type: ${entity::class.simpleName}"))
+    override fun addDeletionLog(planEntity: PlanEntity) {
+        val loggerInUser = cacheDataRepository.getLoggedInUser()
+        addLog(
+            Log(
+                userId = loggerInUser.id,
+                planEntityId = planEntity.id,
+                message = "${loggerInUser.userName} deleted ${getEntityType(planEntity)} (${planEntity.title})"
+            )
+        )
+    }
+
+    override fun addEditionLog(
+        planEntity: PlanEntity,
+        planEntityPropertyToChange: String,
+        oldValue: String,
+        newValue: String
+    ) {
+        val loggerInUser = cacheDataRepository.getLoggedInUser()
+
+        addLog(
+            Log(
+                userId = loggerInUser.id,
+                planEntityId = planEntity.id,
+                message = "${loggerInUser.userName} edited the $planEntityPropertyToChange of ${getEntityType(planEntity)} (${planEntity.title}) from (${oldValue}) to (${newValue})"
+            )
+        )
+    }
+
+    private fun getEntityType(planEntity: PlanEntity): String {
+        return when (planEntity) {
+            is Project -> "project"
+            is State -> "state"
+            is Task -> "task"
+            else -> "unknown plan entity"
         }
     }
 
-    private fun getActionType(action: Action): String {
-        return when (action) {
-            is Create -> "Create"
-            is Delete -> "Delete"
-            is Edit -> "Edit"
-        }
+    private fun addLog(log: Log) {
+        logsCsvWriter.appendLine(
+            logObjToCsvRow(log)
+        )
     }
 
-    private fun createLogLine(log: Log, entityType: String, actionType: String): String {
-        var property: String = "Nan"
-        var oldValue: String = "Nan"
-        var newValue: String = "Nan"
-
-        if (log.action is Edit) {
-            property = log.action.property
-            oldValue = log.action.oldValue
-            newValue = log.action.newValue
-        }
-
+    private fun logObjToCsvRow(log: Log): String {
         return listOf(
             log.id.toString(),
-            log.user.id.toString(),
-            actionType,
-            log.action.entity.id.toString(),
-            entityType,
             log.time.toString(),
-            property,
-            oldValue,
-            newValue
+            log.userId.toString(),
+            log.planEntityId.toString(),
+            log.message,
+            getProjectIdByPlanEntityId(log.planEntityId)
         ).joinToString(",")
     }
 
-    private fun parseLog(line: String): Log? {
+    private fun parseLogCsvRowToLogProjectIdPair(line: String): Pair<Log, UUID> {
         val parts = line.split(",")
+        val projectId = UUID.fromString(parts[5])
 
-        val id = UUID.fromString(parts[0])
-        val userId = UUID.fromString(parts[1])
-        val actionType = parts[2]
-        val entityId = UUID.fromString(parts[3])
-        val entityType = parts[4]
-        val timestamp = LocalDateTime.parse(parts[5])
-        val property = parts[6]
-        val oldValue = parts[7]
-        val newValue = parts[8]
-
-        val user = getUserById(userId)
-        val entity: PlanEntity = getEntityByType(entityType, entityId)
-
-        val action: Action = getActionByType(
-            actionType,
-            entity,
-            property,
-            oldValue,
-            newValue
+        return Pair(
+            Log(
+                id = UUID.fromString(parts[0]),
+                time = LocalDateTime.parse(parts[1]),
+                userId = UUID.fromString(parts[2]),
+                planEntityId = UUID.fromString(parts[3]),
+                message = parts[4]
+            ),
+            projectId
         )
-
-        return Log(id, user, timestamp, action)
     }
 
-    private fun getEntityByType(entityType: String, entityId: UUID): PlanEntity {
-        return when (entityType) {
-            "Task" -> getTaskById(entityId)
-            "Project" -> getProjectById(entityId)
-            "State" -> getStateById(entityId)
-            else -> Task(title = "unknown", description = "unknown")
-        }
-    }
-
-    private fun getUserById(userId: UUID): User {
-        if (userId == AuthenticationDataSource.ADMIN.id) return AuthenticationDataSource.ADMIN
-        return authenticationRepository.getMates().firstOrNull { it.id == userId }
-            ?: User(userName = "Unknown", type = User.Type.MATE)
-    }
-
-    private fun getProjectById(projectId: UUID): Project {
-        return projectsRepository.getAllProjects().first { it.id == projectId }
-    }
-
-    private fun getStateById(stateId: UUID): State {
-        return statesRepository.getStateById(stateId)!!
-    }
-
-    private fun getTaskById(taskId: UUID): Task {
-        return tasksRepository.getTaskByID(taskId)!!
-    }
-
-    private fun getActionByType(
-        actionType: String,
-        entity: PlanEntity,
-        property: String,
-        oldValue: String,
-        newValue: String
-    ): Action {
-        return when (actionType) {
-            "Create" -> Create(entity)
-            "Delete" -> Delete(entity)
-            "Edit" -> Edit(entity, property, oldValue, newValue)
-            else -> Create(entity)
-        }
-    }
-
-    companion object {
-        private const val EXPECTED_COLUMNS = 9
+    private fun getProjectIdByPlanEntityId(planEntityId: UUID): UUID {
+        return projectsRepository.getAllProjects().first { project ->
+            project.id == planEntityId ||
+                    project.tasks.any { it.id == planEntityId } ||
+                    project.states.any { it.id == planEntityId }
+        }.id
     }
 }
 

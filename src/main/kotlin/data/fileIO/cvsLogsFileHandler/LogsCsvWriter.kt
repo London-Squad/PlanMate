@@ -14,7 +14,7 @@ class LogsCsvWriter(
 
         if (!logsFile.exists()) {
             logsFile.createNewFile()
-            logsFile.writeText("id,userId,actionType,entityId,entityType,time,property,oldValue,newValue\n")
+            logsFile.writeText("id,time,userId,planEntityId,message,projectId\n")
         }
     }
 

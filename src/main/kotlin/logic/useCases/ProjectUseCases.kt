@@ -1,14 +1,12 @@
 package logic.useCases
 
 import logic.entities.*
-import logic.repositories.CacheDataRepository
 import logic.repositories.LogsRepository
 import logic.repositories.ProjectsRepository
 import java.util.UUID
 
 class ProjectUseCases(
     private val projectsRepository: ProjectsRepository,
-    private val cacheDataRepository: CacheDataRepository,
     private val logsRepository: LogsRepository
 ) {
 
@@ -16,8 +14,8 @@ class ProjectUseCases(
         return projectsRepository.getAllProjects()
     }
 
-    fun getProjectById(projectId: UUID): Project? {
-        return projectsRepository.getAllProjects().find { it.id == projectId }
+    fun getProjectById(projectId: UUID): Project {
+        return projectsRepository.getAllProjects().first { it.id == projectId }
     }
 
     fun createProject(title: String, description: String): Project {
@@ -44,58 +42,38 @@ class ProjectUseCases(
     }
 
     private fun logNewProject(project: Project) {
-        logsRepository.addLog(
-            Log(
-                user = cacheDataRepository.getLoggedInUser(),
-                action = Create(project)
-            )
-        )
+        logsRepository.addCreationLog(project)
     }
 
     fun editProjectTitle(projectId: UUID, newTitle: String) {
+        val project = getProjectById(projectId)
 
-        logsRepository.addLog(
-            Log(
-                user = cacheDataRepository.getLoggedInUser(),
-                action = Edit(
-                    entity = projectsRepository.getAllProjects().first { it.id == projectId },
-                    property = "title",
-                    oldValue = projectsRepository.getAllProjects().first { it.id == projectId }.title,
-                    newValue = newTitle
-                )
-            )
-        )
         projectsRepository.editProjectTitle(projectId, newTitle)
+
+        logsRepository.addEditionLog(
+            planEntity = project,
+            planEntityPropertyToChange = "title",
+            oldValue = project.title,
+            newValue = newTitle
+        )
     }
 
     fun editProjectDescription(projectId: UUID, newDescription: String) {
-
-        logsRepository.addLog(
-            Log(
-                user = cacheDataRepository.getLoggedInUser(),
-                action = Edit(
-                    entity = projectsRepository.getAllProjects().first { it.id == projectId },
-                    property = "description",
-                    oldValue = projectsRepository.getAllProjects().first { it.id == projectId }.description,
-                    newValue = newDescription
-                )
-            )
-        )
+        val project = getProjectById(projectId)
 
         projectsRepository.editProjectDescription(projectId, newDescription)
+
+        logsRepository.addEditionLog(
+            planEntity = project,
+            planEntityPropertyToChange = "description",
+            oldValue = project.description,
+            newValue = newDescription
+        )
     }
 
     fun deleteProject(projectId: UUID) {
-
-        logsRepository.addLog(
-            Log(
-                user = cacheDataRepository.getLoggedInUser(),
-                action = Delete(
-                    entity = projectsRepository.getAllProjects().first { it.id == projectId },
-                )
-            )
-        )
-
+        val project = getProjectById(projectId)
+        logsRepository.addDeletionLog(project)
         projectsRepository.deleteProject(projectId)
     }
 
@@ -105,11 +83,6 @@ class ProjectUseCases(
     }
 
     fun logTaskCreation(task: Task) {
-        logsRepository.addLog(
-            Log(
-                user = cacheDataRepository.getLoggedInUser(),
-                action = Create(task)
-            )
-        )
+        logsRepository.addCreationLog(task)
     }
 }

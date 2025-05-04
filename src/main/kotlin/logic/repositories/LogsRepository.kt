@@ -1,6 +1,7 @@
 package logic.repositories
 
 import logic.entities.Log
+import logic.entities.PlanEntity
 import java.util.UUID
 
 interface LogsRepository {
@@ -9,6 +10,19 @@ interface LogsRepository {
 
     fun getLogsByEntityId(entityId: UUID): List<Log>
 
-    fun addLog(log: Log)
+    fun addCreationLog(
+        planEntity: PlanEntity,
+    )
+
+    fun addDeletionLog(
+        planEntity: PlanEntity,
+    )
+
+    fun addEditionLog(
+        planEntity: PlanEntity,
+        planEntityPropertyToChange: String,
+        oldValue: String,
+        newValue: String
+    )
 
 }

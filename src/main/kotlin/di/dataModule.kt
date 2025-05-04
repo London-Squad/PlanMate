@@ -50,7 +50,7 @@ val dataModule = module {
     single { LogsCsvReader(get(named("LogsFile"))) }
     single { LogsCsvWriter(get(named("LogsFile"))) }
 
-    single<LogsRepository> { LogsDataSource(get(), get(), get(), get(), get(), get()) }
+    single<LogsRepository> { LogsDataSource(get(), get(), get(), get()) }
 
     single<CacheDataRepository> { CacheDataSource(File(FilePath.ACTIVE_USER_FILE)) }
 
