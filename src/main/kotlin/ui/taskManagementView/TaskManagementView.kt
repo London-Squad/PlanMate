@@ -2,9 +2,12 @@ package ui.taskManagementView
 
 import logic.entities.Project
 import logic.entities.Task
+import logic.exceptions.NotFoundException
 import logic.repositories.TaskRepository
 import ui.cliPrintersAndReaders.CLIPrinter
 import ui.cliPrintersAndReaders.CLIReader
+import ui.logsView.LogsView
+import java.util.UUID
 
 class TaskManagementView(
     private val cliReader: CLIReader,
@@ -13,50 +16,70 @@ class TaskManagementView(
     private val taskDescriptionEditionView: TaskDescriptionEditionView,
     private val taskStateEditionView: TaskStateEditionView,
     private val taskDeletionView: TaskDeletionView,
-    private val taskRepository: TaskRepository
+    private val taskRepository: TaskRepository,
+    private val logsView: LogsView
 ) {
 
-    fun start(task: Task, project: Project) {
-        printTask(task)
+    private lateinit var currentTask: Task
+    private lateinit var currentProject: Project
+    fun start(taskID: UUID, project: Project) {
+
+        try {
+
+            currentTask = taskRepository.getTaskByID(taskID)
+        } catch (e: NotFoundException) {
+            cliPrinter.cliPrintLn(e.message ?: "task not found")
+            return
+        }
+
+        currentProject = project
+        printTask()
         printOptions()
-        selectNextUI(task, project)
+        selectNextUI()
     }
 
-    private fun printTask(task: Task) {
-        printLn("Task: ${task.title}")
-        printLn("Description: ${task.description}")
-        printLn("State: ${task.state.title}")
+    private fun printTask() {
+        printLn("Task: ${currentTask.title}")
+        printLn("Description: ${currentTask.description}")
+        printLn("State: ${currentTask.state.title}")
     }
 
     private fun printOptions() {
         printLn("1. Edit Title")
         printLn("2. Edit description")
         printLn("3. Edit state")
-        printLn("4. delete task")
-        printLn("0. back")
+        printLn("4. Delete task")
+        printLn("5. View task logs")
+        printLn("0. Back")
     }
 
-    private fun selectNextUI(task: Task, project: Project) {
+    private fun selectNextUI() {
         when (getValidUserInput()) {
             "1" -> {
-                taskTitleEditionView.editTitle(task)
-                val updatedTask = taskRepository.getTaskByID(task.id) ?: task
-                start(updatedTask, project)
+                taskTitleEditionView.editTitle(currentTask)
+                start(currentTask.id, currentProject)
             }
+
             "2" -> {
-                taskDescriptionEditionView.editDescription(task)
-                val updatedTask = taskRepository.getTaskByID(task.id) ?: task
-                start(updatedTask, project)
+                taskDescriptionEditionView.editDescription(currentTask)
+                start(currentTask.id, currentProject)
             }
+
             "3" -> {
-                taskStateEditionView.editState(task, project.states)
-                val updatedTask = taskRepository.getTaskByID(task.id) ?: task
-                start(updatedTask, project)
+                taskStateEditionView.editState(currentTask, currentProject.states)
+                start(currentTask.id, currentProject)
             }
+
             "4" -> {
-                taskDeletionView.deleteTask(task)
+                taskDeletionView.deleteTask(currentTask)
                 return
             }
+
+            "5" -> {
+                logsView.printLogsByEntityId(currentTask.id)
+                start(currentTask.id, currentProject)
+            }
+
             "0" -> return
         }
     }
@@ -75,6 +98,6 @@ class TaskManagementView(
     }
 
     private companion object {
-        val OPTIONS_LIST = listOf("0", "1", "2", "3", "4")
+        val OPTIONS_LIST = listOf("0", "1", "2", "3", "4", "5")
     }
 }
