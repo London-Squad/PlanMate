@@ -20,24 +20,28 @@ class TaskManagementView(
     private val logsView: LogsView
 ) {
 
+    private lateinit var currentTask: Task
+    private lateinit var currentProject: Project
     fun start(taskID: UUID, project: Project) {
 
         try {
 
-            val task = taskRepository.getTaskByID(taskID)
-            printTask(task)
-            printOptions()
-            selectNextUI(task, project)
-
+            currentTask = taskRepository.getTaskByID(taskID)
         } catch (e: NotFoundException) {
             cliPrinter.cliPrintLn(e.message ?: "task not found")
+            return
         }
+
+        currentProject = project
+        printTask()
+        printOptions()
+        selectNextUI()
     }
 
-    private fun printTask(task: Task) {
-        printLn("Task: ${task.title}")
-        printLn("Description: ${task.description}")
-        printLn("State: ${task.state.title}")
+    private fun printTask() {
+        printLn("Task: ${currentTask.title}")
+        printLn("Description: ${currentTask.description}")
+        printLn("State: ${currentTask.state.title}")
     }
 
     private fun printOptions() {
@@ -49,31 +53,31 @@ class TaskManagementView(
         printLn("0. Back")
     }
 
-    private fun selectNextUI(task: Task, project: Project) {
+    private fun selectNextUI() {
         when (getValidUserInput()) {
             "1" -> {
-                taskTitleEditionView.editTitle(task)
-                start(task.id, project)
+                taskTitleEditionView.editTitle(currentTask)
+                start(currentTask.id, currentProject)
             }
 
             "2" -> {
-                taskDescriptionEditionView.editDescription(task)
-                start(task.id, project)
+                taskDescriptionEditionView.editDescription(currentTask)
+                start(currentTask.id, currentProject)
             }
 
             "3" -> {
-                taskStateEditionView.editState(task, project.states)
-                start(task.id, project)
+                taskStateEditionView.editState(currentTask, currentProject.states)
+                start(currentTask.id, currentProject)
             }
 
             "4" -> {
-                taskDeletionView.deleteTask(task)
+                taskDeletionView.deleteTask(currentTask)
                 return
             }
 
             "5" -> {
-                logsView.printLogsByEntityId(task.id)
-                start(task.id, project)
+                logsView.printLogsByEntityId(currentTask.id)
+                start(currentTask.id, currentProject)
             }
 
             "0" -> return
