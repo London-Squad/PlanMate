@@ -1,0 +1,38 @@
+package data.parser
+
+import logic.entities.Project
+import logic.repositories.StatesRepository
+import logic.repositories.TaskRepository
+import java.util.UUID
+
+class ProjectParser(
+    private val taskRepository: TaskRepository,
+    private val statesRepository: StatesRepository
+) {
+    fun parseProjectLine(line: String): ProjectParseResult {
+        val parts = line.split(",", limit = 3)
+        if (parts.size < 3) return ProjectParseResult.Failure("Invalid project line format: $line")
+        return try {
+            val projectId = UUID.fromString(parts[0].trim())
+            ProjectParseResult.Success(
+                Project(
+                    id = projectId,
+                    title = parts[1].trim(),
+                    description = parts[2].trim(),
+                    tasks = taskRepository.getAllTasksByProjectID(projectId),
+                    states = statesRepository.getAllStatesByProjectId(projectId)
+                )
+            )
+        } catch (e: IllegalArgumentException) {
+            ProjectParseResult.Failure("Failed to parse project line: $line, reason: ${e.message}")
+        }
+    }
+
+    fun formatProjectLine(project: Project): String =
+        "${project.id},${project.title},${project.description}"
+}
+
+sealed class ProjectParseResult {
+    data class Success(val project: Project) : ProjectParseResult()
+    data class Failure(val reason: String) : ProjectParseResult()
+}
