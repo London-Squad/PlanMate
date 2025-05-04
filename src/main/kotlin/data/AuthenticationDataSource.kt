@@ -4,6 +4,7 @@ import data.fileIO.UserFileHelper
 import data.fileIO.createFileIfNotExist
 import data.security.hashing.HashingAlgorithm
 import logic.entities.User
+import logic.exceptions.NoLoggedInUserIsSavedInCacheException
 import logic.exceptions.UserAlreadyExistException
 import logic.exceptions.UserNotFoundException
 import logic.repositories.AuthenticationRepository
@@ -12,11 +13,12 @@ import java.util.*
 
 class AuthenticationDataSource(
     private val userFile: File,
+    private val activeUserFile: File,
     private val hashingAlgorithm: HashingAlgorithm
 ) : AuthenticationRepository {
 
     init {
-        userFile.createFileIfNotExist( "id,userName,password,type\n")
+        userFile.createFileIfNotExist("id,userName,password,type\n")
     }
 
     override fun getMates(): List<User> {
@@ -55,6 +57,46 @@ class AuthenticationDataSource(
         }
         UserFileHelper.clearAndWriteNewData(userFile, newFileData)
         return true
+    }
+
+    private var loggedInUser: User? = null
+
+    init {
+        activeUserFile.createFileIfNotExist("")
+        loggedInUser = loadUserFromLocalFile()
+    }
+
+    override fun getLoggedInUser(): User {
+        if (loggedInUser == null) throw NoLoggedInUserIsSavedInCacheException()
+        return loggedInUser!!
+    }
+
+    override fun setLoggedInUser(user: User) {
+        activeUserFile.writeText("${user.id},${user.userName},${user.type}")
+        loggedInUser = user
+    }
+
+    override fun clearLoggedInUserFromCache() {
+        activeUserFile.writeText("")
+        loggedInUser = null
+    }
+
+    private fun loadUserFromLocalFile(): User? {
+        val text = activeUserFile.readText().trim()
+        if (text.isEmpty()) return null
+        return text.split(",")
+            .run { User(this[0].toUUID(), this[1], getUserTypeFromString(this[2])) }
+    }
+
+    private fun String.toUUID(): UUID {
+        return UUID.fromString(this)
+    }
+
+    private fun getUserTypeFromString(type: String): User.Type {
+        return when (type.lowercase()) {
+            "admin" -> User.Type.ADMIN
+            else -> User.Type.MATE
+        }
     }
 
     companion object {

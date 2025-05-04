@@ -3,17 +3,15 @@ package logic.useCases
 import logic.entities.User
 import logic.exceptions.*
 import logic.repositories.AuthenticationRepository
-import logic.repositories.CacheDataRepository
 import logic.validation.CredentialValidator
 
 class CreateMateUseCase(
-    private val cacheDataRepository: CacheDataRepository,
     private val authenticationRepository: AuthenticationRepository,
     private val credentialValidator: CredentialValidator
 ) {
     fun createMate(username: String, password: String) {
         val loggedInUser = try {
-            cacheDataRepository.getLoggedInUser()
+            authenticationRepository.getLoggedInUser()
         } catch (e: Exception) {
             throw UserNotFoundException()
         }

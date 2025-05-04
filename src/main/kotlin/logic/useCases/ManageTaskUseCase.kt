@@ -1,14 +1,17 @@
 package logic.useCases
 
-import logic.entities.*
-import logic.repositories.CacheDataRepository
+import logic.entities.Delete
+import logic.entities.Edit
+import logic.entities.Log
+import logic.entities.State
+import logic.repositories.AuthenticationRepository
 import logic.repositories.LogsRepository
 import logic.repositories.TaskRepository
-import java.util.UUID
+import java.util.*
 
 class ManageTaskUseCase(
     private val taskRepository: TaskRepository,
-    private val cacheDataRepository: CacheDataRepository,
+    private val authenticationRepository: AuthenticationRepository,
     private val logsRepository: LogsRepository,
 ) {
 
@@ -16,7 +19,7 @@ class ManageTaskUseCase(
 
         logsRepository.addLog(
             Log(
-                user = cacheDataRepository.getLoggedInUser(),
+                user = authenticationRepository.getLoggedInUser(),
                 action = Edit(
                     entity = taskRepository.getTaskByID(taskID)!!,
                     property = "title",
@@ -33,7 +36,7 @@ class ManageTaskUseCase(
 
         logsRepository.addLog(
             Log(
-                user = cacheDataRepository.getLoggedInUser(),
+                user = authenticationRepository.getLoggedInUser(),
                 action = Edit(
                     entity = taskRepository.getTaskByID(taskID)!!,
                     property = "description",
@@ -50,7 +53,7 @@ class ManageTaskUseCase(
 
         logsRepository.addLog(
             Log(
-                user = cacheDataRepository.getLoggedInUser(),
+                user = authenticationRepository.getLoggedInUser(),
                 action = Edit(
                     entity = taskRepository.getTaskByID(taskID)!!,
                     property = "state",
@@ -67,7 +70,7 @@ class ManageTaskUseCase(
 
         logsRepository.addLog(
             Log(
-                user = cacheDataRepository.getLoggedInUser(),
+                user = authenticationRepository.getLoggedInUser(),
                 action = Delete(
                     entity = taskRepository.getTaskByID(taskID)!!,
                 )

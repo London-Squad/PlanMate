@@ -1,11 +1,11 @@
 package logic.useCases
 
-import logic.repositories.CacheDataRepository
+import logic.repositories.AuthenticationRepository
 
 class ClearLoggedInUserFromCacheUseCase(
-    private val cacheDataRepository: CacheDataRepository
+    private val authenticationRepository: AuthenticationRepository
 ) {
     fun clearLoggedInUserFromCache() {
-        cacheDataRepository.clearLoggedInUserFromCache()
+        authenticationRepository.clearLoggedInUserFromCache()
     }
 }

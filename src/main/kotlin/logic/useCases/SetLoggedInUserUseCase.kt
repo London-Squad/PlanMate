@@ -3,10 +3,11 @@ package logic.useCases
 import logic.entities.User
 import logic.repositories.AuthenticationRepository
 
-class GetLoggedInUserUseCase(
+class SetLoggedInUserUseCase(
     private val authenticationRepository: AuthenticationRepository
+
 ) {
-    fun getLoggedInUser(): User {
-        return authenticationRepository.getLoggedInUser()
+    fun setLoggedInUser(user: User) {
+        authenticationRepository.setLoggedInUser(user = user)
     }
 }
