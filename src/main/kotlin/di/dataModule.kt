@@ -1,16 +1,17 @@
 package di
 
-import data.CacheDataSource
-import data.CsvProjectsDataSource
-import data.CsvStatesDataSource
-import data.CsvTasksDataSource
-import logic.repositories.*
+import data.*
 import data.fileIO.FilePath
 import data.LogsDataSource
 import data.fileIO.cvsLogsFileHandler.LogsCsvReader
 import data.fileIO.cvsLogsFileHandler.LogsCsvWriter
 import data.AuthenticationDataSource
+import data.csvHandler.CsvFileHandler
+import data.parser.ProjectParser
+import data.parser.StateParser
+import data.parser.TaskParser
 import data.security.hashing.MD5HashingAlgorithm
+import logic.repositories.*
 import org.koin.core.qualifier.named
 import org.koin.dsl.module
 import java.io.File
@@ -32,28 +33,49 @@ val dataModule = module {
         File(directory, "projects.csv")
     }
 
-    single(named("LogsFile")) {
+    single(named("logsFile")) {
         val directory = File("csvFiles")
         File(directory, "logs.csv")
     }
 
-    single<TaskRepository> { CsvTasksDataSource(get(named("tasksFile")), get()) }
-    single<StatesRepository> { CsvStatesDataSource(get(named("statesFile"))) }
-    single<ProjectsRepository> {
-        CsvProjectsDataSource(
-            get(named("projectsFile")),
-            get<TaskRepository>() as CsvTasksDataSource,
-            get<StatesRepository>() as CsvStatesDataSource
+    single(named("tasksFileHandler")) { CsvFileHandler(get(named("tasksFile"))) }
+    single(named("projectsFileHandler")) { CsvFileHandler(get(named("projectsFile"))) }
+    single(named("statesFileHandler")) { CsvFileHandler(get(named("statesFile"))) }
+    single(named("logsFileHandler")) { CsvFileHandler(get(named("logsFile"))) }
+
+    single { TaskParser(get()) }
+    single { StateParser() }
+    single { ProjectParser(get<TaskRepository>() as CsvTasksDataSource, get<StatesRepository>() as CsvStatesDataSource) }
+
+    single<TaskRepository> {
+        CsvTasksDataSource(
+            fileHandler = get(named("tasksFileHandler")),
+            taskParser = get(),
         )
     }
 
-    single { LogsCsvReader(get(named("LogsFile"))) }
-    single { LogsCsvWriter(get(named("LogsFile"))) }
+    single<StatesRepository> {
+        CsvStatesDataSource(
+            fileHandler = get(named("statesFileHandler")),
+            stateParser = get()
+        )
+    }
+
+    single<ProjectsRepository> {
+        CsvProjectsDataSource(
+            fileHandler = get(named("projectsFileHandler")),
+            projectParser = get(),
+            taskRepository = get<TaskRepository>() as CsvTasksDataSource,
+            statesRepository = get<StatesRepository>() as CsvStatesDataSource
+        )
+    }
+
+    single { LogsCsvReader(get(named("logsFile"))) }
+    single { LogsCsvWriter(get(named("logsFile"))) }
 
     single<LogsRepository> { LogsDataSource(get(), get(), get(), get(), get(), get()) }
 
     single<CacheDataRepository> { CacheDataSource(File(FilePath.ACTIVE_USER_FILE)) }
 
     single<AuthenticationRepository> { AuthenticationDataSource(File(FilePath.USER_FILE), MD5HashingAlgorithm()) }
-
 }

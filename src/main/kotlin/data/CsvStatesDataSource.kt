@@ -1,94 +1,81 @@
 package data
 
+import data.csvHandler.CsvFileHandler
+import data.parser.StateParseResult
+import data.parser.StateParser
 import logic.entities.State
 import logic.repositories.StatesRepository
-import java.io.File
 import java.util.UUID
 
 class CsvStatesDataSource(
-    private val file: File
+    private val fileHandler: CsvFileHandler,
+    private val stateParser: StateParser
 ) : StatesRepository {
 
     init {
-        val directory = file.parentFile
-        if (!directory.exists()) {
-            directory.mkdir()
-        }
-
-        if (!file.exists()) {
-            file.createNewFile()
-            file.writeText("id,title,description,projectId\n")
-        }
+        fileHandler.writeHeader("id,title,description,projectId")
     }
 
-    override fun getAllStatesByProjectId(projectId: UUID): List<State> {
-        return file.readLines().drop(1).mapNotNull { line ->
-            val (id, title, description, projectIdStr) = line.split(",", limit = 4)
-            if (projectIdStr == projectId.toString()) {
-                State(
-                    id = UUID.fromString(id),
-                    title = title,
-                    description = description
-                )
-            } else {
-                null
+    private fun getAllStates(): List<Pair<UUID, State>> =
+        fileHandler.readLines().drop(1).mapNotNull { line ->
+            when (val result = stateParser.parseStateLine(line)) {
+                is StateParseResult.Success -> Pair(result.projectId, result.state)
+                is StateParseResult.Failure -> null
             }
         }
+
+    private fun filterStatesByProjectId(projectId: UUID): List<State> =
+        getAllStates().filter { it.first == projectId }.map { it.second }
+
+    private fun updateStates(transform: (List<String>) -> List<String>) {
+        val lines = fileHandler.readLines()
+        // Preserve the header when updating
+        val header = lines.firstOrNull() ?: "id,title,description,projectId"
+        val dataLines = lines.drop(1)
+
+        val transformedData = transform(dataLines)
+        // Ensure the header is always the first line when rewriting
+        fileHandler.rewriteLines(listOf(header) + transformedData)
     }
 
-    override fun getStateById(stateId: UUID): State {
-        return file.readLines().drop(1).find { line ->
-            val (id, _, _, _) = line.split(",", limit = 4)
-            id == stateId.toString()
-        }?.let { line ->
-            val (id, title, description, _) = line.split(",", limit = 4)
-            State(
-                id = UUID.fromString(id),
-                title = title,
-                description = description
-            )
-        } ?: State.NoState
-    }
+    override fun getAllStatesByProjectId(projectId: UUID): List<State> = filterStatesByProjectId(projectId)
+
+    override fun getStateById(stateId: UUID): State =
+        getAllStates().find { it.second.id == stateId }?.second ?: State.NoState
 
     override fun addNewState(state: State, projectId: UUID) {
-        file.appendText("${state.id},${state.title},${state.description},${projectId}\n")
+        fileHandler.appendLine(stateParser.formatStateLine(state, projectId))
     }
 
-    override fun editStateTitle(stateId: UUID, newTitle: String) {
-        val lines = file.readLines()
-        val updatedLines = lines.map { line ->
-            val (id, _, _, projectId) = line.split(",", limit = 4)
-            if (id == stateId.toString()) {
-                "$id,$newTitle,${line.split(",", limit = 4)[2]},$projectId"
-            } else {
-                line
+    override fun editStateTitle(stateId: UUID, newTitle: String) =
+        updateStates { lines ->
+            lines.map { line ->
+                val parts = line.split(",", limit = 4)
+                if (parts.size >= 4 && parts[0] == stateId.toString()) {
+                    "${stateId},${newTitle},${parts[2]},${parts[3]}"
+                } else {
+                    line
+                }
             }
         }
-        file.writeText("")
-        updatedLines.forEach { file.appendText("$it\n") }
-    }
 
-    override fun editStateDescription(stateId: UUID, newDescription: String) {
-        val lines = file.readLines()
-        val updatedLines = lines.map { line ->
-            val (id, title, _, projectId) = line.split(",", limit = 4)
-            if (id == stateId.toString()) {
-                "$id,$title,$newDescription,$projectId"
-            } else {
-                line
+    override fun editStateDescription(stateId: UUID, newDescription: String) =
+        updateStates { lines ->
+            lines.map { line ->
+                val parts = line.split(",", limit = 4)
+                if (parts.size >= 4 && parts[0] == stateId.toString()) {
+                    "${stateId},${parts[1]},${newDescription},${parts[3]}"
+                } else {
+                    line
+                }
             }
         }
-        file.writeText("")
-        updatedLines.forEach { file.appendText("$it\n") }
-    }
 
-    override fun deleteState(stateId: UUID) {
-        val lines = file.readLines()
-        val updatedLines = lines.filter { line ->
-            val (id, _, _, _) = line.split(",", limit = 4)
-            id != stateId.toString()
+    override fun deleteState(stateId: UUID) =
+        updateStates { lines ->
+            lines.filter {
+                val parts = it.split(",", limit = 4)
+                parts.isEmpty() || parts[0] != stateId.toString()
+            }
         }
-        file.writeText("")
-        updatedLines.forEach { file.appendText("$it\n") }
-    }
 }

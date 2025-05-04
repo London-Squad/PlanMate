@@ -4,6 +4,7 @@ import logic.entities.*
 import logic.repositories.CacheDataRepository
 import logic.repositories.LogsRepository
 import logic.repositories.ProjectsRepository
+import java.time.LocalDateTime
 import java.util.UUID
 
 class ProjectUseCases(
@@ -47,20 +48,23 @@ class ProjectUseCases(
         logsRepository.addLog(
             Log(
                 user = cacheDataRepository.getLoggedInUser(),
+                time = LocalDateTime.now(),
                 action = Create(project)
             )
         )
     }
 
     fun editProjectTitle(projectId: UUID, newTitle: String) {
+        val project = getProjectById(projectId) ?: return
 
         logsRepository.addLog(
             Log(
                 user = cacheDataRepository.getLoggedInUser(),
+                time = LocalDateTime.now(),
                 action = Edit(
-                    entity = projectsRepository.getAllProjects().first { it.id == projectId },
+                    entity = project,
                     property = "title",
-                    oldValue = projectsRepository.getAllProjects().first { it.id == projectId }.title,
+                    oldValue = project.title,
                     newValue = newTitle
                 )
             )
@@ -69,14 +73,16 @@ class ProjectUseCases(
     }
 
     fun editProjectDescription(projectId: UUID, newDescription: String) {
+        val project = getProjectById(projectId) ?: return
 
         logsRepository.addLog(
             Log(
                 user = cacheDataRepository.getLoggedInUser(),
+                time = LocalDateTime.now(),
                 action = Edit(
-                    entity = projectsRepository.getAllProjects().first { it.id == projectId },
+                    entity = project,
                     property = "description",
-                    oldValue = projectsRepository.getAllProjects().first { it.id == projectId }.description,
+                    oldValue = project.description,
                     newValue = newDescription
                 )
             )
@@ -86,12 +92,14 @@ class ProjectUseCases(
     }
 
     fun deleteProject(projectId: UUID) {
+        val project = getProjectById(projectId) ?: return
 
         logsRepository.addLog(
             Log(
                 user = cacheDataRepository.getLoggedInUser(),
+                time = LocalDateTime.now(),
                 action = Delete(
-                    entity = projectsRepository.getAllProjects().first { it.id == projectId },
+                    entity = project
                 )
             )
         )
@@ -100,14 +108,18 @@ class ProjectUseCases(
     }
 
     fun updateProject(project: Project) {
-        projectsRepository.deleteProject(project.id)
-        projectsRepository.addNewProject(project)
+        val existingProject = getProjectById(project.id)
+        if (existingProject != null) {
+            projectsRepository.deleteProject(project.id)
+            projectsRepository.addNewProject(project)
+        }
     }
 
     fun logTaskCreation(task: Task) {
         logsRepository.addLog(
             Log(
                 user = cacheDataRepository.getLoggedInUser(),
+                time = LocalDateTime.now(),
                 action = Create(task)
             )
         )
