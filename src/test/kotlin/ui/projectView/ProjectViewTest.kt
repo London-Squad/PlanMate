@@ -6,7 +6,8 @@ import io.mockk.verify
 import logic.entities.Project
 import logic.entities.User
 import logic.exceptions.NoLoggedInUserIsSavedInCacheException
-import logic.repositories.CacheDataRepository
+import logic.repositories.AuthenticationRepository
+import logic.useCases.GetLoggedInUserUseCase
 import logic.useCases.ProjectUseCases
 import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Test
@@ -18,7 +19,8 @@ class ProjectViewTest {
 
     private lateinit var cliPrinter: CLIPrinter
     private lateinit var cliReader: CLIReader
-    private lateinit var cacheDataRepository: CacheDataRepository
+    private lateinit var authenticationRepository: AuthenticationRepository
+
     private lateinit var swimlanesView: SwimlanesView
     private lateinit var editProjectView: EditProjectView
     private lateinit var deleteProjectView: DeleteProjectView
@@ -28,12 +30,13 @@ class ProjectViewTest {
     private lateinit var user: User
     private lateinit var logsView: LogsView
     private lateinit var projectUseCases: ProjectUseCases
+    private lateinit var getLoggedInUserUseCase: GetLoggedInUserUseCase
 
     @BeforeEach
     fun setUp() {
         cliPrinter = mockk(relaxed = true)
         cliReader = mockk()
-        cacheDataRepository = mockk()
+        getLoggedInUserUseCase = mockk()
         swimlanesView = mockk()
         editProjectView = mockk()
         deleteProjectView = mockk()
@@ -46,7 +49,7 @@ class ProjectViewTest {
         projectView = ProjectView(
             cliPrinter,
             cliReader,
-            cacheDataRepository,
+            getLoggedInUserUseCase,
             swimlanesView,
             editProjectView,
             deleteProjectView,
@@ -57,7 +60,7 @@ class ProjectViewTest {
 
         every { project.title } returns "Test Project"
 
-        every { cacheDataRepository.getLoggedInUser() } returns user
+        every { getLoggedInUserUseCase.getLoggedInUser() } returns user
         every { user.type } returns User.Type.ADMIN
 
         every { swimlanesView.displaySwimlanes(project) } returns Unit
@@ -66,7 +69,7 @@ class ProjectViewTest {
     @Test
     fun `should display error message when user is not logged in`() {
         // Given
-        every { cacheDataRepository.getLoggedInUser() } throws NoLoggedInUserIsSavedInCacheException()
+        every { authenticationRepository.getLoggedInUser() } throws NoLoggedInUserIsSavedInCacheException()
 
         // When
         projectView.start(project)

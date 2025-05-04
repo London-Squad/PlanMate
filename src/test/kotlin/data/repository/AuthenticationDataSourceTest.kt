@@ -8,7 +8,8 @@ import data.security.hashing.HashingAlgorithm
 import io.mockk.every
 import io.mockk.mockk
 import logic.entities.User
-import logic.exceptions.AuthenticationException
+import logic.exceptions.UserAlreadyExistException
+import logic.exceptions.UserNotFoundException
 import logic.repositories.AuthenticationRepository
 import logic.repository.DummyAuthData
 import org.junit.jupiter.api.BeforeEach
@@ -21,18 +22,21 @@ import kotlin.test.BeforeTest
 class AuthenticationDataSourceTest {
     private lateinit var authenticationRepository: AuthenticationRepository
     private lateinit var file: File
+    private lateinit var activeUser: File
     private lateinit var hashingAlgorithm: HashingAlgorithm
 
     @BeforeTest
     fun preSetup() {
         file = File("test.csv")
-        file.createFileIfNotExist( "id,userName,password\n")
+        file.createFileIfNotExist("id,userName,password\n")
+        activeUser = File("test.csv")
+        activeUser.createFileIfNotExist("id,userName,password\n")
     }
 
     @BeforeEach
     fun setup() {
         hashingAlgorithm = mockk(relaxed = true)
-        authenticationRepository = AuthenticationDataSource(file, hashingAlgorithm)
+        authenticationRepository = AuthenticationDataSource(file, activeUser, hashingAlgorithm)
         every { hashingAlgorithm.hashData(any()) } answers {
             arg(0)
         }
@@ -84,7 +88,7 @@ class AuthenticationDataSourceTest {
         val username = "test"
         val password = "Test12"
 
-        assertThrows<AuthenticationException.UserNotFoundException> {
+        assertThrows<UserNotFoundException> {
             authenticationRepository.login(username, password)
         }
     }
@@ -117,7 +121,7 @@ class AuthenticationDataSourceTest {
         val user = DummyAuthData.users[1]
         authenticationRepository.register(user.userName, "Password12")
 
-        assertThrows<AuthenticationException.UserAlreadyExistException> {
+        assertThrows<UserAlreadyExistException> {
             authenticationRepository.register(user.userName, "Password12")
         }
     }
@@ -136,7 +140,7 @@ class AuthenticationDataSourceTest {
     fun `when we call changePassword with fake user should return exception`() {
         val user = DummyAuthData.users[2]
 
-        assertThrows<AuthenticationException.UserNotFoundException> {
+        assertThrows<UserNotFoundException> {
             authenticationRepository.changePassword(user.userName, "passworD12", "Password12")
         }
     }

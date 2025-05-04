@@ -3,9 +3,11 @@ package logic.useCases
 import com.google.common.truth.Truth.assertThat
 import io.mockk.every
 import io.mockk.mockk
-import logic.exceptions.AuthenticationException
+import logic.exceptions.InvalidPasswordException
+import logic.exceptions.InvalidUserNameLengthException
 import logic.repositories.AuthenticationRepository
 import logic.repository.DummyAuthData
+import logic.validation.CredentialValidator
 import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Test
 import org.junit.jupiter.api.assertThrows
@@ -15,11 +17,13 @@ import org.junit.jupiter.params.provider.CsvSource
 class ChangePasswordUseCaseTest {
     private lateinit var changePasswordUseCase: ChangePasswordUseCase
     private lateinit var authenticationRepository: AuthenticationRepository
+    private lateinit var credentialValidator: CredentialValidator
 
     @BeforeEach
     fun setUp() {
         authenticationRepository = mockk(relaxed = true)
-        changePasswordUseCase = ChangePasswordUseCase(authenticationRepository)
+        credentialValidator = mockk(relaxed = true)
+        changePasswordUseCase = ChangePasswordUseCase(authenticationRepository, credentialValidator)
     }
 
     @Test
@@ -35,7 +39,7 @@ class ChangePasswordUseCaseTest {
     @ParameterizedTest
     @CsvSource("1", "A1", "as1")
     fun `when we call invoke with invalid username should throw exception`(username: String) {
-        assertThrows<AuthenticationException.InvalidUserNameLengthException> {
+        assertThrows<InvalidUserNameLengthException> {
             changePasswordUseCase(username, "Oldpasswor1", "NewPassword1")
         }
     }
@@ -43,7 +47,7 @@ class ChangePasswordUseCaseTest {
     @ParameterizedTest
     @CsvSource("a", "1", "w1", "asw", "password1")
     fun `when we call invoke with invalid old password validations should throw exception`(oldPassword: String) {
-        assertThrows<AuthenticationException.InvalidPasswordException> {
+        assertThrows<InvalidPasswordException> {
             changePasswordUseCase("testName", oldPassword, "NewPassword1")
         }
     }
@@ -51,7 +55,7 @@ class ChangePasswordUseCaseTest {
     @ParameterizedTest
     @CsvSource("a", "1", "w1", "asw", "password1")
     fun `when we call invoke with invalid new password validations should throw exception`(newPassword: String) {
-        assertThrows<AuthenticationException.InvalidPasswordException> {
+        assertThrows<InvalidPasswordException> {
             changePasswordUseCase("testName", "oldPassword1", newPassword)
         }
     }
