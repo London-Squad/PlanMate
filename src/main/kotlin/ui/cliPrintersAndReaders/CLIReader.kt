@@ -44,7 +44,7 @@ class CLIReader(
         return getValidUserInput(
             message = "Do you want to confirm? (y/n): ",
             invalidInputMessage = "Invalid input",
-            isValidInput = userInputValidator::isUserConfirmation
+            isValidInput = { it in listOf("y", "n") }
         )
     }
 
@@ -52,7 +52,7 @@ class CLIReader(
         return getValidUserInput(
             message = "Your choice: ",
             invalidInputMessage = "Invalid input",
-            isValidInput = { userInputValidator.isValidUserNumberInRange(it, max, min) })
+            isValidInput = { it.toIntOrNull() in min..max })
 
     }
 }
