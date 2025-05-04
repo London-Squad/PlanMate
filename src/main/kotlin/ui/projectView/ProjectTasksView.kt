@@ -58,7 +58,7 @@ class ProjectTasksView(
             else -> {
                 val taskIndex = input.toInt() - 1
                 val selectedTask = tasks[taskIndex]
-                taskManagementView.start(selectedTask, currentProject)
+                taskManagementView.start(selectedTask.id, currentProject)
             }
         }
         return currentProject
@@ -85,7 +85,5 @@ class ProjectTasksView(
         projectUseCases.updateProject(currentProject)
         projectUseCases.logTaskCreation(newTask)
         cliPrinter.cliPrintLn("Task created. You can now edit it.")
-        taskManagementView.start(newTask, currentProject)
-
     }
 }
