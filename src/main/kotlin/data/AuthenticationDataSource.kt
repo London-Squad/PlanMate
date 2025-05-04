@@ -16,9 +16,12 @@ class AuthenticationDataSource(
     private val activeUserFile: File,
     private val hashingAlgorithm: HashingAlgorithm
 ) : AuthenticationRepository {
+    private var loggedInUser: User? = null
 
     init {
         userFile.createFileIfNotExist("id,userName,password,type\n")
+        activeUserFile.createFileIfNotExist("")
+        loggedInUser = loadUserFromLocalFile()
     }
 
     override fun getMates(): List<User> {
@@ -57,13 +60,6 @@ class AuthenticationDataSource(
         }
         UserFileHelper.clearAndWriteNewData(userFile, newFileData)
         return true
-    }
-
-    private var loggedInUser: User? = null
-
-    init {
-        activeUserFile.createFileIfNotExist("")
-        loggedInUser = loadUserFromLocalFile()
     }
 
     override fun getLoggedInUser(): User {
