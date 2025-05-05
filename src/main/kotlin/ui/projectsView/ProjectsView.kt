@@ -6,6 +6,7 @@ import logic.repositories.CacheDataRepository
 import logic.useCases.ProjectUseCases
 import ui.cliPrintersAndReaders.CLIPrinter
 import ui.cliPrintersAndReaders.CLIReader
+import ui.cliPrintersAndReaders.cliTable.CLITablePrinter
 import ui.projectView.ProjectView
 
 class ProjectsView(
@@ -13,7 +14,8 @@ class ProjectsView(
     private val cliReader: CLIReader,
     private val projectUseCases: ProjectUseCases,
     private val cacheDataRepository: CacheDataRepository,
-    private val projectView: ProjectView
+    private val projectView: ProjectView,
+    private val cliTablePrinter: CLITablePrinter = CLITablePrinter(cliPrinter)
 ) {
 
     lateinit var currentUser: User
@@ -33,9 +35,7 @@ class ProjectsView(
 
     }
 
-    fun handleProjectsView(currentUser: User) {
 
-    }
 
     private fun printHeader() {
         cliPrinter.printHeader("Projects Menu")
@@ -46,13 +46,18 @@ class ProjectsView(
         if (projects.isEmpty()) {
             cliPrinter.cliPrintLn("No projects found.")
         } else {
-            projects.forEachIndexed { index, project ->
-                val displayIndex = index + 1
-                cliPrinter.cliPrintLn("Project: $displayIndex")
-                cliPrinter.cliPrintLn("Title: ${project.title}")
-                cliPrinter.cliPrintLn("Description: ${project.description}")
-                cliPrinter.cliPrintLn(cliPrinter.getThinHorizontal())
+            val headers = listOf("Project #", "Title", "Description")
+
+
+            val data = projects.mapIndexed { index, project ->
+                listOf(
+                    (index + 1).toString(),
+                    project.title,
+                    project.description
+                )
             }
+            val columnsWidth = listOf(null, null, null)
+            cliTablePrinter(headers, data, columnsWidth)
         }
     }
 
