@@ -39,12 +39,15 @@ class StatesView(
     }
 
     private fun viewStates() {
-        val states = viewExceptionHandler.tryCall { useCase.getStates(projectId) }
-        if (states.isEmpty()) {
-            cliPrinter.cliPrintLn("No states available.")
-        } else {
-            states.forEach {
-                cliPrinter.cliPrintLn("${it.id} - ${it.title}: ${it.description}")
+        var states: List<State>
+        viewExceptionHandler.tryCall {
+            states = useCase.getStates(projectId)
+            if (states.isEmpty()) {
+                cliPrinter.cliPrintLn("No states available.")
+            } else {
+                states.forEach {
+                    cliPrinter.cliPrintLn("${it.id} - ${it.title}: ${it.description}")
+                }
             }
         }
     }

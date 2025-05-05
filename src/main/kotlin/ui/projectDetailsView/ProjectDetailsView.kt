@@ -73,10 +73,10 @@ class ProjectDetailsView(
 
             "3" -> if (currentUser.type == User.Type.ADMIN) {
                 currentProject = editProjectView.editProject(currentProject)
-                currentProject =
-                    viewExceptionHandler.tryCall {
+                viewExceptionHandler.tryCall {
+                    currentProject =
                         projectUseCases.getProjectById(currentProject.id) ?: currentProject
-                    }
+                }
                 printProjectMenu()
                 handleUserInput()
             } else return

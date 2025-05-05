@@ -30,15 +30,15 @@ class MainMenuView(
     }
 
     private fun saveUserType(): Boolean {
-        return try {
-            loggedInUserType = viewExceptionHandler.tryCall {
-                getLoggedInUserUseCase.getLoggedInUser().type
-            }
-            true
-        } catch (e: NoLoggedInUserIsSavedInCacheException) {
-            printLn("please login to continue")
-            false
+        var success = false
+        viewExceptionHandler.tryCall {
+            getLoggedInUserUseCase.getLoggedInUser()
+                .also { user ->
+                    loggedInUserType = user.type
+                    success = true
+                }
         }
+        return success
     }
 
     private fun printMainMenuTitle() {
