@@ -1,7 +1,7 @@
 package ui.welcomeView
 
-import logic.exceptions.NoLoggedInUserIsSavedInCacheException
 import logic.useCases.GetLoggedInUserUseCase
+import ui.ViewExceptionHandler
 import ui.cliPrintersAndReaders.CLIPrinter
 import ui.cliPrintersAndReaders.CLIReader
 import ui.loginView.LoginView
@@ -12,17 +12,20 @@ class WelcomeView(
     private val cliReader: CLIReader,
     private val loginView: LoginView,
     private val mainMenuView: MainMenuView,
-    private val getLoggedInUserUseCase: GetLoggedInUserUseCase
+    private val getLoggedInUserUseCase: GetLoggedInUserUseCase,
+    private val viewExceptionHandler: ViewExceptionHandler
 ) {
 
     fun start() {
-        try {
+        viewExceptionHandler.tryCall {
             getLoggedInUserUseCase.getLoggedInUser()
             mainMenuView.start()
             start()
-            return
-        } catch (_: NoLoggedInUserIsSavedInCacheException) { }
+        }
+        showWelcomeFlow()
+    }
 
+    private fun showWelcomeFlow() {
         printWelcomeMessage()
         printOptions()
         goToNextView()
@@ -33,22 +36,24 @@ class WelcomeView(
     }
 
     private fun printOptions() {
-        println("1. Login")
-        println("0. Exit the app")
+        cliPrinter.cliPrintLn("1. Login")
+        cliPrinter.cliPrintLn("0. Exit the app")
     }
 
     private fun goToNextView() {
-        when (cliReader.getValidUserNumberInRange(MAX_OPTION_NUMBER)) {
-            "1" -> loginView.start()
-            "0" -> {
-                println("Exiting the app...")
-                return
-            }
+        viewExceptionHandler.tryCall {
+            cliReader.getValidUserNumberInRange(MAX_OPTION_NUMBER)
+                .let { input ->
+                    when (input) {
+                        "1" -> loginView.start()
+                        "0" -> cliPrinter.cliPrintLn("Exiting the app...")
+                        else -> Unit
+                    }
+                }
+                .takeUnless { it == Unit }
+                ?.let { start() }
         }
-        start()
     }
-
-    private fun println(message: String) = cliPrinter.cliPrintLn(message)
 
     private companion object {
         const val MAX_OPTION_NUMBER = 1

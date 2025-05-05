@@ -90,7 +90,6 @@ class ProjectsDashboardView(
                 .takeIf { it in 1..projects.size }
                 ?.let { number -> projects[number - 1] }
                 ?.let { project -> projectView.start(project) }
-                ?: throw NotFoundException("Invalid project number.")
         }
     }
 

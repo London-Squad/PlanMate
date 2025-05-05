@@ -23,36 +23,36 @@ val uiModule = module {
     single { ViewExceptionHandler(get()) }
 
     single { TaskTitleEditionView(get(), get(), get()) }
-    single { TaskDescriptionEditionView(get(), get(), get()) }
-    single { TaskStateEditionView(get(), get(), get()) }
-    single { TaskDeletionView(get(), get(), get()) }
-    single { TaskManagementView(get(), get(), get(), get(), get(), get(), get(), get()) }
+    single { TaskDescriptionEditionView(get(), get(), get(), get()) }
+    single { TaskStateEditionView(get(), get(), get(), get()) }
+    single { TaskDeletionView(get(), get(), get(), get()) }
+    single { TaskManagementView(get(), get(), get(), get(), get(), get(), get(), get(), get()) }
 
-    single { ProjectTasksView(get(), get(), get(), get()) }
-    single { LogsView(get(), get(), get()) }
+    single { ProjectTasksView(get(), get(), get(), get(), get()) }
+    single { LogsView(get(), get(), get(), get()) }
 
-    single { MainMenuView(get(), get(), get(), get(), get(), get()) }
+    single { MainMenuView(get(), get(), get(), get(), get(), get(), get()) }
 
-    single { LoginView(get(), get(), get(), get()) }
+    single { LoginView(get(), get(), get(), get(), get()) }
 
-    single { WelcomeView(get(), get(), get(), get(), get()) }
+    single { WelcomeView(get(), get(), get(), get(), get(), get()) }
 
     single { ProjectsDashboardView(get(), get(), get(), get(), get(), get()) }
 
-    single { ProjectDetailsView(get(), get(), get(), get(), get(), get(), get(), get(), get()) }
+    single { ProjectDetailsView(get(), get(), get(), get(), get(), get(), get(), get(), get(), get()) }
     single { SwimlanesView(get()) }
-    single { StatesView(get(), get(), get()) }
-    single { EditProjectView(get(), get(), get(), get()) }
-    single { DeleteProjectView(get(), get(), get()) }
-    single { ProjectDetailsView(get(), get(), get(), get(), get(), get(), get(), get(), get()) }
+    single { StatesView(get(), get(), get(), get()) }
+    single { EditProjectView(get(), get(), get(), get(), get()) }
+    single { DeleteProjectView(get(), get(), get(), get()) }
+    single { ProjectDetailsView(get(), get(), get(), get(), get(), get(), get(), get(), get(), get()) }
     single { ProjectsDashboardView(get(), get(), get(), get(), get(), get()) }
 
-    single { MateCreationView(get(), get(), get()) }
+    single { MateCreationView(get(), get(), get(), get()) }
     single { MatesManagementView(get(), get(), get(), get()) }
 
-    single { MainMenuView(get(), get(), get(), get(), get(), get()) }
+    single { MainMenuView(get(), get(), get(), get(), get(), get(), get()) }
 
-    single { LoginView(get(), get(), get(), get()) }
+    single { LoginView(get(), get(), get(), get(), get()) }
 
-    single { WelcomeView(get(), get(), get(), get(), get()) }
+    single { WelcomeView(get(), get(), get(), get(), get(), get()) }
 }

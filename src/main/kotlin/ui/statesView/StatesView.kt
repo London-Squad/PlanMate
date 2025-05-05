@@ -2,6 +2,7 @@ package ui.statesView
 
 import logic.entities.State
 import logic.useCases.ManageStateUseCase
+import ui.ViewExceptionHandler
 import ui.cliPrintersAndReaders.CLIPrinter
 import ui.cliPrintersAndReaders.CLIReader
 import java.util.*
@@ -9,7 +10,9 @@ import java.util.*
 class StatesView(
     private val cliPrinter: CLIPrinter,
     private val cliReader: CLIReader,
-    private val useCase: ManageStateUseCase
+    private val useCase: ManageStateUseCase,
+    private val viewExceptionHandler: ViewExceptionHandler
+
 ) {
 
     private lateinit var projectId: UUID
@@ -36,7 +39,7 @@ class StatesView(
     }
 
     private fun viewStates() {
-        val states = useCase.getStates(projectId)
+        val states = viewExceptionHandler.tryCall { useCase.getStates(projectId) }
         if (states.isEmpty()) {
             cliPrinter.cliPrintLn("No states available.")
         } else {
@@ -89,12 +92,6 @@ class StatesView(
         }
     }
 
-    private fun getUUID(prompt: String): UUID {
-        return try {
-            UUID.fromString(cliReader.getUserInput(prompt))
-        } catch (e: IllegalArgumentException) {
-            cliPrinter.cliPrintLn("Invalid UUID format.")
-            getUUID(prompt)
-        }
-    }
+    private fun getUUID(prompt: String): UUID =
+        UUID.fromString(cliReader.getUserInput(prompt))
 }

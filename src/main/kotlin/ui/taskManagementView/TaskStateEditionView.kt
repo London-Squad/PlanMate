@@ -4,29 +4,28 @@ import logic.entities.State
 import logic.entities.Task
 import logic.exceptions.NotFoundException
 import logic.useCases.ManageTaskUseCase
+import ui.ViewExceptionHandler
 import ui.cliPrintersAndReaders.CLIPrinter
 import ui.cliPrintersAndReaders.CLIReader
 
 class TaskStateEditionView(
     private val cliReader: CLIReader,
     private val cliPrinter: CLIPrinter,
-    private val manageTaskUseCase: ManageTaskUseCase
+    private val manageTaskUseCase: ManageTaskUseCase,
+    private val viewExceptionHandler: ViewExceptionHandler
+
 ) {
 
     fun editState(task: Task, projectStates: List<State>) {
-
         if (projectStates.isEmpty()) {
             printLn("no states available")
             return
         }
-
         printProjectState(projectStates)
         val newStateIndex = cliReader.getValidUserNumberInRange(min = 1, max = projectStates.size).toInt() - 1
 
-        try {
+        viewExceptionHandler.tryCall {
             manageTaskUseCase.editTaskState(task.id, projectStates[newStateIndex])
-        } catch (e: NotFoundException) {
-            cliPrinter.cliPrintLn(e.message ?: "task not found")
         }
     }
 

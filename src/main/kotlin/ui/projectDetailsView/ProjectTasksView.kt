@@ -2,6 +2,7 @@ package ui.projectDetailsView
 
 import logic.entities.Project
 import logic.useCases.ProjectUseCases
+import ui.ViewExceptionHandler
 import ui.cliPrintersAndReaders.CLIPrinter
 import ui.cliPrintersAndReaders.CLIReader
 import ui.taskManagementView.TaskManagementView
@@ -10,7 +11,8 @@ class ProjectTasksView(
     private val cliPrinter: CLIPrinter,
     private val cliReader: CLIReader,
     private val projectUseCases: ProjectUseCases,
-    private val taskManagementView: TaskManagementView
+    private val taskManagementView: TaskManagementView,
+    private val viewExceptionHandler: ViewExceptionHandler
 ) {
 
     private lateinit var currentProject: Project
@@ -66,11 +68,14 @@ class ProjectTasksView(
         cliReader.getValidTitle()
             .let { title -> cliReader.getValidDescription().let { description -> title to description } }
             .let { (title, description) ->
-                projectUseCases.createTask(currentProject.id, title, description)
-                    ?.also { updatedProject ->
-                        currentProject = updatedProject
-                        cliPrinter.cliPrintLn("Task created. You can now edit it.")
-                    } ?: cliPrinter.cliPrintLn("Error creating task: Project not found or no states available.")
+                viewExceptionHandler.tryCall {
+                    projectUseCases.createTask(currentProject.id, title, description)
+                        ?.also { updatedProject ->
+                            currentProject = updatedProject
+                            cliPrinter.cliPrintLn("Task created. You can now edit it.")
+                        } ?: cliPrinter.cliPrintLn("Error creating task: Project not found or no states available.")
+
+                }
             }
     }
 }

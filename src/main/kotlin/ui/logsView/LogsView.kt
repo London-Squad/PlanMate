@@ -2,6 +2,7 @@ package ui.logsView
 
 import logic.entities.*
 import logic.useCases.GetLogsByEntityIdUseCase
+import ui.ViewExceptionHandler
 import ui.cliPrintersAndReaders.CLIPrinter
 import ui.cliPrintersAndReaders.CLIReader
 import java.time.LocalDateTime
@@ -11,7 +12,8 @@ import java.util.*
 class LogsView(
     private val cliPrinter: CLIPrinter,
     private val cliReader: CLIReader,
-    private val getLogsByEntityIdUseCase: GetLogsByEntityIdUseCase
+    private val getLogsByEntityIdUseCase: GetLogsByEntityIdUseCase,
+    private val viewExceptionHandler: ViewExceptionHandler
 ) {
     fun printLogsByEntityId(entityId: UUID) {
 
@@ -33,7 +35,9 @@ class LogsView(
     }
 
     private fun printLogs(entityId: UUID) {
-        getLogsByEntityIdUseCase.getLogsByEntityId(entityId).forEach(::printLog)
+        viewExceptionHandler.tryCall {
+            getLogsByEntityIdUseCase.getLogsByEntityId(entityId).forEach(::printLog)
+        }
     }
 
     private fun printLog(log: Log) {
