@@ -17,7 +17,7 @@ class CsvStatesDataSource(
     }
 
     private fun getAllStates(): List<Pair<UUID, State>> =
-        fileHandler.readLines().drop(1).mapNotNull { line ->
+        fileHandler.readRecord().drop(1).mapNotNull { line ->
             when (val result = stateParser.parseStateLine(line)) {
                 is StateParseResult.Success -> Pair(result.projectId, result.state)
                 is StateParseResult.Failure -> null
@@ -28,14 +28,14 @@ class CsvStatesDataSource(
         getAllStates().filter { it.first == projectId }.map { it.second }
 
     private fun updateStates(transform: (List<String>) -> List<String>) {
-        val lines = fileHandler.readLines()
+        val lines = fileHandler.readRecord()
         // Preserve the header when updating
         val header = lines.firstOrNull() ?: "id,title,description,projectId"
         val dataLines = lines.drop(1)
 
         val transformedData = transform(dataLines)
         // Ensure the header is always the first line when rewriting
-        fileHandler.rewriteLines(listOf(header) + transformedData)
+        fileHandler.rewriteRecords(listOf(header) + transformedData)
     }
 
     override fun getAllStatesByProjectId(projectId: UUID): List<State> = filterStatesByProjectId(projectId)
@@ -44,7 +44,7 @@ class CsvStatesDataSource(
         getAllStates().find { it.second.id == stateId }?.second ?: State.NoState
 
     override fun addNewState(state: State, projectId: UUID) {
-        fileHandler.appendLine(stateParser.formatStateLine(state, projectId))
+        fileHandler.appendRecord(stateParser.formatStateLine(state, projectId))
     }
 
     override fun editStateTitle(stateId: UUID, newTitle: String) =

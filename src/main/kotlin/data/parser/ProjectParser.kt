@@ -8,10 +8,11 @@ import java.util.UUID
 
 class ProjectParser(
     private val taskRepository: TaskRepository,
-    private val statesRepository: StatesRepository
+    private val statesRepository: StatesRepository,
+    private val csvHandler: CsvFileHandler
 ) {
     fun parseProjectLine(line: String): ProjectParseResult {
-        val parts = CsvFileHandler.decodeRow(line)
+        val parts = csvHandler.decodeRecord(line)
         if (parts.size < 3) return ProjectParseResult.Failure("Invalid project line format: $line")
         return try {
             val projectId = UUID.fromString(parts[0].trim())
@@ -35,7 +36,7 @@ class ProjectParser(
             project.title,
             project.description
         )
-        return CsvFileHandler.encodeRow(record)
+        return csvHandler.encodeRecord(record)
     }
 }
 

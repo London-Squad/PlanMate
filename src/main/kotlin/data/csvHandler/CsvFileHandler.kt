@@ -3,7 +3,11 @@ package data.csvHandler
 import java.io.File
 
 class CsvFileHandler(private val file: File) {
-    fun readLines(): List<String> = if (file.exists()) file.readLines() else emptyList()
+
+    fun readRecord(): List<List<String>> {
+        if (!file.exists()) return emptyList()
+        return file.readLines().map(::decodeRecord)
+    }
 
     fun writeHeader(header: String) {
         if (!file.exists()) {
@@ -13,43 +17,38 @@ class CsvFileHandler(private val file: File) {
         }
     }
 
-    fun appendLine(line: String) = file.appendText("$line\n")
+    fun appendRecord(record: List<String>) {
+        file.appendText("${encodeRecord(record)}\n")
+    }
 
-    fun rewriteLines(lines: List<String>) {
-        if (lines.isEmpty()) {
-            return
-        }
+    fun rewriteRecords(records: List<List<String>>) {
+        if (records.isEmpty()) return
 
-        file.writeText("")
-        lines.forEachIndexed { index, line ->
-            if (index == 0) {
-                file.writeText("$line\n")
-            } else {
-                appendLine(line)
-            }
-        }
+        file.writeText(file.readLines()[0] + "\n")
+        records.forEach(::appendRecord)
+    }
+
+
+    private fun encodeCell(cell: String): String {
+        return cell.replace(",", COMMA_ESCAPE)
+            .replace("\n", LINE_BREAK_ESCAPE)
+    }
+
+    private fun decodeCell(cell: String): String {
+        return cell.replace(COMMA_ESCAPE, ",")
+            .replace(LINE_BREAK_ESCAPE, "\n")
+    }
+
+    private fun encodeRecord(record: List<String>): String {
+        return record.map { encodeCell(it) }.joinToString(separator = ",")
+    }
+
+    private fun decodeRecord(csvRow: String): List<String> {
+        return csvRow.split(",").map { decodeCell(it) }
     }
 
     companion object {
         private const val COMMA_ESCAPE = "__comma__"
         private const val LINE_BREAK_ESCAPE = "__line_break__"
-
-        private fun encodeCell(cell: String): String {
-            return cell.replace(",", COMMA_ESCAPE)
-                .replace("\n", LINE_BREAK_ESCAPE)
-        }
-
-        private fun decodeCell(cell: String): String {
-            return cell.replace(COMMA_ESCAPE, ",")
-                .replace(LINE_BREAK_ESCAPE, "\n")
-        }
-
-        fun encodeRow(record: List<String>): String {
-            return record.map { encodeCell(it) }.joinToString(separator = ",")
-        }
-
-        fun decodeRow(csvRow: String): List<String> {
-            return csvRow.split(",").map { decodeCell(it) }
-        }
     }
 }

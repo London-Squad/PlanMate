@@ -4,10 +4,10 @@ import data.csvHandler.CsvFileHandler
 import logic.entities.State
 import java.util.UUID
 
-class StateParser {
+class StateParser(private val csvHandler: CsvFileHandler) {
     fun parseStateLine(line: String): StateParseResult {
         return try {
-            val parts = CsvFileHandler.decodeRow(line)
+            val parts = csvHandler.decodeRecord(line)
             if (parts.size < 4) return StateParseResult.Failure("Invalid state line format: $line")
 
             val id = parts[0]
@@ -36,7 +36,7 @@ class StateParser {
             state.description,
             projectId.toString()
         )
-        return CsvFileHandler.encodeRow(record)
+        return csvHandler.encodeRecord(record)
     }
 }
 

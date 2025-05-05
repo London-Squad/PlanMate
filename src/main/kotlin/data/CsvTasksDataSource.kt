@@ -18,7 +18,7 @@ class CsvTasksDataSource(
     }
 
     private fun getAllTasksPaired(): List<Pair<UUID, Task>> =
-        fileHandler.readLines().drop(1).mapNotNull { line ->
+        fileHandler.readRecord().drop(1).mapNotNull { line ->
             when (val result = taskParser.parseTaskLine(line)) {
                 is TaskParseResult.Success -> Pair(result.projectId, result.task)
                 is TaskParseResult.Failure -> null
@@ -26,13 +26,13 @@ class CsvTasksDataSource(
         }
 
     private fun updateTasks(transform: (List<Pair<UUID, Task>>) -> List<Pair<UUID, Task>>) {
-        val allLines = fileHandler.readLines()
+        val allLines = fileHandler.readRecord()
         val header = allLines.firstOrNull() ?: "id,title,description,stateID,projectID"
         val tasks = getAllTasksPaired()
         val updatedTasks = transform(tasks)
 
         // Always preserve the header when rewriting
-        fileHandler.rewriteLines(
+        fileHandler.rewriteRecords(
             listOf(header) +
                     updatedTasks.map { taskParser.formatTaskLine(it.first, it.second) }
         )
@@ -41,11 +41,13 @@ class CsvTasksDataSource(
     override fun getAllTasksByProjectID(projectId: UUID): List<Task> =
         getAllTasksPaired().filter { it.first == projectId }.map { it.second }
 
-    override fun getTaskByID(taskId: UUID): Task? =
-        getAllTasksPaired().find { it.second.id == taskId }?.second
+    override fun getTaskByID(taskId: UUID): Task {
+        return getAllTasksPaired().find { it.second.id == taskId }?.second
+            ?: throw NoSuchElementException("Task with ID $taskId not found")
+    }
 
     override fun addNewTask(task: Task, projectId: UUID) {
-        fileHandler.appendLine(taskParser.formatTaskLine(projectId, task))
+        fileHandler.appendRecord(taskParser.formatTaskLine(projectId, task))
     }
 
     override fun editTaskTitle(taskId: UUID, newTitle: String) =

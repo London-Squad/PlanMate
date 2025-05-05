@@ -37,14 +37,21 @@ val dataModule = module {
         File(directory, "logs.csv")
     }
 
+    single { CsvFileHandler(get(named("statesFile"))) }
     single(named("tasksFileHandler")) { CsvFileHandler(get(named("tasksFile"))) }
     single(named("projectsFileHandler")) { CsvFileHandler(get(named("projectsFile"))) }
     single(named("statesFileHandler")) { CsvFileHandler(get(named("statesFile"))) }
     single(named("logsFileHandler")) { CsvFileHandler(get(named("logsFile"))) }
 
-    single { TaskParser(get()) }
-    single { StateParser() }
-    single { ProjectParser(get<TaskRepository>() as CsvTasksDataSource, get<StatesRepository>() as CsvStatesDataSource) }
+    single { TaskParser(get(), get()) }
+    single { StateParser(get()) }
+    single {
+        ProjectParser(
+            get<TaskRepository>() as CsvTasksDataSource,
+            get<StatesRepository>() as CsvStatesDataSource,
+            get()
+        )
+    }
 
     single<TaskRepository> {
         CsvTasksDataSource(

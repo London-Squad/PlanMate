@@ -21,7 +21,7 @@ class CsvProjectsDataSource(
     }
 
     override fun getAllProjects(): List<Project> =
-        fileHandler.readLines().drop(1).mapNotNull { line ->
+        fileHandler.readRecord().drop(1).mapNotNull { line ->
             when (val result = projectParser.parseProjectLine(line)) {
                 is ProjectParseResult.Success -> result.project
                 is ProjectParseResult.Failure -> null
@@ -29,10 +29,10 @@ class CsvProjectsDataSource(
         }
 
     private fun updateProjects(transform: (List<Project>) -> List<Project>) {
-        val header = fileHandler.readLines().firstOrNull() ?: "id,title,description"
+        val header = fileHandler.readRecord().firstOrNull() ?: "id,title,description"
         val projects = getAllProjects()
         val updatedProjects = transform(projects)
-        fileHandler.rewriteLines(
+        fileHandler.rewriteRecords(
             listOf(header) +
                     updatedProjects.map { projectParser.formatProjectLine(it) }
         )
@@ -41,7 +41,7 @@ class CsvProjectsDataSource(
     override fun addNewProject(project: Project) {
         project.states.forEach { statesRepository.addNewState(it, project.id) }
         project.tasks.forEach { taskRepository.addNewTask(it, project.id) }
-        fileHandler.appendLine(projectParser.formatProjectLine(project))
+        fileHandler.appendRecord(projectParser.formatProjectLine(project))
     }
 
     override fun editProjectTitle(projectId: UUID, newTitle: String) =

@@ -5,10 +5,13 @@ import logic.entities.Task
 import logic.repositories.StatesRepository
 import java.util.UUID
 
-class TaskParser(private val statesRepository: StatesRepository) {
+class TaskParser(
+    private val statesRepository: StatesRepository,
+    private val csvHandler: CsvFileHandler
+) {
     fun parseTaskLine(line: String): TaskParseResult {
         return try {
-            val parts = CsvFileHandler.decodeRow(line)
+            val parts = csvHandler.decodeRecord(line)
             if (parts.size < 5) return TaskParseResult.Failure("Invalid task line format: $line")
 
             val id = parts[0]
@@ -44,7 +47,7 @@ class TaskParser(private val statesRepository: StatesRepository) {
             task.state.id.toString(),
             projectId.toString()
         )
-        return CsvFileHandler.encodeRow(record)
+        return csvHandler.encodeRecord(record)
     }
 }
 
