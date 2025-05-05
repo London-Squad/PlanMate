@@ -2,9 +2,10 @@ package ui.projectDetailsView
 
 import logic.entities.Project
 import ui.cliPrintersAndReaders.CLIPrinter
+import ui.cliPrintersAndReaders.cliTable.CLITablePrinter
 
 class SwimlanesView(
-    private val cliPrinter: CLIPrinter
+    private val cliPrinter: CLIPrinter, private val cliTablePrinter: CLITablePrinter = CLITablePrinter(cliPrinter)
 ) {
 
     fun displaySwimlanes(project: Project) {
@@ -19,31 +20,26 @@ class SwimlanesView(
         }
 
         val maxTasks = tasksByState.values.maxOfOrNull { it.size } ?: 0
-        val columnWidth = 25
-        val separator = "|"
+        val headers = project.states.map { it.title }
 
-        project.states.forEach { state ->
-            val stateHeader = state.title.take(columnWidth - 1).padEnd(columnWidth)
-            cliPrinter.cliPrint("$stateHeader$separator")
-        }
-        cliPrinter.cliPrintLn("")
-
-        project.states.forEach { _ ->
-            cliPrinter.cliPrint("-".repeat(columnWidth) + separator)
-        }
-        cliPrinter.cliPrintLn("")
-
+        val data = mutableListOf<List<String>>()
         for (row in 0 until maxTasks) {
-            project.states.forEach { state ->
+            val rowData = project.states.map { state ->
                 val tasks = tasksByState[state] ?: emptyList()
-                val taskTitle = if (row < tasks.size) {
-                    tasks[row].title.take(columnWidth - 1).padEnd(columnWidth)
+                if (row < tasks.size) {
+                    val task = tasks[row]
+                    "${row + 1}. ${task.title}"
                 } else {
-                    "".padEnd(columnWidth)
+                    ""
                 }
-                cliPrinter.cliPrint("$taskTitle$separator")
             }
-            cliPrinter.cliPrintLn("")
+            data.add(rowData)
         }
+
+        val columnWidths = headers.mapIndexed { colIndex, header ->
+            maxOf(header.length, data.maxOfOrNull { it[colIndex].length } ?: 0)
+        }
+
+        cliTablePrinter(headers, data, columnWidths)
     }
 }

@@ -6,6 +6,8 @@ import logic.useCases.GetLoggedInUserUseCase
 import logic.useCases.ProjectUseCases
 import ui.cliPrintersAndReaders.CLIPrinter
 import ui.cliPrintersAndReaders.CLIReader
+import ui.cliPrintersAndReaders.cliTable.CLITablePrinter
+import ui.cliPrintersAndReaders.cliTable.InvalidTableInput
 import ui.projectDetailsView.ProjectDetailsView
 
 class ProjectsDashboardView(
@@ -13,7 +15,8 @@ class ProjectsDashboardView(
     private val cliReader: CLIReader,
     private val projectUseCases: ProjectUseCases,
     private val getLoggedInUserUseCase: GetLoggedInUserUseCase,
-    private val projectView: ProjectDetailsView
+    private val projectView: ProjectDetailsView,
+    private val cliTablePrinter: CLITablePrinter = CLITablePrinter(cliPrinter)
 ) {
 
     lateinit var currentUser: User
@@ -33,9 +36,7 @@ class ProjectsDashboardView(
 
     }
 
-    fun handleProjectsView(currentUser: User) {
 
-    }
 
     private fun printHeader() {
         cliPrinter.printHeader("Projects Menu")
@@ -46,12 +47,21 @@ class ProjectsDashboardView(
         if (projects.isEmpty()) {
             cliPrinter.cliPrintLn("No projects found.")
         } else {
-            projects.forEachIndexed { index, project ->
-                val displayIndex = index + 1
-                cliPrinter.cliPrintLn("Project: $displayIndex")
-                cliPrinter.cliPrintLn("Title: ${project.title}")
-                cliPrinter.cliPrintLn("Description: ${project.description}")
-                cliPrinter.cliPrintLn(cliPrinter.getThinHorizontal())
+            val headers = listOf("Project #", "Title", "Description")
+
+
+            val data = projects.mapIndexed { index, project ->
+                listOf(
+                    (index + 1).toString(),
+                    project.title,
+                    project.description
+                )
+            }
+            val columnsWidth = listOf(null, null, null)
+            try {
+                cliTablePrinter(headers, data, columnsWidth)
+            } catch (e: InvalidTableInput) {
+                cliPrinter.cliPrintLn("Error displaying swimlanes: ${e.message}")
             }
         }
     }
