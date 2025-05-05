@@ -1,4 +1,4 @@
-package ui.projectView
+package ui.projectDetailsView
 
 import logic.entities.Project
 import ui.cliPrintersAndReaders.CLIPrinter

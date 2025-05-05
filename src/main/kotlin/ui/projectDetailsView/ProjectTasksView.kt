@@ -1,12 +1,10 @@
-package ui.projectView
+package ui.projectDetailsView
 
 import logic.entities.Project
-import logic.entities.Task
 import logic.useCases.ProjectUseCases
 import ui.cliPrintersAndReaders.CLIPrinter
 import ui.cliPrintersAndReaders.CLIReader
 import ui.taskManagementView.TaskManagementView
-import java.util.UUID
 
 class ProjectTasksView(
     private val cliPrinter: CLIPrinter,
