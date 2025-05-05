@@ -12,7 +12,7 @@ class MateCreationView(
 ) {
 
     fun createMate() {
-        cliPrinter.printHeader(" ============================= Create New Mate =============================")
+        cliPrinter.printHeader("Create New Mate")
         try {
             val username = cliReader.getValidUserInput(
                 { it.isNotBlank() },

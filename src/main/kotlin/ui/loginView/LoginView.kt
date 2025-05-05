@@ -1,7 +1,6 @@
 package ui.loginView
 
 import logic.exceptions.AuthenticationException
-import logic.repositories.CacheDataRepository
 import logic.useCases.LoginUseCase
 import ui.cliPrintersAndReaders.CLIPrinter
 import ui.cliPrintersAndReaders.CLIReader
@@ -12,7 +11,6 @@ class LoginView(
     private val cliReader: CLIReader,
     private val loginUseCase: LoginUseCase,
     private val mainMenuView: MainMenuView,
-    private val cacheDataRepository: CacheDataRepository,
 ) {
 
     fun start() {
@@ -27,8 +25,7 @@ class LoginView(
 
     private fun processLogin(username: String, password: String) {
         try {
-            val user = loginUseCase(username, password)
-            cacheDataRepository.setLoggedInUser(user)
+            loginUseCase(username, password)
             println("Login successful")
             mainMenuView.start()
         } catch (e: AuthenticationException) {

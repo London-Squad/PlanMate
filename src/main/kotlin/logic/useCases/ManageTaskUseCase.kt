@@ -1,24 +1,28 @@
 package logic.useCases
 
-import logic.entities.*
-import logic.repositories.CacheDataRepository
+import logic.entities.Delete
+import logic.entities.Edit
+import logic.entities.Log
+import logic.entities.State
+import logic.repositories.AuthenticationRepository
 import logic.repositories.LogsRepository
 import logic.repositories.TaskRepository
-import java.util.UUID
+import java.util.*
 
 class ManageTaskUseCase(
     private val taskRepository: TaskRepository,
-    private val cacheDataRepository: CacheDataRepository,
+    private val authenticationRepository: AuthenticationRepository,
     private val logsRepository: LogsRepository,
 ) {
 
     fun editTaskTitle(taskID: UUID, newTitle: String) {
             val task = taskRepository.getTaskByID(taskID)
 
+        taskRepository.editTaskTitle(taskID, newTitle)
             taskRepository.editTaskTitle(taskID, newTitle)
             logsRepository.addLog(
                 Log(
-                    user = cacheDataRepository.getLoggedInUser(),
+                    user = authenticationRepository.getLoggedInUser(),
                     action = Edit(
                         entity = task,
                         property = "title",
@@ -35,7 +39,7 @@ class ManageTaskUseCase(
         taskRepository.editTaskDescription(taskID, newDescription)
         logsRepository.addLog(
             Log(
-                user = cacheDataRepository.getLoggedInUser(),
+                user = authenticationRepository.getLoggedInUser(),
                 action = Edit(
                     entity = task,
                     property = "description",
@@ -52,7 +56,7 @@ class ManageTaskUseCase(
         taskRepository.editTaskState(taskID, newState)
         logsRepository.addLog(
             Log(
-                user = cacheDataRepository.getLoggedInUser(),
+                user = authenticationRepository.getLoggedInUser(),
                 action = Edit(
                     entity = task,
                     property = "state",
@@ -69,7 +73,7 @@ class ManageTaskUseCase(
         taskRepository.deleteTask(taskID)
         logsRepository.addLog(
             Log(
-                user = cacheDataRepository.getLoggedInUser(),
+                user = authenticationRepository.getLoggedInUser(),
                 action = Delete(
                     entity = task,
                 )

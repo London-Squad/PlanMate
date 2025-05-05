@@ -4,7 +4,6 @@ import com.google.common.truth.Truth.assertThat
 import io.mockk.every
 import io.mockk.mockk
 import logic.repositories.AuthenticationRepository
-import logic.repositories.CacheDataRepository
 import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Test
 
@@ -15,8 +14,7 @@ class LogoutUseCaseTest {
     @BeforeEach
     fun setUp() {
         authenticationRepository = mockk(relaxed = true)
-        val cacheDataRepository = mockk<CacheDataRepository>(relaxed = true)
-        logoutUseCase = LogoutUseCase(authenticationRepository, cacheDataRepository)
+        logoutUseCase = LogoutUseCase(authenticationRepository)
     }
 
     @Test

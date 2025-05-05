@@ -40,6 +40,9 @@ class CLIReader(
         )
     }
 
+/**
+ * @return "y" or "n" string
+ **/
     fun getUserConfirmation(): String {
         return getValidUserInput(
             message = "Do you want to confirm? (y/n): ",

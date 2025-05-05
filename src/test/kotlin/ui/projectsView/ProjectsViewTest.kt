@@ -3,10 +3,9 @@ package ui.projectsView
 import io.mockk.every
 import io.mockk.mockk
 import io.mockk.verify
-import logic.entities.Project
 import logic.entities.User
 import logic.exceptions.NoLoggedInUserIsSavedInCacheException
-import logic.repositories.CacheDataRepository
+import logic.useCases.GetLoggedInUserUseCase
 import logic.useCases.ProjectUseCases
 import ui.cliPrintersAndReaders.CLIPrinter
 import ui.cliPrintersAndReaders.CLIReader
@@ -18,20 +17,20 @@ class ProjectsViewTest {
     private val cliPrinter: CLIPrinter = mockk(relaxed = true)
     private val cliReader: CLIReader = mockk()
     private val projectUseCases: ProjectUseCases = mockk(relaxed = true)
-    private val cacheDataRepository: CacheDataRepository = mockk()
+    private val getLoggedInUserUseCase: GetLoggedInUserUseCase = mockk(relaxed = true)
     private val projectView: ProjectView = mockk(relaxed = true)
     private val projectsView = ProjectsView(
         cliPrinter,
         cliReader,
         projectUseCases,
-        cacheDataRepository,
+        getLoggedInUserUseCase,
         projectView
     )
 
     @Test
     fun shouldPrintErrorAndExitWhenNoUserLoggedIn() {
         // given
-        every { cacheDataRepository.getLoggedInUser() } throws NoLoggedInUserIsSavedInCacheException()
+        every { getLoggedInUserUseCase.getLoggedInUser() } throws NoLoggedInUserIsSavedInCacheException()
 
         // when
         projectsView.start()
@@ -44,7 +43,7 @@ class ProjectsViewTest {
     fun shouldCallHandleProjectsViewWhenUserLoggedIn() {
         // given
         val user = mockk<User>()
-        every { cacheDataRepository.getLoggedInUser() } returns user
+        every { getLoggedInUserUseCase.getLoggedInUser() } returns user
         every { user.type } returns User.Type.MATE
         every { projectUseCases.getAllProjects() } returns emptyList()
         every { cliReader.getUserInput("Choice: ") } returns "back"

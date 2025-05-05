@@ -2,7 +2,7 @@ package ui.projectsView
 
 import logic.entities.User
 import logic.exceptions.NoLoggedInUserIsSavedInCacheException
-import logic.repositories.CacheDataRepository
+import logic.useCases.GetLoggedInUserUseCase
 import logic.useCases.ProjectUseCases
 import ui.cliPrintersAndReaders.CLIPrinter
 import ui.cliPrintersAndReaders.CLIReader
@@ -16,6 +16,7 @@ class ProjectsView(
     private val cacheDataRepository: CacheDataRepository,
     private val projectView: ProjectView,
     private val cliTablePrinter: CLITablePrinter = CLITablePrinter(cliPrinter)
+    private val getLoggedInUserUseCase: GetLoggedInUserUseCase,
 ) {
 
     lateinit var currentUser: User
@@ -23,7 +24,7 @@ class ProjectsView(
     fun start() {
 
         try {
-            currentUser = cacheDataRepository.getLoggedInUser()
+            currentUser = getLoggedInUserUseCase.getLoggedInUser()
         } catch (e: NoLoggedInUserIsSavedInCacheException) {
             cliPrinter.cliPrintLn("Error: No user logged in. Please log in first.")
             return

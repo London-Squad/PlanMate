@@ -3,20 +3,22 @@ package logic.useCases
 import io.mockk.every
 import io.mockk.mockk
 import logic.entities.*
-import logic.repositories.CacheDataRepository
+import logic.repositories.AuthenticationRepository
 import logic.repositories.LogsRepository
 import logic.repositories.StatesRepository
 import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Test
 import java.util.*
-import kotlin.test.*
+import kotlin.test.assertEquals
+import kotlin.test.assertNotNull
+import kotlin.test.assertTrue
 
 class ManageStateUseCaseTest {
 
     private lateinit var useCase: ManageStateUseCase
     private lateinit var statesRepo: FakeStatesRepository
     private lateinit var logsRepo: FakeLogsRepository
-    private lateinit var cacheDataRepository: CacheDataRepository
+    private lateinit var authenticationRepository: AuthenticationRepository
     private val projectId = UUID.randomUUID()
     private val admin = User(UUID.randomUUID(), "admin", User.Type.ADMIN)
 
@@ -25,10 +27,10 @@ class ManageStateUseCaseTest {
         statesRepo = FakeStatesRepository()
         logsRepo = FakeLogsRepository()
 
-        cacheDataRepository = mockk(relaxed = true)
-        every { cacheDataRepository.getLoggedInUser() } returns admin
+        authenticationRepository = mockk(relaxed = true)
+        every { authenticationRepository.getLoggedInUser() } returns admin
 
-        useCase = ManageStateUseCase(statesRepo, logsRepo, cacheDataRepository)
+        useCase = ManageStateUseCase(statesRepo, logsRepo, authenticationRepository)
     }
 
     @Test

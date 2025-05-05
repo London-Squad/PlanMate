@@ -3,7 +3,7 @@ package ui.projectView
 import logic.entities.Project
 import logic.entities.User
 import logic.exceptions.NoLoggedInUserIsSavedInCacheException
-import logic.repositories.CacheDataRepository
+import logic.useCases.GetLoggedInUserUseCase
 import logic.useCases.ProjectUseCases
 import ui.cliPrintersAndReaders.CLIPrinter
 import ui.cliPrintersAndReaders.CLIReader
@@ -12,7 +12,7 @@ import ui.logsView.LogsView
 class ProjectView(
     private val cliPrinter: CLIPrinter,
     private val cliReader: CLIReader,
-    private val cacheDataRepository: CacheDataRepository,
+    private val getLoggedInUserUseCase: GetLoggedInUserUseCase,
     private val swimlanesView: SwimlanesView,
     private val editProjectView: EditProjectView,
     private val deleteProjectView: DeleteProjectView,
@@ -27,7 +27,7 @@ class ProjectView(
         currentProject = project
 
         try {
-            cacheDataRepository.getLoggedInUser()
+            getLoggedInUserUseCase.getLoggedInUser()
         } catch (e: NoLoggedInUserIsSavedInCacheException) {
             cliPrinter.cliPrintLn(ERROR_MESSAGE)
             return
@@ -39,7 +39,7 @@ class ProjectView(
     }
 
     private fun printProjectMenu() {
-        val currentUser = cacheDataRepository.getLoggedInUser()
+        val currentUser = getLoggedInUserUseCase.getLoggedInUser()
         cliPrinter.cliPrintLn("1. Manage tasks")
         cliPrinter.cliPrintLn("2. View project logs")
         if (currentUser.type == User.Type.ADMIN) {
@@ -50,7 +50,7 @@ class ProjectView(
     }
 
     private fun handleUserInput() {
-        val currentUser = cacheDataRepository.getLoggedInUser()
+        val currentUser = getLoggedInUserUseCase.getLoggedInUser()
         val maxVisibleOptionNumber = if (currentUser.type == User.Type.ADMIN) MAX_OPTION_NUMBER_ADMIN
         else MAX_OPTION_NUMBER_MATE
         val input = cliReader.getValidUserNumberInRange(maxVisibleOptionNumber)
