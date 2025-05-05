@@ -23,11 +23,8 @@ class EditProjectView(
         cliPrinter.cliPrintLn("3. States management")
         cliPrinter.cliPrintLn("0. Back to project")
 
-        val input = cliReader.getValidUserInput(
-            isValidInput = { it in listOf("0", "1", "2", "3") },
-            message = "Choose an option: ",
-            invalidInputMessage = "Invalid option, try again ..."
-        )
+        val input = cliReader.getValidUserNumberInRange(MAX_OPTION_NUMBER)
+
 
         when (input) {
             "1" -> editProjectTitle()
@@ -39,11 +36,7 @@ class EditProjectView(
     }
 
     private fun editProjectTitle() {
-        val newTitle = cliReader.getValidUserInput(
-            message = "Enter new project title: ",
-            invalidInputMessage = "Title cannot be empty",
-            isValidInput = { it.isNotBlank() }
-        )
+        val newTitle = cliReader.getValidTitle()
         projectUseCases.editProjectTitle(currentProject.id, newTitle)
         currentProject = currentProject.copy(title = newTitle)
         cliPrinter.cliPrintLn("Project title updated.")
@@ -51,11 +44,7 @@ class EditProjectView(
     }
 
     private fun editProjectDescription() {
-        val newDescription = cliReader.getValidUserInput(
-            message = "Enter new project description: ",
-            invalidInputMessage = "Description cannot be empty",
-            isValidInput = { it.isNotBlank() }
-        )
+        val newDescription = cliReader.getValidDescription()
         projectUseCases.editProjectDescription(currentProject.id, newDescription)
         currentProject = currentProject.copy(description = newDescription)
         cliPrinter.cliPrintLn("Project description updated.")
@@ -63,5 +52,9 @@ class EditProjectView(
 
     private fun statesManagement() {
         statesView.start(currentProject.id)
+    }
+
+    private companion object {
+        const val MAX_OPTION_NUMBER = 3
     }
 }

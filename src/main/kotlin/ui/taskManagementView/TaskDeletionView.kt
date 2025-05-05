@@ -25,15 +25,6 @@ class TaskDeletionView(
         }
     }
 
-    private fun isCancelDelete(): Boolean {
-
-        return when (cliReader.getUserInput("Are you sure to delete the task? (y/n): ")) {
-            "y" -> false
-            "n" -> true
-            else -> {
-                cliPrinter.cliPrintLn("Invalid input")
-                isCancelDelete()
-            }
-        }
-    }
+    private fun isCancelDelete(): Boolean =
+        cliReader.getUserConfirmation() == "n"
 }

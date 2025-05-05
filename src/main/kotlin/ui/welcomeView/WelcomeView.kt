@@ -38,20 +38,19 @@ class WelcomeView(
     }
 
     private fun goToNextView() {
-        when (getUserInput()) {
+        when (cliReader.getValidUserNumberInRange(MAX_OPTION_NUMBER)) {
             "1" -> loginView.start()
             "0" -> {
                 println("Exiting the app...")
                 return
             }
         }
-        start() // start the welcome view again after coming back from options
+        start()
     }
 
-    private fun getUserInput() = cliReader.getValidUserInput(
-        { it in listOf("1", "0") },
-        "\nenter your option: "
-    )
-
     private fun println(message: String) = cliPrinter.cliPrintLn(message)
+
+    private companion object {
+        const val MAX_OPTION_NUMBER = 1
+    }
 }
