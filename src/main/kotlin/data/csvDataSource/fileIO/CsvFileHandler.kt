@@ -27,6 +27,7 @@ class CsvFileHandler(
 
     fun rewriteRecords(records: List<List<String>>) {
         if (records.isEmpty()) return
+        file.writeText("")
         records.forEach(::appendRecord)
     }
 

@@ -1,15 +1,15 @@
 package logic.repositories
 
-import logic.entities.State
+import logic.entities.TaskState
 import java.util.UUID
 
 interface TasksStatesRepository {
 
-    fun getTasksStatesByProjectId(projectId: UUID, includeDeleted: Boolean = false): List<State>
+    fun getTasksStatesByProjectId(projectId: UUID, includeDeleted: Boolean = false): List<TaskState>
 
-    fun getTaskStateById(stateId: UUID, includeDeleted: Boolean = false): State
+    fun getTaskStateById(stateId: UUID, includeDeleted: Boolean = false): TaskState
 
-    fun addNewTaskState(state: State, projectId: UUID)
+    fun addNewTaskState(taskState: TaskState, projectId: UUID)
 
     fun editTaskStateTitle(stateId: UUID, newTitle: String)
 

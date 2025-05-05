@@ -13,10 +13,10 @@ class ManageStateUseCase(
     private val authenticationRepository: AuthenticationRepository
 ) {
 
-    fun addState(state: State, projectID: UUID) {
-        if (state.title.isBlank()) return
-        tasksStatesRepository.addNewTaskState(state, projectID)
-        logAction(Create(state))
+    fun addState(taskState: TaskState, projectID: UUID) {
+        if (taskState.title.isBlank()) return
+        tasksStatesRepository.addNewTaskState(taskState, projectID)
+        logAction(Create(taskState))
     }
 
     fun editStateTitle(stateID: UUID, newTitle: String) {
@@ -49,12 +49,12 @@ class ManageStateUseCase(
 
     fun deleteState(stateID: UUID) {
         val oldState = tasksStatesRepository.getTaskStateById(stateID) ?: return
-        if (oldState.id == State.NoState.id) return
+        if (oldState.id == TaskState.NoTaskState.id) return
         tasksStatesRepository.deleteTaskState(stateID)
         logAction(Delete(oldState))
     }
 
-    fun getStates(projectId: UUID): List<State> {
+    fun getStates(projectId: UUID): List<TaskState> {
         return tasksStatesRepository.getTasksStatesByProjectId(projectId)
     }
 

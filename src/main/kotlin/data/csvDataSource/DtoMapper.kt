@@ -1,42 +1,42 @@
 package data.csvDataSource
 
-import data.entitiesData.*
+import data.dto.*
 import logic.entities.*
 import java.util.*
 
 class DtoMapper {
-    fun mapToTask(taskData: TaskData, taskState: State): Task {
+    fun mapToTask(taskDto: TaskDto, taskState: TaskState): Task {
         return Task(
-            id = taskData.id,
-            title = taskData.title,
-            description = taskData.description,
-            state = taskState
+            id = taskDto.id,
+            title = taskDto.title,
+            description = taskDto.description,
+            taskState = taskState
         )
     }
 
-    fun mapToTaskData(task: Task, projectId: UUID, isDeleted: Boolean = false): TaskData {
-        return TaskData(
+    fun mapToTaskDto(task: Task, projectId: UUID, isDeleted: Boolean = false): TaskDto {
+        return TaskDto(
             id = task.id,
             title = task.title,
             description = task.description,
-            stateId = task.state.id,
+            stateId = task.taskState.id,
             projectId = projectId,
             isDeleted = isDeleted
         )
     }
 
-    fun mapToProject(projectData: ProjectData, tasks: List<Task>, states: List<State>): Project {
+    fun mapToProject(projectDto: ProjectDto, tasks: List<Task>, tasksStates: List<TaskState>): Project {
         return Project(
-            id = projectData.id,
-            title = projectData.title,
-            description = projectData.description,
+            id = projectDto.id,
+            title = projectDto.title,
+            description = projectDto.description,
             tasks = tasks,
-            tasksStates = states
+            tasksStates = tasksStates
         )
     }
 
-    fun mapToProjectData(project: Project, isDeleted: Boolean = false): ProjectData {
-        return ProjectData(
+    fun mapToProjectDto(project: Project, isDeleted: Boolean = false): ProjectDto {
+        return ProjectDto(
             id = project.id,
             title = project.title,
             description = project.description,
@@ -44,34 +44,34 @@ class DtoMapper {
         )
     }
 
-    fun mapToTaskState(taskStateData: TaskStateData): State {
-        return State(
-            id = taskStateData.id,
-            title = taskStateData.title,
-            description = taskStateData.description
+    fun mapToTaskState(taskStateDto: TaskStateDto): TaskState {
+        return TaskState(
+            id = taskStateDto.id,
+            title = taskStateDto.title,
+            description = taskStateDto.description
         )
     }
 
-    fun mapToTaskStateData(state: State, projectId: UUID, isDeleted: Boolean = false): TaskStateData {
-        return TaskStateData(
-            id = state.id,
-            title = state.title,
-            description = state.description,
+    fun mapToTaskStateDto(taskState: TaskState, projectId: UUID, isDeleted: Boolean = false): TaskStateDto {
+        return TaskStateDto(
+            id = taskState.id,
+            title = taskState.title,
+            description = taskState.description,
             projectId = projectId,
             isDeleted = isDeleted
         )
     }
 
-    fun mapToUser(userData: UserData): User {
+    fun mapToUser(userDto: UserDto): User {
         return User(
-            id = userData.id,
-            userName = userData.userName,
-            type = User.Type.valueOf(userData.type.uppercase())
+            id = userDto.id,
+            userName = userDto.userName,
+            type = User.Type.valueOf(userDto.type.uppercase())
         )
     }
 
-    fun mapToUserData(user: User, hashedPassword: String, isDeleted: Boolean = false): UserData {
-        return UserData(
+    fun mapToUserDto(user: User, hashedPassword: String, isDeleted: Boolean = false): UserDto {
+        return UserDto(
             id = user.id,
             userName = user.userName,
             hashedPassword = hashedPassword,
@@ -80,37 +80,37 @@ class DtoMapper {
         )
     }
 
-    fun mapToLog(logData: LogData, user: User, planEntity: PlanEntity): Log {
+    fun mapToLog(logDto: LogDto, user: User, planEntity: PlanEntity): Log {
 
-        val action = when (logData.action.lowercase()) {
+        val action = when (logDto.action.lowercase()) {
             "create" -> Create(entity = planEntity)
             "delete" -> Delete(entity = planEntity)
             "edit" -> Edit(
                 entity = planEntity,
-                property = logData.planEntityProperty,
-                oldValue = logData.oldValue,
-                newValue = logData.newValue
+                property = logDto.planEntityProperty,
+                oldValue = logDto.oldValue,
+                newValue = logDto.newValue
             )
 
-            else -> throw IllegalArgumentException("Unknown action type: ${logData.action}")
+            else -> throw IllegalArgumentException("Unknown action type: ${logDto.action}")
         }
 
         return Log(
-            id = logData.id,
+            id = logDto.id,
             user = user,
-            time = logData.time,
+            time = logDto.time,
             action = action
         )
     }
 
-    fun mapToLogData(log: Log): LogData {
+    fun mapToLogDto(log: Log): LogDto {
         val action = when (log.action) {
             is Create -> "create"
             is Delete -> "delete"
             is Edit -> "edit"
         }
 
-        return LogData(
+        return LogDto(
             id = log.id,
             userId = log.user.id,
             time = log.time,

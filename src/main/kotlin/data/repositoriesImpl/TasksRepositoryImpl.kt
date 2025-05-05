@@ -2,7 +2,7 @@ package data.repositoriesImpl
 
 import data.csvDataSource.DtoMapper
 import data.dataSources.TasksDataSource
-import logic.entities.State
+import logic.entities.TaskState
 import logic.entities.Task
 import logic.exceptions.TaskNotFoundException
 import logic.repositories.TaskRepository
@@ -38,7 +38,7 @@ class TasksRepositoryImpl(
 
     override fun addNewTask(task: Task, projectId: UUID) {
         tasksDataSource.addNewTask(
-            mapper.mapToTaskData(task, projectId)
+            mapper.mapToTaskDto(task, projectId)
         )
     }
 
@@ -50,8 +50,8 @@ class TasksRepositoryImpl(
         tasksDataSource.editTaskDescription(taskId, newDescription)
     }
 
-    override fun editTaskState(taskId: UUID, newState: State) {
-        tasksDataSource.editTaskState(taskId, newState.id)
+    override fun editTaskState(taskId: UUID, newTaskState: TaskState) {
+        tasksDataSource.editTaskState(taskId, newTaskState.id)
     }
 
     override fun deleteTask(taskId: UUID) {

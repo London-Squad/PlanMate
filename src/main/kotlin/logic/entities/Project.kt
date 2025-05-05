@@ -7,5 +7,5 @@ data class Project(
     override val title: String,
     override val description: String,
     val tasks: List<Task>,
-    val tasksStates: List<State>,
+    val tasksStates: List<TaskState>,
 ): PlanEntity

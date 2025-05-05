@@ -1,14 +1,14 @@
 package data.dataSources
 
-import data.entitiesData.UserData
+import data.dto.UserDto
 import java.util.UUID
 
 interface UsersDataSource {
-    fun getMates(): List<UserData>
-    fun getAdmin(): UserData
+    fun getMates(): List<UserDto>
+    fun getAdmin(): UserDto
     fun deleteUser(userId: UUID)
-    fun register(userName: String, hashedPassword: String)
-    fun getLoggedInUser(): UserData
-    fun setLoggedInUser(user: UserData)
+    fun addMate(userName: String, hashedPassword: String)
+    fun getLoggedInUser(): UserDto
+    fun setLoggedInUser(user: UserDto)
     fun clearLoggedInUser()
 }

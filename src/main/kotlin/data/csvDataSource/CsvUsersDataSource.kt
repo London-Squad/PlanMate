@@ -3,7 +3,7 @@ package data.csvDataSource
 import data.csvDataSource.fileIO.CsvFileHandler
 import data.csvDataSource.fileIO.Parser
 import data.dataSources.UsersDataSource
-import data.entitiesData.UserData
+import data.dto.UserDto
 import logic.entities.User
 import logic.exceptions.NoLoggedInUserIsSavedInCacheException
 import java.util.*
@@ -13,49 +13,49 @@ class CsvUsersDataSource(
     private val loggedInUserCsvFileHandler: CsvFileHandler,
     private val parser: Parser
 ) : UsersDataSource {
-    private var loggedInUser: UserData? = null
+    private var loggedInUser: UserDto? = null
 
     init {
         loggedInUser = loadUserFromLocalFile()
     }
 
-    override fun getMates(): List<UserData> {
+    override fun getMates(): List<UserDto> {
         return usersCsvFileHandler.readRecords()
-            .map(parser::recordToUserData)
+            .map(parser::recordToUserDto)
     }
 
-    override fun getAdmin(): UserData = ADMIN
+    override fun getAdmin(): UserDto = ADMIN
 
     override fun deleteUser(userId: UUID) {
         usersCsvFileHandler.readRecords()
             .map {
-                val userData = parser.recordToUserData(it)
-                if (userData.id == userId)
-                    parser.userDataToRecord(userData.copy(isDeleted = true))
+                val userDto = parser.recordToUserDto(it)
+                if (userDto.id == userId)
+                    parser.userDtoToRecord(userDto.copy(isDeleted = true))
                 else it
             }
             .also(usersCsvFileHandler::rewriteRecords)
     }
 
-    override fun register(userName: String, hashedPassword: String) {
+    override fun addMate(userName: String, hashedPassword: String) {
         usersCsvFileHandler.appendRecord(
-            UserData(
+            UserDto(
                 id = UUID.randomUUID(),
                 userName = userName,
                 hashedPassword = hashedPassword,
                 type = User.Type.MATE.name,
                 isDeleted = false
-            ).let(parser::userDataToRecord)
+            ).let(parser::userDtoToRecord)
         )
     }
 
-    override fun getLoggedInUser(): UserData {
+    override fun getLoggedInUser(): UserDto {
         return loggedInUser ?: throw NoLoggedInUserIsSavedInCacheException()
     }
 
-    override fun setLoggedInUser(user: UserData) {
+    override fun setLoggedInUser(user: UserDto) {
         loggedInUserCsvFileHandler.rewriteRecords(
-            listOf(parser.userDataToRecord(user))
+            listOf(parser.userDtoToRecord(user))
         )
         loggedInUser = user
     }
@@ -67,14 +67,14 @@ class CsvUsersDataSource(
         loggedInUser = null
     }
 
-    private fun loadUserFromLocalFile(): UserData? {
+    private fun loadUserFromLocalFile(): UserDto? {
         return loggedInUserCsvFileHandler.readRecords()
             .takeIf { it.isNotEmpty() }
-            ?.let { parser.recordToUserData(it[0]) }
+            ?.let { parser.recordToUserDto(it[0]) }
     }
 
     companion object {
-        private val ADMIN = UserData(
+        private val ADMIN = UserDto(
             id = UUID.fromString("5750f82c-c1b6-454d-b160-5b14857bc9dc"),
             userName = "admin",
             hashedPassword = "2e6e5a2b38ba905790605c9b101497bc",

@@ -18,15 +18,15 @@ class ProjectUseCases(
         return projectsRepository.getAllProjects()
     }
 
-    fun getProjectById(projectId: UUID): Project? {
+    fun getProjectById(projectId: UUID): Project {
         return projectsRepository.getProjectById(projectId)
     }
 
-    fun createProject(title: String, description: String): Project {
-        val defaultStates = listOf(
-            State(id = UUID.randomUUID(), title = "TODO", description = "TO DO TASKS"),
-            State(id = UUID.randomUUID(), title = "InProgress", description = "INPROGRESS TASKS"),
-            State(id = UUID.randomUUID(), title = "Done", description = "FINISHED TASKS")
+    fun createProject(title: String, description: String) {
+        val defaultTasksStates = listOf(
+            TaskState(id = UUID.randomUUID(), title = "TODO", description = "TO DO TASKS"),
+            TaskState(id = UUID.randomUUID(), title = "InProgress", description = "INPROGRESS TASKS"),
+            TaskState(id = UUID.randomUUID(), title = "Done", description = "FINISHED TASKS")
         )
 
         val project = Project(
@@ -34,14 +34,10 @@ class ProjectUseCases(
             title = title,
             description = description,
             tasks = emptyList(),
-            tasksStates = defaultStates
+            tasksStates = defaultTasksStates
         )
-        val addedProject = projectsRepository.addNewProject(project)
-        if (addedProject != null) {
-            logNewProject(project)
-            return project
-        }
-        throw Exception("Failed to create project.")
+        projectsRepository.addNewProject(project)
+        logNewProject(project)
     }
 
     private fun logNewProject(project: Project) {
@@ -98,6 +94,7 @@ class ProjectUseCases(
 
     fun addNewTask(task: Task, projectId: UUID) {
         taskRepository.addNewTask(task, projectId)
+        logTaskCreation(task)
     }
 
     private fun logTaskCreation(task: Task) {

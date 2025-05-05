@@ -41,11 +41,11 @@ class LogsRepositoryImpl(
                 .firstOrNull { it.id == entityId }
                 ?.let { mapper.mapToTaskState(it) }
 
-            ?: taskRepository.getTaskByID(entityId)
+            ?: taskRepository.getTaskByID(entityId, includeDeleted = true)
     }
 
     override fun getLogsByEntityId(entityId: UUID): List<Log> {
-        var result: List<Log> = emptyList()
+        var result: List<Log>
         result = getAllLogs().filter { it.action.entity.id == entityId }
 
         result.forEach { log ->
@@ -67,6 +67,6 @@ class LogsRepositoryImpl(
     }
 
     override fun addLog(log: Log) {
-        logsDataSource.addLog(mapper.mapToLogData(log))
+        logsDataSource.addLog(mapper.mapToLogDto(log))
     }
 }

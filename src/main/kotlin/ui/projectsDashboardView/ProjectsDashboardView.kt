@@ -93,7 +93,7 @@ class ProjectsDashboardView(
             input.toInt()
                 .takeIf { it in 1..projects.size }
                 ?.let { number -> projects[number - 1] }
-                ?.let { project -> projectView.start(project) }
+                ?.let { project -> projectView.start(project.id) }
         }
     }
 

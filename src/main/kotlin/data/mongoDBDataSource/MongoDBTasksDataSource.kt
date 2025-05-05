@@ -1,16 +1,20 @@
 package data.mongoDBDataSource
 
-import logic.entities.State
+import logic.entities.TaskState
 import logic.entities.Task
 import logic.repositories.TaskRepository
 import java.util.*
 
 class MongoDBTasksDataSource() : TaskRepository {
-    override fun getAllTasksByProjectID(projectId: UUID): List<Task> {
+    fun getAllTasksByProjectID(projectId: UUID): List<Task> {
         TODO("Not yet implemented")
     }
 
-    override fun getTaskByID(taskId: UUID): Task {
+    override fun getTasksByProjectID(projectId: UUID, includeDeleted: Boolean): List<Task> {
+        TODO("Not yet implemented")
+    }
+
+    override fun getTaskByID(taskId: UUID, includeDeleted: Boolean): Task {
         TODO("Not yet implemented")
     }
 
@@ -26,7 +30,7 @@ class MongoDBTasksDataSource() : TaskRepository {
         TODO("Not yet implemented")
     }
 
-    override fun editTaskState(taskId: UUID, newState: State) {
+    override fun editTaskState(taskId: UUID, newTaskState: TaskState) {
         TODO("Not yet implemented")
     }
 

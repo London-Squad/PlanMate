@@ -1,9 +1,9 @@
-package data.entitiesData
+package data.dto
 
 import java.time.LocalDateTime
 import java.util.UUID
 
-data class LogData(
+data class LogDto(
     val id: UUID,
     val userId: UUID,
     val time: LocalDateTime,

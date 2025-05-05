@@ -1,8 +1,7 @@
 package ui.taskManagementView
 
-import logic.entities.State
+import logic.entities.TaskState
 import logic.entities.Task
-import logic.exceptions.NotFoundException
 import logic.useCases.ManageTaskUseCase
 import ui.ViewExceptionHandler
 import ui.cliPrintersAndReaders.CLIPrinter
@@ -16,21 +15,21 @@ class TaskStateEditionView(
 
 ) {
 
-    fun editState(task: Task, projectStates: List<State>) {
-        if (projectStates.isEmpty()) {
+    fun editState(task: Task, projectTasksStates: List<TaskState>) {
+        if (projectTasksStates.isEmpty()) {
             printLn("no states available")
             return
         }
-        printProjectState(projectStates)
-        val newStateIndex = cliReader.getValidUserNumberInRange(min = 1, max = projectStates.size).toInt() - 1
+        printProjectState(projectTasksStates)
+        val newStateIndex = cliReader.getValidUserNumberInRange(min = 1, max = projectTasksStates.size).toInt() - 1
 
         viewExceptionHandler.tryCall {
-            manageTaskUseCase.editTaskState(task.id, projectStates[newStateIndex])
+            manageTaskUseCase.editTaskState(task.id, projectTasksStates[newStateIndex])
         }
     }
 
-    private fun printProjectState(states: List<State>) {
-        states.forEachIndexed { index, state ->
+    private fun printProjectState(tasksStates: List<TaskState>) {
+        tasksStates.forEachIndexed { index, state ->
             printLn("${index + 1}. ${state.title}")
         }
     }

@@ -1,11 +1,13 @@
 package ui.projectDetailsView
 
 import logic.entities.Project
+import logic.entities.Task
 import logic.useCases.ProjectUseCases
 import ui.ViewExceptionHandler
 import ui.cliPrintersAndReaders.CLIPrinter
 import ui.cliPrintersAndReaders.CLIReader
 import ui.taskManagementView.TaskManagementView
+import java.util.UUID
 
 class ProjectTasksView(
     private val cliPrinter: CLIPrinter,
@@ -17,8 +19,8 @@ class ProjectTasksView(
 
     private lateinit var currentProject: Project
 
-    fun manageTasks(project: Project): Project {
-        currentProject = project
+    fun manageTasks(projectId: UUID) {
+        currentProject = projectUseCases.getProjectById(projectId)
         cliPrinter.printHeader("Manage Tasks: ${currentProject.title}")
 
         val tasks = currentProject.tasks
@@ -27,7 +29,7 @@ class ProjectTasksView(
         } else {
             cliPrinter.cliPrintLn("Current tasks:")
             tasks.forEachIndexed { index, task ->
-                cliPrinter.cliPrintLn("${index + 1}. ${task.title} (State: ${task.state.title})")
+                cliPrinter.cliPrintLn("${index + 1}. ${task.title} (State: ${task.taskState.title})")
                 cliPrinter.cliPrintLn("   Description: ${task.description}")
             }
         }
@@ -54,23 +56,22 @@ class ProjectTasksView(
 
         when (input) {
             "add" -> addNewTask()
-            "0" -> return currentProject
+            "0" -> return
             else -> {
                 val taskIndex = input.toInt() - 1
                 val selectedTask = tasks[taskIndex]
                 taskManagementView.start(selectedTask.id, currentProject)
             }
         }
-        return currentProject
     }
 
     private fun addNewTask() {
-        if (currentProject.states.isEmpty()) {
-            cliPrinter.cliPrintLn("No states available for this project. Cannot create task.")
+        if (currentProject.tasksStates.isEmpty()) {
+            cliPrinter.cliPrintLn("No tasks states available for this project. Cannot create task.")
             return
         }
 
-        val defaultState = currentProject.states.first()
+        val defaultState = currentProject.tasksStates.first()
         val title = cliReader.getValidTitle()
         val description = cliReader.getValidDescription()
 
@@ -78,12 +79,12 @@ class ProjectTasksView(
             id = UUID.randomUUID(),
             title = title,
             description = description,
-            state = defaultState
+            taskState = defaultState
         )
 
-        currentProject = currentProject.copy(tasks = currentProject.tasks + newTask)
-
-        viewExceptionHandler.tryCall{ projectUseCases.logTaskCreation(newTask) }
-        cliPrinter.cliPrintLn("Task created. You can now edit it.")
+        viewExceptionHandler.tryCall {
+            projectUseCases.addNewTask(newTask, currentProject.id)
+            cliPrinter.cliPrintLn("Task created.")
+        }
     }
 }

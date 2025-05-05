@@ -5,15 +5,15 @@ import logic.repositories.ProjectsRepository
 import java.util.*
 
 class MongoDBProjectsDataSource() : ProjectsRepository {
-    override fun getAllProjects(): List<Project> {
+    override fun getAllProjects(includeDeleted: Boolean): List<Project> {
         TODO("Not yet implemented")
     }
 
-    override fun getProjectById(projectId: UUID): Project {
+    override fun getProjectById(projectId: UUID, includeDeleted: Boolean): Project {
         TODO("Not yet implemented")
     }
 
-    override fun addNewProject(project: Project): Project {
+    override fun addNewProject(project: Project) {
         TODO("Not yet implemented")
     }
 

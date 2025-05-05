@@ -9,9 +9,7 @@ interface ProjectsRepository {
 
     fun getProjectById(projectId: UUID, includeDeleted: Boolean = false): Project
 
-    fun getProjectById(projectId: UUID): Project
-
-    fun addNewProject(project: Project): Project
+    fun addNewProject(project: Project)
 
     fun editProjectTitle(projectId: UUID, newTitle: String)
 

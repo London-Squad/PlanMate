@@ -2,7 +2,6 @@ package ui.taskManagementView
 
 import logic.entities.Project
 import logic.entities.Task
-import logic.exceptions.NotFoundException
 import logic.repositories.TaskRepository
 import ui.ViewExceptionHandler
 import ui.cliPrintersAndReaders.CLIPrinter
@@ -39,7 +38,7 @@ class TaskManagementView(
     private fun printTask() {
         printLn("Task: ${currentTask.title}")
         printLn("Description: ${currentTask.description}")
-        printLn("State: ${currentTask.state.title}")
+        printLn("State: ${currentTask.taskState.title}")
     }
 
     private fun printOptions() {

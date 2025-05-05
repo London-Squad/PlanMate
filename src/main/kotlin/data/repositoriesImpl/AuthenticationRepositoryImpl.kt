@@ -54,14 +54,14 @@ class AuthenticationRepositoryImpl(
         return true
     }
 
-    override fun register(userName: String, password: String): Boolean {
+    override fun addMate(userName: String, password: String): Boolean {
         getMates().any { user ->
             user.userName == userName
         }.let {
             if (it) throw UsernameTakenException()
         }
 
-        usersDataSource.register(
+        usersDataSource.addMate(
             userName,
             hashingAlgorithm.hashData(password)
         )

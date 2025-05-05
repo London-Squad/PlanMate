@@ -1,8 +1,8 @@
-package data.entitiesData
+package data.dto
 
 import java.util.UUID
 
-data class UserData(
+data class UserDto(
     val id: UUID,
     val userName: String,
     val hashedPassword: String,

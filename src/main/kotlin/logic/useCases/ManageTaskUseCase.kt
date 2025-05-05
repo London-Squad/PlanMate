@@ -3,7 +3,7 @@ package logic.useCases
 import logic.entities.Delete
 import logic.entities.Edit
 import logic.entities.Log
-import logic.entities.State
+import logic.entities.TaskState
 import logic.repositories.AuthenticationRepository
 import logic.repositories.LogsRepository
 import logic.repositories.TaskRepository
@@ -50,18 +50,18 @@ class ManageTaskUseCase(
         )
     }
 
-    fun editTaskState(taskID: UUID, newState: State) {
+    fun editTaskState(taskID: UUID, newTaskState: TaskState) {
         val task = taskRepository.getTaskByID(taskID)
 
-        taskRepository.editTaskState(taskID, newState)
+        taskRepository.editTaskState(taskID, newTaskState)
         logsRepository.addLog(
             Log(
                 user = authenticationRepository.getLoggedInUser(),
                 action = Edit(
                     entity = task,
                     property = "state",
-                    oldValue = task.state.title,
-                    newValue = newState.title
+                    oldValue = task.taskState.title,
+                    newValue = newTaskState.title
                 )
             )
         )
@@ -71,6 +71,7 @@ class ManageTaskUseCase(
         val task = taskRepository.getTaskByID(taskID)
 
         taskRepository.deleteTask(taskID)
+
         logsRepository.addLog(
             Log(
                 user = authenticationRepository.getLoggedInUser(),

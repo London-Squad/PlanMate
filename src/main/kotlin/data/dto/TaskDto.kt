@@ -1,8 +1,8 @@
-package data.entitiesData
+package data.dto
 
 import java.util.UUID
 
-data class TaskData(
+data class TaskDto(
     val id: UUID,
     val title: String,
     val description: String,

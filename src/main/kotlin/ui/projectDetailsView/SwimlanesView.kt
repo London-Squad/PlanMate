@@ -4,7 +4,7 @@ import logic.entities.Project
 import ui.cliPrintersAndReaders.CLIPrinter
 import ui.cliPrintersAndReaders.cliTable.CLITablePrinter
 import ui.cliPrintersAndReaders.cliTable.InvalidTableInput
-import logic.entities.State
+import logic.entities.TaskState
 import logic.entities.Task
 
 class SwimlanesView(
@@ -22,8 +22,8 @@ class SwimlanesView(
 
         val tasksByState = groupTasksByState(project)
         val maxTasks = getMaxTaskCount(tasksByState)
-        val headers = getHeaders(project.states)
-        val data = buildData(tasksByState, maxTasks, project.states)
+        val headers = getHeaders(project.tasksStates)
+        val data = buildData(tasksByState, maxTasks, project.tasksStates)
         val columnWidths = calculateColumnWidths(headers, data)
 
         displayTable(headers, data, columnWidths)
@@ -33,32 +33,32 @@ class SwimlanesView(
         cliPrinter.printHeader("Project: ${project.title}")
     }
 
-    private fun hasNoStates(project: Project) = project.states.isEmpty()
+    private fun hasNoStates(project: Project) = project.tasksStates.isEmpty()
 
-    private fun groupTasksByState(project: Project): Map<State, List<Task>> {
-        return project.states.associateWith { state ->
-            project.tasks.filter { it.state.id == state.id }
+    private fun groupTasksByState(project: Project): Map<TaskState, List<Task>> {
+        return project.tasksStates.associateWith { state ->
+            project.tasks.filter { it.taskState.id == state.id }
         }
     }
 
-    private fun getMaxTaskCount(tasksByState: Map<State, List<Task>>): Int {
-        return tasksByState.values.maxOfOrNull { it.size } ?: 0
+    private fun getMaxTaskCount(tasksByTaskState: Map<TaskState, List<Task>>): Int {
+        return tasksByTaskState.values.maxOfOrNull { it.size } ?: 0
     }
 
-    private fun getHeaders(states: List<State>): List<String> {
-        return states.map { it.title }
+    private fun getHeaders(tasksStates: List<TaskState>): List<String> {
+        return tasksStates.map { it.title }
     }
 
     private fun buildData(
-        tasksByState: Map<State, List<Task>>,
+        tasksByTaskState: Map<TaskState, List<Task>>,
         maxTasks: Int,
-        states: List<State>
+        tasksStates: List<TaskState>
     ): List<List<String>> {
         val data = mutableListOf<List<String>>()
         var taskNumber = 1
         for (row in 0 until maxTasks) {
-            val rowData = states.map { state ->
-                val tasks = tasksByState[state] ?: emptyList()
+            val rowData = tasksStates.map { state ->
+                val tasks = tasksByTaskState[state] ?: emptyList()
                 if (row < tasks.size) {
                     val task = tasks[row]
                     val numberedTask = "$taskNumber. ${task.title}"

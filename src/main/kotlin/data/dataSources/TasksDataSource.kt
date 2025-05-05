@@ -1,12 +1,12 @@
 package data.dataSources
 
-import data.entitiesData.TaskData
+import data.dto.TaskDto
 import java.util.*
 
 interface TasksDataSource {
-    fun getAllTasks(): List<TaskData>
+    fun getAllTasks(): List<TaskDto>
 
-    fun addNewTask(taskData: TaskData)
+    fun addNewTask(taskDto: TaskDto)
 
     fun editTaskTitle(taskId: UUID, newTitle: String)
 

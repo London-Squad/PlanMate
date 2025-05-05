@@ -1,6 +1,6 @@
 package logic.repositories
 
-import logic.entities.State
+import logic.entities.TaskState
 import logic.entities.Task
 import java.util.*
 
@@ -16,7 +16,7 @@ interface TaskRepository {
 
     fun editTaskDescription(taskId: UUID, newDescription: String)
 
-    fun editTaskState(taskId: UUID, newState: State)
+    fun editTaskState(taskId: UUID, newTaskState: TaskState)
 
     fun deleteTask(taskId: UUID)
 }

@@ -1,25 +1,25 @@
 package data.csvDataSource.fileIO
 
-import data.entitiesData.*
+import data.dto.*
 import logic.exceptions.RetrievingDataFailureException
 import java.time.LocalDateTime
 import java.util.*
 
 class Parser {
-    fun taskDataToRecord(taskData: TaskData): List<String> {
+    fun taskDtoToRecord(taskDto: TaskDto): List<String> {
         return listOf(
-            taskData.id.toString(),
-            taskData.title,
-            taskData.description,
-            taskData.stateId.toString(),
-            taskData.projectId.toString(),
-            taskData.isDeleted.toString()
+            taskDto.id.toString(),
+            taskDto.title,
+            taskDto.description,
+            taskDto.stateId.toString(),
+            taskDto.projectId.toString(),
+            taskDto.isDeleted.toString()
         )
     }
 
-    fun recordToTaskData(record: List<String>): TaskData {
+    fun recordToTaskDto(record: List<String>): TaskDto {
         if (record.size != 6) throw RetrievingDataFailureException("Invalid TaskData record size")
-        return TaskData(
+        return TaskDto(
             id = UUID.fromString(record[0]),
             title = record[1],
             description = record[2],
@@ -29,7 +29,7 @@ class Parser {
         )
     }
 
-    fun taskStateDataToRecord(stateData: TaskStateData): List<String> {
+    fun taskStateDtoToRecord(stateData: TaskStateDto): List<String> {
         return listOf(
             stateData.id.toString(),
             stateData.title,
@@ -39,9 +39,9 @@ class Parser {
         )
     }
 
-    fun recordToTaskStateData(record: List<String>): TaskStateData {
+    fun recordToTaskStateDto(record: List<String>): TaskStateDto {
         if (record.size != 5) throw RetrievingDataFailureException("Invalid StateData record size")
-        return TaskStateData(
+        return TaskStateDto(
             id = UUID.fromString(record[0]),
             title = record[1],
             description = record[2],
@@ -50,18 +50,18 @@ class Parser {
         )
     }
 
-    fun projectDataToRecord(projectData: ProjectData): List<String> {
+    fun projectDtoToRecord(projectDto: ProjectDto): List<String> {
         return listOf(
-            projectData.id.toString(),
-            projectData.title,
-            projectData.description,
-            projectData.isDeleted.toString()
+            projectDto.id.toString(),
+            projectDto.title,
+            projectDto.description,
+            projectDto.isDeleted.toString()
         )
     }
 
-    fun recordToProjectData(record: List<String>): ProjectData {
+    fun recordToProjectDto(record: List<String>): ProjectDto {
         if (record.size != 4) throw RetrievingDataFailureException("Invalid ProjectData record size")
-        return ProjectData(
+        return ProjectDto(
             id = UUID.fromString(record[0]),
             title = record[1],
             description = record[2],
@@ -69,19 +69,19 @@ class Parser {
         )
     }
 
-    fun userDataToRecord(userData: UserData): List<String> {
+    fun userDtoToRecord(userDto: UserDto): List<String> {
         return listOf(
-            userData.id.toString(),
-            userData.userName,
-            userData.type,
-            userData.hashedPassword,
-            userData.isDeleted.toString()
+            userDto.id.toString(),
+            userDto.userName,
+            userDto.type,
+            userDto.hashedPassword,
+            userDto.isDeleted.toString()
         )
     }
 
-    fun recordToUserData(record: List<String>): UserData {
+    fun recordToUserDto(record: List<String>): UserDto {
         if (record.size != 5) throw RetrievingDataFailureException("Invalid UserData record size")
-        return UserData(
+        return UserDto(
             id = UUID.fromString(record[0]),
             userName = record[1],
             type = record[2],
@@ -90,22 +90,22 @@ class Parser {
         )
     }
 
-    fun logDataToRecord(logData: LogData): List<String> {
+    fun logDtoToRecord(logDto: LogDto): List<String> {
         return listOf(
-            logData.id.toString(),
-            logData.userId.toString(),
-            logData.time.toString(),
-            logData.action,
-            logData.planEntityId.toString(),
-            logData.planEntityProperty,
-            logData.oldValue,
-            logData.newValue
+            logDto.id.toString(),
+            logDto.userId.toString(),
+            logDto.time.toString(),
+            logDto.action,
+            logDto.planEntityId.toString(),
+            logDto.planEntityProperty,
+            logDto.oldValue,
+            logDto.newValue
         )
     }
 
-    fun recordToLogData(record: List<String>): LogData {
+    fun recordToLogDto(record: List<String>): LogDto {
         if (record.size != 8) throw RetrievingDataFailureException("Invalid LogData record size")
-        return LogData(
+        return LogDto(
             id = UUID.fromString(record[0]),
             userId = UUID.fromString(record[1]),
             time = LocalDateTime.parse(record[2]),

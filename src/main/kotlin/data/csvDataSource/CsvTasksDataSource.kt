@@ -3,7 +3,7 @@ package data.csvDataSource
 import data.csvDataSource.fileIO.CsvFileHandler
 import data.csvDataSource.fileIO.Parser
 import data.dataSources.TasksDataSource
-import data.entitiesData.TaskData
+import data.dto.TaskDto
 import java.util.*
 
 class CsvTasksDataSource(
@@ -11,25 +11,24 @@ class CsvTasksDataSource(
     private val parser: Parser
 ) : TasksDataSource {
 
-    override fun getAllTasks(): List<TaskData> {
+    override fun getAllTasks(): List<TaskDto> {
         return tasksCsvFileHandler.readRecords()
-            .map(parser::recordToTaskData)
+            .map(parser::recordToTaskDto)
     }
 
-    override fun addNewTask(taskData: TaskData) {
+    override fun addNewTask(taskDto: TaskDto) {
         tasksCsvFileHandler.appendRecord(
-            parser.taskDataToRecord(taskData)
+            parser.taskDtoToRecord(taskDto)
         )
     }
 
     override fun editTaskTitle(taskId: UUID, newTitle: String) {
         tasksCsvFileHandler.readRecords()
             .map {
-                val taskData = parser.recordToTaskData(it)
+                val taskData = parser.recordToTaskDto(it)
                 if (taskData.id == taskId) {
-                    return@map parser.taskDataToRecord(taskData.copy(title = newTitle))
-                }
-                it
+                    parser.taskDtoToRecord(taskData.copy(title = newTitle))
+                } else it
             }
             .also(tasksCsvFileHandler::rewriteRecords)
     }
@@ -37,11 +36,10 @@ class CsvTasksDataSource(
     override fun editTaskDescription(taskId: UUID, newDescription: String) {
         tasksCsvFileHandler.readRecords()
             .map {
-                val taskData = parser.recordToTaskData(it)
+                val taskData = parser.recordToTaskDto(it)
                 if (taskData.id == taskId) {
-                    return@map parser.taskDataToRecord(taskData.copy(description = newDescription))
-                }
-                it
+                    parser.taskDtoToRecord(taskData.copy(description = newDescription))
+                } else it
             }
             .also(tasksCsvFileHandler::rewriteRecords)
     }
@@ -49,11 +47,10 @@ class CsvTasksDataSource(
     override fun editTaskState(taskId: UUID, newStateId: UUID) {
         tasksCsvFileHandler.readRecords()
             .map {
-                val taskData = parser.recordToTaskData(it)
+                val taskData = parser.recordToTaskDto(it)
                 if (taskData.id == taskId) {
-                    return@map parser.taskDataToRecord(taskData.copy(stateId = newStateId))
-                }
-                it
+                    parser.taskDtoToRecord(taskData.copy(stateId = newStateId))
+                } else it
             }
             .also(tasksCsvFileHandler::rewriteRecords)
     }
@@ -62,11 +59,10 @@ class CsvTasksDataSource(
     override fun deleteTask(taskId: UUID) {
         tasksCsvFileHandler.readRecords()
             .map {
-                val taskData = parser.recordToTaskData(it)
+                val taskData = parser.recordToTaskDto(it)
                 if (taskData.id == taskId) {
-                    return@map parser.taskDataToRecord(taskData.copy(isDeleted = true))
-                }
-                it
+                    parser.taskDtoToRecord(taskData.copy(isDeleted = true))
+                } else it
             }
             .also(tasksCsvFileHandler::rewriteRecords)
     }

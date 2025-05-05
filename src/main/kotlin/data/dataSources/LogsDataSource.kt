@@ -1,8 +1,8 @@
 package data.dataSources
 
-import data.entitiesData.LogData
+import data.dto.LogDto
 
 interface LogsDataSource {
-    fun getAllLogs(): List<LogData>
-    fun addLog(logData: LogData)
+    fun getAllLogs(): List<LogDto>
+    fun addLog(logDto: LogDto)
 }

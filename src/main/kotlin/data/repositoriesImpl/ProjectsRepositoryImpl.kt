@@ -53,13 +53,13 @@ class ProjectsRepositoryImpl(
 
     override fun addNewProject(project: Project) {
         projectsDataSource.addNewProject(
-            mapper.mapToProjectData(project)
+            mapper.mapToProjectDto(project)
         )
         project.tasks
-            .map({ task -> mapper.mapToTaskData(task, project.id) })
+            .map({ task -> mapper.mapToTaskDto(task, project.id) })
             .forEach(tasksDataSource::addNewTask)
         project.tasksStates
-            .map({ taskState -> mapper.mapToTaskStateData(taskState, project.id) })
+            .map({ taskState -> mapper.mapToTaskStateDto(taskState, project.id) })
             .forEach(tasksStatesDataSource::addNewTaskState)
     }
 

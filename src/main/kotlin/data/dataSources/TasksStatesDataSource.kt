@@ -1,12 +1,12 @@
 package data.dataSources
 
-import data.entitiesData.TaskStateData
+import data.dto.TaskStateDto
 import java.util.UUID
 
 interface TasksStatesDataSource {
-    fun getAllTasksStates(): List<TaskStateData>
+    fun getAllTasksStates(): List<TaskStateDto>
 
-    fun addNewTaskState(taskStateData: TaskStateData)
+    fun addNewTaskState(taskStateDto: TaskStateDto)
 
     fun editTaskStateTitle(stateId: UUID, newTitle: String)
 
