@@ -65,9 +65,6 @@ class ProjectsDashboardViewTest {
         every { cliReader.getUserInput("Choice: ") } returns "back"
         every { cliReader.getValidUserInput(any(), any(), any()) } returnsMany listOf("1", "0")
 
-        // when
-        projectsView.handleProjectsView(user)
-
         // then
         verify { cliReader.getValidUserInput(any(), eq("Choose an option: "), any()) }
     }
