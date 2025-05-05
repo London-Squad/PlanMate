@@ -29,4 +29,27 @@ class CsvFileHandler(private val file: File) {
             }
         }
     }
+
+    companion object {
+        private const val COMMA_ESCAPE = "__comma__"
+        private const val LINE_BREAK_ESCAPE = "__line_break__"
+
+        private fun encodeCell(cell: String): String {
+            return cell.replace(",", COMMA_ESCAPE)
+                .replace("\n", LINE_BREAK_ESCAPE)
+        }
+
+        private fun decodeCell(cell: String): String {
+            return cell.replace(COMMA_ESCAPE, ",")
+                .replace(LINE_BREAK_ESCAPE, "\n")
+        }
+
+        fun encodeRow(record: List<String>): String {
+            return record.map { encodeCell(it) }.joinToString(separator = ",")
+        }
+
+        fun decodeRow(csvRow: String): List<String> {
+            return csvRow.split(",").map { decodeCell(it) }
+        }
+    }
 }

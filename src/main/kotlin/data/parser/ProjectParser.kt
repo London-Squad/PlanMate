@@ -1,5 +1,6 @@
 package data.parser
 
+import data.csvHandler.CsvFileHandler
 import logic.entities.Project
 import logic.repositories.StatesRepository
 import logic.repositories.TaskRepository
@@ -10,7 +11,7 @@ class ProjectParser(
     private val statesRepository: StatesRepository
 ) {
     fun parseProjectLine(line: String): ProjectParseResult {
-        val parts = line.split(",", limit = 3)
+        val parts = CsvFileHandler.decodeRow(line)
         if (parts.size < 3) return ProjectParseResult.Failure("Invalid project line format: $line")
         return try {
             val projectId = UUID.fromString(parts[0].trim())
@@ -28,8 +29,14 @@ class ProjectParser(
         }
     }
 
-    fun formatProjectLine(project: Project): String =
-        "${project.id},${project.title},${project.description}"
+    fun formatProjectLine(project: Project): String {
+        val record = listOf(
+            project.id.toString(),
+            project.title,
+            project.description
+        )
+        return CsvFileHandler.encodeRow(record)
+    }
 }
 
 sealed class ProjectParseResult {
