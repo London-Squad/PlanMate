@@ -61,17 +61,14 @@ class MainMenuView(
     }
 
     private fun getValidUserInput(): String {
-        val validInputs = validInputsForAdmin.takeIf { loggedInUserType == User.Type.ADMIN } ?: validInputsForMate
-        val userInput = cliReader.getUserInput("\nchoose an option: ").trim()
-        if (userInput in validInputs) return userInput
-        cliPrinter.cliPrintLn("invalid option, try again ...")
-        return getValidUserInput()
+        val MAX_OPTION_NUMBER = MAX_OPTION_NUMBER_ADMIN.takeIf { loggedInUserType == User.Type.ADMIN } ?: MAX_OPTION_NUMBER_MATE
+        return cliReader.getValidUserNumberInRange(MAX_OPTION_NUMBER)
     }
 
     private fun printLn(message: String) = cliPrinter.cliPrintLn(message)
 
     private companion object {
-        val validInputsForAdmin = listOf("0", "1", "2")
-        val validInputsForMate = listOf("0", "1")
+        const val MAX_OPTION_NUMBER_ADMIN = 2
+        const val MAX_OPTION_NUMBER_MATE = 1
     }
 }

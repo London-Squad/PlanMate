@@ -2,6 +2,8 @@ package logic.exceptions
 
 class NoLoggedInUserIsSavedInCacheException() : Exception("no logged in user is saved in memory")
 
+class NotFoundException(message: String) : Exception(message)
+
 open class AuthenticationException(message: String) : Exception(message)
 
 class InvalidUserNameLengthException : AuthenticationException("Username should be 4 or more characters")

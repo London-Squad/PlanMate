@@ -51,14 +51,10 @@ class ProjectView(
 
     private fun handleUserInput() {
         val currentUser = getLoggedInUserUseCase.getLoggedInUser()
-        val validInputs = if (currentUser.type == User.Type.ADMIN) listOf(
-            "0", "1", "2", "3", "4",
-        ) else listOf("0", "1", "2")
-        val input = cliReader.getValidUserInput(
-            isValidInput = { it in validInputs },
-            message = "Choose an option: ",
-            invalidInputMessage = "Invalid option, try again ..."
-        )
+        val maxVisibleOptionNumber = if (currentUser.type == User.Type.ADMIN) MAX_OPTION_NUMBER_ADMIN
+        else MAX_OPTION_NUMBER_MATE
+        val input = cliReader.getValidUserNumberInRange(maxVisibleOptionNumber)
+
         when (input) {
             "1" -> {
                 currentProject = projectTasksView.manageTasks(currentProject)
@@ -98,5 +94,7 @@ class ProjectView(
 
     companion object {
         const val ERROR_MESSAGE = "Error: No project selected or user not logged in."
+        const val MAX_OPTION_NUMBER_ADMIN = 4
+        const val MAX_OPTION_NUMBER_MATE = 2
     }
 }

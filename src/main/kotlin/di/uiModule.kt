@@ -18,13 +18,13 @@ import ui.welcomeView.WelcomeView
 val uiModule = module {
 
     single { CLIPrinter() }
-    single { CLIReader(get()) }
+    single { CLIReader(get(), get()) }
 
     single { TaskTitleEditionView(get(), get(), get()) }
     single { TaskDescriptionEditionView(get(), get(), get()) }
     single { TaskStateEditionView(get(), get(), get()) }
     single { TaskDeletionView(get(), get(), get()) }
-    single { TaskManagementView(get(), get(), get(), get(), get(), get(), get()) }
+    single { TaskManagementView(get(), get(), get(), get(), get(), get(), get(), get()) }
 
     single { ProjectTasksView(get(), get(), get(), get()) }
     single { LogsView(get(), get(), get()) }
