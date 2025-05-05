@@ -4,7 +4,9 @@ import data.dataSources.ProjectsDataSource
 import data.dataSources.TasksDataSource
 import data.dataSources.TasksStatesDataSource
 import data.entitiesData.DtoMapper
+import data.entitiesData.TaskData
 import logic.entities.Project
+import logic.entities.Task
 import logic.exceptions.TaskStateNotFoundException
 import logic.repositories.ProjectsRepository
 import java.util.*
@@ -23,7 +25,8 @@ class ProjectsRepositoryImpl(
 
         return projectsData
             .map { projectData ->
-                val taskStatesOfProject = taskStatesData
+
+            val taskStatesOfProject = taskStatesData
                     .filter { it.projectId == projectData.id }
                     .map(mapper::mapToTaskState)
 

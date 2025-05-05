@@ -15,7 +15,5 @@ interface AuthenticationRepository {
 
     fun register(userName: String, password: String): Boolean
 
-    fun changePassword(userName: String, currentPassword: String, newPassword: String): Boolean
-
     fun getLoggedInUser(): User
 }

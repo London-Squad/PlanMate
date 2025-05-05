@@ -1,47 +1,72 @@
 package data.repositoriesImpl
 
-import data.csvDataSource.CsvAuthenticationDataSource
+import data.dataSources.UsersDataSource
+import data.entitiesData.DtoMapper
+import data.security.hashing.HashingAlgorithm
 import logic.entities.User
+import logic.exceptions.UserNotFoundException
+import logic.exceptions.UsernameTakenException
 import logic.repositories.AuthenticationRepository
 import java.util.*
 
 class AuthenticationRepositoryImpl(
-    private val authenticationDataSource: CsvAuthenticationDataSource
+    private val usersDataSource: UsersDataSource,
+    private val mapper: DtoMapper,
+    private val hashingAlgorithm: HashingAlgorithm
 ) : AuthenticationRepository {
     override fun getMates(): List<User> {
-        TODO("Not yet implemented")
-//        return authenticationDataSource.getMates().map{ dbUser ->
-//            User(dbUser.id, dbUser.userName, getUserType(dbUser.type))
-//        }
-    }
-
-    private fun getUserType(userType: String): User.Type {
-        if (userType == "admin") return User.Type.ADMIN
-        return User.Type.MATE
+        return usersDataSource.getMates()
+            .filter { !it.isDeleted }
+            .map(mapper::mapToUser)
     }
 
     override fun deleteUser(userId: UUID) {
-        TODO("Not yet implemented")
+        usersDataSource.deleteUser(userId)
     }
 
     override fun login(userName: String, password: String): User {
-        TODO("Not yet implemented")
+        val hashedPassword = hashingAlgorithm.hashData(password)
+
+        val admin = usersDataSource.getAdmin()
+
+        if (userName == admin.userName && hashedPassword == admin.hashedPassword)
+            return admin
+                .also(usersDataSource::setLoggedInUser)
+                .let(mapper::mapToUser)
+
+        return usersDataSource.getMates()
+            .firstOrNull {
+                it.userName == userName
+                        && it.hashedPassword == hashedPassword
+                        && !it.isDeleted
+            }
+            ?.also(usersDataSource::setLoggedInUser)
+            ?.let(mapper::mapToUser)
+            ?: throw UserNotFoundException()
     }
 
     override fun logout(): Boolean {
-        TODO("Not yet implemented")
+        usersDataSource.clearLoggedInUser()
+        return true
     }
 
     override fun register(userName: String, password: String): Boolean {
-        TODO("Not yet implemented")
-    }
+        getMates().any { user ->
+            user.userName == userName
+        }.let {
+            if (it) throw UsernameTakenException()
+        }
 
-    override fun changePassword(userName: String, currentPassword: String, newPassword: String): Boolean {
-        TODO("Not yet implemented")
+        usersDataSource.register(
+            userName,
+            hashingAlgorithm.hashData(password)
+        )
+        return true
     }
 
     override fun getLoggedInUser(): User {
-        TODO("Not yet implemented")
+        return usersDataSource.getLoggedInUser()
+            .let(mapper::mapToUser)
     }
 
 }

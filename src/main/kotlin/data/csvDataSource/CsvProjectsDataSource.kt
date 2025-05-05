@@ -25,11 +25,10 @@ class CsvProjectsDataSource(
     override fun editProjectTitle(projectId: UUID, newTitle: String) {
         projectsCsvFileHandler.readRecords()
             .map {
-                val newProjectData = parser.recordToTaskData(it)
-                if (newProjectData.id == projectId) {
-                    return@map parser.taskDataToRecord(newProjectData.copy(title = newTitle))
-                }
-                it
+                val projectData = parser.recordToProjectData(it)
+                if (projectData.id == projectId)
+                    parser.projectDataToRecord(projectData.copy(title = newTitle))
+                else it
             }
             .also(projectsCsvFileHandler::rewriteRecords)
     }
@@ -37,11 +36,10 @@ class CsvProjectsDataSource(
     override fun editProjectDescription(projectId: UUID, newDescription: String) {
         projectsCsvFileHandler.readRecords()
             .map {
-                val newProjectData = parser.recordToTaskData(it)
-                if (newProjectData.id == projectId) {
-                    return@map parser.taskDataToRecord(newProjectData.copy(description = newDescription))
-                }
-                it
+                val projectData = parser.recordToProjectData(it)
+                if (projectData.id == projectId)
+                    parser.projectDataToRecord(projectData.copy(description = newDescription))
+                else it
             }
             .also(projectsCsvFileHandler::rewriteRecords)
     }
@@ -49,11 +47,10 @@ class CsvProjectsDataSource(
     override fun deleteProject(projectId: UUID) {
         projectsCsvFileHandler.readRecords()
             .map {
-                val newProjectData = parser.recordToTaskData(it)
-                if (newProjectData.id == projectId) {
-                    return@map parser.taskDataToRecord(newProjectData.copy(isDeleted = true))
-                }
-                it
+                val projectData = parser.recordToProjectData(it)
+                if (projectData.id == projectId)
+                    parser.projectDataToRecord(projectData.copy(isDeleted = true))
+                else it
             }
             .also(projectsCsvFileHandler::rewriteRecords)
     }

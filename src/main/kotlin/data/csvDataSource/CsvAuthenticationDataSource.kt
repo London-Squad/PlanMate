@@ -1,110 +1,85 @@
 package data.csvDataSource
 
-import data.csvDataSource.fileIO.UserFileHelper
-import data.csvDataSource.fileIO.createFileIfNotExist
-import data.security.hashing.HashingAlgorithm
+import data.csvDataSource.fileIO.CsvFileHandler
+import data.csvDataSource.fileIO.Parser
+import data.dataSources.UsersDataSource
+import data.entitiesData.UserData
 import logic.entities.User
 import logic.exceptions.NoLoggedInUserIsSavedInCacheException
-import logic.exceptions.UserAlreadyExistException
-import logic.exceptions.UserNotFoundException
-import logic.repositories.AuthenticationRepository
-import java.io.File
 import java.util.*
 
 class CsvAuthenticationDataSource(
-    private val userFile: File,
-    private val activeUserFile: File,
-    private val hashingAlgorithm: HashingAlgorithm
-) : AuthenticationRepository {
-    private var loggedInUser: User? = null
+    private val usersCsvFileHandler: CsvFileHandler,
+    private val loggedInUserCsvFileHandler: CsvFileHandler,
+    private val parser: Parser
+) : UsersDataSource {
+    private var loggedInUser: UserData? = null
 
     init {
-        userFile.createFileIfNotExist("id,userName,password,type\n")
-        activeUserFile.createFileIfNotExist("")
         loggedInUser = loadUserFromLocalFile()
     }
 
-    override fun getMates(): List<User> {
-        val users = userFile.readLines().toMutableList()
-        users.removeFirst()
-        return users.map(UserFileHelper.Companion::lineToUser)
+    override fun getMates(): List<UserData> {
+        return usersCsvFileHandler.readRecords()
+            .map(parser::recordToUserData)
     }
+
+    override fun getAdmin(): UserData = ADMIN
 
     override fun deleteUser(userId: UUID) {
-        val newFileData = userFile.readLines().toMutableList()
-        newFileData.removeIf { it.contains("$userId", ignoreCase = true) }
-        UserFileHelper.clearAndWriteNewData(userFile, newFileData)
+        usersCsvFileHandler.readRecords()
+            .map {
+                val userData = parser.recordToUserData(it)
+                if (userData.id == userId)
+                    parser.userDataToRecord(userData.copy(isDeleted = true))
+                else it
+            }
+            .also(usersCsvFileHandler::rewriteRecords)
     }
 
-    override fun login(userName: String, password: String): User {
-        if (userName == ADMIN.userName && password == ADMIN_PASSWORD) return ADMIN.also(::setLoggedInUser)
-        val hashedPassword = hashingAlgorithm.hashData(password)
-        return UserFileHelper.readUserOrNull(
-            userFile, userName, hashedPassword
-        )?.also(::setLoggedInUser) ?: throw UserNotFoundException()
+    override fun register(userName: String, hashedPassword: String) {
+        usersCsvFileHandler.appendRecord(
+            UserData(
+                id = UUID.randomUUID(),
+                userName = userName,
+                hashedPassword = hashedPassword,
+                type = User.Type.MATE.name,
+                isDeleted = false
+            ).let(parser::userDataToRecord)
+        )
     }
 
-    override fun logout(): Boolean {
-        clearLoggedInUserFromCache()
-        return true
-    }
-
-    override fun register(userName: String, password: String): Boolean {
-        val hashedPassword = hashingAlgorithm.hashData(password)
-        if (UserFileHelper.isUserNameExistInFile(userFile, userName)) throw UserAlreadyExistException()
-        val id = UUID.randomUUID()
-        return UserFileHelper.writeUser(userFile, id, userName, hashedPassword)
-    }
-
-    override fun changePassword(userName: String, currentPassword: String, newPassword: String): Boolean {
-        if (!UserFileHelper.isUserExistInFile(userFile, userName, currentPassword)) throw UserNotFoundException()
-        val newFileData = userFile.readLines().map { line ->
-            if (line.contains("$userName,$currentPassword", ignoreCase = true)) {
-                line.replace("$userName,$currentPassword", "$userName,$newPassword")
-            } else line
-        }
-        UserFileHelper.clearAndWriteNewData(userFile, newFileData)
-        return true
-    }
-
-    override fun getLoggedInUser(): User {
+    override fun getLoggedInUser(): UserData {
         return loggedInUser ?: throw NoLoggedInUserIsSavedInCacheException()
     }
 
-    private fun setLoggedInUser(user: User) {
-        activeUserFile.writeText("${user.id},${user.userName},${user.type}")
+    override fun setLoggedInUser(user: UserData) {
+        loggedInUserCsvFileHandler.rewriteRecords(
+            listOf(parser.userDataToRecord(user))
+        )
         loggedInUser = user
     }
 
-    private fun clearLoggedInUserFromCache() {
-        activeUserFile.writeText("")
+    override fun clearLoggedInUser() {
+        loggedInUserCsvFileHandler.rewriteRecords(
+            listOf()
+        )
         loggedInUser = null
     }
 
-    private fun loadUserFromLocalFile(): User? {
-        val text = activeUserFile.readText().trim()
-        if (text.isEmpty()) return null
-        return text.split(",")
-            .run { User(this[0].toUUID(), this[1], getUserTypeFromString(this[2])) }
-    }
-
-    private fun String.toUUID(): UUID {
-        return UUID.fromString(this)
-    }
-
-    private fun getUserTypeFromString(type: String): User.Type {
-        return when (type.lowercase()) {
-            "admin" -> User.Type.ADMIN
-            else -> User.Type.MATE
-        }
+    private fun loadUserFromLocalFile(): UserData? {
+        return loggedInUserCsvFileHandler.readRecords()
+            .takeIf { it.isNotEmpty() }
+            ?.let { parser.recordToUserData(it[0]) }
     }
 
     companion object {
-        val ADMIN = User(
+        private val ADMIN = UserData(
             id = UUID.fromString("5750f82c-c1b6-454d-b160-5b14857bc9dc"),
             userName = "admin",
-            type = User.Type.ADMIN
+            hashedPassword = "2e6e5a2b38ba905790605c9b101497bc",
+            type = "ADMIN",
+            isDeleted = false
         )
-        private const val ADMIN_PASSWORD = "Admin12"
     }
 }
