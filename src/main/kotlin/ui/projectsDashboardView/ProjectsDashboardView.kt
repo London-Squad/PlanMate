@@ -16,12 +16,9 @@ class ProjectsDashboardView(
     private val projectUseCases: ProjectUseCases,
     private val getLoggedInUserUseCase: GetLoggedInUserUseCase,
     private val projectView: ProjectDetailsView,
-    private val exceptionHandler: ViewExceptionHandler
+    private val exceptionHandler: ViewExceptionHandler,
     private val cliTablePrinter: CLITablePrinter = CLITablePrinter(cliPrinter),
 ) {
-
-    lateinit var currentUser: User
-
     fun start() {
         exceptionHandler.tryCall {
             getLoggedInUserUseCase.getLoggedInUser()
@@ -71,20 +68,15 @@ class ProjectsDashboardView(
     }
 
     private fun handleProjectSelection(user: User) {
-        exceptionHandler.tryCall {
-            cliReader.getUserInput("Choice: ").trim().lowercase()
-                .let { input ->
-                    when (input) {
-                        "back" -> Unit
-                        "new" -> handleNewProject(user)
-                        else -> handleProjectSelectionInput(input)
-                    }
+        cliReader.getUserInput("Choice: ").trim().lowercase()
+            .let { input ->
+                when (input) {
+                    "back" -> return
+                    "new" -> handleNewProject(user)
+                    else -> handleProjectSelectionInput(input)
                 }
-                .takeUnless { it == Unit }
-                ?.let { start() }
-        }
+            }
         start()
-
     }
 
     private fun handleNewProject(user: User) {

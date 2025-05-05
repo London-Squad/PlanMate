@@ -14,7 +14,7 @@ class LogsView(
     private val cliPrinter: CLIPrinter,
     private val cliReader: CLIReader,
     private val getLogsByEntityIdUseCase: GetLogsByEntityIdUseCase,
-    private val cliTablePrinter: CLITablePrinter
+    private val cliTablePrinter: CLITablePrinter,
     private val viewExceptionHandler: ViewExceptionHandler
 ) {
     fun printLogsByEntityId(entityId: UUID) {

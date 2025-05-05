@@ -41,18 +41,17 @@ class WelcomeView(
     }
 
     private fun goToNextView() {
-        viewExceptionHandler.tryCall {
-            cliReader.getValidUserNumberInRange(MAX_OPTION_NUMBER)
-                .let { input ->
-                    when (input) {
-                        "1" -> loginView.start()
-                        "0" -> cliPrinter.cliPrintLn("Exiting the app...")
-                        else -> Unit
+        cliReader.getValidUserNumberInRange(MAX_OPTION_NUMBER)
+            .let { input ->
+                when (input) {
+                    "1" -> loginView.start()
+                    "0" -> {
+                        cliPrinter.cliPrintLn("Exiting the app...")
+                        return
                     }
                 }
-                .takeUnless { it == Unit }
-                ?.let { start() }
-        }
+            }
+        start()
     }
 
     private companion object {
