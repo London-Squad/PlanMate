@@ -13,25 +13,12 @@ class TaskTitleEditionView(
 ) {
 
     fun editTitle(task: Task) {
-        val newTitle = getValidTitle()
+        val newTitle = cliReader.getValidTitle()
 
         try {
             manageTaskUseCase.editTaskTitle(task.id, newTitle)
         } catch (e: NotFoundException) {
             cliPrinter.cliPrintLn(e.message ?: "task not found")
         }
-    }
-
-    private fun getValidTitle(): String {
-        val userInput = cliReader.getUserInput("New Title ($MAX_TITLE_LENGTH character or less): ").trim()
-        if (userInput.isNotBlank() && userInput.length <= MAX_TITLE_LENGTH) return userInput
-        else {
-            cliPrinter.cliPrintLn("Invalid Title")
-            return getValidTitle()
-        }
-    }
-
-    private companion object {
-        const val MAX_TITLE_LENGTH = 30
     }
 }

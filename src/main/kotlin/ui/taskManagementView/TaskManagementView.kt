@@ -54,7 +54,7 @@ class TaskManagementView(
     }
 
     private fun selectNextUI() {
-        when (getValidUserInput()) {
+        when (cliReader.getValidUserNumberInRange(MAX_OPTION_NUMBER)) {
             "1" -> {
                 taskTitleEditionView.editTitle(currentTask)
                 start(currentTask.id, currentProject)
@@ -84,20 +84,12 @@ class TaskManagementView(
         }
     }
 
-    private fun getValidUserInput(): String {
-        val userInput = cliReader.getUserInput("your option:")
-        if (userInput in OPTIONS_LIST) return userInput
-        else {
-            printLn("Invalid option")
-            return getValidUserInput()
-        }
-    }
 
     private fun printLn(message: String) {
         cliPrinter.cliPrintLn(message)
     }
 
     private companion object {
-        val OPTIONS_LIST = listOf("0", "1", "2", "3", "4", "5")
+        const val MAX_OPTION_NUMBER = 5
     }
 }

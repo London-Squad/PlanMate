@@ -1,6 +1,5 @@
 package ui.projectsView
 
-import logic.entities.Project
 import logic.entities.User
 import logic.exceptions.NoLoggedInUserIsSavedInCacheException
 import logic.repositories.CacheDataRepository
@@ -114,14 +113,9 @@ class ProjectsView(
 
     fun createProject() {
         cliPrinter.printHeader("Create Project")
-        val title = cliReader.getValidUserInput(
-            message = "Enter project title: ",
-            invalidInputMessage = "Title cannot be empty",
-            isValidInput = { it.isNotBlank() }
-        )
-        val description = cliReader.getUserInput(
-            message = "Enter project description: ",
-        )
+        val title = cliReader.getValidTitle()
+        val description = cliReader.getValidDescription()
+
 
         projectUseCases.createProject(title, description)
         cliPrinter.cliPrintLn("Project created successfully.")

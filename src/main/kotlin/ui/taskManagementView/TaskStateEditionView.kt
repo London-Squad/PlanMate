@@ -21,10 +21,10 @@ class TaskStateEditionView(
         }
 
         printProjectState(projectStates)
-        val newState = getValidState(projectStates)
+        val newStateIndex = cliReader.getValidUserNumberInRange(projectStates.size - 1).toInt()
 
         try {
-            manageTaskUseCase.editTaskState(task.id, newState)
+            manageTaskUseCase.editTaskState(task.id, projectStates[newStateIndex])
         } catch (e: NotFoundException) {
             cliPrinter.cliPrintLn(e.message ?: "task not found")
         }
@@ -33,16 +33,6 @@ class TaskStateEditionView(
     private fun printProjectState(states: List<State>) {
         states.forEachIndexed { index, state ->
             printLn("${index + 1}. ${state.title}")
-        }
-    }
-
-    private fun getValidState(states: List<State>): State {
-        val userInput = cliReader.getUserInput("Your choice: ").toIntOrNull()
-        if (userInput in 1..states.size)
-            return states[userInput!! - 1]
-        else {
-            printLn("Invalid input")
-            return getValidState(states)
         }
     }
 
