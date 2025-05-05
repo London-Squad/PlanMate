@@ -110,7 +110,7 @@ class ProjectUseCases(
         )
     }
 
-    fun createTask(projectId: UUID, title: String, description: String): Project {
+    fun createTask(projectId: UUID, taskTitle: String, taskDescription: String): Project {
         val project = getProjectById(projectId) ?: throw IllegalArgumentException("Project not found")
 
         if (project.states.isEmpty()) {
@@ -121,8 +121,8 @@ class ProjectUseCases(
 
         val newTask = Task(
             id = UUID.randomUUID(),
-            title = title,
-            description = description,
+            title = taskTitle,
+            description = taskDescription,
             state = defaultState
         )
 
