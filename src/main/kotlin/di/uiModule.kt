@@ -3,6 +3,7 @@ package di
 import org.koin.dsl.module
 import ui.cliPrintersAndReaders.CLIPrinter
 import ui.cliPrintersAndReaders.CLIReader
+import ui.cliPrintersAndReaders.cliTable.CLITablePrinter
 import ui.projectView.ProjectView
 import ui.loginView.LoginView
 import ui.logsView.LogsView
@@ -35,7 +36,7 @@ val uiModule = module {
 
     single { WelcomeView(get(), get(), get(), get(), get()) }
 
-    single { ProjectsView(get(), get(), get(), get(), get()) }
+    single { ProjectsView(get(), get(), get(), get(), get(),get()) }
 
     single { ProjectView(get(), get(), get(), get(), get(), get(), get(), get(), get()) }
     single { SwimlanesView(get()) }
@@ -43,7 +44,7 @@ val uiModule = module {
     single { EditProjectView(get(), get(), get(), get()) }
     single { DeleteProjectView(get(), get(), get()) }
     single { ProjectView(get(), get(), get(), get(), get(), get(), get(), get(), get()) }
-    single { ProjectsView(get(), get(), get(), get(), get()) }
+    single { ProjectsView(get(), get(), get(),get(),get(),get()) }
 
     single { MateCreationView(get(), get(), get()) }
     single { MatesManagementView(get(), get(), get(), get()) }
@@ -53,4 +54,6 @@ val uiModule = module {
     single { LoginView(get(), get(), get(), get()) }
 
     single { WelcomeView(get(), get(), get(), get(), get()) }
+    single { CLITablePrinter(get()) }
+
 }
