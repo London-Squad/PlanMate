@@ -41,7 +41,7 @@ val uiModule = module {
     single { SwimlanesView(get()) }
     single { StatesView(get(), get(), get()) }
     single { EditProjectView(get(), get(), get(), get()) }
-    single { DeleteProjectView(get(), get()) }
+    single { DeleteProjectView(get(), get(), get()) }
     single { ProjectView(get(), get(), get(), get(), get(), get(), get(), get(), get()) }
     single { ProjectsView(get(), get(), get(), get(), get()) }
 
