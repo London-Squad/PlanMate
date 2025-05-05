@@ -24,4 +24,11 @@ class MongoDBProjectsDataSource() : ProjectsRepository {
     override fun deleteProject(projectId: UUID) {
         TODO("Not yet implemented")
     }
+
+    companion object {
+        private const val ID_FIELD = "id"
+        private const val TITLE_FIELD = "title"
+        private const val DESCRIPTION_FIELD = "description"
+        private const val IS_DELETED_FIELD = "isDeleted"
+    }
 }

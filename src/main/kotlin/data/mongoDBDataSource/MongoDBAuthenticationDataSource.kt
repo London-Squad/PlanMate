@@ -32,4 +32,12 @@ class MongoDBAuthenticationDataSource() : AuthenticationRepository {
     override fun getLoggedInUser(): User {
         TODO("Not yet implemented")
     }
+
+    private companion object {
+        const val ID_FIELD = "id"
+        const val USERNAME_FIELD = "userName"
+        const val PASSWORD_FIELD = "hashedPassword"
+        const val TYPE_FIELD = "type"
+        const val IS_DELETED_FIELD_FIELD = "isDeleted"
+    }
 }

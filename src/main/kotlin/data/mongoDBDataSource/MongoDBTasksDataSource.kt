@@ -5,7 +5,7 @@ import logic.entities.Task
 import logic.repositories.TaskRepository
 import java.util.*
 
-class MongoDBTasksDataSource(): TaskRepository {
+class MongoDBTasksDataSource() : TaskRepository {
     override fun getAllTasksByProjectID(projectId: UUID): List<Task> {
         TODO("Not yet implemented")
     }
@@ -32,5 +32,14 @@ class MongoDBTasksDataSource(): TaskRepository {
 
     override fun deleteTask(taskId: UUID) {
         TODO("Not yet implemented")
+    }
+
+    companion object {
+        private const val ID_FIELD = "id"
+        private const val TITLE_FIELD = "title"
+        private const val DESCRIPTION_FIELD = "description"
+        private const val STATE_ID_FIELD = "stateId"
+        private const val PROJECT_ID_FIELD = "projectId"
+        private const val IS_DELETED_FIELD = "isDeleted"
     }
 }
