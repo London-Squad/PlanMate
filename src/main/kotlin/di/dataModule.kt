@@ -1,9 +1,9 @@
 package di
 
-import data.*
-import data.fileIO.FilePath
-import data.fileIO.cvsLogsFileHandler.LogsCsvReader
-import data.fileIO.cvsLogsFileHandler.LogsCsvWriter
+import data.csvStorage.*
+import data.csvStorage.fileIO.*
+import data.csvStorage.fileIO.cvsLogsFileHandler.LogsCsvReader
+import data.csvStorage.fileIO.cvsLogsFileHandler.LogsCsvWriter
 import data.security.hashing.MD5HashingAlgorithm
 import logic.repositories.*
 import org.koin.core.qualifier.named
@@ -45,11 +45,11 @@ val dataModule = module {
     single { LogsCsvReader(get(named("LogsFile"))) }
     single { LogsCsvWriter(get(named("LogsFile"))) }
 
-    single<LogsRepository> { LogsDataSource(get(), get(), get(), get(), get(), get()) }
+    single<LogsRepository> { CsvLogsDataSource(get(), get(), get(), get(), get(), get()) }
 
 
     single<AuthenticationRepository> {
-        AuthenticationDataSource(
+        CsvAuthenticationDataSource(
             File(FilePath.USER_FILE),
             File(FilePath.ACTIVE_USER_FILE),
             MD5HashingAlgorithm(),

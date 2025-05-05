@@ -1,13 +1,13 @@
-package data
+package data.csvStorage
 
-import data.fileIO.cvsLogsFileHandler.LogsCsvReader
-import data.fileIO.cvsLogsFileHandler.LogsCsvWriter
+import data.csvStorage.fileIO.cvsLogsFileHandler.LogsCsvReader
+import data.csvStorage.fileIO.cvsLogsFileHandler.LogsCsvWriter
 import logic.entities.*
 import logic.repositories.*
 import java.time.LocalDateTime
 import java.util.UUID
 
-class LogsDataSource(
+class CsvLogsDataSource(
     private val logsCsvReader: LogsCsvReader,
     private val logsCsvWriter: LogsCsvWriter,
     private val authenticationRepository: AuthenticationRepository,
@@ -132,7 +132,7 @@ class LogsDataSource(
     }
 
     private fun getUserById(userId: UUID): User {
-        if (userId == AuthenticationDataSource.ADMIN.id) return AuthenticationDataSource.ADMIN
+        if (userId == CsvAuthenticationDataSource.ADMIN.id) return CsvAuthenticationDataSource.ADMIN
         return authenticationRepository.getMates().firstOrNull { it.id == userId }
             ?: User(userName = "Unknown", type = User.Type.MATE)
     }

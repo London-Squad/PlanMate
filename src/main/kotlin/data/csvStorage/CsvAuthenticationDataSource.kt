@@ -1,7 +1,7 @@
-package data
+package data.csvStorage
 
-import data.fileIO.UserFileHelper
-import data.fileIO.createFileIfNotExist
+import data.csvStorage.fileIO.UserFileHelper
+import data.csvStorage.fileIO.createFileIfNotExist
 import data.security.hashing.HashingAlgorithm
 import logic.entities.User
 import logic.exceptions.NoLoggedInUserIsSavedInCacheException
@@ -11,7 +11,7 @@ import logic.repositories.AuthenticationRepository
 import java.io.File
 import java.util.*
 
-class AuthenticationDataSource(
+class CsvAuthenticationDataSource(
     private val userFile: File,
     private val activeUserFile: File,
     private val hashingAlgorithm: HashingAlgorithm
@@ -27,7 +27,7 @@ class AuthenticationDataSource(
     override fun getMates(): List<User> {
         val users = userFile.readLines().toMutableList()
         users.removeFirst()
-        return users.map(UserFileHelper::lineToUser)
+        return users.map(UserFileHelper.Companion::lineToUser)
     }
 
     override fun deleteUser(userId: UUID) {

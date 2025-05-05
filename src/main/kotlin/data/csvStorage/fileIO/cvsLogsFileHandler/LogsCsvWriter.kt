@@ -1,4 +1,4 @@
-package data.fileIO.cvsLogsFileHandler
+package data.csvStorage.fileIO.cvsLogsFileHandler
 
 import java.io.File
 

@@ -1,4 +1,4 @@
-package data.fileIO
+package data.csvStorage.fileIO
 
 object FilePath {
     const val USER_FILE = "csvFiles/user.csv"

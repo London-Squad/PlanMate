@@ -1,8 +1,8 @@
 package data.repository
 
 import com.google.common.truth.Truth.assertThat
-import data.AuthenticationDataSource
-import data.fileIO.UserFileHelper
+import data.csvStorage.CsvAuthenticationDataSource
+import data.csvStorage.fileIO.UserFileHelper
 import data.security.hashing.HashingAlgorithm
 import io.mockk.every
 import io.mockk.mockk
@@ -18,7 +18,7 @@ import java.io.File
 import kotlin.test.AfterTest
 import kotlin.test.BeforeTest
 
-class AuthenticationDataSourceTest {
+class CsvAuthenticationDataSourceTest {
     private lateinit var authenticationRepository: AuthenticationRepository
     private lateinit var UsersFile: File
     private lateinit var activeUserFile: File
@@ -39,7 +39,7 @@ class AuthenticationDataSourceTest {
     @BeforeEach
     fun setup() {
         hashingAlgorithm = mockk(relaxed = true)
-        authenticationRepository = AuthenticationDataSource(UsersFile, activeUserFile, hashingAlgorithm)
+        authenticationRepository = CsvAuthenticationDataSource(UsersFile, activeUserFile, hashingAlgorithm)
         every { hashingAlgorithm.hashData(any()) } answers {
             arg(0)
         }

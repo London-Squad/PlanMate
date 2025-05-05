@@ -1,4 +1,4 @@
-package data
+package data.csvStorage
 
 import logic.entities.State
 import logic.entities.Task
