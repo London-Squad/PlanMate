@@ -3,14 +3,15 @@ package di
 import org.koin.dsl.module
 import ui.cliPrintersAndReaders.CLIPrinter
 import ui.cliPrintersAndReaders.CLIReader
-import ui.projectDetailsView.ProjectDetailsView
+import ui.cliPrintersAndReaders.cliTable.CLITablePrinter
+import ui.projectView.ProjectView
 import ui.loginView.LoginView
 import ui.logsView.LogsView
 import ui.mainMenuView.MainMenuView
 import ui.matesManagementView.MateCreationView
 import ui.matesManagementView.MatesManagementView
-import ui.projectDetailsView.*
-import ui.projectsDashboardView.ProjectsDashboardView
+import ui.projectView.*
+import ui.projectsView.ProjectsView
 import ui.statesView.StatesView
 import ui.taskManagementView.*
 import ui.welcomeView.WelcomeView
@@ -35,14 +36,15 @@ val uiModule = module {
 
     single { WelcomeView(get(), get(), get(), get(), get()) }
 
-    single { ProjectsDashboardView(get(), get(),get() ,get(),get())}
+    single { ProjectsView(get(), get(), get(), get(), get(),get()) }
 
-    single { ProjectDetailsView(get(), get(), get(), get(), get(), get(), get(), get(), get()) }
+    single { ProjectView(get(), get(), get(), get(), get(), get(), get(), get(), get()) }
     single { SwimlanesView(get()) }
     single { StatesView(get(), get(), get()) }
     single { EditProjectView(get(), get(), get(), get()) }
     single { DeleteProjectView(get(), get(), get()) }
-    single { ProjectDetailsView(get(), get(), get(), get(), get(), get(), get(), get(), get()) }
+    single { ProjectView(get(), get(), get(), get(), get(), get(), get(), get(), get()) }
+    single { ProjectsView(get(), get(), get(),get(),get(),get()) }
 
     single { MateCreationView(get(), get(), get()) }
     single { MatesManagementView(get(), get(), get(), get()) }
@@ -52,4 +54,6 @@ val uiModule = module {
     single { LoginView(get(), get(), get(), get()) }
 
     single { WelcomeView(get(), get(), get(), get(), get()) }
+    single { CLITablePrinter(get()) }
+
 }
