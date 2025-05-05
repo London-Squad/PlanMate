@@ -3,6 +3,7 @@ package ui.projectView
 import logic.entities.Project
 import ui.cliPrintersAndReaders.CLIPrinter
 import ui.cliPrintersAndReaders.cliTable.CLITablePrinter
+import ui.cliPrintersAndReaders.cliTable.InvalidTableInput
 
 class SwimlanesView(
     private val cliPrinter: CLIPrinter, private val cliTablePrinter: CLITablePrinter = CLITablePrinter(cliPrinter)
@@ -39,7 +40,10 @@ class SwimlanesView(
         val columnWidths = headers.mapIndexed { colIndex, header ->
             maxOf(header.length, data.maxOfOrNull { it[colIndex].length } ?: 0)
         }
-
-        cliTablePrinter(headers, data, columnWidths)
+        try {
+            cliTablePrinter(headers, data, columnWidths)
+        } catch (e: InvalidTableInput) {
+            cliPrinter.cliPrintLn("Error displaying swimlanes: ${e.message}")
+        }
     }
 }

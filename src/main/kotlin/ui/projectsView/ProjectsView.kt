@@ -7,6 +7,7 @@ import logic.useCases.ProjectUseCases
 import ui.cliPrintersAndReaders.CLIPrinter
 import ui.cliPrintersAndReaders.CLIReader
 import ui.cliPrintersAndReaders.cliTable.CLITablePrinter
+import ui.cliPrintersAndReaders.cliTable.InvalidTableInput
 import ui.projectView.ProjectView
 
 class ProjectsView(
@@ -36,7 +37,6 @@ class ProjectsView(
     }
 
 
-
     private fun printHeader() {
         cliPrinter.printHeader("Projects Menu")
     }
@@ -51,13 +51,15 @@ class ProjectsView(
 
             val data = projects.mapIndexed { index, project ->
                 listOf(
-                    (index + 1).toString(),
-                    project.title,
-                    project.description
+                    (index + 1).toString(), project.title, project.description
                 )
             }
             val columnsWidth = listOf(null, null, null)
-            cliTablePrinter(headers, data, columnsWidth)
+            try {
+                cliTablePrinter(headers, data, columnsWidth)
+            } catch (e: InvalidTableInput) {
+                cliPrinter.cliPrintLn("Error displaying swimlanes: ${e.message}")
+            }
         }
     }
 
