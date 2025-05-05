@@ -1,40 +1,31 @@
 package ui.projectsDashboardView
 
 import logic.entities.User
-import logic.exceptions.NoLoggedInUserIsSavedInCacheException
+import logic.exceptions.*
 import logic.useCases.GetLoggedInUserUseCase
 import logic.useCases.ProjectUseCases
 import ui.cliPrintersAndReaders.CLIPrinter
 import ui.cliPrintersAndReaders.CLIReader
 import ui.projectDetailsView.ProjectDetailsView
+import ui.ViewExceptionHandler
 
 class ProjectsDashboardView(
     private val cliPrinter: CLIPrinter,
     private val cliReader: CLIReader,
     private val projectUseCases: ProjectUseCases,
     private val getLoggedInUserUseCase: GetLoggedInUserUseCase,
-    private val projectView: ProjectDetailsView
+    private val projectView: ProjectDetailsView,
+    private val exceptionHandler: ViewExceptionHandler
 ) {
-
-    lateinit var currentUser: User
-
     fun start() {
-
-        try {
-            currentUser = getLoggedInUserUseCase.getLoggedInUser()
-        } catch (e: NoLoggedInUserIsSavedInCacheException) {
-            cliPrinter.cliPrintLn("Error: No user logged in. Please log in first.")
-            return
+        exceptionHandler.tryCall {
+            getLoggedInUserUseCase.getLoggedInUser()
+                .let { user ->
+                    printHeader()
+                    printProjects()
+                    goToNextUi(user)
+                }
         }
-
-        printHeader()
-        printProjects()
-        goToNextUi()
-
-    }
-
-    fun handleProjectsView(currentUser: User) {
-
     }
 
     private fun printHeader() {
@@ -42,27 +33,26 @@ class ProjectsDashboardView(
     }
 
     private fun printProjects() {
-        val projects = projectUseCases.getAllProjects()
-        if (projects.isEmpty()) {
-            cliPrinter.cliPrintLn("No projects found.")
-        } else {
-            projects.forEachIndexed { index, project ->
-                val displayIndex = index + 1
-                cliPrinter.cliPrintLn("Project: $displayIndex")
-                cliPrinter.cliPrintLn("Title: ${project.title}")
-                cliPrinter.cliPrintLn("Description: ${project.description}")
-                cliPrinter.cliPrintLn(cliPrinter.getThinHorizontal())
-            }
+        exceptionHandler.tryCall {
+            projectUseCases.getAllProjects()
+                .takeIf { it.isNotEmpty() }
+                ?.forEachIndexed { index, project ->
+                    val displayIndex = index + 1
+                    cliPrinter.cliPrintLn("Project: $displayIndex")
+                    cliPrinter.cliPrintLn("Title: ${project.title}")
+                    cliPrinter.cliPrintLn("Description: ${project.description}")
+                    cliPrinter.cliPrintLn(cliPrinter.getThinHorizontal())
+                } ?: cliPrinter.cliPrintLn("No projects found.")
         }
     }
 
-    private fun goToNextUi() {
-        printInputInstruction()
-        handleProjectSelection()
+    private fun goToNextUi(user: User) {
+        printInputInstruction(user)
+        handleProjectSelection(user)
     }
 
-    private fun printInputInstruction() {
-        val promptMessage = if (currentUser.type == User.Type.ADMIN) {
+    private fun printInputInstruction(user: User) {
+        val promptMessage = if (user.type == User.Type.ADMIN) {
             "Enter the project number to select, 'new' to create a new project, or 'back' to return:"
         } else {
             "Enter the project number to select or 'back' to return: "
@@ -70,54 +60,47 @@ class ProjectsDashboardView(
         cliPrinter.cliPrintLn(promptMessage)
     }
 
-    private fun handleProjectSelection() {
-
-        val input = cliReader.getUserInput("Choice: ").trim().lowercase()
-
-        when (input) {
-            "back" -> return
-            "new" -> handleNewProject()
-            else -> handleProjectSelectionInput(input)
+    private fun handleProjectSelection(user: User) {
+        exceptionHandler.tryCall {
+            cliReader.getUserInput("Choice: ").trim().lowercase()
+                .let { input ->
+                    when (input) {
+                        "back" -> Unit
+                        "new" -> handleNewProject(user)
+                        else -> handleProjectSelectionInput(input)
+                    }
+                }
+                .takeUnless { it == Unit }
+                ?.let { start() }
         }
-        start()
-
     }
 
-    fun handleNewProject() {
-        if (currentUser.type == User.Type.ADMIN) {
+    private fun handleNewProject(user: User) {
+        if (user.type == User.Type.ADMIN) {
             createProject()
         } else {
             cliPrinter.cliPrintLn("Invalid option. Please enter a project number or 'back'.")
         }
     }
 
-    fun handleProjectSelectionInput(input: String) {
-
-        val projects = projectUseCases.getAllProjects()
-
-        val projectIndex = try {
-            val number = input.toInt()
-            if (number in 1..projects.size) number - 1 else null
-        } catch (e: NumberFormatException) {
-            null
+    private fun handleProjectSelectionInput(input: String) {
+        exceptionHandler.tryCall {
+            val projects = projectUseCases.getAllProjects()
+            input.toInt()
+                .takeIf { it in 1..projects.size }
+                ?.let { number -> projects[number - 1] }
+                ?.let { project -> projectView.start(project) }
+                ?: throw NotFoundException("Invalid project number.")
         }
-
-        if (projectIndex == null) {
-            cliPrinter.cliPrintLn("Invalid project number.")
-            return
-        }
-
-        val project = projects[projectIndex]
-        projectView.start(project)
     }
 
-    fun createProject() {
-        cliPrinter.printHeader("Create Project")
-        val title = cliReader.getValidTitle()
-        val description = cliReader.getValidDescription()
-
-
-        projectUseCases.createProject(title, description)
-        cliPrinter.cliPrintLn("Project created successfully.")
+    private fun createProject() {
+        exceptionHandler.tryCall {
+            cliPrinter.printHeader("Create Project")
+            val title = cliReader.getValidTitle()
+            val description = cliReader.getValidDescription()
+            projectUseCases.createProject(title, description)
+                .also { cliPrinter.cliPrintLn("Project created successfully.") }
+        }
     }
 }

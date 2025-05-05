@@ -20,7 +20,7 @@ class ProjectUseCases(
         return projectsRepository.getProjectById(projectId)
     }
 
-    fun createProject(title: String, description: String): Project? {
+    fun createProject(title: String, description: String): Project {
         val defaultStates = listOf(
             State(id = UUID.randomUUID(), title = "TODO", description = "TO DO TASKS"),
             State(id = UUID.randomUUID(), title = "InProgress", description = "INPROGRESS TASKS"),
@@ -39,7 +39,7 @@ class ProjectUseCases(
             logNewProject(project)
             return project
         }
-        return null
+        throw Exception("Failed to create project.")
     }
 
     private fun logNewProject(project: Project) {

@@ -1,6 +1,7 @@
 package di
 
 import org.koin.dsl.module
+import ui.ViewExceptionHandler
 import ui.cliPrintersAndReaders.CLIPrinter
 import ui.cliPrintersAndReaders.CLIReader
 import ui.projectDetailsView.ProjectDetailsView
@@ -19,6 +20,7 @@ val uiModule = module {
 
     single { CLIPrinter() }
     single { CLIReader(get(), get()) }
+    single { ViewExceptionHandler(get()) }
 
     single { TaskTitleEditionView(get(), get(), get()) }
     single { TaskDescriptionEditionView(get(), get(), get()) }
@@ -35,7 +37,7 @@ val uiModule = module {
 
     single { WelcomeView(get(), get(), get(), get(), get()) }
 
-    single { ProjectsDashboardView(get(), get(), get(), get(), get()) }
+    single { ProjectsDashboardView(get(), get(), get(), get(), get(), get()) }
 
     single { ProjectDetailsView(get(), get(), get(), get(), get(), get(), get(), get(), get()) }
     single { SwimlanesView(get()) }
@@ -43,7 +45,7 @@ val uiModule = module {
     single { EditProjectView(get(), get(), get(), get()) }
     single { DeleteProjectView(get(), get(), get()) }
     single { ProjectDetailsView(get(), get(), get(), get(), get(), get(), get(), get(), get()) }
-    single { ProjectsDashboardView(get(), get(), get(), get(), get()) }
+    single { ProjectsDashboardView(get(), get(), get(), get(), get(), get()) }
 
     single { MateCreationView(get(), get(), get()) }
     single { MatesManagementView(get(), get(), get(), get()) }
