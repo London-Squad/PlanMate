@@ -7,13 +7,14 @@ import logic.useCases.LogoutUseCase
 import ui.cliPrintersAndReaders.CLIPrinter
 import ui.cliPrintersAndReaders.CLIReader
 import ui.matesManagementView.MatesManagementView
+import ui.projectDetailsView.ProjectDetailsView
 import ui.projectsDashboardView.ProjectsDashboardView
 
 class MainMenuView(
     private val cliPrinter: CLIPrinter,
     private val cliReader: CLIReader,
     private val getLoggedInUserUseCase: GetLoggedInUserUseCase,
-    private val projectsView: ProjectsDashboardView,
+    private val projectDetailsView: ProjectsDashboardView,
     private val matesManagementView: MatesManagementView,
     private val logoutUseCase: LogoutUseCase,
 ) {
@@ -49,7 +50,7 @@ class MainMenuView(
 
     private fun goToNextUI() {
         when (getValidUserInput()) {
-            "1" -> projectsView.start()
+            "1" -> projectDetailsView.start()
             "2" -> matesManagementView.start()
             "0" -> {
                 printLn("\nLogging out ...")
