@@ -9,7 +9,11 @@ class MongoDBProjectsDataSource() : ProjectsRepository {
         TODO("Not yet implemented")
     }
 
-    override fun addNewProject(project: Project) {
+    override fun getProjectById(projectId: UUID): Project {
+        TODO("Not yet implemented")
+    }
+
+    override fun addNewProject(project: Project): Project {
         TODO("Not yet implemented")
     }
 
