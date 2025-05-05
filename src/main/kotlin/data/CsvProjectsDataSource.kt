@@ -54,16 +54,16 @@ class CsvProjectsDataSource(
         }
     }
 
-    override fun getProjectById(projectId: UUID): Project? {
+    override fun getProjectById(projectId: UUID): Project {
         try {
             return getAllProjects().find { it.id == projectId }
+                ?: throw NoSuchElementException("Project with ID $projectId not found")
         } catch (e: Exception) {
-            println("Failed to retrieve project with ID $projectId: ${e.message}")
-            return null
+            throw RuntimeException("Failed to retrieve project with ID $projectId: ${e.message}", e)
         }
     }
 
-    override fun addNewProject(project: Project): Project? {
+    override fun addNewProject(project: Project): Project {
         try {
             project.states.forEach { state ->
                 csvStatesDataSource.addNewState(state, project.id)
@@ -75,52 +75,45 @@ class CsvProjectsDataSource(
             return project
         } catch (e: Exception) {
             println("Failed to add project: ${e.message}")
-            return null
         }
+        return project
     }
 
-    override fun editProjectTitle(projectId: UUID, newTitle: String): Boolean {
+    override fun editProjectTitle(projectId: UUID, newTitle: String) {
         try {
             val projects = getAllProjects()
             if (projects.none { it.id == projectId }) {
                 println("Project with ID $projectId not found")
-                return false
             }
             val updatedProjects = projects.map { project ->
                 if (project.id == projectId) project.copy(title = newTitle) else project
             }
             writeProjectsToFile(updatedProjects)
-            return true
         } catch (e: Exception) {
             println("Failed to edit project title: ${e.message}")
-            return false
         }
     }
 
-    override fun editProjectDescription(projectId: UUID, newDescription: String): Boolean {
+    override fun editProjectDescription(projectId: UUID, newDescription: String) {
         try {
             val projects = getAllProjects()
             if (projects.none { it.id == projectId }) {
                 println("Project with ID $projectId not found")
-                return false
             }
             val updatedProjects = projects.map { project ->
                 if (project.id == projectId) project.copy(description = newDescription) else project
             }
             writeProjectsToFile(updatedProjects)
-            return true
         } catch (e: Exception) {
             println("Failed to edit project description: ${e.message}")
-            return false
         }
     }
 
-    override fun deleteProject(projectId: UUID): Boolean {
+    override fun deleteProject(projectId: UUID) {
         try {
             val projects = getAllProjects()
             if (projects.none { it.id == projectId }) {
                 println("Project with ID $projectId not found")
-                return false
             }
             csvTasksDataSource.getAllTasksByProjectID(projectId).forEach { task ->
                 csvTasksDataSource.deleteTask(task.id)
@@ -130,10 +123,8 @@ class CsvProjectsDataSource(
             }
             val remainingProjects = projects.filter { it.id != projectId }
             writeProjectsToFile(remainingProjects)
-            return true
         } catch (e: Exception) {
             println("Failed to delete project: ${e.message}")
-            return false
         }
     }
 
