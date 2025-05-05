@@ -1,11 +1,10 @@
-package data.DBEntities
+package data.entitiesData
 
-import java.util.UUID
+import java.util.*
 
-data class DBTaskState(
+data class ProjectData(
     val id: UUID,
     val title: String,
     val description: String,
-    val projectID: UUID,
     val isDeleted: Boolean
 )

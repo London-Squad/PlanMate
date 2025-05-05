@@ -1,6 +1,6 @@
 package data.dataSource
 
-import data.csvStorage.CsvStatesDataSource
+import data.csvDataSource.CsvTasksStatesDataSource
 import logic.entities.State
 import org.junit.jupiter.api.AfterEach
 import org.junit.jupiter.api.BeforeEach
@@ -9,10 +9,10 @@ import java.io.File
 import java.util.UUID
 import kotlin.test.assertEquals
 
-class CsvStatesDataSourceTest {
+class CsvTasksStatesDataSourceTest {
 
     private lateinit var file: File
-    private lateinit var csvStatesDataSource: CsvStatesDataSource
+    private lateinit var csvTasksStatesDataSource: CsvTasksStatesDataSource
     private val projectId = UUID.fromString("550e8400-e29b-41d4-a716-446655440000")
     private val stateId = UUID.fromString("07fa94e1-8030-41ad-8342-fefa210461ce")
 
@@ -20,7 +20,7 @@ class CsvStatesDataSourceTest {
     fun setUp() {
         file = File.createTempFile("states", ".csv")
         file.writeText("id,title,description,projectId\n")
-        csvStatesDataSource = CsvStatesDataSource(file)
+        csvTasksStatesDataSource = CsvTasksStatesDataSource(file)
     }
 
     @AfterEach
@@ -31,7 +31,7 @@ class CsvStatesDataSourceTest {
     @Test
     fun `should return empty list when no states for project`() {
         // When
-        val states = csvStatesDataSource.getAllStatesByProjectId(projectId)
+        val states = csvTasksStatesDataSource.getAllStatesByProjectId(projectId)
 
         // Then
         assertEquals(0, states.size)
@@ -43,7 +43,7 @@ class CsvStatesDataSourceTest {
         file.appendText("$stateId,No State,this is the default state,$projectId\n")
 
         // When
-        val states = csvStatesDataSource.getAllStatesByProjectId(projectId)
+        val states = csvTasksStatesDataSource.getAllStatesByProjectId(projectId)
 
         // Then
         assertEquals(1, states.size)
@@ -56,7 +56,7 @@ class CsvStatesDataSourceTest {
         file.appendText("$stateId,No State,this is the default state,${UUID.randomUUID()}\n")
 
         // When
-        val states = csvStatesDataSource.getAllStatesByProjectId(projectId)
+        val states = csvTasksStatesDataSource.getAllStatesByProjectId(projectId)
 
         // Then
         assertEquals(0, states.size)
@@ -68,7 +68,7 @@ class CsvStatesDataSourceTest {
         // File is initialized with only header
 
         // When
-        val state = csvStatesDataSource.getStateById(stateId)
+        val state = csvTasksStatesDataSource.getStateById(stateId)
 
         // Then
         assertEquals(State.NoState.title, state.title)
@@ -80,7 +80,7 @@ class CsvStatesDataSourceTest {
         file.appendText("$stateId,No State,this is the default state,$projectId\n")
 
         // When
-        val state = csvStatesDataSource.getStateById(stateId)
+        val state = csvTasksStatesDataSource.getStateById(stateId)
 
         // Then
         assertEquals("No State", state.title)
@@ -92,7 +92,7 @@ class CsvStatesDataSourceTest {
         val newState = State(stateId, "TODO", "To-do tasks")
 
         // When
-        csvStatesDataSource.addNewState(newState, projectId)
+        csvTasksStatesDataSource.addNewState(newState, projectId)
 
         // Then
         val lines = file.readLines()
@@ -107,7 +107,7 @@ class CsvStatesDataSourceTest {
         val newTitle = "In Progress"
 
         // When
-        csvStatesDataSource.editStateTitle(stateId, newTitle)
+        csvTasksStatesDataSource.editStateTitle(stateId, newTitle)
 
         // Then
         val lines = file.readLines()
@@ -122,7 +122,7 @@ class CsvStatesDataSourceTest {
         val newDescription = "Tasks in progress"
 
         // When
-        csvStatesDataSource.editStateDescription(stateId, newDescription)
+        csvTasksStatesDataSource.editStateDescription(stateId, newDescription)
 
         // Then
         val lines = file.readLines()
@@ -136,7 +136,7 @@ class CsvStatesDataSourceTest {
         file.appendText("$stateId,No State,this is the default state,$projectId\n")
 
         // When
-        csvStatesDataSource.deleteState(stateId)
+        csvTasksStatesDataSource.deleteState(stateId)
 
         // Then
         val lines = file.readLines()

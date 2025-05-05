@@ -1,7 +1,7 @@
-package data.csvStorage
+package data.csvDataSource
 
-import data.csvStorage.fileIO.cvsLogsFileHandler.LogsCsvReader
-import data.csvStorage.fileIO.cvsLogsFileHandler.LogsCsvWriter
+import data.csvDataSource.fileIO.cvsLogsFileHandler.LogsCsvReader
+import data.csvDataSource.fileIO.cvsLogsFileHandler.LogsCsvWriter
 import logic.entities.*
 import logic.repositories.*
 import java.time.LocalDateTime
@@ -12,7 +12,7 @@ class CsvLogsDataSource(
     private val logsCsvWriter: LogsCsvWriter,
     private val authenticationRepository: AuthenticationRepository,
     private val projectsRepository: ProjectsRepository,
-    private val statesRepository: StatesRepository,
+    private val tasksStatesRepository: TasksStatesRepository,
     private val tasksRepository: TaskRepository,
 ) : LogsRepository {
 
@@ -142,7 +142,7 @@ class CsvLogsDataSource(
     }
 
     private fun getStateById(stateId: UUID): State {
-        return statesRepository.getStateById(stateId)
+        return tasksStatesRepository.getStateById(stateId)
     }
 
     private fun getTaskById(taskId: UUID): Task {

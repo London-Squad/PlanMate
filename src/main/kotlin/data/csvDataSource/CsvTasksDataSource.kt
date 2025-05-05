@@ -1,16 +1,16 @@
-package data.csvStorage
+package data.csvDataSource
 
 import logic.entities.State
 import logic.entities.Task
 import logic.exceptions.NotFoundException
-import logic.repositories.StatesRepository
+import logic.repositories.TasksStatesRepository
 import logic.repositories.TaskRepository
 import java.io.File
 import java.util.*
 
 class CsvTasksDataSource(
     private val file: File,
-    private val statesRepository: StatesRepository
+    private val tasksStatesRepository: TasksStatesRepository
 ) : TaskRepository {
 
     init {
@@ -34,13 +34,13 @@ class CsvTasksDataSource(
                     id = UUID.fromString(id),
                     title = title,
                     description = description,
-                    state = statesRepository.getStateById(UUID.fromString(stateId))
+                    state = tasksStatesRepository.getStateById(UUID.fromString(stateId))
                 )
             )
         }
     }
 
-    override fun getAllTasksByProjectID(projectId: UUID): List<Task> {
+    override fun getTasksByProjectID(projectId: UUID): List<Task> {
         return getAllTasksPairedWithProjectID()
             .filter { it.first == projectId }
             .map { it.second }

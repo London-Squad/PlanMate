@@ -1,11 +1,11 @@
-package data.DBEntities
+package data.entitiesData
 
 import java.util.UUID
 
-data class DBUser(
+data class UserData(
     val id: UUID,
     val userName: String,
-    val password: String,
+    val hashedPassword: String,
     val type: String,
     val isDeleted: Boolean
 )

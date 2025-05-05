@@ -3,26 +3,26 @@ package logic.useCases
 import logic.entities.*
 import logic.repositories.AuthenticationRepository
 import logic.repositories.LogsRepository
-import logic.repositories.StatesRepository
+import logic.repositories.TasksStatesRepository
 import java.time.LocalDateTime
 import java.util.*
 
 class ManageStateUseCase(
-    private val statesRepository: StatesRepository,
+    private val tasksStatesRepository: TasksStatesRepository,
     private val logsRepository: LogsRepository,
     private val authenticationRepository: AuthenticationRepository
 ) {
 
     fun addState(state: State, projectID: UUID) {
         if (state.title.isBlank()) return
-        statesRepository.addNewState(state, projectID)
+        tasksStatesRepository.addNewTaskState(state, projectID)
         logAction(Create(state))
     }
 
     fun editStateTitle(stateID: UUID, newTitle: String) {
-        val oldState = statesRepository.getStateById(stateID) ?: return
+        val oldState = tasksStatesRepository.getStateById(stateID) ?: return
         if (newTitle.isBlank()) return
-        statesRepository.editStateTitle(stateID, newTitle)
+        tasksStatesRepository.editTaskStateTitle(stateID, newTitle)
         logAction(
             Edit(
                 entity = oldState.copy(title = newTitle),
@@ -34,9 +34,9 @@ class ManageStateUseCase(
     }
 
     fun editStateDescription(stateID: UUID, newDescription: String) {
-        val oldState = statesRepository.getStateById(stateID) ?: return
+        val oldState = tasksStatesRepository.getStateById(stateID) ?: return
         if (newDescription.isBlank()) return
-        statesRepository.editStateDescription(stateID, newDescription)
+        tasksStatesRepository.editTaskStateDescription(stateID, newDescription)
         logAction(
             Edit(
                 entity = oldState.copy(description = newDescription),
@@ -48,14 +48,14 @@ class ManageStateUseCase(
     }
 
     fun deleteState(stateID: UUID) {
-        val oldState = statesRepository.getStateById(stateID) ?: return
+        val oldState = tasksStatesRepository.getStateById(stateID) ?: return
         if (oldState.id == State.NoState.id) return
-        statesRepository.deleteState(stateID)
+        tasksStatesRepository.deleteTaskState(stateID)
         logAction(Delete(oldState))
     }
 
     fun getStates(projectId: UUID): List<State> {
-        return statesRepository.getAllStatesByProjectId(projectId)
+        return tasksStatesRepository.getTasksStatesByProjectId(projectId)
     }
 
     private fun logAction(action: Action) {

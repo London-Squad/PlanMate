@@ -1,12 +1,12 @@
 package data.dataSource
 
 import com.google.common.truth.Truth.assertThat
-import data.csvStorage.CsvTasksDataSource
+import data.csvDataSource.CsvTasksDataSource
 import io.mockk.every
 import io.mockk.mockk
 import logic.entities.State
 import logic.entities.Task
-import logic.repositories.StatesRepository
+import logic.repositories.TasksStatesRepository
 import org.junit.jupiter.api.AfterEach
 import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Test
@@ -16,7 +16,7 @@ import java.util.*
 class CsvTasksDataSourceTest {
 
     private lateinit var tempFile: File
-    private lateinit var stateRepository: StatesRepository
+    private lateinit var stateRepository: TasksStatesRepository
     private lateinit var csvTasksDataSource: CsvTasksDataSource
 
     @BeforeEach
@@ -66,7 +66,7 @@ class CsvTasksDataSourceTest {
                     "873354d1-28f9-4a2d-ba80-e5fbe2600220,New Task,Default description,07fa94e1-8030-41ad-8342-fefa210461ce,$anotherProjectID\n"
         )
 
-        val tasks = csvTasksDataSource.getAllTasksByProjectID(wantedProjectID)
+        val tasks = csvTasksDataSource.getTasksByProjectID(wantedProjectID)
 
         assertThat(tasks).isEmpty()
     }
@@ -83,7 +83,7 @@ class CsvTasksDataSourceTest {
                     "${dummyTasks[1].id},${dummyTasks[1].title},${dummyTasks[1].description},${dummyTasks[1].state.id},$wantedProjectID\n"
         )
 
-        val tasks = csvTasksDataSource.getAllTasksByProjectID(wantedProjectID)
+        val tasks = csvTasksDataSource.getTasksByProjectID(wantedProjectID)
 
         assertThat(tasks).containsExactly(dummyTasks[0], dummyTasks[1])
     }

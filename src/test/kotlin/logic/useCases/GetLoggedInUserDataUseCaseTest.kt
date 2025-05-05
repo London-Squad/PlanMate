@@ -9,7 +9,7 @@ import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.params.ParameterizedTest
 import org.junit.jupiter.params.provider.MethodSource
 
-class GetLoggedInDBUserUseCaseTest {
+class GetLoggedInUserDataUseCaseTest {
 
     private lateinit var getLoggedInUserUseCase: GetLoggedInUserUseCase
     private lateinit var authenticationRepository: AuthenticationRepository

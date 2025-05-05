@@ -5,7 +5,7 @@ import io.mockk.mockk
 import logic.entities.*
 import logic.repositories.AuthenticationRepository
 import logic.repositories.LogsRepository
-import logic.repositories.StatesRepository
+import logic.repositories.TasksStatesRepository
 import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Test
 import java.util.*
@@ -16,7 +16,7 @@ import kotlin.test.assertTrue
 class ManageStateUseCaseTest {
 
     private lateinit var useCase: ManageStateUseCase
-    private lateinit var statesRepo: FakeStatesRepository
+    private lateinit var statesRepo: FakeTasksStatesRepository
     private lateinit var logsRepo: FakeLogsRepository
     private lateinit var authenticationRepository: AuthenticationRepository
     private val projectId = UUID.randomUUID()
@@ -24,7 +24,7 @@ class ManageStateUseCaseTest {
 
     @BeforeEach
     fun setup() {
-        statesRepo = FakeStatesRepository()
+        statesRepo = FakeTasksStatesRepository()
         logsRepo = FakeLogsRepository()
 
         authenticationRepository = mockk(relaxed = true)
@@ -38,7 +38,7 @@ class ManageStateUseCaseTest {
         val state = State(title = "New", description = "To do")
         useCase.addState(state, projectId)
 
-        val saved = statesRepo.getAllStatesByProjectId(projectId)
+        val saved = statesRepo.getTasksStatesByProjectId(projectId)
         assertEquals(1, saved.size)
         assertEquals(state.title, saved.first().title)
         assertTrue(logsRepo.logs.any { it.action is Create })
@@ -47,7 +47,7 @@ class ManageStateUseCaseTest {
     @Test
     fun `should edit state title and log edit action when state exists`() {
         val state = State(title = "Old", description = "desc")
-        statesRepo.addNewState(state, projectId)
+        statesRepo.addNewTaskState(state, projectId)
         useCase.editStateTitle(state.id, "Updated")
 
         assertEquals("Updated", statesRepo.getStateById(state.id)?.title)
@@ -57,7 +57,7 @@ class ManageStateUseCaseTest {
     @Test
     fun `should edit state description and log edit action when state exists`() {
         val state = State(title = "Old", description = "desc")
-        statesRepo.addNewState(state, projectId)
+        statesRepo.addNewTaskState(state, projectId)
         useCase.editStateDescription(state.id, "New desc")
 
         assertEquals("New desc", statesRepo.getStateById(state.id)?.description)
@@ -69,14 +69,14 @@ class ManageStateUseCaseTest {
         val state = State(title = "", description = "desc")
         useCase.addState(state, projectId)
 
-        assertTrue(statesRepo.getAllStatesByProjectId(projectId).isEmpty())
+        assertTrue(statesRepo.getTasksStatesByProjectId(projectId).isEmpty())
         assertTrue(logsRepo.logs.none { it.action is Create })
     }
 
     @Test
     fun `should not edit title or log when new title is blank`() {
         val state = State(title = "Real", description = "desc")
-        statesRepo.addNewState(state, projectId)
+        statesRepo.addNewTaskState(state, projectId)
         useCase.editStateTitle(state.id, "")
 
         assertEquals("Real", statesRepo.getStateById(state.id)?.title)
@@ -86,7 +86,7 @@ class ManageStateUseCaseTest {
     @Test
     fun `should not edit description or log when new description is blank`() {
         val state = State(title = "Real", description = "desc")
-        statesRepo.addNewState(state, projectId)
+        statesRepo.addNewTaskState(state, projectId)
         useCase.editStateDescription(state.id, "")
 
         assertEquals("desc", statesRepo.getStateById(state.id)?.description)
@@ -103,7 +103,7 @@ class ManageStateUseCaseTest {
     @Test
     fun should_not_delete_or_log_when_state_is_NoState() {
         val noState = State.NoState
-        statesRepo.addNewState(noState, projectId)
+        statesRepo.addNewTaskState(noState, projectId)
         useCase.deleteState(noState.id)
 
         assertNotNull(statesRepo.getStateById(noState.id))
@@ -111,29 +111,29 @@ class ManageStateUseCaseTest {
     }
 
     // Fake implementations
-    class FakeStatesRepository : StatesRepository {
+    class FakeTasksStatesRepository : TasksStatesRepository {
         private val states = mutableMapOf<UUID, State>()
         private val projectStates = mutableMapOf<UUID, MutableList<UUID>>()
 
-        override fun addNewState(state: State, projectId: UUID) {
+        override fun addNewTaskState(state: State, projectId: UUID) {
             states[state.id] = state
             projectStates.getOrPut(projectId) { mutableListOf() }.add(state.id)
         }
 
-        override fun editStateTitle(stateId: UUID, newTitle: String) {
+        override fun editTaskStateTitle(stateId: UUID, newTitle: String) {
             states[stateId]?.let { states[stateId] = it.copy(title = newTitle) }
         }
 
-        override fun editStateDescription(stateId: UUID, newDescription: String) {
+        override fun editTaskStateDescription(stateId: UUID, newDescription: String) {
             states[stateId]?.let { states[stateId] = it.copy(description = newDescription) }
         }
 
-        override fun deleteState(stateId: UUID) {
+        override fun deleteTaskState(stateId: UUID) {
             states.remove(stateId)
             projectStates.values.forEach { it.remove(stateId) }
         }
 
-        override fun getAllStatesByProjectId(projectId: UUID): List<State> {
+        override fun getTasksStatesByProjectId(projectId: UUID): List<State> {
             return projectStates[projectId]?.mapNotNull { states[it] } ?: emptyList()
         }
 

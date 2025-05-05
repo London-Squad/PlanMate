@@ -1,4 +1,4 @@
-package data.csvStorage
+package data.csvDataSource
 
 import logic.entities.Project
 import logic.repositories.ProjectsRepository
@@ -8,7 +8,7 @@ import java.util.UUID
 class CsvProjectsDataSource(
     private val file: File,
     private val csvTasksDataSource: CsvTasksDataSource,
-    private val csvStatesDataSource: CsvStatesDataSource
+    private val csvTasksStatesDataSource: CsvTasksStatesDataSource
 ) : ProjectsRepository {
 
     init {
@@ -34,8 +34,8 @@ class CsvProjectsDataSource(
                     id = projectId,
                     title = parts[1].trim(),
                     description = parts[2].trim(),
-                    tasks = csvTasksDataSource.getAllTasksByProjectID(projectId),
-                    states = csvStatesDataSource.getAllStatesByProjectId(projectId)
+                    tasks = csvTasksDataSource.getTasksByProjectID(projectId),
+                    states = csvTasksStatesDataSource.getAllStatesByProjectId(projectId)
                 )
             } catch (e: IllegalArgumentException) {
                 null
@@ -45,7 +45,7 @@ class CsvProjectsDataSource(
 
     override fun addNewProject(project: Project) {
         project.states.forEach { state ->
-            csvStatesDataSource.addNewState(state, project.id)
+            csvTasksStatesDataSource.addNewState(state, project.id)
         }
         project.tasks.forEach { task ->
             csvTasksDataSource.addNewTask(task, project.id)
@@ -69,11 +69,11 @@ class CsvProjectsDataSource(
 
     override fun deleteProject(projectId: UUID) {
         val projects = getAllProjects().filter { it.id != projectId }
-        csvTasksDataSource.getAllTasksByProjectID(projectId).forEach { task ->
+        csvTasksDataSource.getTasksByProjectID(projectId).forEach { task ->
             csvTasksDataSource.deleteTask(task.id)
         }
-        csvStatesDataSource.getAllStatesByProjectId(projectId).forEach { state ->
-            csvStatesDataSource.deleteState(state.id)
+        csvTasksStatesDataSource.getAllStatesByProjectId(projectId).forEach { state ->
+            csvTasksStatesDataSource.deleteState(state.id)
         }
         writeProjectsToFile(projects)
     }

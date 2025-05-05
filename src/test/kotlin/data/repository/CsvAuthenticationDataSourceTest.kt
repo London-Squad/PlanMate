@@ -1,8 +1,8 @@
 package data.repository
 
 import com.google.common.truth.Truth.assertThat
-import data.csvStorage.CsvAuthenticationDataSource
-import data.csvStorage.fileIO.UserFileHelper
+import data.csvDataSource.CsvAuthenticationDataSource
+import data.csvDataSource.fileIO.UserFileHelper
 import data.security.hashing.HashingAlgorithm
 import io.mockk.every
 import io.mockk.mockk

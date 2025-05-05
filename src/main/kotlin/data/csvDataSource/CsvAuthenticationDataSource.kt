@@ -1,7 +1,7 @@
-package data.csvStorage
+package data.csvDataSource
 
-import data.csvStorage.fileIO.UserFileHelper
-import data.csvStorage.fileIO.createFileIfNotExist
+import data.csvDataSource.fileIO.UserFileHelper
+import data.csvDataSource.fileIO.createFileIfNotExist
 import data.security.hashing.HashingAlgorithm
 import logic.entities.User
 import logic.exceptions.NoLoggedInUserIsSavedInCacheException
