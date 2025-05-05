@@ -2,8 +2,8 @@ package ui.mainMenuView
 
 import logic.entities.User
 import logic.exceptions.NoLoggedInUserIsSavedInCacheException
-import logic.useCases.ClearLoggedInUserFromCacheUseCase
 import logic.useCases.GetLoggedInUserUseCase
+import logic.useCases.LogoutUseCase
 import ui.cliPrintersAndReaders.CLIPrinter
 import ui.cliPrintersAndReaders.CLIReader
 import ui.matesManagementView.MatesManagementView
@@ -13,7 +13,7 @@ class MainMenuView(
     private val cliPrinter: CLIPrinter,
     private val cliReader: CLIReader,
     private val getLoggedInUserUseCase: GetLoggedInUserUseCase,
-    private val clearLoggedInUserFromCacheUseCase: ClearLoggedInUserFromCacheUseCase,
+    private val logoutUseCase: LogoutUseCase,
     private val projectsView: ProjectsView,
     private val matesManagementView: MatesManagementView
 ) {
@@ -53,7 +53,7 @@ class MainMenuView(
             "2" -> matesManagementView.start()
             "0" -> {
                 printLn("\nLogging out ...")
-                clearLoggedInUserFromCacheUseCase.clearLoggedInUserFromCache()
+                logoutUseCase()
                 return // exit main menu
             }
         }

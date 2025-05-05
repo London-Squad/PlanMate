@@ -4,7 +4,7 @@ import io.mockk.every
 import io.mockk.mockk
 import io.mockk.verify
 import logic.entities.User
-import logic.exceptions.AuthenticationException
+import logic.exceptions.*
 import logic.useCases.CreateMateUseCase
 import ui.cliPrintersAndReaders.CLIPrinter
 import ui.cliPrintersAndReaders.CLIReader
@@ -58,7 +58,7 @@ class MateCreationViewTest {
                 "testuser",
                 "Password123"
             )
-        } throws AuthenticationException.UserNotFoundException()
+        } throws UserNotFoundException()
 
         view.createMate()
 
@@ -73,7 +73,7 @@ class MateCreationViewTest {
         every { cliReader.getUserInput("Enter password: ") } returns "Password123"
         every {
             createMateUseCase.createMate("testuser", "Password123")
-        } throws AuthenticationException.UnauthorizedAccessException()
+        } throws UnauthorizedAccessException()
 
         view.createMate()
 
@@ -88,7 +88,7 @@ class MateCreationViewTest {
         every { cliReader.getUserInput("Enter password: ") } returns "Pass123"
         every {
             createMateUseCase.createMate("abc", "Pass123")
-        } throws AuthenticationException.InvalidUserNameLengthException()
+        } throws InvalidUserNameLengthException()
 
         view.createMate()
 
@@ -103,7 +103,7 @@ class MateCreationViewTest {
         every { cliReader.getUserInput("Enter password: ") } returns "short"
         every {
             createMateUseCase.createMate("testuser", "short")
-        } throws AuthenticationException.InvalidPasswordException()
+        } throws InvalidPasswordException()
 
         view.createMate()
 
@@ -118,7 +118,7 @@ class MateCreationViewTest {
         every { cliReader.getUserInput("Enter password: ") } returns "Password123"
         every {
             createMateUseCase.createMate("testuser", "Password123")
-        } throws AuthenticationException.UsernameTakenException()
+        } throws UsernameTakenException()
 
         view.createMate()
 
@@ -133,7 +133,7 @@ class MateCreationViewTest {
         every { cliReader.getUserInput("Enter password: ") } returns "Password123"
         every {
             createMateUseCase.createMate("testuser", "Password123")
-        } throws AuthenticationException.RegistrationFailedException()
+        } throws RegistrationFailedException()
 
         view.createMate()
 

@@ -10,7 +10,7 @@ import java.util.UUID
 class LogsDataSource(
     private val logsCsvReader: LogsCsvReader,
     private val logsCsvWriter: LogsCsvWriter,
-    private val authenticationRepository: AuthenticationRepository,
+    private val mateRepository: MateRepository,
     private val projectsRepository: ProjectsRepository,
     private val statesRepository: StatesRepository,
     private val tasksRepository: TaskRepository,
@@ -132,8 +132,8 @@ class LogsDataSource(
     }
 
     private fun getUserById(userId: UUID): User {
-        if (userId == AuthenticationDataSource.ADMIN.id) return AuthenticationDataSource.ADMIN
-        return authenticationRepository.getMates().firstOrNull { it.id == userId }
+        if (userId == CsvAuthenticationDataSource.ADMIN.id) return CsvAuthenticationDataSource.ADMIN
+        return mateRepository.getMates().firstOrNull { it.id == userId }
             ?: User(userName = "Unknown", type = User.Type.MATE)
     }
 

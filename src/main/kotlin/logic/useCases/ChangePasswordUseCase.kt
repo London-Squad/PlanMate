@@ -1,16 +1,11 @@
 package logic.useCases
 
-import logic.repositories.AuthenticationRepository
-import logic.validation.CredentialValidator
+import logic.repositories.MateRepository
 
 class ChangePasswordUseCase(
-    private val authenticationRepository: AuthenticationRepository,
-    private val credentialValidator: CredentialValidator
+    private val mateRepository: MateRepository
 ) {
     operator fun invoke(username: String, oldPassword: String, newPassword: String): Boolean {
-        credentialValidator.takeIfValidNameOrThrowException(username)
-        credentialValidator.takeIfValidPasswordOrThrowException(oldPassword)
-        credentialValidator.takeIfValidPasswordOrThrowException(newPassword)
-        return authenticationRepository.changePassword(username, oldPassword, newPassword)
+        return mateRepository.changeMatePassword(username, oldPassword, newPassword)
     }
 }

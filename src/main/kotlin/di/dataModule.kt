@@ -1,16 +1,13 @@
 package di
 
-import data.CacheDataSource
-import data.CsvProjectsDataSource
-import data.CsvStatesDataSource
-import data.CsvTasksDataSource
+import data.*
 import logic.repositories.*
 import data.fileIO.FilePath
-import data.LogsDataSource
 import data.fileIO.cvsLogsFileHandler.LogsCsvReader
 import data.fileIO.cvsLogsFileHandler.LogsCsvWriter
-import data.AuthenticationDataSource
+import data.security.hashing.HashingAlgorithm
 import data.security.hashing.MD5HashingAlgorithm
+import logic.validation.CredentialValidator
 import org.koin.core.qualifier.named
 import org.koin.dsl.module
 import java.io.File
@@ -48,12 +45,20 @@ val dataModule = module {
     }
 
     single { LogsCsvReader(get(named("LogsFile"))) }
+
     single { LogsCsvWriter(get(named("LogsFile"))) }
 
     single<LogsRepository> { LogsDataSource(get(), get(), get(), get(), get(), get()) }
 
     single<CacheDataRepository> { CacheDataSource(File(FilePath.ACTIVE_USER_FILE)) }
 
-    single<AuthenticationRepository> { AuthenticationDataSource(File(FilePath.USER_FILE), MD5HashingAlgorithm()) }
+    single { CredentialValidator() }
 
+    single { File(FilePath.USER_FILE) }
+
+    single<HashingAlgorithm> { MD5HashingAlgorithm() }
+
+    single<AuthenticationRepository> { CsvAuthenticationDataSource(get(), get(), get(), get()) }
+
+    single<MateRepository> { CsvMateDataSource(get(), get(), get()) }
 }
