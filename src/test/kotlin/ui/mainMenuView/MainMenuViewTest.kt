@@ -15,7 +15,7 @@ import org.junit.jupiter.params.provider.MethodSource
 import ui.cliPrintersAndReaders.CLIPrinter
 import ui.cliPrintersAndReaders.CLIReader
 import ui.matesManagementView.MatesManagementView
-import ui.projectsView.ProjectsView
+import ui.projectsDashboardView.ProjectsDashboardView
 
 @TestInstance(TestInstance.Lifecycle.PER_CLASS)
 class MainMenuViewTest {
@@ -24,7 +24,7 @@ class MainMenuViewTest {
     private lateinit var cliPrinter: CLIPrinter
     private lateinit var cliReader: CLIReader
     private lateinit var getLoggedInUserUseCase: GetLoggedInUserUseCase
-    private lateinit var projectsView: ProjectsView
+    private lateinit var projectsView: ProjectsDashboardView
     private lateinit var matesManagementView: MatesManagementView
     private lateinit var logoutUseCase: LogoutUseCase
 

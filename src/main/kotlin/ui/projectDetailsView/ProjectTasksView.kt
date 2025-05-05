@@ -1,12 +1,10 @@
-package ui.projectView
+package ui.projectDetailsView
 
 import logic.entities.Project
-import logic.entities.Task
 import logic.useCases.ProjectUseCases
 import ui.cliPrintersAndReaders.CLIPrinter
 import ui.cliPrintersAndReaders.CLIReader
 import ui.taskManagementView.TaskManagementView
-import java.util.UUID
 
 class ProjectTasksView(
     private val cliPrinter: CLIPrinter,
@@ -65,25 +63,14 @@ class ProjectTasksView(
     }
 
     private fun addNewTask() {
-        if (currentProject.states.isEmpty()) {
-            cliPrinter.cliPrintLn("No states available for this project. Cannot create task.")
-            return
-        }
-
-        val defaultState = currentProject.states.first()
-        val title = cliReader.getValidTitle()
-        val description = cliReader.getValidDescription()
-
-        val newTask = Task(
-            id = UUID.randomUUID(),
-            title = title,
-            description = description,
-            state = defaultState
-        )
-
-        currentProject = currentProject.copy(tasks = currentProject.tasks + newTask)
-        projectUseCases.updateProject(currentProject)
-        projectUseCases.logTaskCreation(newTask)
-        cliPrinter.cliPrintLn("Task created. You can now edit it.")
+        cliReader.getValidTitle()
+            .let { title -> cliReader.getValidDescription().let { description -> title to description } }
+            .let { (title, description) ->
+                projectUseCases.createTask(currentProject.id, title, description)
+                    ?.also { updatedProject ->
+                        currentProject = updatedProject
+                        cliPrinter.cliPrintLn("Task created. You can now edit it.")
+                    } ?: cliPrinter.cliPrintLn("Error creating task: Project not found or no states available.")
+            }
     }
 }

@@ -1,4 +1,4 @@
-package ui.projectsView
+package ui.projectsDashboardView
 
 import io.mockk.every
 import io.mockk.mockk
@@ -9,17 +9,17 @@ import logic.useCases.GetLoggedInUserUseCase
 import logic.useCases.ProjectUseCases
 import ui.cliPrintersAndReaders.CLIPrinter
 import ui.cliPrintersAndReaders.CLIReader
-import ui.projectView.ProjectView
+import ui.projectDetailsView.ProjectDetailsView
 import kotlin.test.Test
 
-class ProjectsViewTest {
+class ProjectsDashboardViewTest {
 
     private val cliPrinter: CLIPrinter = mockk(relaxed = true)
     private val cliReader: CLIReader = mockk()
     private val projectUseCases: ProjectUseCases = mockk(relaxed = true)
     private val getLoggedInUserUseCase: GetLoggedInUserUseCase = mockk(relaxed = true)
-    private val projectView: ProjectView = mockk(relaxed = true)
-    private val projectsView = ProjectsView(
+    private val projectView: ProjectDetailsView = mockk(relaxed = true)
+    private val projectsView = ProjectsDashboardView(
         cliPrinter,
         cliReader,
         projectUseCases,

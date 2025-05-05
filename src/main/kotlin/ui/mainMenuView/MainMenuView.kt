@@ -7,13 +7,13 @@ import logic.useCases.LogoutUseCase
 import ui.cliPrintersAndReaders.CLIPrinter
 import ui.cliPrintersAndReaders.CLIReader
 import ui.matesManagementView.MatesManagementView
-import ui.projectsView.ProjectsView
+import ui.projectsDashboardView.ProjectsDashboardView
 
 class MainMenuView(
     private val cliPrinter: CLIPrinter,
     private val cliReader: CLIReader,
     private val getLoggedInUserUseCase: GetLoggedInUserUseCase,
-    private val projectsView: ProjectsView,
+    private val projectsView: ProjectsDashboardView,
     private val matesManagementView: MatesManagementView,
     private val logoutUseCase: LogoutUseCase,
 ) {

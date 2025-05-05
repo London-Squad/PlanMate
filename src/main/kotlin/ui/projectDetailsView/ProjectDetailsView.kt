@@ -1,4 +1,4 @@
-package ui.projectView
+package ui.projectDetailsView
 
 import logic.entities.Project
 import logic.entities.User
@@ -9,7 +9,7 @@ import ui.cliPrintersAndReaders.CLIPrinter
 import ui.cliPrintersAndReaders.CLIReader
 import ui.logsView.LogsView
 
-class ProjectView(
+class ProjectDetailsView(
     private val cliPrinter: CLIPrinter,
     private val cliReader: CLIReader,
     private val getLoggedInUserUseCase: GetLoggedInUserUseCase,

@@ -1,4 +1,4 @@
-package ui.projectsView
+package ui.projectsDashboardView
 
 import logic.entities.User
 import logic.exceptions.NoLoggedInUserIsSavedInCacheException
@@ -6,14 +6,14 @@ import logic.useCases.GetLoggedInUserUseCase
 import logic.useCases.ProjectUseCases
 import ui.cliPrintersAndReaders.CLIPrinter
 import ui.cliPrintersAndReaders.CLIReader
-import ui.projectView.ProjectView
+import ui.projectDetailsView.ProjectDetailsView
 
-class ProjectsView(
+class ProjectsDashboardView(
     private val cliPrinter: CLIPrinter,
     private val cliReader: CLIReader,
     private val projectUseCases: ProjectUseCases,
     private val getLoggedInUserUseCase: GetLoggedInUserUseCase,
-    private val projectView: ProjectView
+    private val projectView: ProjectDetailsView
 ) {
 
     lateinit var currentUser: User

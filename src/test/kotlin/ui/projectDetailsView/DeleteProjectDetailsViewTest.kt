@@ -1,4 +1,4 @@
-package ui.projectView
+package ui.projectDetailsView
 
 import io.mockk.every
 import io.mockk.mockk
@@ -10,7 +10,7 @@ import org.junit.jupiter.api.Test
 import ui.cliPrintersAndReaders.CLIPrinter
 import java.util.UUID
 
-class DeleteProjectViewTest {
+class DeleteProjectDetailsViewTest {
 
     private lateinit var cliPrinter: CLIPrinter
     private lateinit var projectUseCases: ProjectUseCases
