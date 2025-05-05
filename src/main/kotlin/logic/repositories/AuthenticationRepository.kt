@@ -5,7 +5,9 @@ import java.util.*
 
 interface AuthenticationRepository {
 
-    fun getMates(): List<User>
+    fun getMates(includeDeleted: Boolean = false): List<User>
+
+    fun getAdmin(): User
 
     fun deleteUser(userId: UUID)
 

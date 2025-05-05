@@ -1,7 +1,7 @@
 package data.repositoriesImpl
 
 import data.dataSources.UsersDataSource
-import data.entitiesData.DtoMapper
+import data.csvDataSource.DtoMapper
 import data.security.hashing.HashingAlgorithm
 import logic.entities.User
 import logic.exceptions.UserNotFoundException
@@ -14,11 +14,15 @@ class AuthenticationRepositoryImpl(
     private val mapper: DtoMapper,
     private val hashingAlgorithm: HashingAlgorithm
 ) : AuthenticationRepository {
-    override fun getMates(): List<User> {
+    override fun getMates(includeDeleted: Boolean): List<User> {
         return usersDataSource.getMates()
-            .filter { !it.isDeleted }
+            .filter { if (includeDeleted) true else !it.isDeleted }
             .map(mapper::mapToUser)
     }
+
+    override fun getAdmin(): User =
+        usersDataSource.getAdmin()
+            .let(mapper::mapToUser)
 
     override fun deleteUser(userId: UUID) {
         usersDataSource.deleteUser(userId)

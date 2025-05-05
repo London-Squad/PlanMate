@@ -6,15 +6,10 @@ import java.io.File
 
 fun main() {
     startKoin {
-        modules(uiModule, dataModule, logicModule)
-
+        modules(csvStorageModule, uiModule, dataModule, logicModule)
     }
-    initFilesDirectory()
-    val ui: WelcomeView = getKoin().get()
-    ui.start()
-}
 
-fun initFilesDirectory() {
-    val directory = File("csvFiles")
-    if (!directory.exists()) directory.mkdir()
+    val ui: WelcomeView = getKoin().get()
+
+    ui.start()
 }

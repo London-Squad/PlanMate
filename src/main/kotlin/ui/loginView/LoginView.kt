@@ -30,9 +30,9 @@ class LoginView(
             mainMenuView.start()
         } catch (e: AuthenticationException) {
             println(e.message)
-        } catch (e: Exception) {
-            println("Invalid username or password")
-        }
+        } // catch (e: Exception) {
+//            println("Invalid username or password. ${e.message}")
+//        }
     }
 
     private fun println(message: String) = cliPrinter.cliPrintLn(message)

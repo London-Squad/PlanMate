@@ -22,6 +22,6 @@ open class NotFoundException(message: String) : Exception(message)
 class UserNotFoundException : NotFoundException("User Not found")
 class TaskNotFoundException : NotFoundException("Task Not found")
 class TaskStateNotFoundException : NotFoundException("TaskState Not found")
-class ProjectNotFoundException : NotFoundException("Project Not found")
+class ProjectNotFoundException(message: String = "Project Not found") : NotFoundException(message)
 
 class RetrievingDataFailureException(message: String) : Exception(message)

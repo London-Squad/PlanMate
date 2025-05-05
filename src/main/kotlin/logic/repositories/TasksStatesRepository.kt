@@ -5,9 +5,9 @@ import java.util.UUID
 
 interface TasksStatesRepository {
 
-    fun getTasksStatesByProjectId(projectId: UUID): List<State>
+    fun getTasksStatesByProjectId(projectId: UUID, includeDeleted: Boolean = false): List<State>
 
-    fun getStateById(stateId: UUID): State
+    fun getTaskStateById(stateId: UUID, includeDeleted: Boolean = false): State
 
     fun addNewTaskState(state: State, projectId: UUID)
 

@@ -8,7 +8,7 @@ import logic.entities.User
 import logic.exceptions.NoLoggedInUserIsSavedInCacheException
 import java.util.*
 
-class CsvAuthenticationDataSource(
+class CsvUsersDataSource(
     private val usersCsvFileHandler: CsvFileHandler,
     private val loggedInUserCsvFileHandler: CsvFileHandler,
     private val parser: Parser

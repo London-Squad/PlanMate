@@ -4,12 +4,14 @@ import logic.entities.*
 import logic.repositories.AuthenticationRepository
 import logic.repositories.LogsRepository
 import logic.repositories.ProjectsRepository
+import logic.repositories.TaskRepository
 import java.util.*
 
 class ProjectUseCases(
     private val projectsRepository: ProjectsRepository,
     private val logsRepository: LogsRepository,
-    private val authenticationRepository: AuthenticationRepository
+    private val authenticationRepository: AuthenticationRepository,
+    private val taskRepository: TaskRepository
 ) {
 
     fun getAllProjects(): List<Project> {
@@ -99,9 +101,8 @@ class ProjectUseCases(
         projectsRepository.deleteProject(projectId)
     }
 
-    fun updateProject(project: Project) {
-        projectsRepository.deleteProject(project.id)
-        projectsRepository.addNewProject(project)
+    fun addNewTask(task: Task, projectId: UUID) {
+        taskRepository.addNewTask(task, projectId)
     }
 
     fun logTaskCreation(task: Task) {

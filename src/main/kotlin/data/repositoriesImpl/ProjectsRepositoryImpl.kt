@@ -3,10 +3,9 @@ package data.repositoriesImpl
 import data.dataSources.ProjectsDataSource
 import data.dataSources.TasksDataSource
 import data.dataSources.TasksStatesDataSource
-import data.entitiesData.DtoMapper
-import data.entitiesData.TaskData
+import data.csvDataSource.DtoMapper
 import logic.entities.Project
-import logic.entities.Task
+import logic.exceptions.ProjectNotFoundException
 import logic.exceptions.TaskStateNotFoundException
 import logic.repositories.ProjectsRepository
 import java.util.*
@@ -18,10 +17,13 @@ class ProjectsRepositoryImpl(
     private val mapper: DtoMapper
 ) : ProjectsRepository {
 
-    override fun getAllProjects(): List<Project> {
+    override fun getAllProjects(includeDeleted: Boolean): List<Project> {
         val projectsData = projectsDataSource.getAllProjects()
+            .filter { if (includeDeleted) true else !it.isDeleted }
         val tasksData = tasksDataSource.getAllTasks()
+            .filter { if (includeDeleted) true else !it.isDeleted }
         val taskStatesData = tasksStatesDataSource.getAllTasksStates()
+            .filter { if (includeDeleted) true else !it.isDeleted }
 
         return projectsData
             .map { projectData ->
@@ -42,6 +44,11 @@ class ProjectsRepositoryImpl(
 
                 mapper.mapToProject(projectData, tasksOfProject, taskStatesOfProject)
             }
+    }
+
+    override fun getProjectById(projectId: UUID, includeDeleted: Boolean): Project {
+        return getAllProjects(includeDeleted).firstOrNull { it.id == projectId }
+            ?: throw ProjectNotFoundException("Project with id $projectId not found")
     }
 
     override fun addNewProject(project: Project) {

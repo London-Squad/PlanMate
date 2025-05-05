@@ -12,7 +12,7 @@ class ProjectTasksView(
     private val cliPrinter: CLIPrinter,
     private val cliReader: CLIReader,
     private val projectUseCases: ProjectUseCases,
-    private val taskManagementView: TaskManagementView
+    private val taskManagementView: TaskManagementView,
 ) {
 
     private lateinit var currentProject: Project
@@ -81,9 +81,8 @@ class ProjectTasksView(
             state = defaultState
         )
 
-        currentProject = currentProject.copy(tasks = currentProject.tasks + newTask)
-        projectUseCases.updateProject(currentProject)
-        projectUseCases.logTaskCreation(newTask)
+        projectUseCases.addNewTask(newTask, currentProject.id)
+
         cliPrinter.cliPrintLn("Task created. You can now edit it.")
     }
 }

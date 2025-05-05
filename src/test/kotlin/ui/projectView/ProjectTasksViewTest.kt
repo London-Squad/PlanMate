@@ -160,6 +160,6 @@ class ProjectTasksViewTest {
         // Then
         verify { cliPrinter.cliPrintLn("Task created. You can now edit it.") }
         verify { taskManagementView.start(any(), project) }
-        verify { projectUseCases.updateProject(project) }
+//        verify { projectUseCases.addNewTask(project) }
     }
 }

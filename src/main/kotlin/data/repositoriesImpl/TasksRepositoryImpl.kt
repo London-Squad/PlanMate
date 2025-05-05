@@ -1,6 +1,6 @@
 package data.repositoriesImpl
 
-import data.entitiesData.DtoMapper
+import data.csvDataSource.DtoMapper
 import data.dataSources.TasksDataSource
 import logic.entities.State
 import logic.entities.Task
@@ -15,20 +15,22 @@ class TasksRepositoryImpl(
     private val mapper: DtoMapper
 ) : TaskRepository {
 
-    override fun getTasksByProjectID(projectId: UUID): List<Task> {
+    override fun getTasksByProjectID(projectId: UUID, includeDeleted: Boolean): List<Task> {
         return tasksDataSource.getAllTasks()
-            .filter { !it.isDeleted && it.projectId == projectId }
+            .filter { if (includeDeleted) true else !it.isDeleted }
+            .filter { it.projectId == projectId }
             .map { taskData ->
-                val taskState = tasksStatesRepository.getStateById(taskData.stateId)
+                val taskState = tasksStatesRepository.getTaskStateById(taskData.stateId)
                 mapper.mapToTask(taskData, taskState)
             }
     }
 
-    override fun getTaskByID(taskId: UUID): Task {
+    override fun getTaskByID(taskId: UUID, includeDeleted: Boolean): Task {
         return tasksDataSource.getAllTasks()
-            .firstOrNull { !it.isDeleted && it.id == taskId }
+            .filter { if (includeDeleted) true else !it.isDeleted }
+            .firstOrNull { it.id == taskId }
             ?.let {
-                val taskState = tasksStatesRepository.getStateById(it.stateId)
+                val taskState = tasksStatesRepository.getTaskStateById(it.stateId)
                 return mapper.mapToTask(it, taskState)
             } ?: throw TaskNotFoundException()
     }

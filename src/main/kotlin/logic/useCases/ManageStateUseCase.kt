@@ -20,7 +20,7 @@ class ManageStateUseCase(
     }
 
     fun editStateTitle(stateID: UUID, newTitle: String) {
-        val oldState = tasksStatesRepository.getStateById(stateID) ?: return
+        val oldState = tasksStatesRepository.getTaskStateById(stateID) ?: return
         if (newTitle.isBlank()) return
         tasksStatesRepository.editTaskStateTitle(stateID, newTitle)
         logAction(
@@ -34,7 +34,7 @@ class ManageStateUseCase(
     }
 
     fun editStateDescription(stateID: UUID, newDescription: String) {
-        val oldState = tasksStatesRepository.getStateById(stateID) ?: return
+        val oldState = tasksStatesRepository.getTaskStateById(stateID) ?: return
         if (newDescription.isBlank()) return
         tasksStatesRepository.editTaskStateDescription(stateID, newDescription)
         logAction(
@@ -48,7 +48,7 @@ class ManageStateUseCase(
     }
 
     fun deleteState(stateID: UUID) {
-        val oldState = tasksStatesRepository.getStateById(stateID) ?: return
+        val oldState = tasksStatesRepository.getTaskStateById(stateID) ?: return
         if (oldState.id == State.NoState.id) return
         tasksStatesRepository.deleteTaskState(stateID)
         logAction(Delete(oldState))

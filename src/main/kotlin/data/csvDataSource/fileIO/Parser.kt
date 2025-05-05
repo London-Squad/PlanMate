@@ -73,12 +73,14 @@ class Parser {
         return listOf(
             userData.id.toString(),
             userData.userName,
+            userData.type,
+            userData.hashedPassword,
             userData.isDeleted.toString()
         )
     }
 
     fun recordToUserData(record: List<String>): UserData {
-        if (record.size != 4) throw RetrievingDataFailureException("Invalid UserData record size")
+        if (record.size != 5) throw RetrievingDataFailureException("Invalid UserData record size")
         return UserData(
             id = UUID.fromString(record[0]),
             userName = record[1],
