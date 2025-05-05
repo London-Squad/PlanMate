@@ -4,6 +4,7 @@ import org.koin.dsl.module
 import ui.ViewExceptionHandler
 import ui.cliPrintersAndReaders.CLIPrinter
 import ui.cliPrintersAndReaders.CLIReader
+import ui.cliPrintersAndReaders.cliTable.CLITablePrinter
 import ui.projectDetailsView.ProjectDetailsView
 import ui.loginView.LoginView
 import ui.logsView.LogsView
@@ -29,7 +30,7 @@ val uiModule = module {
     single { TaskManagementView(get(), get(), get(), get(), get(), get(), get(), get(), get()) }
 
     single { ProjectTasksView(get(), get(), get(), get(), get()) }
-    single { LogsView(get(), get(), get(), get()) }
+    single { LogsView(get(), get(), get(), get(), get()) }
 
     single { MainMenuView(get(), get(), get(), get(), get(), get(), get()) }
 
@@ -52,6 +53,7 @@ val uiModule = module {
 
     single { MainMenuView(get(), get(), get(), get(), get(), get(), get()) }
 
+    single{ CLITablePrinter(get()) }
     single { LoginView(get(), get(), get(), get(), get()) }
 
     single { WelcomeView(get(), get(), get(), get(), get(), get()) }

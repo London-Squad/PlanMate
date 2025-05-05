@@ -51,8 +51,8 @@ class ProjectUseCases(
         )
     }
 
-    fun editProjectTitle(projectId: UUID, newTitle: String): Boolean {
-        val project = projectsRepository.getProjectById(projectId) ?: return false
+    fun editProjectTitle(projectId: UUID, newTitle: String) {
+        val project = projectsRepository.getProjectById(projectId)
         logsRepository.addLog(
             Log(
                 user = authenticationRepository.getLoggedInUser(),
@@ -64,11 +64,11 @@ class ProjectUseCases(
                 )
             )
         )
-        return projectsRepository.editProjectTitle(projectId, newTitle)
+        projectsRepository.editProjectTitle(projectId, newTitle)
     }
 
-    fun editProjectDescription(projectId: UUID, newDescription: String): Boolean {
-        val project = projectsRepository.getProjectById(projectId) ?: return false
+    fun editProjectDescription(projectId: UUID, newDescription: String) {
+        val project = projectsRepository.getProjectById(projectId)
         logsRepository.addLog(
             Log(
                 user = authenticationRepository.getLoggedInUser(),
@@ -80,24 +80,24 @@ class ProjectUseCases(
                 )
             )
         )
-        return projectsRepository.editProjectDescription(projectId, newDescription)
+        projectsRepository.editProjectDescription(projectId, newDescription)
     }
 
-    fun deleteProject(projectId: UUID): Boolean {
-        val project = projectsRepository.getProjectById(projectId) ?: return false
+    fun deleteProject(projectId: UUID) {
+        val project = projectsRepository.getProjectById(projectId)
         logsRepository.addLog(
             Log(
                 user = authenticationRepository.getLoggedInUser(),
                 action = Delete(entity = project)
             )
         )
-        return projectsRepository.deleteProject(projectId)
+        projectsRepository.deleteProject(projectId)
     }
 
-    fun updateProject(project: Project): Boolean {
-        val deleted = projectsRepository.deleteProject(project.id)
-        val added = projectsRepository.addNewProject(project)
-        return deleted && added != null
+    fun updateProject(project: Project) {
+        projectsRepository.deleteProject(project.id)
+        projectsRepository.addNewProject(project)
+
     }
 
     private fun logTaskCreation(task: Task) {
@@ -125,11 +125,8 @@ class ProjectUseCases(
         )
 
         val updatedProject = project.copy(tasks = project.tasks + newTask)
-        val updated = updateProject(updatedProject)
-        if (updated) {
-            logTaskCreation(newTask)
-            return updatedProject
-        }
-        return null
+        updateProject(updatedProject)
+        logTaskCreation(newTask)
+        return updatedProject
     }
 }

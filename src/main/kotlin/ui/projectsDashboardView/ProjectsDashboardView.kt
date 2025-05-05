@@ -1,11 +1,12 @@
 package ui.projectsDashboardView
 
 import logic.entities.User
-import logic.exceptions.*
 import logic.useCases.GetLoggedInUserUseCase
+import logic.exceptions.*
 import logic.useCases.ProjectUseCases
 import ui.cliPrintersAndReaders.CLIPrinter
 import ui.cliPrintersAndReaders.CLIReader
+import ui.cliPrintersAndReaders.cliTable.CLITablePrinter
 import ui.projectDetailsView.ProjectDetailsView
 import ui.ViewExceptionHandler
 
@@ -16,7 +17,11 @@ class ProjectsDashboardView(
     private val getLoggedInUserUseCase: GetLoggedInUserUseCase,
     private val projectView: ProjectDetailsView,
     private val exceptionHandler: ViewExceptionHandler
+    private val cliTablePrinter: CLITablePrinter = CLITablePrinter(cliPrinter),
 ) {
+
+    lateinit var currentUser: User
+
     fun start() {
         exceptionHandler.tryCall {
             getLoggedInUserUseCase.getLoggedInUser()
@@ -34,15 +39,20 @@ class ProjectsDashboardView(
 
     private fun printProjects() {
         exceptionHandler.tryCall {
-            projectUseCases.getAllProjects()
-                .takeIf { it.isNotEmpty() }
-                ?.forEachIndexed { index, project ->
-                    val displayIndex = index + 1
-                    cliPrinter.cliPrintLn("Project: $displayIndex")
-                    cliPrinter.cliPrintLn("Title: ${project.title}")
-                    cliPrinter.cliPrintLn("Description: ${project.description}")
-                    cliPrinter.cliPrintLn(cliPrinter.getThinHorizontal())
-                } ?: cliPrinter.cliPrintLn("No projects found.")
+            val projects = projectUseCases.getAllProjects()
+            if (projects.isEmpty()) {
+                cliPrinter.cliPrintLn("No projects found.")
+            } else {
+                val headers = listOf("Project #", "Title", "Description")
+                val data = projects.mapIndexed { index, project ->
+                    listOf(
+                        (index + 1).toString(), project.title, project.description
+                    )
+                }
+                val columnsWidth = listOf(null, null, null)
+                cliTablePrinter(headers, data, columnsWidth)
+            }
+
         }
     }
 
@@ -73,6 +83,8 @@ class ProjectsDashboardView(
                 .takeUnless { it == Unit }
                 ?.let { start() }
         }
+        start()
+
     }
 
     private fun handleNewProject(user: User) {
