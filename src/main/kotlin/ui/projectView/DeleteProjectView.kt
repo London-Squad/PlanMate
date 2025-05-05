@@ -13,16 +13,16 @@ class DeleteProjectView(
 
     fun deleteProject(project: Project) {
         if (isCancelDelete()) {
-            cliPrinter.cliPrintLn("deletion canceled")
+            cliPrinter.cliPrintLn("Project deletion canceled")
             return
         }
 
         projectUseCases.deleteProject(project.id)
-        cliPrinter.cliPrintLn("Project deleted.")
+        cliPrinter.cliPrintLn("Project ${project.id} was deleted successfully.")
     }
 
     private fun isCancelDelete(): Boolean {
-        return when (cliReader.getUserInput("Are you sure to delete the task? (y/n): ")) {
+        return when (cliReader.getUserInput("Are you sure to delete the project? (y/n): ")) {
             "y" -> false
             "n" -> true
             else -> {
