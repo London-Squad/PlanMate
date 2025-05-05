@@ -4,6 +4,7 @@ import data.fileIO.UserFileHelper
 import data.fileIO.createFileIfNotExist
 import data.security.hashing.HashingAlgorithm
 import logic.entities.User
+import logic.exceptions.NoLoggedInUserIsSavedInCacheException
 import logic.exceptions.UserAlreadyExistException
 import logic.exceptions.UserNotFoundException
 import logic.repositories.AuthenticationRepository
@@ -12,11 +13,15 @@ import java.util.*
 
 class AuthenticationDataSource(
     private val userFile: File,
+    private val activeUserFile: File,
     private val hashingAlgorithm: HashingAlgorithm
 ) : AuthenticationRepository {
+    private var loggedInUser: User? = null
 
     init {
-        userFile.createFileIfNotExist( "id,userName,password,type\n")
+        userFile.createFileIfNotExist("id,userName,password,type\n")
+        activeUserFile.createFileIfNotExist("")
+        loggedInUser = loadUserFromLocalFile()
     }
 
     override fun getMates(): List<User> {
@@ -32,12 +37,17 @@ class AuthenticationDataSource(
     }
 
     override fun login(userName: String, password: String): User {
-        if (userName == ADMIN.userName && password == ADMIN_PASSWORD) return ADMIN
+        if (userName == ADMIN.userName && password == ADMIN_PASSWORD) return ADMIN.also(::setLoggedInUser)
         val hashedPassword = hashingAlgorithm.hashData(password)
-        return UserFileHelper.readUserOrNull(userFile, userName, hashedPassword) ?: throw UserNotFoundException()
+        return UserFileHelper.readUserOrNull(
+            userFile, userName, hashedPassword
+        )?.also(::setLoggedInUser) ?: throw UserNotFoundException()
     }
 
-    override fun logout() = true
+    override fun logout(): Boolean {
+        clearLoggedInUserFromCache()
+        return true
+    }
 
     override fun register(userName: String, password: String): Boolean {
         val hashedPassword = hashingAlgorithm.hashData(password)
@@ -55,6 +65,38 @@ class AuthenticationDataSource(
         }
         UserFileHelper.clearAndWriteNewData(userFile, newFileData)
         return true
+    }
+
+    override fun getLoggedInUser(): User {
+        return loggedInUser ?: throw NoLoggedInUserIsSavedInCacheException()
+    }
+
+    private fun setLoggedInUser(user: User) {
+        activeUserFile.writeText("${user.id},${user.userName},${user.type}")
+        loggedInUser = user
+    }
+
+    private fun clearLoggedInUserFromCache() {
+        activeUserFile.writeText("")
+        loggedInUser = null
+    }
+
+    private fun loadUserFromLocalFile(): User? {
+        val text = activeUserFile.readText().trim()
+        if (text.isEmpty()) return null
+        return text.split(",")
+            .run { User(this[0].toUUID(), this[1], getUserTypeFromString(this[2])) }
+    }
+
+    private fun String.toUUID(): UUID {
+        return UUID.fromString(this)
+    }
+
+    private fun getUserTypeFromString(type: String): User.Type {
+        return when (type.lowercase()) {
+            "admin" -> User.Type.ADMIN
+            else -> User.Type.MATE
+        }
     }
 
     companion object {

@@ -31,7 +31,7 @@ val uiModule = module {
 
     single { MainMenuView(get(), get(), get(), get(), get(), get()) }
 
-    single { LoginView(get(), get(), get(), get(), get()) }
+    single { LoginView(get(), get(), get(), get()) }
 
     single { WelcomeView(get(), get(), get(), get(), get()) }
 
@@ -50,7 +50,7 @@ val uiModule = module {
 
     single { MainMenuView(get(), get(), get(), get(), get(), get()) }
 
-    single { LoginView(get(), get(), get(), get(), get()) }
+    single { LoginView(get(), get(), get(), get()) }
 
     single { WelcomeView(get(), get(), get(), get(), get()) }
 }

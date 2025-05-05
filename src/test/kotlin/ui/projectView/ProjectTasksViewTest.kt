@@ -13,7 +13,6 @@ import ui.cliPrintersAndReaders.CLIPrinter
 import ui.cliPrintersAndReaders.CLIReader
 import ui.taskManagementView.TaskManagementView
 import java.util.UUID
-import kotlin.test.assertEquals
 
 class ProjectTasksViewTest {
 
@@ -109,13 +108,13 @@ class ProjectTasksViewTest {
         // Given
         every { project.tasks } returns listOf(task)
         every { cliReader.getValidUserInput(any(), any(), any()) } returns "1"
-        every { taskManagementView.start(task, project) } returns Unit
+        every { taskManagementView.start(task.id, project) } returns Unit
 
         // When
         projectTasksView.manageTasks(project)
 
         // Then
-        verify { taskManagementView.start(task, project) }
+        verify { taskManagementView.start(task.id, project) }
     }
 
     @Test
