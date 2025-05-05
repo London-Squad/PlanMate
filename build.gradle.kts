@@ -23,10 +23,6 @@ dependencies {
 
     // MongoDB Kotlin driver dependency
     implementation("org.mongodb:mongodb-driver-kotlin-coroutine:4.10.1")
-
-    // .Env
-    implementation("io.github.cdimascio:dotenv-kotlin:6.4.1")
-
 }
 
 tasks.test {
