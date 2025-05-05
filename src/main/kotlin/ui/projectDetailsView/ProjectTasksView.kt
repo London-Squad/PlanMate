@@ -63,14 +63,14 @@ class ProjectTasksView(
     }
 
     private fun addNewTask() {
-        try {
-            val title = cliReader.getValidTitle()
-            val description = cliReader.getValidDescription()
-
-            currentProject = projectUseCases.createTask(currentProject.id, title, description)
-            cliPrinter.cliPrintLn("Task created. You can now edit it.")
-        } catch (e: IllegalStateException) {
-            cliPrinter.cliPrintLn(e.message ?: "Error creating task")
-        }
+        cliReader.getValidTitle()
+            .let { title -> cliReader.getValidDescription().let { description -> title to description } }
+            .let { (title, description) ->
+                projectUseCases.createTask(currentProject.id, title, description)
+                    ?.also { updatedProject ->
+                        currentProject = updatedProject
+                        cliPrinter.cliPrintLn("Task created. You can now edit it.")
+                    } ?: cliPrinter.cliPrintLn("Error creating task: Project not found or no states available.")
+            }
     }
 }

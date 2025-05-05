@@ -7,12 +7,14 @@ interface ProjectsRepository {
 
     fun getAllProjects(): List<Project>
 
-    fun addNewProject(project: Project)
+    fun getProjectById(projectId: UUID): Project?
 
-    fun editProjectTitle(projectId: UUID, newTitle: String)
+    fun addNewProject(project: Project): Project?
 
-    fun editProjectDescription(projectId: UUID, newDescription: String)
+    fun editProjectTitle(projectId: UUID, newTitle: String): Boolean
 
-    fun deleteProject(projectId: UUID)
+    fun editProjectDescription(projectId: UUID, newDescription: String): Boolean
+
+    fun deleteProject(projectId: UUID): Boolean
 
 }
