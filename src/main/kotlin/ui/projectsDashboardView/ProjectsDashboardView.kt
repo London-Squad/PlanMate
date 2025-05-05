@@ -1,4 +1,4 @@
-package ui.projectsDashboardView
+package ui.projectsView
 
 import logic.entities.User
 import logic.exceptions.NoLoggedInUserIsSavedInCacheException
@@ -7,16 +7,15 @@ import logic.useCases.ProjectUseCases
 import ui.cliPrintersAndReaders.CLIPrinter
 import ui.cliPrintersAndReaders.CLIReader
 import ui.cliPrintersAndReaders.cliTable.CLITablePrinter
-import ui.cliPrintersAndReaders.cliTable.InvalidTableInput
-import ui.projectDetailsView.ProjectDetailsView
+import ui.projectView.ProjectView
 
-class ProjectsDashboardView(
+class ProjectsView(
     private val cliPrinter: CLIPrinter,
     private val cliReader: CLIReader,
     private val projectUseCases: ProjectUseCases,
+    private val projectView: ProjectView,
+    private val cliTablePrinter: CLITablePrinter = CLITablePrinter(cliPrinter),
     private val getLoggedInUserUseCase: GetLoggedInUserUseCase,
-    private val projectView: ProjectDetailsView,
-    private val cliTablePrinter: CLITablePrinter = CLITablePrinter(cliPrinter)
 ) {
 
     lateinit var currentUser: User
@@ -58,11 +57,7 @@ class ProjectsDashboardView(
                 )
             }
             val columnsWidth = listOf(null, null, null)
-            try {
-                cliTablePrinter(headers, data, columnsWidth)
-            } catch (e: InvalidTableInput) {
-                cliPrinter.cliPrintLn("Error displaying swimlanes: ${e.message}")
-            }
+            cliTablePrinter(headers, data, columnsWidth)
         }
     }
 
