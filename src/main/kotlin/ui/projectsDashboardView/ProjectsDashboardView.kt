@@ -36,10 +36,6 @@ class ProjectsDashboardView(
 
     }
 
-    fun handleProjectsView(currentUser: User) {
-
-    }
-
     private fun printHeader() {
         cliPrinter.printHeader("Projects Menu")
     }
