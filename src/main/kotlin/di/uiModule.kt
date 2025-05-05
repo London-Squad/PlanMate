@@ -28,7 +28,7 @@ val uiModule = module {
     single { TaskManagementView(get(), get(), get(), get(), get(), get(), get(), get()) }
 
     single { ProjectTasksView(get(), get(), get(), get()) }
-    single { LogsView(get(), get(), get(),get()) }
+    single { LogsView(get(), get(), get()) }
 
     single { MainMenuView(get(), get(), get(), get(), get(), get()) }
 

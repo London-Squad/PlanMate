@@ -10,11 +10,16 @@ import java.time.format.DateTimeFormatter
 import java.util.*
 
 class LogsView(
-    private val cliPrinter: CLIPrinter,
     private val cliReader: CLIReader,
     private val getLogsByEntityIdUseCase: GetLogsByEntityIdUseCase,
     private val cliTablePrinter: CLITablePrinter
 ) {
+    fun printLogsByEntityId(entityId: UUID) {
+        printLogs(entityId)
+        cliReader.getUserInput("\nPress enter to go back")
+
+    }
+
     private fun printLogs(entityId: UUID) {
         val logs = getLogsByEntityIdUseCase.getLogsByEntityId(entityId)
 
