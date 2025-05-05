@@ -1,4 +1,4 @@
-package data.dbEntities
+package data.entitiesData
 
 import java.util.UUID
 
