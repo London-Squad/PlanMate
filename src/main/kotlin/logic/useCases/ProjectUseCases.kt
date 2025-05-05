@@ -53,7 +53,6 @@ class ProjectUseCases(
     }
 
     fun editProjectTitle(projectId: UUID, newTitle: String) {
-
         logsRepository.addLog(
             Log(
                 user = authenticationRepository.getLoggedInUser(),
@@ -69,7 +68,6 @@ class ProjectUseCases(
     }
 
     fun editProjectDescription(projectId: UUID, newDescription: String) {
-
         logsRepository.addLog(
             Log(
                 user = authenticationRepository.getLoggedInUser(),
@@ -86,7 +84,6 @@ class ProjectUseCases(
     }
 
     fun deleteProject(projectId: UUID) {
-
         logsRepository.addLog(
             Log(
                 user = authenticationRepository.getLoggedInUser(),
@@ -111,5 +108,28 @@ class ProjectUseCases(
                 action = Create(task)
             )
         )
+    }
+
+    fun createTask(projectId: UUID, title: String, description: String): Project {
+        val project = getProjectById(projectId) ?: throw IllegalArgumentException("Project not found")
+
+        if (project.states.isEmpty()) {
+            throw IllegalStateException("No states available for this project. Cannot create task.")
+        }
+
+        val defaultState = project.states.first()
+
+        val newTask = Task(
+            id = UUID.randomUUID(),
+            title = title,
+            description = description,
+            state = defaultState
+        )
+
+        val updatedProject = project.copy(tasks = project.tasks + newTask)
+        updateProject(updatedProject)
+        logTaskCreation(newTask)
+
+        return updatedProject
     }
 }
