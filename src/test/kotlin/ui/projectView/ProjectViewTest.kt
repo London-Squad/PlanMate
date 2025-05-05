@@ -19,7 +19,6 @@ class ProjectViewTest {
 
     private lateinit var cliPrinter: CLIPrinter
     private lateinit var cliReader: CLIReader
-    private lateinit var authenticationRepository: AuthenticationRepository
 
     private lateinit var swimlanesView: SwimlanesView
     private lateinit var editProjectView: EditProjectView
@@ -69,7 +68,7 @@ class ProjectViewTest {
     @Test
     fun `should display error message when user is not logged in`() {
         // Given
-        every { authenticationRepository.getLoggedInUser() } throws NoLoggedInUserIsSavedInCacheException()
+        every { getLoggedInUserUseCase.getLoggedInUser() } throws NoLoggedInUserIsSavedInCacheException()
 
         // When
         projectView.start(project)

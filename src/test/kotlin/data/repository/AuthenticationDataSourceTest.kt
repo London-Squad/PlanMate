@@ -3,7 +3,6 @@ package data.repository
 import com.google.common.truth.Truth.assertThat
 import data.AuthenticationDataSource
 import data.fileIO.UserFileHelper
-import data.fileIO.createFileIfNotExist
 import data.security.hashing.HashingAlgorithm
 import io.mockk.every
 import io.mockk.mockk
@@ -21,22 +20,26 @@ import kotlin.test.BeforeTest
 
 class AuthenticationDataSourceTest {
     private lateinit var authenticationRepository: AuthenticationRepository
-    private lateinit var file: File
-    private lateinit var activeUser: File
+    private lateinit var UsersFile: File
+    private lateinit var activeUserFile: File
     private lateinit var hashingAlgorithm: HashingAlgorithm
 
     @BeforeTest
     fun preSetup() {
-        file = File("test.csv")
-        file.createFileIfNotExist("id,userName,password\n")
-        activeUser = File("test.csv")
-        activeUser.createFileIfNotExist("id,userName,password\n")
+        UsersFile = File("usersTest.csv")
+        activeUserFile = File("activeUserTest.csv")
+    }
+
+    @AfterTest
+    fun tearDown() {
+        UsersFile.delete()
+        activeUserFile.delete()
     }
 
     @BeforeEach
     fun setup() {
         hashingAlgorithm = mockk(relaxed = true)
-        authenticationRepository = AuthenticationDataSource(file, activeUser, hashingAlgorithm)
+        authenticationRepository = AuthenticationDataSource(UsersFile, activeUserFile, hashingAlgorithm)
         every { hashingAlgorithm.hashData(any()) } answers {
             arg(0)
         }
@@ -45,7 +48,7 @@ class AuthenticationDataSourceTest {
     @Test
     fun `when call getMates should return list of users`() {
         val expectedUsers = DummyAuthData.users
-        expectedUsers.forEach { UserFileHelper.writeUser(file, it.id, it.userName, "") }
+        expectedUsers.forEach { UserFileHelper.writeUser(UsersFile, it.id, it.userName, "") }
 
         val actualUsers = authenticationRepository.getMates()
 
@@ -64,10 +67,10 @@ class AuthenticationDataSourceTest {
     @Test
     fun `when call deleteUser with valid Id should delete it`() {
         val user = DummyAuthData.users[1]
-        UserFileHelper.writeUser(file, user.id, user.userName, "")
+        UserFileHelper.writeUser(UsersFile, user.id, user.userName, "")
 
         authenticationRepository.deleteUser(user.id)
-        val lines = file.readLines()
+        val lines = UsersFile.readLines()
 
         assertThat(lines).hasSize(1)
     }
@@ -75,7 +78,7 @@ class AuthenticationDataSourceTest {
     @Test
     fun `when login with valid credentials of mate should return user`() {
         val user = DummyAuthData.users[1]
-        UserFileHelper.writeUser(file, user.id, user.userName, "Poula12")
+        UserFileHelper.writeUser(UsersFile, user.id, user.userName, "Poula12")
 
         val loggedInUser = authenticationRepository.login(user.userName, "Poula12")
 
@@ -129,7 +132,7 @@ class AuthenticationDataSourceTest {
     @Test
     fun `when we call changePassword with valid user should return true`() {
         val user = DummyAuthData.users[2]
-        UserFileHelper.writeUser(file, user.id, user.userName, "passworD12")
+        UserFileHelper.writeUser(UsersFile, user.id, user.userName, "passworD12")
 
         val isChanged = authenticationRepository.changePassword(user.userName, "passworD12", "Password12")
 
@@ -143,10 +146,5 @@ class AuthenticationDataSourceTest {
         assertThrows<UserNotFoundException> {
             authenticationRepository.changePassword(user.userName, "passworD12", "Password12")
         }
-    }
-
-    @AfterTest
-    fun teardown() {
-        file.delete()
     }
 }
