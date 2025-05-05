@@ -21,14 +21,6 @@ class DeleteProjectView(
         cliPrinter.cliPrintLn("Project ${project.id} was deleted successfully.")
     }
 
-    private fun isCancelDelete(): Boolean {
-        return when (cliReader.getUserInput("Are you sure to delete the project? (y/n): ")) {
-            "y" -> false
-            "n" -> true
-            else -> {
-                cliPrinter.cliPrintLn("Invalid input")
-                isCancelDelete()
-            }
-        }
-    }
+    private fun isCancelDelete(): Boolean =
+        cliReader.getUserConfirmation() == "n"
 }
