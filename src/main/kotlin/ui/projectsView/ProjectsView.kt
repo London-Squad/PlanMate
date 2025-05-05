@@ -13,9 +13,8 @@ class ProjectsView(
     private val cliPrinter: CLIPrinter,
     private val cliReader: CLIReader,
     private val projectUseCases: ProjectUseCases,
-    private val cacheDataRepository: CacheDataRepository,
     private val projectView: ProjectView,
-    private val cliTablePrinter: CLITablePrinter = CLITablePrinter(cliPrinter)
+    private val cliTablePrinter: CLITablePrinter = CLITablePrinter(cliPrinter),
     private val getLoggedInUserUseCase: GetLoggedInUserUseCase,
 ) {
 
