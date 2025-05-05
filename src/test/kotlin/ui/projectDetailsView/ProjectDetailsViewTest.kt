@@ -1,4 +1,4 @@
-package ui.projectView
+package ui.projectDetailsView
 
 import io.mockk.every
 import io.mockk.mockk
@@ -6,7 +6,6 @@ import io.mockk.verify
 import logic.entities.Project
 import logic.entities.User
 import logic.exceptions.NoLoggedInUserIsSavedInCacheException
-import logic.repositories.AuthenticationRepository
 import logic.useCases.GetLoggedInUserUseCase
 import logic.useCases.ProjectUseCases
 import org.junit.jupiter.api.BeforeEach
@@ -15,7 +14,7 @@ import ui.cliPrintersAndReaders.CLIPrinter
 import ui.cliPrintersAndReaders.CLIReader
 import ui.logsView.LogsView
 
-class ProjectViewTest {
+class ProjectDetailsViewTest {
 
     private lateinit var cliPrinter: CLIPrinter
     private lateinit var cliReader: CLIReader
@@ -24,7 +23,7 @@ class ProjectViewTest {
     private lateinit var editProjectView: EditProjectView
     private lateinit var deleteProjectView: DeleteProjectView
     private lateinit var projectTasksView: ProjectTasksView
-    private lateinit var projectView: ProjectView
+    private lateinit var projectView: ProjectDetailsView
     private lateinit var project: Project
     private lateinit var user: User
     private lateinit var logsView: LogsView
@@ -45,7 +44,7 @@ class ProjectViewTest {
         logsView = mockk()
         projectUseCases = mockk()
 
-        projectView = ProjectView(
+        projectView = ProjectDetailsView(
             cliPrinter,
             cliReader,
             getLoggedInUserUseCase,
@@ -74,7 +73,7 @@ class ProjectViewTest {
         projectView.start(project)
 
         // Then
-        verify { cliPrinter.cliPrintLn(ProjectView.ERROR_MESSAGE) }
+        verify { cliPrinter.cliPrintLn(ProjectDetailsView.ERROR_MESSAGE) }
     }
 
     @Test

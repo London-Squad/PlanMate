@@ -1,7 +1,8 @@
-package ui.projectView
+package ui.projectDetailsView
 
 import logic.entities.Project
 import logic.useCases.ProjectUseCases
+import ui.ViewExceptionHandler
 import ui.cliPrintersAndReaders.CLIPrinter
 import ui.cliPrintersAndReaders.CLIReader
 import ui.statesView.StatesView
@@ -10,7 +11,8 @@ class EditProjectView(
     private val cliPrinter: CLIPrinter,
     private val cliReader: CLIReader,
     private val projectUseCases: ProjectUseCases,
-    private val statesView: StatesView
+    private val statesView: StatesView,
+    private val viewExceptionHandler: ViewExceptionHandler
 ) {
 
     lateinit var currentProject: Project
@@ -37,7 +39,9 @@ class EditProjectView(
 
     private fun editProjectTitle() {
         val newTitle = cliReader.getValidTitle()
-        projectUseCases.editProjectTitle(currentProject.id, newTitle)
+        viewExceptionHandler.tryCall {
+            projectUseCases.editProjectTitle(currentProject.id, newTitle)
+        }
         currentProject = currentProject.copy(title = newTitle)
         cliPrinter.cliPrintLn("Project title updated.")
         cliPrinter.printHeader("Edit Project: ${currentProject.title}") // Show updated header
@@ -45,7 +49,9 @@ class EditProjectView(
 
     private fun editProjectDescription() {
         val newDescription = cliReader.getValidDescription()
-        projectUseCases.editProjectDescription(currentProject.id, newDescription)
+        viewExceptionHandler.tryCall {
+            projectUseCases.editProjectDescription(currentProject.id, newDescription)
+        }
         currentProject = currentProject.copy(description = newDescription)
         cliPrinter.cliPrintLn("Project description updated.")
     }

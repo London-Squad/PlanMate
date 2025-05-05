@@ -2,8 +2,10 @@ package ui.logsView
 
 import logic.entities.*
 import logic.useCases.GetLogsByEntityIdUseCase
+import ui.ViewExceptionHandler
 import ui.cliPrintersAndReaders.CLIPrinter
 import ui.cliPrintersAndReaders.CLIReader
+import ui.cliPrintersAndReaders.cliTable.CLITablePrinter
 import java.time.LocalDateTime
 import java.time.format.DateTimeFormatter
 import java.util.*
@@ -11,33 +13,30 @@ import java.util.*
 class LogsView(
     private val cliPrinter: CLIPrinter,
     private val cliReader: CLIReader,
-    private val getLogsByEntityIdUseCase: GetLogsByEntityIdUseCase
+    private val getLogsByEntityIdUseCase: GetLogsByEntityIdUseCase,
+    private val cliTablePrinter: CLITablePrinter,
+    private val viewExceptionHandler: ViewExceptionHandler
 ) {
     fun printLogsByEntityId(entityId: UUID) {
-
-        printHeader()
-        printLogsTableHeader()
         printLogs(entityId)
         cliReader.getUserInput("\npress enter to go back")
 
     }
 
-    private fun printHeader() {
-        cliPrinter.printHeader("Logs")
-    }
-
-    private fun printLogsTableHeader() {
-        printLn("------------------------------------------------------------------------------------------------------------------------")
-        printLn("Log Id                               | log message                                                                      ")
-        printLn("------------------------------------------------------------------------------------------------------------------------")
-    }
 
     private fun printLogs(entityId: UUID) {
-        getLogsByEntityIdUseCase.getLogsByEntityId(entityId).forEach(::printLog)
-    }
-
-    private fun printLog(log: Log) {
-        printLn("${log.id} | user (${log.user.userName}) ${actionToString(log.action)} at ${formatedTime(log.time)}")
+        viewExceptionHandler.tryCall {
+            val logs = getLogsByEntityIdUseCase.getLogsByEntityId(entityId)
+            val headers = listOf("Log ID", "Action Message")
+            val data = logs.map { log ->
+                listOf(
+                    log.id.toString(),
+                    "user (${log.user.userName}) ${actionToString(log.action)} at ${formatedTime(log.time)}"
+                )
+            }
+            val columnWidths = listOf(36, null)
+            cliTablePrinter(headers, data, columnWidths)
+        }
     }
 
     private fun actionToString(action: Action): String {
@@ -61,6 +60,4 @@ class LogsView(
         val formatter = DateTimeFormatter.ofPattern("dd/MM/yyyy HH:mm:ss")
         return time.format(formatter)
     }
-
-    private fun printLn(message: String) = cliPrinter.cliPrintLn(message)
 }

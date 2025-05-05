@@ -1,4 +1,4 @@
-package ui.projectView
+package ui.projectDetailsView
 
 import io.mockk.every
 import io.mockk.mockk

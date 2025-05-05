@@ -1,4 +1,4 @@
-package ui.projectView
+package ui.projectDetailsView
 
 import io.mockk.every
 import io.mockk.mockk
@@ -12,7 +12,7 @@ import ui.cliPrintersAndReaders.CLIReader
 import ui.statesView.StatesView
 import java.util.UUID
 
-class EditProjectViewTest {
+class EditProjectDetailsViewTest {
 
     private lateinit var cliPrinter: CLIPrinter
     private lateinit var cliReader: CLIReader

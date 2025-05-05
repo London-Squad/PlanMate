@@ -19,16 +19,12 @@ class ProjectUseCases(
     }
 
     fun getProjectById(projectId: UUID): Project? {
-        return projectsRepository.getAllProjects().find { it.id == projectId }
+        return projectsRepository.getProjectById(projectId)
     }
 
     fun createProject(title: String, description: String): Project {
         val defaultStates = listOf(
-            State(
-                id = UUID.randomUUID(),
-                title = "TODO",
-                description = "TO DO TASKS"
-            ),
+            State(id = UUID.randomUUID(), title = "TODO", description = "TO DO TASKS"),
             State(id = UUID.randomUUID(), title = "InProgress", description = "INPROGRESS TASKS"),
             State(id = UUID.randomUUID(), title = "Done", description = "FINISHED TASKS")
         )
@@ -40,9 +36,12 @@ class ProjectUseCases(
             tasks = emptyList(),
             tasksStates = defaultStates
         )
-        projectsRepository.addNewProject(project)
-        logNewProject(project)
-        return project
+        val addedProject = projectsRepository.addNewProject(project)
+        if (addedProject != null) {
+            logNewProject(project)
+            return project
+        }
+        throw Exception("Failed to create project.")
     }
 
     private fun logNewProject(project: Project) {
@@ -55,14 +54,14 @@ class ProjectUseCases(
     }
 
     fun editProjectTitle(projectId: UUID, newTitle: String) {
-
+        val project = projectsRepository.getProjectById(projectId)
         logsRepository.addLog(
             Log(
                 user = authenticationRepository.getLoggedInUser(),
                 action = Edit(
-                    entity = projectsRepository.getAllProjects().first { it.id == projectId },
+                    entity = project,
                     property = "title",
-                    oldValue = projectsRepository.getAllProjects().first { it.id == projectId }.title,
+                    oldValue = project.title,
                     newValue = newTitle
                 )
             )
@@ -71,33 +70,29 @@ class ProjectUseCases(
     }
 
     fun editProjectDescription(projectId: UUID, newDescription: String) {
-
+        val project = projectsRepository.getProjectById(projectId)
         logsRepository.addLog(
             Log(
                 user = authenticationRepository.getLoggedInUser(),
                 action = Edit(
-                    entity = projectsRepository.getAllProjects().first { it.id == projectId },
+                    entity = project,
                     property = "description",
-                    oldValue = projectsRepository.getAllProjects().first { it.id == projectId }.description,
+                    oldValue = project.description,
                     newValue = newDescription
                 )
             )
         )
-
         projectsRepository.editProjectDescription(projectId, newDescription)
     }
 
     fun deleteProject(projectId: UUID) {
-
+        val project = projectsRepository.getProjectById(projectId)
         logsRepository.addLog(
             Log(
                 user = authenticationRepository.getLoggedInUser(),
-                action = Delete(
-                    entity = projectsRepository.getAllProjects().first { it.id == projectId },
-                )
+                action = Delete(entity = project)
             )
         )
-
         projectsRepository.deleteProject(projectId)
     }
 
@@ -105,7 +100,7 @@ class ProjectUseCases(
         taskRepository.addNewTask(task, projectId)
     }
 
-    fun logTaskCreation(task: Task) {
+    private fun logTaskCreation(task: Task) {
         logsRepository.addLog(
             Log(
                 user = authenticationRepository.getLoggedInUser(),

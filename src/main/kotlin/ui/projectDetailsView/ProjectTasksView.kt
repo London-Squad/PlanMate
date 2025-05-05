@@ -1,18 +1,18 @@
-package ui.projectView
+package ui.projectDetailsView
 
 import logic.entities.Project
-import logic.entities.Task
 import logic.useCases.ProjectUseCases
+import ui.ViewExceptionHandler
 import ui.cliPrintersAndReaders.CLIPrinter
 import ui.cliPrintersAndReaders.CLIReader
 import ui.taskManagementView.TaskManagementView
-import java.util.UUID
 
 class ProjectTasksView(
     private val cliPrinter: CLIPrinter,
     private val cliReader: CLIReader,
     private val projectUseCases: ProjectUseCases,
     private val taskManagementView: TaskManagementView,
+    private val viewExceptionHandler: ViewExceptionHandler
 ) {
 
     private lateinit var currentProject: Project
@@ -65,12 +65,12 @@ class ProjectTasksView(
     }
 
     private fun addNewTask() {
-        if (currentProject.tasksStates.isEmpty()) {
+        if (currentProject.states.isEmpty()) {
             cliPrinter.cliPrintLn("No states available for this project. Cannot create task.")
             return
         }
 
-        val defaultState = currentProject.tasksStates.first()
+        val defaultState = currentProject.states.first()
         val title = cliReader.getValidTitle()
         val description = cliReader.getValidDescription()
 
@@ -81,8 +81,9 @@ class ProjectTasksView(
             state = defaultState
         )
 
-        projectUseCases.addNewTask(newTask, currentProject.id)
+        currentProject = currentProject.copy(tasks = currentProject.tasks + newTask)
 
+        viewExceptionHandler.tryCall{ projectUseCases.logTaskCreation(newTask) }
         cliPrinter.cliPrintLn("Task created. You can now edit it.")
     }
 }

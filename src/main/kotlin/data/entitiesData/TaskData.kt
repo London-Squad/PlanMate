@@ -10,4 +10,3 @@ data class TaskData(
     val projectId: UUID,
     val isDeleted: Boolean
 )
-

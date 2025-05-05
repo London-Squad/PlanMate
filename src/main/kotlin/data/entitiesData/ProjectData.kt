@@ -1,6 +1,6 @@
 package data.entitiesData
 
-import java.util.*
+import java.util.UUID
 
 data class ProjectData(
     val id: UUID,

@@ -1,15 +1,16 @@
-package ui.projectView
+package ui.projectDetailsView
 
 import logic.entities.Project
 import logic.entities.User
 import logic.exceptions.NoLoggedInUserIsSavedInCacheException
 import logic.useCases.GetLoggedInUserUseCase
 import logic.useCases.ProjectUseCases
+import ui.ViewExceptionHandler
 import ui.cliPrintersAndReaders.CLIPrinter
 import ui.cliPrintersAndReaders.CLIReader
 import ui.logsView.LogsView
 
-class ProjectView(
+class ProjectDetailsView(
     private val cliPrinter: CLIPrinter,
     private val cliReader: CLIReader,
     private val getLoggedInUserUseCase: GetLoggedInUserUseCase,
@@ -18,7 +19,8 @@ class ProjectView(
     private val deleteProjectView: DeleteProjectView,
     private val projectTasksView: ProjectTasksView,
     private val projectUseCases: ProjectUseCases,
-    private val logsView: LogsView
+    private val logsView: LogsView,
+    private val viewExceptionHandler: ViewExceptionHandler
 ) {
 
     private lateinit var currentProject: Project
@@ -71,7 +73,10 @@ class ProjectView(
 
             "3" -> if (currentUser.type == User.Type.ADMIN) {
                 currentProject = editProjectView.editProject(currentProject)
-                currentProject = projectUseCases.getProjectById(currentProject.id) ?: currentProject
+                viewExceptionHandler.tryCall {
+                    currentProject =
+                        projectUseCases.getProjectById(currentProject.id) ?: currentProject
+                }
                 printProjectMenu()
                 handleUserInput()
             } else return
