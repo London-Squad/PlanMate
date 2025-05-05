@@ -18,20 +18,20 @@ import ui.welcomeView.WelcomeView
 val uiModule = module {
 
     single { CLIPrinter() }
-    single { CLIReader(get()) }
+    single { CLIReader(get(), get()) }
 
     single { TaskTitleEditionView(get(), get(), get()) }
     single { TaskDescriptionEditionView(get(), get(), get()) }
     single { TaskStateEditionView(get(), get(), get()) }
     single { TaskDeletionView(get(), get(), get()) }
-    single { TaskManagementView(get(), get(), get(), get(), get(), get(), get()) }
+    single { TaskManagementView(get(), get(), get(), get(), get(), get(), get(), get()) }
 
     single { ProjectTasksView(get(), get(), get(), get()) }
     single { LogsView(get(), get(), get()) }
 
     single { MainMenuView(get(), get(), get(), get(), get(), get()) }
 
-    single { LoginView(get(), get(), get(), get(), get()) }
+    single { LoginView(get(), get(), get(), get()) }
 
     single { WelcomeView(get(), get(), get(), get(), get()) }
 
@@ -41,7 +41,7 @@ val uiModule = module {
     single { SwimlanesView(get()) }
     single { StatesView(get(), get(), get()) }
     single { EditProjectView(get(), get(), get(), get()) }
-    single { DeleteProjectView(get(), get()) }
+    single { DeleteProjectView(get(), get(), get()) }
     single { ProjectView(get(), get(), get(), get(), get(), get(), get(), get(), get()) }
     single { ProjectsView(get(), get(), get(), get(), get()) }
 
@@ -50,7 +50,7 @@ val uiModule = module {
 
     single { MainMenuView(get(), get(), get(), get(), get(), get()) }
 
-    single { LoginView(get(), get(), get(), get(), get()) }
+    single { LoginView(get(), get(), get(), get()) }
 
     single { WelcomeView(get(), get(), get(), get(), get()) }
 }

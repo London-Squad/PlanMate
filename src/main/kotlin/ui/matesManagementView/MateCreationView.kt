@@ -12,12 +12,21 @@ class MateCreationView(
 ) {
 
     fun createMate() {
-        cliPrinter.printHeader(" ============================= Create New Mate =============================")
+        cliPrinter.printHeader("Create New Mate")
         try {
-            val username = cliReader.getUserInput("Enter username: ")
-            val password = cliReader.getUserInput("Enter password: ")
+            val username = cliReader.getValidUserInput(
+                { it.isNotBlank() },
+                "Enter username: ",
+                "username cant be empty"
+            )
+            val password = cliReader.getValidUserInput(
+                { it.isNotBlank() },
+                "Enter password: ",
+                "password cant be empty"
+            )
+
             createMateUseCase.createMate(username, password)
-            cliPrinter.cliPrintLn("Mate created successfully: ${username}")
+            cliPrinter.cliPrintLn("Mate created successfully: $username")
         } catch (e: UserNotFoundException) {
             cliPrinter.cliPrintLn("Error: No user is logged in.")
         } catch (e: UnauthorizedAccessException) {

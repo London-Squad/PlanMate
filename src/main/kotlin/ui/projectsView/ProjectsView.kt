@@ -1,9 +1,8 @@
 package ui.projectsView
 
-import logic.entities.Project
 import logic.entities.User
 import logic.exceptions.NoLoggedInUserIsSavedInCacheException
-import logic.repositories.CacheDataRepository
+import logic.useCases.GetLoggedInUserUseCase
 import logic.useCases.ProjectUseCases
 import ui.cliPrintersAndReaders.CLIPrinter
 import ui.cliPrintersAndReaders.CLIReader
@@ -13,7 +12,7 @@ class ProjectsView(
     private val cliPrinter: CLIPrinter,
     private val cliReader: CLIReader,
     private val projectUseCases: ProjectUseCases,
-    private val cacheDataRepository: CacheDataRepository,
+    private val getLoggedInUserUseCase: GetLoggedInUserUseCase,
     private val projectView: ProjectView
 ) {
 
@@ -22,7 +21,7 @@ class ProjectsView(
     fun start() {
 
         try {
-            currentUser = cacheDataRepository.getLoggedInUser()
+            currentUser = getLoggedInUserUseCase.getLoggedInUser()
         } catch (e: NoLoggedInUserIsSavedInCacheException) {
             cliPrinter.cliPrintLn("Error: No user logged in. Please log in first.")
             return
@@ -114,14 +113,9 @@ class ProjectsView(
 
     fun createProject() {
         cliPrinter.printHeader("Create Project")
-        val title = cliReader.getValidUserInput(
-            message = "Enter project title: ",
-            invalidInputMessage = "Title cannot be empty",
-            isValidInput = { it.isNotBlank() }
-        )
-        val description = cliReader.getUserInput(
-            message = "Enter project description: ",
-        )
+        val title = cliReader.getValidTitle()
+        val description = cliReader.getValidDescription()
+
 
         projectUseCases.createProject(title, description)
         cliPrinter.cliPrintLn("Project created successfully.")

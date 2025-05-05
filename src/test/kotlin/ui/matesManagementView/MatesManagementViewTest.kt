@@ -25,7 +25,7 @@ class MatesManagementViewTest {
         cliPrinter = mockk(relaxed = true)
         getLoggedInUserUseCase = mockk()
         mateCreationView = mockk(relaxed = true)
-        view = MatesManagementView(cliReader, cliPrinter, getLoggedInUserUseCase, mateCreationView)
+        view = MatesManagementView(cliPrinter, cliReader, getLoggedInUserUseCase, mateCreationView)
     }
 
     @Test

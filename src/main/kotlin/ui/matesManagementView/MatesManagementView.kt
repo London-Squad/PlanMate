@@ -6,8 +6,8 @@ import ui.cliPrintersAndReaders.CLIPrinter
 import ui.cliPrintersAndReaders.CLIReader
 
 class MatesManagementView(
-    private val cliReader: CLIReader,
     private val cliPrinter: CLIPrinter,
+    private val cliReader: CLIReader,
     private val getLoggedInUserUseCase: GetLoggedInUserUseCase,
     private val mateCreationView: MateCreationView
 ) {
@@ -29,20 +29,13 @@ class MatesManagementView(
     }
 
     private fun selectNextUI() {
-        when (getValidUserInput()) {
+        val userInput = cliReader.getValidUserNumberInRange(MAX_OPTION_NUMBER)
+
+        when (userInput) {
             "1" -> mateCreationView.createMate()
             "0" -> return
         }
         start()
-    }
-
-    private fun getValidUserInput(): String {
-        val userInput = cliReader.getUserInput("Your option: ")
-        if (userInput in "0"..MAX_OPTION) return userInput
-        else {
-            printLn("Invalid option")
-            return getValidUserInput()
-        }
     }
 
     private fun printLn(message: String) {
@@ -50,7 +43,7 @@ class MatesManagementView(
     }
 
     private companion object {
-        const val MAX_OPTION = "1"
+        const val MAX_OPTION_NUMBER = 1
     }
 
 }

@@ -2,6 +2,7 @@ package ui.taskManagementView
 
 import logic.entities.State
 import logic.entities.Task
+import logic.exceptions.NotFoundException
 import logic.useCases.ManageTaskUseCase
 import ui.cliPrintersAndReaders.CLIPrinter
 import ui.cliPrintersAndReaders.CLIReader
@@ -20,24 +21,18 @@ class TaskStateEditionView(
         }
 
         printProjectState(projectStates)
-        val newState = getValidState(projectStates)
+        val newStateIndex = cliReader.getValidUserNumberInRange(min = 1, max = projectStates.size).toInt() - 1
 
-        manageTaskUseCase.editTaskState(task.id, newState)
+        try {
+            manageTaskUseCase.editTaskState(task.id, projectStates[newStateIndex])
+        } catch (e: NotFoundException) {
+            cliPrinter.cliPrintLn(e.message ?: "task not found")
+        }
     }
 
     private fun printProjectState(states: List<State>) {
         states.forEachIndexed { index, state ->
             printLn("${index + 1}. ${state.title}")
-        }
-    }
-
-    private fun getValidState(states: List<State>): State {
-        val userInput = cliReader.getUserInput("Your choice: ").toIntOrNull()
-        if (userInput in 1..states.size)
-            return states[userInput!! - 1]
-        else {
-            printLn("Invalid input")
-            return getValidState(states)
         }
     }
 

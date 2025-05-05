@@ -1,7 +1,7 @@
 package logic.repositories
 
 import logic.entities.User
-import java.util.UUID
+import java.util.*
 
 interface AuthenticationRepository {
 
@@ -16,4 +16,6 @@ interface AuthenticationRepository {
     fun register(userName: String, password: String): Boolean
 
     fun changePassword(userName: String, currentPassword: String, newPassword: String): Boolean
+
+    fun getLoggedInUser(): User
 }

@@ -142,11 +142,11 @@ class LogsDataSource(
     }
 
     private fun getStateById(stateId: UUID): State {
-        return statesRepository.getStateById(stateId)!!
+        return statesRepository.getStateById(stateId)
     }
 
     private fun getTaskById(taskId: UUID): Task {
-        return tasksRepository.getTaskByID(taskId)!!
+        return tasksRepository.getTaskByID(taskId)
     }
 
     private fun getActionByType(

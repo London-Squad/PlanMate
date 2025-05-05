@@ -1,16 +1,17 @@
 package logic.useCases
 
 import logic.entities.*
-import logic.repositories.CacheDataRepository
+import logic.repositories.AuthenticationRepository
 import logic.repositories.LogsRepository
 import logic.repositories.ProjectsRepository
+import java.util.*
 import java.time.LocalDateTime
 import java.util.UUID
 
 class ProjectUseCases(
     private val projectsRepository: ProjectsRepository,
-    private val cacheDataRepository: CacheDataRepository,
-    private val logsRepository: LogsRepository
+    private val logsRepository: LogsRepository,
+    private val authenticationRepository: AuthenticationRepository
 ) {
 
     fun getAllProjects(): List<Project> {
@@ -47,8 +48,7 @@ class ProjectUseCases(
     private fun logNewProject(project: Project) {
         logsRepository.addLog(
             Log(
-                user = cacheDataRepository.getLoggedInUser(),
-                time = LocalDateTime.now(),
+                user = authenticationRepository.getLoggedInUser(),
                 action = Create(project)
             )
         )
@@ -59,12 +59,11 @@ class ProjectUseCases(
 
         logsRepository.addLog(
             Log(
-                user = cacheDataRepository.getLoggedInUser(),
-                time = LocalDateTime.now(),
+                user = authenticationRepository.getLoggedInUser(),
                 action = Edit(
-                    entity = project,
+                    entity = projectsRepository.getAllProjects().first { it.id == projectId },
                     property = "title",
-                    oldValue = project.title,
+                    oldValue = projectsRepository.getAllProjects().first { it.id == projectId }.title,
                     newValue = newTitle
                 )
             )
@@ -77,12 +76,11 @@ class ProjectUseCases(
 
         logsRepository.addLog(
             Log(
-                user = cacheDataRepository.getLoggedInUser(),
-                time = LocalDateTime.now(),
+                user = authenticationRepository.getLoggedInUser(),
                 action = Edit(
-                    entity = project,
+                    entity = projectsRepository.getAllProjects().first { it.id == projectId },
                     property = "description",
-                    oldValue = project.description,
+                    oldValue = projectsRepository.getAllProjects().first { it.id == projectId }.description,
                     newValue = newDescription
                 )
             )
@@ -96,10 +94,9 @@ class ProjectUseCases(
 
         logsRepository.addLog(
             Log(
-                user = cacheDataRepository.getLoggedInUser(),
-                time = LocalDateTime.now(),
+                user = authenticationRepository.getLoggedInUser(),
                 action = Delete(
-                    entity = project
+                    entity = projectsRepository.getAllProjects().first { it.id == projectId },
                 )
             )
         )
@@ -118,8 +115,7 @@ class ProjectUseCases(
     fun logTaskCreation(task: Task) {
         logsRepository.addLog(
             Log(
-                user = cacheDataRepository.getLoggedInUser(),
-                time = LocalDateTime.now(),
+                user = authenticationRepository.getLoggedInUser(),
                 action = Create(task)
             )
         )

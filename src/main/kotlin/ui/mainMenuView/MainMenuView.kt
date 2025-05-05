@@ -2,8 +2,8 @@ package ui.mainMenuView
 
 import logic.entities.User
 import logic.exceptions.NoLoggedInUserIsSavedInCacheException
-import logic.useCases.ClearLoggedInUserFromCacheUseCase
 import logic.useCases.GetLoggedInUserUseCase
+import logic.useCases.LogoutUseCase
 import ui.cliPrintersAndReaders.CLIPrinter
 import ui.cliPrintersAndReaders.CLIReader
 import ui.matesManagementView.MatesManagementView
@@ -13,9 +13,9 @@ class MainMenuView(
     private val cliPrinter: CLIPrinter,
     private val cliReader: CLIReader,
     private val getLoggedInUserUseCase: GetLoggedInUserUseCase,
-    private val clearLoggedInUserFromCacheUseCase: ClearLoggedInUserFromCacheUseCase,
     private val projectsView: ProjectsView,
-    private val matesManagementView: MatesManagementView
+    private val matesManagementView: MatesManagementView,
+    private val logoutUseCase: LogoutUseCase,
 ) {
 
     private lateinit var loggedInUserType: User.Type
@@ -53,7 +53,7 @@ class MainMenuView(
             "2" -> matesManagementView.start()
             "0" -> {
                 printLn("\nLogging out ...")
-                clearLoggedInUserFromCacheUseCase.clearLoggedInUserFromCache()
+                logoutUseCase()
                 return // exit main menu
             }
         }
@@ -61,17 +61,14 @@ class MainMenuView(
     }
 
     private fun getValidUserInput(): String {
-        val validInputs = validInputsForAdmin.takeIf { loggedInUserType == User.Type.ADMIN } ?: validInputsForMate
-        val userInput = cliReader.getUserInput("\nchoose an option: ").trim()
-        if (userInput in validInputs) return userInput
-        cliPrinter.cliPrintLn("invalid option, try again ...")
-        return getValidUserInput()
+        val MAX_OPTION_NUMBER = MAX_OPTION_NUMBER_ADMIN.takeIf { loggedInUserType == User.Type.ADMIN } ?: MAX_OPTION_NUMBER_MATE
+        return cliReader.getValidUserNumberInRange(MAX_OPTION_NUMBER)
     }
 
     private fun printLn(message: String) = cliPrinter.cliPrintLn(message)
 
     private companion object {
-        val validInputsForAdmin = listOf("0", "1", "2")
-        val validInputsForMate = listOf("0", "1")
+        const val MAX_OPTION_NUMBER_ADMIN = 2
+        const val MAX_OPTION_NUMBER_MATE = 1
     }
 }

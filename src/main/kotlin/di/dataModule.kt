@@ -2,7 +2,6 @@ package di
 
 import data.*
 import data.fileIO.FilePath
-import data.LogsDataSource
 import data.fileIO.cvsLogsFileHandler.LogsCsvReader
 import data.fileIO.cvsLogsFileHandler.LogsCsvWriter
 import data.AuthenticationDataSource
@@ -75,7 +74,13 @@ val dataModule = module {
 
     single<LogsRepository> { LogsDataSource(get(), get(), get(), get(), get(), get()) }
 
-    single<CacheDataRepository> { CacheDataSource(File(FilePath.ACTIVE_USER_FILE)) }
 
-    single<AuthenticationRepository> { AuthenticationDataSource(File(FilePath.USER_FILE), MD5HashingAlgorithm()) }
+    single<AuthenticationRepository> {
+        AuthenticationDataSource(
+            File(FilePath.USER_FILE),
+            File(FilePath.ACTIVE_USER_FILE),
+            MD5HashingAlgorithm(),
+        )
+    }
+
 }
