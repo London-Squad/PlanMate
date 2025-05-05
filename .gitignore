@@ -49,3 +49,5 @@ csvFiles/*
 
 ### .idea ###
 .idea
+
+.env
