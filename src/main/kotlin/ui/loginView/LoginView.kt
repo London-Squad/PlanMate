@@ -2,7 +2,6 @@ package ui.loginView
 
 import logic.exceptions.AuthenticationException
 import logic.useCases.LoginUseCase
-import logic.useCases.SetLoggedInUserUseCase
 import ui.cliPrintersAndReaders.CLIPrinter
 import ui.cliPrintersAndReaders.CLIReader
 import ui.mainMenuView.MainMenuView
@@ -12,7 +11,6 @@ class LoginView(
     private val cliReader: CLIReader,
     private val loginUseCase: LoginUseCase,
     private val mainMenuView: MainMenuView,
-    private val setLoggedInUserUseCase: SetLoggedInUserUseCase
 ) {
 
     fun start() {
@@ -27,8 +25,7 @@ class LoginView(
 
     private fun processLogin(username: String, password: String) {
         try {
-            val user = loginUseCase(username, password)
-            setLoggedInUserUseCase.setLoggedInUser(user)
+            loginUseCase(username, password)
             println("Login successful")
             mainMenuView.start()
         } catch (e: AuthenticationException) {

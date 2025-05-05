@@ -7,7 +7,7 @@ class LogoutUseCase(
 ) {
     operator fun invoke(): Boolean {
         if (!authenticationRepository.logout()) return false
-        authenticationRepository.clearLoggedInUserFromCache()
+        authenticationRepository.logout()
         return true
     }
 }

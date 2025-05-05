@@ -5,8 +5,8 @@ import io.mockk.mockk
 import io.mockk.verify
 import logic.entities.User
 import logic.exceptions.NoLoggedInUserIsSavedInCacheException
-import logic.useCases.ClearLoggedInUserFromCacheUseCase
 import logic.useCases.GetLoggedInUserUseCase
+import logic.useCases.LogoutUseCase
 import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Test
 import org.junit.jupiter.api.TestInstance
@@ -24,16 +24,16 @@ class MainMenuViewTest {
     private lateinit var cliPrinter: CLIPrinter
     private lateinit var cliReader: CLIReader
     private lateinit var getLoggedInUserUseCase: GetLoggedInUserUseCase
-    private lateinit var clearLoggedInUserFromCacheUseCase: ClearLoggedInUserFromCacheUseCase
     private lateinit var projectsView: ProjectsView
     private lateinit var matesManagementView: MatesManagementView
+    private lateinit var logoutUseCase: LogoutUseCase
 
     @BeforeEach
     fun setup() {
         cliPrinter = mockk(relaxed = true)
         cliReader = mockk(relaxed = true)
         getLoggedInUserUseCase = mockk(relaxed = true)
-        clearLoggedInUserFromCacheUseCase = mockk(relaxed = true)
+        logoutUseCase = mockk(relaxed = true)
         projectsView = mockk(relaxed = true)
         matesManagementView = mockk(relaxed = true)
 
@@ -41,9 +41,9 @@ class MainMenuViewTest {
             cliPrinter,
             cliReader,
             getLoggedInUserUseCase,
-            clearLoggedInUserFromCacheUseCase,
             projectsView,
-            matesManagementView
+            matesManagementView,
+            logoutUseCase
         )
     }
 
@@ -84,7 +84,7 @@ class MainMenuViewTest {
         mainMenuView.start()
 
         // Then
-        verify(exactly = 1) { clearLoggedInUserFromCacheUseCase.clearLoggedInUserFromCache() }
+        verify(exactly = 1) { logoutUseCase() }
     }
 
     @ParameterizedTest

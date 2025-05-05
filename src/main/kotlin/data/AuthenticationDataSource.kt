@@ -37,12 +37,17 @@ class AuthenticationDataSource(
     }
 
     override fun login(userName: String, password: String): User {
-        if (userName == ADMIN.userName && password == ADMIN_PASSWORD) return ADMIN
+        if (userName == ADMIN.userName && password == ADMIN_PASSWORD) return ADMIN.also(::setLoggedInUser)
         val hashedPassword = hashingAlgorithm.hashData(password)
-        return UserFileHelper.readUserOrNull(userFile, userName, hashedPassword) ?: throw UserNotFoundException()
+        return UserFileHelper.readUserOrNull(
+            userFile, userName, hashedPassword
+        )?.also(::setLoggedInUser) ?: throw UserNotFoundException()
     }
 
-    override fun logout() = true
+    override fun logout(): Boolean {
+        clearLoggedInUserFromCache()
+        return true
+    }
 
     override fun register(userName: String, password: String): Boolean {
         val hashedPassword = hashingAlgorithm.hashData(password)
@@ -63,16 +68,15 @@ class AuthenticationDataSource(
     }
 
     override fun getLoggedInUser(): User {
-        if (loggedInUser == null) throw NoLoggedInUserIsSavedInCacheException()
-        return loggedInUser!!
+        return loggedInUser ?: throw NoLoggedInUserIsSavedInCacheException()
     }
 
-    override fun setLoggedInUser(user: User) {
+    private fun setLoggedInUser(user: User) {
         activeUserFile.writeText("${user.id},${user.userName},${user.type}")
         loggedInUser = user
     }
 
-    override fun clearLoggedInUserFromCache() {
+    private fun clearLoggedInUserFromCache() {
         activeUserFile.writeText("")
         loggedInUser = null
     }

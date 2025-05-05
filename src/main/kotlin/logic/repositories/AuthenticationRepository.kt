@@ -18,8 +18,4 @@ interface AuthenticationRepository {
     fun changePassword(userName: String, currentPassword: String, newPassword: String): Boolean
 
     fun getLoggedInUser(): User
-
-    fun setLoggedInUser(user: User)
-
-    fun clearLoggedInUserFromCache()
 }
