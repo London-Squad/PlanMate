@@ -50,7 +50,7 @@ class LogsView(
     private fun entityName(entity: PlanEntity): String {
         return when (entity) {
             is Project -> "project"
-            is State -> "state"
+            is TaskState -> "state"
             is Task -> "task"
             else -> "unknown entity"
         }

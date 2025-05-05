@@ -10,6 +10,6 @@ class SignupUseCase(
     operator fun invoke(userName: String, password: String): Boolean {
         credentialValidator.takeIfValidNameOrThrowException(userName)
         credentialValidator.takeIfValidPasswordOrThrowException(password)
-        return authenticationRepository.register(userName, password)
+        return authenticationRepository.addMate(userName, password)
     }
 }

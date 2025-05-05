@@ -29,7 +29,7 @@ class SignupUseCaseTest {
     @Test
     fun `when signup with valid data should return true`() {
         val user = DummyAuthData.users[1]
-        every { authenticationRepository.register(any(), any()) } returns true
+        every { authenticationRepository.addMate(any(), any()) } returns true
 
         val isRegistered = signupUseCase(user.userName, "Password12")
 
@@ -39,7 +39,7 @@ class SignupUseCaseTest {
     @Test
     fun `when signup with valid data but user not authorized should return false`() {
         val user = DummyAuthData.users[1]
-        every { authenticationRepository.register(any(), any()) } returns false
+        every { authenticationRepository.addMate(any(), any()) } returns false
 
         val isRegistered = signupUseCase(user.userName, "Password12")
 

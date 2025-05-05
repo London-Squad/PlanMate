@@ -4,27 +4,29 @@ import logic.entities.*
 import logic.repositories.AuthenticationRepository
 import logic.repositories.LogsRepository
 import logic.repositories.ProjectsRepository
+import logic.repositories.TaskRepository
 import java.util.*
 
 class ProjectUseCases(
     private val projectsRepository: ProjectsRepository,
     private val logsRepository: LogsRepository,
-    private val authenticationRepository: AuthenticationRepository
+    private val authenticationRepository: AuthenticationRepository,
+    private val taskRepository: TaskRepository
 ) {
 
     fun getAllProjects(): List<Project> {
         return projectsRepository.getAllProjects()
     }
 
-    fun getProjectById(projectId: UUID): Project? {
+    fun getProjectById(projectId: UUID): Project {
         return projectsRepository.getProjectById(projectId)
     }
 
-    fun createProject(title: String, description: String): Project {
-        val defaultStates = listOf(
-            State(id = UUID.randomUUID(), title = "TODO", description = "TO DO TASKS"),
-            State(id = UUID.randomUUID(), title = "InProgress", description = "INPROGRESS TASKS"),
-            State(id = UUID.randomUUID(), title = "Done", description = "FINISHED TASKS")
+    fun createProject(title: String, description: String) {
+        val defaultTasksStates = listOf(
+            TaskState(id = UUID.randomUUID(), title = "TODO", description = "TO DO TASKS"),
+            TaskState(id = UUID.randomUUID(), title = "InProgress", description = "INPROGRESS TASKS"),
+            TaskState(id = UUID.randomUUID(), title = "Done", description = "FINISHED TASKS")
         )
 
         val project = Project(
@@ -32,14 +34,10 @@ class ProjectUseCases(
             title = title,
             description = description,
             tasks = emptyList(),
-            states = defaultStates
+            tasksStates = defaultTasksStates
         )
-        val addedProject = projectsRepository.addNewProject(project)
-        if (addedProject != null) {
-            logNewProject(project)
-            return project
-        }
-        throw Exception("Failed to create project.")
+        projectsRepository.addNewProject(project)
+        logNewProject(project)
     }
 
     private fun logNewProject(project: Project) {
@@ -94,10 +92,9 @@ class ProjectUseCases(
         projectsRepository.deleteProject(projectId)
     }
 
-    fun updateProject(project: Project) {
-        projectsRepository.deleteProject(project.id)
-        projectsRepository.addNewProject(project)
-
+    fun addNewTask(task: Task, projectId: UUID) {
+        taskRepository.addNewTask(task, projectId)
+        logTaskCreation(task)
     }
 
     private fun logTaskCreation(task: Task) {
@@ -107,26 +104,5 @@ class ProjectUseCases(
                 action = Create(task)
             )
         )
-    }
-
-    fun createTask(projectId: UUID, taskTitle: String, taskDescription: String): Project? {
-        val project = getProjectById(projectId) ?: return null
-
-        if (project.states.isEmpty()) {
-            return null
-        }
-
-        val defaultState = project.states.first()
-        val newTask = Task(
-            id = UUID.randomUUID(),
-            title = taskTitle,
-            description = taskDescription,
-            state = defaultState
-        )
-
-        val updatedProject = project.copy(tasks = project.tasks + newTask)
-        updateProject(updatedProject)
-        logTaskCreation(newTask)
-        return updatedProject
     }
 }

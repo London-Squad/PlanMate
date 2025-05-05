@@ -5,7 +5,9 @@ import java.util.*
 
 interface AuthenticationRepository {
 
-    fun getMates(): List<User>
+    fun getMates(includeDeleted: Boolean = false): List<User>
+
+    fun getAdmin(): User
 
     fun deleteUser(userId: UUID)
 
@@ -13,9 +15,7 @@ interface AuthenticationRepository {
 
     fun logout(): Boolean
 
-    fun register(userName: String, password: String): Boolean
-
-    fun changePassword(userName: String, currentPassword: String, newPassword: String): Boolean
+    fun addMate(userName: String, password: String): Boolean
 
     fun getLoggedInUser(): User
 }

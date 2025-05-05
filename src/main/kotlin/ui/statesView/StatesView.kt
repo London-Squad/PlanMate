@@ -1,6 +1,6 @@
 package ui.statesView
 
-import logic.entities.State
+import logic.entities.TaskState
 import logic.useCases.ManageStateUseCase
 import ui.ViewExceptionHandler
 import ui.cliPrintersAndReaders.CLIPrinter
@@ -39,13 +39,13 @@ class StatesView(
     }
 
     private fun viewStates() {
-        var states: List<State>
+        var tasksStates: List<TaskState>
         viewExceptionHandler.tryCall {
-            states = useCase.getStates(projectId)
-            if (states.isEmpty()) {
+            tasksStates = useCase.getStates(projectId)
+            if (tasksStates.isEmpty()) {
                 cliPrinter.cliPrintLn("No states available.")
             } else {
-                states.forEach {
+                tasksStates.forEach {
                     cliPrinter.cliPrintLn("${it.id} - ${it.title}: ${it.description}")
                 }
             }
@@ -55,7 +55,7 @@ class StatesView(
     private fun addState() {
         val title = cliReader.getValidTitle()
         val desc = cliReader.getValidDescription()
-        useCase.addState(State(title = title, description = desc), projectId)
+        useCase.addState(TaskState(title = title, description = desc), projectId)
         cliPrinter.cliPrintLn("State added successfully.")
     }
 

@@ -29,7 +29,7 @@ class CreateMateUseCase(
                 throw UsernameTakenException()
             }
         val registered = try {
-            authenticationRepository.register(username, password)
+            authenticationRepository.addMate(username, password)
         } catch (e: UserAlreadyExistException) {
             throw UsernameTakenException()
         } catch (e: Exception) {

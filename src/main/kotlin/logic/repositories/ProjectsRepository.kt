@@ -5,11 +5,11 @@ import java.util.UUID
 
 interface ProjectsRepository {
 
-    fun getAllProjects(): List<Project>
+    fun getAllProjects(includeDeleted: Boolean = false): List<Project>
 
-    fun getProjectById(projectId: UUID): Project
+    fun getProjectById(projectId: UUID, includeDeleted: Boolean = false): Project
 
-    fun addNewProject(project: Project): Project
+    fun addNewProject(project: Project)
 
     fun editProjectTitle(projectId: UUID, newTitle: String)
 
