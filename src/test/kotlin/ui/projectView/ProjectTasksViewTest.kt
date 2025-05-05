@@ -40,7 +40,7 @@ class ProjectTasksViewTest {
 
         every { project.title } returns "Test Project"
         every { project.tasks } returns emptyList()
-        every { project.states } returns listOf(state)
+        every { project.tasksStates } returns listOf(state)
         every { project.id } returns UUID.randomUUID()
 
         every { task.title } returns "Test Task"
@@ -93,7 +93,7 @@ class ProjectTasksViewTest {
     @Test
     fun `should call addNewTask when user enters add with no states`() {
         // Given
-        every { project.states } returns emptyList()
+        every { project.tasksStates } returns emptyList()
         every { cliReader.getValidUserInput(any(), any(), any()) } returns "add"
 
         // When
@@ -147,7 +147,7 @@ class ProjectTasksViewTest {
     fun `should create new task with user input and start taskManagementView`() {
         // Given
         every { project.tasks } returns emptyList()
-        every { project.states } returns listOf(state)
+        every { project.tasksStates } returns listOf(state)
         every { cliReader.getValidUserInput(any(), "Enter your choice: ", any()) } returns "add"
         every { cliReader.getValidUserInput(any(), "Enter task title: ", any()) } returns "New Task"
         every { cliReader.getValidUserInput(any(), "Enter task description: ", any()) } returns "New Description"

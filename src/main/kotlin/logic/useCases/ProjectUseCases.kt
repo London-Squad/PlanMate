@@ -36,7 +36,7 @@ class ProjectUseCases(
             title = title,
             description = description,
             tasks = emptyList(),
-            states = defaultStates
+            tasksStates = defaultStates
         )
         projectsRepository.addNewProject(project)
         logNewProject(project)

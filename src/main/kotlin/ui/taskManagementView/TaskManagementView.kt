@@ -66,7 +66,7 @@ class TaskManagementView(
             }
 
             "3" -> {
-                taskStateEditionView.editState(currentTask, currentProject.states)
+                taskStateEditionView.editState(currentTask, currentProject.tasksStates)
                 start(currentTask.id, currentProject)
             }
 

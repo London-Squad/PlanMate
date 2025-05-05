@@ -31,7 +31,7 @@ class CsvLogsDataSource(
                     (log.action.entity as Project).tasks.forEach { task ->
                         result = result + getLogsByEntityId(task.id)
                     }
-                    (log.action.entity as Project).states.forEach { state ->
+                    (log.action.entity as Project).tasksStates.forEach { state ->
                         result = result + getLogsByEntityId(state.id)
                     }
                 }

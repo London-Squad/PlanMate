@@ -9,12 +9,12 @@ class SwimlanesView(
 
     fun displaySwimlanes(project: Project) {
         cliPrinter.printHeader("Project: ${project.title}")
-        if (project.states.isEmpty()) {
+        if (project.tasksStates.isEmpty()) {
             cliPrinter.cliPrintLn("No states defined for this project.")
             return
         }
 
-        val tasksByState = project.states.associateWith { state ->
+        val tasksByState = project.tasksStates.associateWith { state ->
             project.tasks.filter { it.state.id == state.id }
         }
 
@@ -22,19 +22,19 @@ class SwimlanesView(
         val columnWidth = 25
         val separator = "|"
 
-        project.states.forEach { state ->
+        project.tasksStates.forEach { state ->
             val stateHeader = state.title.take(columnWidth - 1).padEnd(columnWidth)
             cliPrinter.cliPrint("$stateHeader$separator")
         }
         cliPrinter.cliPrintLn("")
 
-        project.states.forEach { _ ->
+        project.tasksStates.forEach { _ ->
             cliPrinter.cliPrint("-".repeat(columnWidth) + separator)
         }
         cliPrinter.cliPrintLn("")
 
         for (row in 0 until maxTasks) {
-            project.states.forEach { state ->
+            project.tasksStates.forEach { state ->
                 val tasks = tasksByState[state] ?: emptyList()
                 val taskTitle = if (row < tasks.size) {
                     tasks[row].title.take(columnWidth - 1).padEnd(columnWidth)

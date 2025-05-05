@@ -65,12 +65,12 @@ class ProjectTasksView(
     }
 
     private fun addNewTask() {
-        if (currentProject.states.isEmpty()) {
+        if (currentProject.tasksStates.isEmpty()) {
             cliPrinter.cliPrintLn("No states available for this project. Cannot create task.")
             return
         }
 
-        val defaultState = currentProject.states.first()
+        val defaultState = currentProject.tasksStates.first()
         val title = cliReader.getValidTitle()
         val description = cliReader.getValidDescription()
 

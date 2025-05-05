@@ -1,87 +1,60 @@
 package data.csvDataSource
 
-import logic.entities.Project
-import logic.repositories.ProjectsRepository
-import java.io.File
+import data.csvDataSource.fileIO.CsvFileHandler
+import data.csvDataSource.fileIO.Parser
+import data.dataSources.ProjectsDataSource
+import data.entitiesData.ProjectData
 import java.util.UUID
 
 class CsvProjectsDataSource(
-    private val file: File,
-    private val csvTasksDataSource: CsvTasksDataSource,
-    private val csvTasksStatesDataSource: CsvTasksStatesDataSource
-) : ProjectsRepository {
+    private val projectsCsvFileHandler: CsvFileHandler,
+    private val parser: Parser,
+) : ProjectsDataSource {
 
-    init {
-        val directory = file.parentFile
-        if (!directory.exists()) {
-            directory.mkdir()
-        }
-
-        if (!file.exists()) {
-            file.createNewFile()
-            file.writeText("id,title,description\n")
-        }
+    override fun getAllProjects(): List<ProjectData> {
+        return projectsCsvFileHandler.readRecords()
+            .map(parser::recordToProjectData)
     }
 
-    override fun getAllProjects(): List<Project> {
-        return file.readLines().drop(1).mapNotNull { line ->
-            // Split the line into parts, taking only the first 3 fields
-            val parts = line.split(",", limit = 3)
-            if (parts.size < 3) return@mapNotNull null
-            try {
-                val projectId = UUID.fromString(parts[0].trim())
-                Project(
-                    id = projectId,
-                    title = parts[1].trim(),
-                    description = parts[2].trim(),
-                    tasks = csvTasksDataSource.getTasksByProjectID(projectId),
-                    states = csvTasksStatesDataSource.getAllStatesByProjectId(projectId)
-                )
-            } catch (e: IllegalArgumentException) {
-                null
-            }
-        }
-    }
-
-    override fun addNewProject(project: Project) {
-        project.states.forEach { state ->
-            csvTasksStatesDataSource.addNewState(state, project.id)
-        }
-        project.tasks.forEach { task ->
-            csvTasksDataSource.addNewTask(task, project.id)
-        }
-        file.appendText("${project.id},${project.title},${project.description}\n")
+    override fun addNewProject(project: ProjectData) {
+        projectsCsvFileHandler.appendRecord(
+            parser.projectDataToRecord(project)
+        )
     }
 
     override fun editProjectTitle(projectId: UUID, newTitle: String) {
-        val projects = getAllProjects().map { project ->
-            if (project.id == projectId) project.copy(title = newTitle) else project
-        }
-        writeProjectsToFile(projects)
+        projectsCsvFileHandler.readRecords()
+            .map {
+                val newProjectData = parser.recordToTaskData(it)
+                if (newProjectData.id == projectId) {
+                    return@map parser.taskDataToRecord(newProjectData.copy(title = newTitle))
+                }
+                it
+            }
+            .also(projectsCsvFileHandler::rewriteRecords)
     }
 
     override fun editProjectDescription(projectId: UUID, newDescription: String) {
-        val projects = getAllProjects().map { project ->
-            if (project.id == projectId) project.copy(description = newDescription) else project
-        }
-        writeProjectsToFile(projects)
+        projectsCsvFileHandler.readRecords()
+            .map {
+                val newProjectData = parser.recordToTaskData(it)
+                if (newProjectData.id == projectId) {
+                    return@map parser.taskDataToRecord(newProjectData.copy(description = newDescription))
+                }
+                it
+            }
+            .also(projectsCsvFileHandler::rewriteRecords)
     }
 
     override fun deleteProject(projectId: UUID) {
-        val projects = getAllProjects().filter { it.id != projectId }
-        csvTasksDataSource.getTasksByProjectID(projectId).forEach { task ->
-            csvTasksDataSource.deleteTask(task.id)
-        }
-        csvTasksStatesDataSource.getAllStatesByProjectId(projectId).forEach { state ->
-            csvTasksStatesDataSource.deleteState(state.id)
-        }
-        writeProjectsToFile(projects)
-    }
-
-    private fun writeProjectsToFile(projects: List<Project>) {
-        file.writeText("id,title,description\n")
-        projects.forEach { project ->
-            file.appendText("${project.id},${project.title},${project.description}\n")
-        }
+        projectsCsvFileHandler.readRecords()
+            .map {
+                val newProjectData = parser.recordToTaskData(it)
+                if (newProjectData.id == projectId) {
+                    return@map parser.taskDataToRecord(newProjectData.copy(isDeleted = true))
+                }
+                it
+            }
+            .also(projectsCsvFileHandler::rewriteRecords)
     }
 }

@@ -30,7 +30,7 @@ class DtoMapper {
             title = projectData.title,
             description = projectData.description,
             tasks = tasks,
-            states = states
+            tasksStates = states
         )
     }
 
