@@ -52,32 +52,32 @@ class TaskManagementView(
 
     private fun selectNextUI() {
         when (cliReader.getValidUserNumberInRange(MAX_OPTION_NUMBER)) {
-            "1" -> {
+            1 -> {
                 taskTitleEditionView.editTitle(currentTask)
                 start(currentTask.id, currentProject)
             }
 
-            "2" -> {
+            2 -> {
                 taskDescriptionEditionView.editDescription(currentTask)
                 start(currentTask.id, currentProject)
             }
 
-            "3" -> {
+            3 -> {
                 taskStateEditionView.editState(currentTask, currentProject.tasksStates)
                 start(currentTask.id, currentProject)
             }
 
-            "4" -> {
+            4 -> {
                 taskDeletionView.deleteTask(currentTask)
                 return
             }
 
-            "5" -> {
+            5 -> {
                 logsView.printLogsByEntityId(currentTask.id)
                 start(currentTask.id, currentProject)
             }
 
-            "0" -> return
+            0 -> return
         }
     }
 
