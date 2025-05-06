@@ -1,4 +1,4 @@
-package logic.useCases
+package logic.useCases.mateUseCase
 
 import logic.repositories.AuthenticationRepository
 import logic.validation.CredentialValidator
