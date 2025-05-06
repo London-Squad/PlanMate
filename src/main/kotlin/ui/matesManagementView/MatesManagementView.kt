@@ -1,14 +1,18 @@
 package ui.matesManagementView
 
 import logic.entities.User
+import logic.useCases.GetAllMatesUseCase
 import logic.useCases.GetLoggedInUserUseCase
 import ui.cliPrintersAndReaders.CLIPrinter
 import ui.cliPrintersAndReaders.CLIReader
+import ui.cliPrintersAndReaders.cliTable.CLITablePrinter
 
 class MatesManagementView(
     private val cliPrinter: CLIPrinter,
     private val cliReader: CLIReader,
     private val getLoggedInUserUseCase: GetLoggedInUserUseCase,
+    private val getAllMatesUseCase: GetAllMatesUseCase,
+    private val cliTablePrinter: CLITablePrinter,
     private val mateCreationView: MateCreationView
 ) {
 
@@ -24,6 +28,7 @@ class MatesManagementView(
 
     private fun printOptions() {
         printLn("Mates Management Menu")
+        listAllMates()
         printLn("1. Create New Mate")
         printLn("0. Back")
     }
@@ -38,6 +43,22 @@ class MatesManagementView(
         start()
     }
 
+    private fun listAllMates() {
+        val mates = getAllMatesUseCase.getAllMates()
+        if (mates.isEmpty()) {
+            printLn("No mates found.")
+            return
+        }
+
+        val headers = listOf("ID", "Username", "Type")
+        val data = mates.map { mate ->
+            listOf(mate.id.toString(), mate.userName, mate.type.toString())
+        }
+        val columnWidths = listOf(null, null, null)
+
+        cliTablePrinter(headers, data, columnWidths)
+    }
+
     private fun printLn(message: String) {
         cliPrinter.cliPrintLn(message)
     }
@@ -45,5 +66,4 @@ class MatesManagementView(
     private companion object {
         const val MAX_OPTION_NUMBER = 1
     }
-
 }

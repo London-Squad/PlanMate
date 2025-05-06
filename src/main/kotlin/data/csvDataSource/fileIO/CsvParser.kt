@@ -5,7 +5,7 @@ import logic.exceptions.RetrievingDataFailureException
 import java.time.LocalDateTime
 import java.util.*
 
-class Parser {
+class CsvParser {
     fun taskDtoToRecord(taskDto: TaskDto): List<String> {
         return listOf(
             taskDto.id.toString(),

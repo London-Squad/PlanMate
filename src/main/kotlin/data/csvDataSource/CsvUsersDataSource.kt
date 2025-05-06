@@ -1,7 +1,7 @@
 package data.csvDataSource
 
 import data.csvDataSource.fileIO.CsvFileHandler
-import data.csvDataSource.fileIO.Parser
+import data.csvDataSource.fileIO.CsvParser
 import data.dataSources.UsersDataSource
 import data.dto.UserDto
 import logic.entities.User
@@ -11,7 +11,7 @@ import java.util.*
 class CsvUsersDataSource(
     private val usersCsvFileHandler: CsvFileHandler,
     private val loggedInUserCsvFileHandler: CsvFileHandler,
-    private val parser: Parser
+    private val csvParser: CsvParser
 ) : UsersDataSource {
     private var loggedInUser: UserDto? = null
 
@@ -21,7 +21,7 @@ class CsvUsersDataSource(
 
     override fun getMates(): List<UserDto> {
         return usersCsvFileHandler.readRecords()
-            .map(parser::recordToUserDto)
+            .map(csvParser::recordToUserDto)
     }
 
     override fun getAdmin(): UserDto = ADMIN
@@ -29,9 +29,9 @@ class CsvUsersDataSource(
     override fun deleteUser(userId: UUID) {
         usersCsvFileHandler.readRecords()
             .map {
-                val userDto = parser.recordToUserDto(it)
+                val userDto = csvParser.recordToUserDto(it)
                 if (userDto.id == userId)
-                    parser.userDtoToRecord(userDto.copy(isDeleted = true))
+                    csvParser.userDtoToRecord(userDto.copy(isDeleted = true))
                 else it
             }
             .also(usersCsvFileHandler::rewriteRecords)
@@ -45,7 +45,7 @@ class CsvUsersDataSource(
                 hashedPassword = hashedPassword,
                 type = User.Type.MATE.name,
                 isDeleted = false
-            ).let(parser::userDtoToRecord)
+            ).let(csvParser::userDtoToRecord)
         )
     }
 
@@ -55,7 +55,7 @@ class CsvUsersDataSource(
 
     override fun setLoggedInUser(user: UserDto) {
         loggedInUserCsvFileHandler.rewriteRecords(
-            listOf(parser.userDtoToRecord(user))
+            listOf(csvParser.userDtoToRecord(user))
         )
         loggedInUser = user
     }
@@ -70,7 +70,7 @@ class CsvUsersDataSource(
     private fun loadUserFromLocalFile(): UserDto? {
         return loggedInUserCsvFileHandler.readRecords()
             .takeIf { it.isNotEmpty() }
-            ?.let { parser.recordToUserDto(it[0]) }
+            ?.let { csvParser.recordToUserDto(it[0]) }
     }
 
     companion object {

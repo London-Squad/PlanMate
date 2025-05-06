@@ -1,33 +1,33 @@
 package data.csvDataSource
 
 import data.csvDataSource.fileIO.CsvFileHandler
-import data.csvDataSource.fileIO.Parser
+import data.csvDataSource.fileIO.CsvParser
 import data.dataSources.TasksStatesDataSource
 import data.dto.TaskStateDto
 import java.util.UUID
 
 class CsvTasksStatesDataSource(
     private val tasksStatesCsvFileHandler: CsvFileHandler,
-    private val parser: Parser
+    private val csvParser: CsvParser
 ) : TasksStatesDataSource {
 
     override fun getAllTasksStates(): List<TaskStateDto> {
         return tasksStatesCsvFileHandler.readRecords()
-            .map(parser::recordToTaskStateDto)
+            .map(csvParser::recordToTaskStateDto)
     }
 
     override fun addNewTaskState(taskStateDto: TaskStateDto) {
         tasksStatesCsvFileHandler.appendRecord(
-            parser.taskStateDtoToRecord(taskStateDto)
+            csvParser.taskStateDtoToRecord(taskStateDto)
         )
     }
 
     override fun editTaskStateTitle(stateId: UUID, newTitle: String) {
         tasksStatesCsvFileHandler.readRecords()
             .map {
-                val newTaskData = parser.recordToTaskStateDto(it)
+                val newTaskData = csvParser.recordToTaskStateDto(it)
                 if (newTaskData.id == stateId) {
-                    parser.taskStateDtoToRecord(newTaskData.copy(title = newTitle))
+                    csvParser.taskStateDtoToRecord(newTaskData.copy(title = newTitle))
                 } else it
             }
             .also(tasksStatesCsvFileHandler::rewriteRecords)
@@ -36,9 +36,9 @@ class CsvTasksStatesDataSource(
     override fun editTaskStateDescription(stateId: UUID, newDescription: String) {
         tasksStatesCsvFileHandler.readRecords()
             .map {
-                val newTaskData = parser.recordToTaskStateDto(it)
+                val newTaskData = csvParser.recordToTaskStateDto(it)
                 if (newTaskData.id == stateId) {
-                    parser.taskStateDtoToRecord(newTaskData.copy(description = newDescription))
+                    csvParser.taskStateDtoToRecord(newTaskData.copy(description = newDescription))
                 } else it
             }
             .also(tasksStatesCsvFileHandler::rewriteRecords)
@@ -47,9 +47,9 @@ class CsvTasksStatesDataSource(
     override fun deleteTaskState(stateId: UUID) {
         tasksStatesCsvFileHandler.readRecords()
             .map {
-                val newTaskData = parser.recordToTaskStateDto(it)
+                val newTaskData = csvParser.recordToTaskStateDto(it)
                 if (newTaskData.id == stateId) {
-                    parser.taskStateDtoToRecord(newTaskData.copy(isDeleted = true))
+                    csvParser.taskStateDtoToRecord(newTaskData.copy(isDeleted = true))
                 } else it
             }
             .also(tasksStatesCsvFileHandler::rewriteRecords)

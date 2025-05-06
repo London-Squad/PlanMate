@@ -11,39 +11,41 @@ import org.bson.Document
 import java.util.UUID
 
 class MongoDBUsersDataSource(
-    private val collection: MongoCollection<Document> = DatabaseConnection.getUsersCollection()
+    private val collection: MongoCollection<Document>,
+    private val mongoParser: MongoDBParse
 ) : UsersDataSource {
 
     private var loggedInUser: UserDto? = null
 
     override fun getMates(): List<UserDto> {
-        return collection.find(Filters.eq(IS_DELETED_FIELD, false)).map { doc ->
-            UserDto(
-                id = UUID.fromString(doc.getString(ID_FIELD)),
-                userName = doc.getString(USERNAME_FIELD),
-                hashedPassword = doc.getString(PASSWORD_FIELD),
-                type = doc.getString(TYPE_FIELD),
-                isDeleted = doc.getBoolean(IS_DELETED_FIELD) ?: false
-            )
+        return collection.find(Filters.eq(MongoDBParse.IS_DELETED_FIELD, false)).map { doc ->
+            mongoParser.documentToUserDto(doc)
         }.toList()
     }
 
     override fun getAdmin(): UserDto = ADMIN
 
     override fun deleteUser(userId: UUID) {
-            collection.updateOne(Filters.eq(ID_FIELD, userId.toString()), Updates.set(IS_DELETED_FIELD, true))
+        collection.updateOne(
+            Filters.eq(MongoDBParse.ID_FIELD, userId.toString()),
+            Updates.set(MongoDBParse.IS_DELETED_FIELD, true)
+        )
 
     }
 
     override fun addMate(userName: String, hashedPassword: String) {
-            val existingUser = collection.find(Filters.eq(USERNAME_FIELD, userName)).first()
-        if (existingUser != null) throw UserNameAlreadyTakenException()
-            val doc = Document(ID_FIELD, UUID.randomUUID().toString())
-                .append(USERNAME_FIELD, userName)
-                .append(PASSWORD_FIELD, hashedPassword)
-                .append(TYPE_FIELD, "MATE")
-                .append(IS_DELETED_FIELD, false)
-            collection.insertOne(doc)
+        val existingUser = collection.find(Filters.eq(MongoDBParse.USERNAME_FIELD, userName)).first()
+        if (existingUser != null) throw IllegalStateException("User with username '$userName' already exists")
+        val doc = mongoParser.userDtoToDocument(
+            UserDto(
+                UUID.randomUUID(),
+                userName,
+                hashedPassword,
+                "MATE",
+                isDeleted = false
+            )
+        )
+        collection.insertOne(doc)
     }
 
     override fun getLoggedInUser(): UserDto {
@@ -59,11 +61,6 @@ class MongoDBUsersDataSource(
     }
 
     companion object {
-        private const val ID_FIELD = "id"
-        private const val USERNAME_FIELD = "userName"
-        private const val PASSWORD_FIELD = "hashedPassword"
-        private const val TYPE_FIELD = "type"
-        private const val IS_DELETED_FIELD = "isDeleted"
         private val ADMIN = UserDto(
             id = UUID.fromString("5750f82c-c1b6-454d-b160-5b14857bc9dc"),
             userName = "admin",

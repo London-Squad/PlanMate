@@ -1,33 +1,33 @@
 package data.csvDataSource
 
 import data.csvDataSource.fileIO.CsvFileHandler
-import data.csvDataSource.fileIO.Parser
+import data.csvDataSource.fileIO.CsvParser
 import data.dataSources.ProjectsDataSource
 import data.dto.ProjectDto
 import java.util.UUID
 
 class CsvProjectsDataSource(
     private val projectsCsvFileHandler: CsvFileHandler,
-    private val parser: Parser,
+    private val csvParser: CsvParser,
 ) : ProjectsDataSource {
 
     override fun getAllProjects(): List<ProjectDto> {
         return projectsCsvFileHandler.readRecords()
-            .map(parser::recordToProjectDto)
+            .map(csvParser::recordToProjectDto)
     }
 
     override fun addNewProject(project: ProjectDto) {
         projectsCsvFileHandler.appendRecord(
-            parser.projectDtoToRecord(project)
+            csvParser.projectDtoToRecord(project)
         )
     }
 
     override fun editProjectTitle(projectId: UUID, newTitle: String) {
         projectsCsvFileHandler.readRecords()
             .map {
-                val projectData = parser.recordToProjectDto(it)
+                val projectData = csvParser.recordToProjectDto(it)
                 if (projectData.id == projectId)
-                    parser.projectDtoToRecord(projectData.copy(title = newTitle))
+                    csvParser.projectDtoToRecord(projectData.copy(title = newTitle))
                 else it
             }
             .also(projectsCsvFileHandler::rewriteRecords)
@@ -36,9 +36,9 @@ class CsvProjectsDataSource(
     override fun editProjectDescription(projectId: UUID, newDescription: String) {
         projectsCsvFileHandler.readRecords()
             .map {
-                val projectData = parser.recordToProjectDto(it)
+                val projectData = csvParser.recordToProjectDto(it)
                 if (projectData.id == projectId)
-                    parser.projectDtoToRecord(projectData.copy(description = newDescription))
+                    csvParser.projectDtoToRecord(projectData.copy(description = newDescription))
                 else it
             }
             .also(projectsCsvFileHandler::rewriteRecords)
@@ -47,9 +47,9 @@ class CsvProjectsDataSource(
     override fun deleteProject(projectId: UUID) {
         projectsCsvFileHandler.readRecords()
             .map {
-                val projectData = parser.recordToProjectDto(it)
+                val projectData = csvParser.recordToProjectDto(it)
                 if (projectData.id == projectId)
-                    parser.projectDtoToRecord(projectData.copy(isDeleted = true))
+                    csvParser.projectDtoToRecord(projectData.copy(isDeleted = true))
                 else it
             }
             .also(projectsCsvFileHandler::rewriteRecords)

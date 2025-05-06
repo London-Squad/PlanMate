@@ -1,23 +1,23 @@
 package data.csvDataSource
 
 import data.csvDataSource.fileIO.CsvFileHandler
-import data.csvDataSource.fileIO.Parser
+import data.csvDataSource.fileIO.CsvParser
 import data.dataSources.LogsDataSource
 import data.dto.LogDto
 
 class CsvLogsDataSource(
     private val logsCsvFileHandler: CsvFileHandler,
-    private val parser: Parser
+    private val csvParser: CsvParser
 ) : LogsDataSource {
 
     override fun getAllLogs(): List<LogDto> {
         return logsCsvFileHandler.readRecords()
-            .map(parser::recordToLogDto)
+            .map(csvParser::recordToLogDto)
     }
 
     override fun addLog(logDto: LogDto) {
         logsCsvFileHandler.appendRecord(
-            parser.logDtoToRecord(logDto)
+            csvParser.logDtoToRecord(logDto)
         )
     }
 }

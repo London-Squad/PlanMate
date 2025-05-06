@@ -2,7 +2,7 @@ package di
 
 import data.csvDataSource.*
 import data.csvDataSource.fileIO.CsvFileHandler
-import data.csvDataSource.fileIO.Parser
+import data.csvDataSource.fileIO.CsvParser
 import data.dataSources.*
 import data.mongoDBDataSource.MongoDBProjectsDataSource
 import org.koin.core.qualifier.named
@@ -41,12 +41,12 @@ val csvStorageModule = module {
         CsvFileHandler(File(directory, "activeUser.csv"))
     }
 
-    single { Parser() }
+    single { CsvParser() }
 
     single<TasksDataSource> { CsvTasksDataSource(get(named("tasksFileHandler")), get()) }
     single<TasksStatesDataSource> { CsvTasksStatesDataSource(get(named("taskStatesFileHandler")), get()) }
     single<ProjectsDataSource> { CsvProjectsDataSource(get(named("projectsFileHandler")), get()) }
-    single<ProjectsDataSource> { MongoDBProjectsDataSource(get()) }
+    single<ProjectsDataSource> { CsvProjectsDataSource(get(), get()) }
     single<UsersDataSource> {
         CsvUsersDataSource(
             get(named("usersFileHandler")),

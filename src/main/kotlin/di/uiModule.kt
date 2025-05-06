@@ -44,8 +44,5 @@ val uiModule = module {
     single { LogsView(get(), get(), get(), get()) }
 
     single { MateCreationView(get(), get(), get(), get()) }
-    single { MatesManagementView(get(), get(), get(), get()) }
-
-
-
+    single { MatesManagementView(get(), get(), get(), get(), get(), get()) }
 }
