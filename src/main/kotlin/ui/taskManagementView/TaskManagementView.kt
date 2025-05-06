@@ -23,8 +23,8 @@ class TaskManagementView(
 
     private lateinit var currentTask: Task
     private lateinit var currentProject: Project
-    fun start(taskID: UUID, project: Project) {
 
+    fun start(taskID: UUID, project: Project) {
         viewExceptionHandler.tryCall {
             currentTask = taskRepository.getTaskByID(taskID)
         }
@@ -36,12 +36,15 @@ class TaskManagementView(
     }
 
     private fun printTask() {
-        printLn("Task: ${currentTask.title}")
-        printLn("Description: ${currentTask.description}")
-        printLn("State: ${currentTask.taskState.title}")
+        cliPrinter.printHeader("Task: ${currentTask.title}")
+        printLn("Details:")
+        printLn("  - Description: ${currentTask.description}")
+        printLn("  - State: ${currentTask.taskState.title}")
+        printLn("")
     }
 
     private fun printOptions() {
+        printLn("Options:")
         printLn("1. Edit Title")
         printLn("2. Edit description")
         printLn("3. Edit state")
@@ -80,7 +83,6 @@ class TaskManagementView(
             0 -> return
         }
     }
-
 
     private fun printLn(message: String) {
         cliPrinter.cliPrintLn(message)
