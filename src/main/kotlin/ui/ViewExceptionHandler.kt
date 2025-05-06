@@ -8,31 +8,17 @@ class ViewExceptionHandler(private val cliPrinter: CLIPrinter) {
         try {
             anyFunction()
             return true
-        } catch (e: NoLoggedInUserFoundException) {
-            cliPrinter.cliPrintLn("Error: No user logged in. Please log in first.")
-        } catch (e: UserNotFoundException) {
-            cliPrinter.cliPrintLn("Error: user was not found.")
-        } catch (e: IndexOutOfBoundsException) {
-            cliPrinter.cliPrintLn("Error: Selected index is out of bounds.")
-        } catch (e: NotFoundException) {
-            cliPrinter.cliPrintLn("Unexpected error: ${e.message}")
-        } catch (e: InvalidUserNameLengthException) {
-            cliPrinter.cliPrintLn("Unexpected error: ${e.message}")
         } catch (e: AuthenticationException) {
-            cliPrinter.cliPrintLn("Unexpected error: ${e.message}")
-        } catch (e: InvalidPasswordException) {
-            cliPrinter.cliPrintLn("Unexpected error: ${e.message}")
-        } catch (e: UserAlreadyExistException) {
-            cliPrinter.cliPrintLn("Unexpected error: ${e.message}")
-        } catch (e: UnauthorizedAccessException) {
-            cliPrinter.cliPrintLn("Unexpected error: ${e.message}")
-        } catch (e: UserNameAlreadyTakenException) {
-            cliPrinter.cliPrintLn("Unexpected error: ${e.message}")
-        } catch (e: RegistrationFailedException) {
-            cliPrinter.cliPrintLn("Unexpected error: ${e.message}")
+            printLn(e.message ?: "something went wrong")
+        } catch (e: RetrievingDataFailureException) {
+            printLn(e.message ?: "something went wrong")
+        } catch (e: StoringDataFailureException) {
+            printLn(e.message ?: "something went wrong")
         } catch (e: Exception) {
-            cliPrinter.cliPrintLn("Unexpected error: ${e.message}")
+            printLn("Unexpected error: ${e.message}")
         }
         return false
     }
+
+    private fun printLn(message: String) = cliPrinter.cliPrintLn(message)
 }

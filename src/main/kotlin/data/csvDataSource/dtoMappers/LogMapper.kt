@@ -2,6 +2,7 @@ package data.csvDataSource.dtoMappers
 
 import data.dto.LogDto
 import logic.entities.*
+import logic.exceptions.RetrievingDataFailureException
 
 fun LogDto.toLog(user: User, planEntity: PlanEntity): Log {
     val action = when (this.action.lowercase()) {
@@ -14,7 +15,7 @@ fun LogDto.toLog(user: User, planEntity: PlanEntity): Log {
             newValue = this.newValue
         )
 
-        else -> throw IllegalArgumentException("Unknown action type: ${this.action}")
+        else -> throw RetrievingDataFailureException("Unknown action type: ${this.action}")
     }
 
     return Log(

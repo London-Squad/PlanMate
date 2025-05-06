@@ -4,6 +4,7 @@ import org.koin.java.KoinJavaComponent.getKoin
 import ui.welcomeView.WelcomeView
 
 fun main() {
+
     startKoin {
         modules(
 //            csvStorageModule,

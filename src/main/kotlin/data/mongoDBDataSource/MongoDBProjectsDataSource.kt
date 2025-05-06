@@ -9,7 +9,7 @@ import org.bson.Document
 import java.util.UUID
 
 class MongoDBProjectsDataSource(
-    private val projectsCollection: MongoCollection<Document> = DatabaseConnection.getUsersCollection()
+    private val projectsCollection: MongoCollection<Document>
 ) : ProjectsDataSource {
 
     override fun getAllProjects(): List<ProjectDto> {

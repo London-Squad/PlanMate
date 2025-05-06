@@ -8,7 +8,7 @@ import java.time.LocalDateTime
 import java.util.UUID
 
 class MongoDBLogsDataSource(
-    private val collection: MongoCollection<Document> = DatabaseConnection.getUsersCollection()
+    private val collection: MongoCollection<Document>
 ) : LogsDataSource {
 
     override fun getAllLogs(): List<LogDto> {

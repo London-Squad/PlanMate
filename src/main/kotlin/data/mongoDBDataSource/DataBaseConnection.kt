@@ -14,9 +14,9 @@ object DatabaseConnection {
     private const val USERS_COLLECTION_NAME = "users"
 
     private val mongoUri: String = System.getenv("MONGO_URI")
-        ?: throw IllegalStateException("MONGO_URI not set in environment variables")
 
     private val client = MongoClients.create(mongoUri)
+
     val database: MongoDatabase = client.getDatabase(DB_NAME)
 
     private val projectsCollection: MongoCollection<Document> = database.getCollection(PROJECTS_COLLECTION_NAME)
