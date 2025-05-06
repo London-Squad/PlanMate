@@ -38,18 +38,19 @@ class StatesView(
         }
     }
 
-    private fun viewStates() {
-        var tasksStates: List<TaskState>
+    private fun viewStates():List<TaskState> {
+        var states: List<TaskState> = emptyList()
         viewExceptionHandler.tryCall {
-            tasksStates = useCase.getStates(projectId)
-            if (tasksStates.isEmpty()) {
+            states = useCase.getStates(projectId)
+            if (states.isEmpty()) {
                 cliPrinter.cliPrintLn("No states available.")
             } else {
-                tasksStates.forEach {
-                    cliPrinter.cliPrintLn("${it.id} - ${it.title}: ${it.description}")
+                states.forEachIndexed { index, state ->
+                    cliPrinter.cliPrintLn("${index + 1} - ${state.title}: ${state.description}")
                 }
             }
         }
+        return states
     }
 
     private fun addState() {
@@ -60,8 +61,10 @@ class StatesView(
     }
 
     private fun editState() {
-        viewStates()
-        val id = getUUID("Enter state ID to edit: ")
+         val states =viewStates()
+      if (states.isEmpty()) return
+        val  index = getValidIndex(states.size ,"Enter the number (1 to ${states.size}) of the state to edit: ")
+        val selectedState = states[index]
 
         cliPrinter.cliPrintLn("1. Edit title")
         cliPrinter.cliPrintLn("2. Edit description")
@@ -69,13 +72,13 @@ class StatesView(
         when (cliReader.getUserInput("Choose: ")) {
             "1" -> {
                 val newTitle = cliReader.getUserInput("New title: ")
-                useCase.editStateTitle(id, newTitle)
+                useCase.editStateTitle(selectedState.id, newTitle)
                 cliPrinter.cliPrintLn("Title updated.")
             }
 
             "2" -> {
                 val newDesc = cliReader.getUserInput("New description: ")
-                useCase.editStateDescription(id, newDesc)
+                useCase.editStateDescription(selectedState.id, newDesc)
                 cliPrinter.cliPrintLn("Description updated.")
             }
 
@@ -84,14 +87,27 @@ class StatesView(
     }
 
     private fun deleteState() {
-        viewStates()
-        val id = getUUID("Enter state ID to delete: ")
+         val states= viewStates()
+        if (states.isEmpty())return
+        val index = getValidIndex(states.size, "Enter the number (1 to ${states.size}) of the state to delete: ")
+        val selectedState = states[index]
         val confirm = cliReader.getUserInput("Are you sure? (y/n): ")
         if (confirm.lowercase() == "y") {
-            useCase.deleteState(id)
+            useCase.deleteState(selectedState.id)
             cliPrinter.cliPrintLn("State deleted.")
         } else {
             cliPrinter.cliPrintLn("Deletion canceled.")
+        }
+    }
+    private fun getValidIndex(max: Int, prompt: String): Int {
+        while (true) {
+            val input = cliReader.getUserInput(prompt)
+            val index = input.toIntOrNull()
+            if (index != null && index in 1..max) {
+                return index - 1
+            } else {
+                cliPrinter.cliPrintLn("Please enter a number between 1 and $max.")
+            }
         }
     }
 
