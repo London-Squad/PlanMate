@@ -1,7 +1,6 @@
 package ui
 
 import data.exceptions.NoLoggedInUserException
-import logic.exceptions.*
 import logic.exceptions.authenticationExceptions.AuthenticationException
 import logic.exceptions.authenticationExceptions.InvalidPasswordException
 import logic.exceptions.authenticationExceptions.InvalidUserNameLengthException
@@ -17,7 +16,7 @@ class ViewExceptionHandler(private val cliPrinter: CLIPrinter) {
         try {
             anyFunction()
             return true
-        } catch (e: NoLoggedInUserFoundException) {
+        } catch (e: NoLoggedInUserException) {
             cliPrinter.cliPrintLn("Error: No user logged in. Please log in first.")
         } catch (e: UserNotFoundException) {
             cliPrinter.cliPrintLn("Error: No user is logged in.")
@@ -34,8 +33,6 @@ class ViewExceptionHandler(private val cliPrinter: CLIPrinter) {
         } catch (e: UseNameAlreadyExistException) {
             cliPrinter.cliPrintLn("Unexpected error: ${e.message}")
         } catch (e: UnauthorizedAccessException) {
-            cliPrinter.cliPrintLn("Unexpected error: ${e.message}")
-        } catch (e: UserNameAlreadyTakenException) {
             cliPrinter.cliPrintLn("Unexpected error: ${e.message}")
         } catch (e: RegistrationFailedException) {
             cliPrinter.cliPrintLn("Unexpected error: ${e.message}")

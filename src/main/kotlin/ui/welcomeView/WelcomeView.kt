@@ -1,6 +1,6 @@
 package ui.welcomeView
 
-import logic.exceptions.NoLoggedInUserFoundException
+import data.exceptions.NoLoggedInUserException
 import logic.useCases.GetLoggedInUserUseCase
 import ui.ViewExceptionHandler
 import ui.cliPrintersAndReaders.CLIPrinter
@@ -23,7 +23,7 @@ class WelcomeView(
                 val loggedInUserType = getLoggedInUserUseCase.getLoggedInUser().type
                 mainMenuView.start(loggedInUserType)
                 start()
-            } catch (_: NoLoggedInUserFoundException) {
+            } catch (_: NoLoggedInUserException) {
                 startNormalWelcomeView()
             }
         }
