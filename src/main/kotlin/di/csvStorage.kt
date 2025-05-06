@@ -4,6 +4,8 @@ import data.csvDataSource.*
 import data.csvDataSource.fileIO.CsvFileHandler
 import data.csvDataSource.fileIO.Parser
 import data.dataSources.*
+import data.mongoDBDataSource.MongoDBLogsDataSource
+import data.mongoDBDataSource.MongoDBProjectsDataSource
 import org.koin.core.qualifier.named
 import org.koin.dsl.module
 import java.io.File
@@ -46,7 +48,8 @@ val csvStorageModule = module {
 
     single<TasksDataSource> { CsvTasksDataSource(get(named("tasksFileHandler")), get()) }
     single<TasksStatesDataSource> { CsvTasksStatesDataSource(get(named("taskStatesFileHandler")), get()) }
-    single<ProjectsDataSource> { CsvProjectsDataSource(get(named("projectsFileHandler")), get()) }
+//    single<ProjectsDataSource> { CsvProjectsDataSource(get(named("projectsFileHandler")), get()) }
+    single<ProjectsDataSource> { MongoDBProjectsDataSource(get()) }
     single<UsersDataSource> {
         CsvUsersDataSource(
             get(named("usersFileHandler")),
@@ -54,6 +57,7 @@ val csvStorageModule = module {
             get()
         )
     }
-    single<LogsDataSource> { CsvLogsDataSource(get(named("LogsFileHandler")), get()) }
+//    single<LogsDataSource> { CsvLogsDataSource(get(named("LogsFileHandler")), get()) }
+    single<LogsDataSource> { MongoDBLogsDataSource(get()) }
 
 }
