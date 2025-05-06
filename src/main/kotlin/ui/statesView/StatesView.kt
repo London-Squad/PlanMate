@@ -35,15 +35,16 @@ class StatesView(
         }
     }
 
-    private fun viewStates() {
+    private fun viewStates(): List<State> {
         val states = useCase.getStates(projectId)
         if (states.isEmpty()) {
             cliPrinter.cliPrintLn("No states available.")
         } else {
-            states.forEach {
-                cliPrinter.cliPrintLn("${it.id} - ${it.title}: ${it.description}")
+            states.forEachIndexed {index, state ->
+                cliPrinter.cliPrintLn("${index+1}.${state.title}:${state.description} (ID: ${state.id})")
             }
         }
+        return states
     }
 
     private fun addState() {
@@ -54,22 +55,23 @@ class StatesView(
     }
 
     private fun editState() {
-        viewStates()
-        val id = getUUID("Enter state ID to edit: ")
-
+         val states=viewStates()
+        if(states.isEmpty())return
+        val index = getValidIndex(states.size, "Enter the number of the state you want to edit (1 to ${states.size}):")
+        val selectedState=states[index]
         cliPrinter.cliPrintLn("1. Edit title")
         cliPrinter.cliPrintLn("2. Edit description")
 
         when (cliReader.getUserInput("Choose: ")) {
             "1" -> {
                 val newTitle = cliReader.getUserInput("New title: ")
-                useCase.editStateTitle(id, newTitle)
+                useCase.editStateTitle(selectedState.id, newTitle)
                 cliPrinter.cliPrintLn("Title updated.")
             }
 
             "2" -> {
                 val newDesc = cliReader.getUserInput("New description: ")
-                useCase.editStateDescription(id, newDesc)
+                useCase.editStateDescription(selectedState.id, newDesc)
                 cliPrinter.cliPrintLn("Description updated.")
             }
 
@@ -78,23 +80,32 @@ class StatesView(
     }
 
     private fun deleteState() {
-        viewStates()
-        val id = getUUID("Enter state ID to delete: ")
+        val state=viewStates()
+        if(state.isEmpty())return
+        val index = getValidIndex(state.size, "Enter the number of the state you want to delete (1 to ${state.size}):")
+
+        val selectedState=state[index]
+
         val confirm = cliReader.getUserInput("Are you sure? (y/n): ")
         if (confirm.lowercase() == "y") {
-            useCase.deleteState(id)
+            useCase.deleteState(selectedState.id)
             cliPrinter.cliPrintLn("State deleted.")
         } else {
             cliPrinter.cliPrintLn("Deletion canceled.")
         }
     }
 
-    private fun getUUID(prompt: String): UUID {
-        return try {
-            UUID.fromString(cliReader.getUserInput(prompt))
-        } catch (e: IllegalArgumentException) {
-            cliPrinter.cliPrintLn("Invalid UUID format.")
-            getUUID(prompt)
+
+    private fun getValidIndex(max: Int, prompt: String): Int {
+        while (true) {
+            val input = cliReader.getUserInput(prompt)
+            val index = input.toIntOrNull()
+            if (index != null && index in 1..max) {
+                return index - 1
+            } else {
+                cliPrinter.cliPrintLn("Invalid number.")
+            }
         }
     }
+
 }
