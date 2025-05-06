@@ -46,7 +46,7 @@ class MainMenuView(
                 return
             }
         }
-        start(loggedInUserType) // start main menu again after going back from options
+        start(loggedInUserType)
     }
 
     private fun getValidUserInput(): Int {

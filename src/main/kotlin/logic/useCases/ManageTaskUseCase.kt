@@ -15,14 +15,8 @@ class ManageTaskUseCase(
 ) {
 
     fun createNewTask(title: String, description: String, projectId: UUID) {
-        val taskState = projectsRepository.getProjectById(projectId).tasksStates.first()
 
-        val newTask = Task(
-            id = UUID.randomUUID(),
-            title = title,
-            description = description,
-            taskState = taskState
-        )
+        val newTask = buildNewTask(title, description, projectId)
 
         taskRepository.addNewTask(newTask, projectId)
 
@@ -34,28 +28,39 @@ class ManageTaskUseCase(
         )
     }
 
-    fun editTaskTitle(taskID: UUID, newTitle: String) {
-        val task = taskRepository.getTaskByID(taskID)
-
-        taskRepository.editTaskTitle(taskID, newTitle)
-            taskRepository.editTaskTitle(taskID, newTitle)
-            logsRepository.addLog(
-                Log(
-                    user = authenticationRepository.getLoggedInUser(),
-                    action = Edit(
-                        entity = task,
-                        property = "title",
-                        oldValue = task.title,
-                        newValue = newTitle
-                    )
-                )
-            )
+    private fun buildNewTask(
+        title: String,
+        description: String,
+        projectId: UUID
+    ): Task {
+        return Task(
+            title = title,
+            description = description,
+            taskState = projectsRepository.getProjectById(projectId).tasksStates.first()
+        )
     }
 
-    fun editTaskDescription(taskID: UUID, newDescription: String) {
-        val task = taskRepository.getTaskByID(taskID)
+    fun editTaskTitle(taskId: UUID, newTitle: String) {
+        val task = taskRepository.getTaskByID(taskId)
 
-        taskRepository.editTaskDescription(taskID, newDescription)
+        taskRepository.editTaskTitle(taskId, newTitle)
+        logsRepository.addLog(
+            Log(
+                user = authenticationRepository.getLoggedInUser(),
+                action = Edit(
+                    entity = task,
+                    property = "title",
+                    oldValue = task.title,
+                    newValue = newTitle
+                )
+            )
+        )
+    }
+
+    fun editTaskDescription(taskId: UUID, newDescription: String) {
+        val task = taskRepository.getTaskByID(taskId)
+
+        taskRepository.editTaskDescription(taskId, newDescription)
         logsRepository.addLog(
             Log(
                 user = authenticationRepository.getLoggedInUser(),
@@ -69,10 +74,10 @@ class ManageTaskUseCase(
         )
     }
 
-    fun editTaskState(taskID: UUID, newTaskState: TaskState) {
-        val task = taskRepository.getTaskByID(taskID)
+    fun editTaskState(taskId: UUID, newTaskState: TaskState) {
+        val task = taskRepository.getTaskByID(taskId)
 
-        taskRepository.editTaskState(taskID, newTaskState)
+        taskRepository.editTaskState(taskId, newTaskState)
         logsRepository.addLog(
             Log(
                 user = authenticationRepository.getLoggedInUser(),
