@@ -15,29 +15,17 @@ class CreateMateUseCase(
     private val credentialValidator: CredentialValidator
 ) {
     fun createMate(username: String, password: String) {
-        val loggedInUser = try {
-            authenticationRepository.getLoggedInUser()
-        } catch (e: Exception) {
-            throw UserNotFoundException()
-        }
-
-        if (loggedInUser.type != User.Type.ADMIN) {
-            throw UnauthorizedAccessException()
-        }
-
-        credentialValidator.takeIfValidNameOrThrowException(username)
-        credentialValidator.takeIfValidPasswordOrThrowException(password)
+        credentialValidator.validateUserName(username)
+        credentialValidator.validatePassword(password)
 
         authenticationRepository.getMates()
             .any { it.userName == username }
             .takeIf { it }?.let {
                 throw UseNameAlreadyExistException()
             }
-        try {
-            authenticationRepository.addMate(username, password)
-        }catch(_: AuthenticationException){
-            throw RegistrationFailedException()
-        }
+
+        authenticationRepository.addMate(username, password)
+
     }
 
 

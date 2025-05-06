@@ -32,8 +32,8 @@ class MatesManagementView(
         val userInput = cliReader.getValidUserNumberInRange(MAX_OPTION_NUMBER)
 
         when (userInput) {
-            "1" -> mateCreationView.createMate()
-            "0" -> return
+            1 -> mateCreationView.createMate()
+            0 -> return
         }
         start()
     }

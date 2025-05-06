@@ -4,7 +4,6 @@ import logic.entities.Project
 import ui.cliPrintersAndReaders.CLIPrinter
 import ui.cliPrintersAndReaders.cliTable.CLITablePrinter
 import logic.entities.TaskState
-import logic.entities.Task
 
 class SwimlanesView(
     private val cliPrinter: CLIPrinter,
@@ -12,18 +11,18 @@ class SwimlanesView(
 ) {
 
     fun displaySwimlanes(project: Project) {
-        cliPrinter.printHeader("Project: ${project.title}")
         printHeader(project)
+
         if (hasNoStates(project)) {
             cliPrinter.cliPrintLn("No states defined for this project.")
             return
         }
 
-        val tasksByState = groupTasksByState(project)
+        val tasksByState = groupTasksTitlesByState(project)
         val maxTasks = getMaxTaskCount(tasksByState)
         val headers = getHeaders(project.tasksStates)
         val data = buildData(tasksByState, maxTasks, project.tasksStates)
-        val columnWidths = calculateColumnWidths(headers, data)
+        val columnWidths = List(project.tasksStates.size) { COLUMN_WIDTH }
 
         displayTable(headers, data, columnWidths)
     }
@@ -34,13 +33,16 @@ class SwimlanesView(
 
     private fun hasNoStates(project: Project) = project.tasksStates.isEmpty()
 
-    private fun groupTasksByState(project: Project): Map<TaskState, List<Task>> {
+    private fun groupTasksTitlesByState(project: Project): Map<TaskState, List<String>> {
         return project.tasksStates.associateWith { state ->
-            project.tasks.filter { it.taskState.id == state.id }
+            project.tasks
+                .mapIndexed { index, task -> Pair("${index + 1}. ${task.title}", task.taskState) }
+                .filter { it.second == state }
+                .map { it.first }
         }
     }
 
-    private fun getMaxTaskCount(tasksByTaskState: Map<TaskState, List<Task>>): Int {
+    private fun getMaxTaskCount(tasksByTaskState: Map<TaskState, List<String>>): Int {
         return tasksByTaskState.values.maxOfOrNull { it.size } ?: 0
     }
 
@@ -49,20 +51,17 @@ class SwimlanesView(
     }
 
     private fun buildData(
-        tasksByTaskState: Map<TaskState, List<Task>>,
+        tasksTitlesByTaskState: Map<TaskState, List<String>>,
         maxTasks: Int,
         tasksStates: List<TaskState>
     ): List<List<String>> {
         val data = mutableListOf<List<String>>()
-        var taskNumber = 1
         for (row in 0 until maxTasks) {
             val rowData = tasksStates.map { state ->
-                val tasks = tasksByTaskState[state] ?: emptyList()
-                if (row < tasks.size) {
-                    val task = tasks[row]
-                    val numberedTask = "$taskNumber. ${task.title}"
-                    taskNumber++
-                    numberedTask
+                val tasksTitles = tasksTitlesByTaskState[state] ?: emptyList()
+                if (row < tasksTitles.size) {
+                    val taskTitle = tasksTitles[row]
+                    taskTitle
                 } else {
                     ""
                 }
@@ -72,13 +71,11 @@ class SwimlanesView(
         return data
     }
 
-    private fun calculateColumnWidths(headers: List<String>, data: List<List<String>>): List<Int> {
-        return headers.mapIndexed { colIndex, header ->
-            maxOf(header.length, data.maxOfOrNull { it[colIndex].length } ?: 0)
-        }
-    }
-
     private fun displayTable(headers: List<String>, data: List<List<String>>, columnWidths: List<Int>) {
             cliTablePrinter(headers, data, columnWidths)
+    }
+
+    private companion object {
+        const val COLUMN_WIDTH = 30
     }
 }

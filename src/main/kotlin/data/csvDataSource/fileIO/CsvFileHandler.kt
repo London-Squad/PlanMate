@@ -20,17 +20,8 @@ class CsvFileHandler(
     }
 
     fun readRecords(): List<List<String>> {
-        if (!file.exists()) {
-            throw FileNotFound("CSV file at ${file.path} does not exist")
-        }
         try {
-            return file.readLines().map { line ->
-                try {
-                    decodeRecord(line)
-                } catch (e: CSVDataException) {
-                    throw InvalidFormat("Invalid CSV record: $line")
-                }
-            }
+            return file.readLines().map(::decodeRecord)
         } catch (e: IOException) {
             throw FileNotFound("Failed to read CSV file at ${file.path}")
         }
@@ -39,18 +30,16 @@ class CsvFileHandler(
     fun appendRecord(record: List<String>) {
         try {
             file.appendText("${encodeRecord(record)}\n")
-        }catch (e: IOException) {
+        } catch (e: IOException) {
             throw WriteFailure("Failed to append record to CSV file at ${file.path}")
         }
     }
 
     fun rewriteRecords(records: List<List<String>>) {
-        if (records.isEmpty()) return
         try {
             file.writeText("")
-            records.forEach { record ->
-                appendRecord(record)
-            }
+            if (records.isEmpty()) return
+            records.forEach(::appendRecord)
         } catch (e: IOException) {
             throw WriteFailure("Failed to rewrite CSV file at ${file.path}")
         }

@@ -1,104 +1,98 @@
 package ui.projectDetailsView
 
-import data.exceptions.NoLoggedInUserException
 import logic.entities.Project
 import logic.entities.User
-import logic.useCases.GetLoggedInUserUseCase
+import logic.useCases.ManageTaskUseCase
 import logic.useCases.ProjectUseCases
 import ui.ViewExceptionHandler
 import ui.cliPrintersAndReaders.CLIPrinter
 import ui.cliPrintersAndReaders.CLIReader
 import ui.logsView.LogsView
+import ui.taskManagementView.TaskManagementView
 import java.util.UUID
 
 class ProjectDetailsView(
     private val cliPrinter: CLIPrinter,
     private val cliReader: CLIReader,
-    private val getLoggedInUserUseCase: GetLoggedInUserUseCase,
     private val swimlanesView: SwimlanesView,
     private val editProjectView: EditProjectView,
     private val deleteProjectView: DeleteProjectView,
-    private val projectTasksView: ProjectTasksView,
     private val projectUseCases: ProjectUseCases,
+    private val taskManagementView: TaskManagementView,
     private val logsView: LogsView,
-    private val viewExceptionHandler: ViewExceptionHandler
+    private val viewExceptionHandler: ViewExceptionHandler,
+    private val manageTaskUseCase: ManageTaskUseCase
 ) {
 
-    private lateinit var currentProject: Project
+    private lateinit var loggedInUserType: User.Type
+    private lateinit var project: Project
 
-    fun start(projectId: UUID) {
-        currentProject = projectUseCases.getProjectById(projectId)
+    fun start(projectId: UUID, loggedInUserType: User.Type) {
+        this.loggedInUserType = loggedInUserType
 
-        try {
-            getLoggedInUserUseCase.getLoggedInUser()
-        } catch (e: NoLoggedInUserException) {
-            cliPrinter.cliPrintLn(ERROR_MESSAGE)
+        viewExceptionHandler.tryCall { project = projectUseCases.getProjectById(projectId) }
+            .also { if (!it) return }
+
+        swimlanesView.displaySwimlanes(project)
+
+        printOptions()
+        goToNextView()
+    }
+
+    private fun printOptions() {
+        printLn("\n1. select a task")
+        printLn("2. create new tasks")
+        printLn("3. View project logs")
+        if (loggedInUserType == User.Type.ADMIN) {
+            printLn("4. Edit project")
+            printLn("5. Delete project")
+        }
+        printLn("0. Back to projects")
+    }
+
+    private fun goToNextView() {
+        when (getValidUserInput()) {
+            1 -> selectTask()
+            2 -> createNewTask()
+            3 -> logsView.printLogsByEntityId(project.id)
+            4 -> editProjectView.editProject(project)
+            5 -> deleteProjectView.deleteProject(project)
+            0 -> {
+                printLn("\nExiting Project..."); return
+            }
+        }
+        start(project.id, loggedInUserType)
+    }
+
+    private fun getValidUserInput(): Int {
+        val maxOptionNumberAllowed =
+            if (loggedInUserType == User.Type.ADMIN) MAX_OPTION_NUMBER_ADMIN
+            else MAX_OPTION_NUMBER_MATE
+
+        return cliReader.getValidUserNumberInRange(maxOptionNumberAllowed)
+    }
+
+    private fun selectTask() {
+        if (project.tasks.isEmpty()) {
+            printLn("No tasks available to select.")
             return
         }
-
-        swimlanesView.displaySwimlanes(currentProject)
-        printProjectMenu()
-        handleUserInput()
+        printLn("Select a task by number:")
+        val input = cliReader.getValidUserNumberInRange(project.tasks.size)
+        taskManagementView.start(project.tasks[input - 1].id, project)
     }
 
-    private fun printProjectMenu() {
-        val currentUser = getLoggedInUserUseCase.getLoggedInUser()
-        cliPrinter.cliPrintLn("1. Manage tasks")
-        cliPrinter.cliPrintLn("2. View project logs")
-        if (currentUser.type == User.Type.ADMIN) {
-            cliPrinter.cliPrintLn("3. Edit project")
-            cliPrinter.cliPrintLn("4. Delete project")
-        }
-        cliPrinter.cliPrintLn("0. Back to projects")
+    private fun createNewTask() {
+        val title = cliReader.getValidTitle()
+        val description = cliReader.getValidDescription()
+
+        manageTaskUseCase.createNewTask(title, description, project.id)
     }
 
-    private fun handleUserInput() {
-        val currentUser = getLoggedInUserUseCase.getLoggedInUser()
-        val maxVisibleOptionNumber = if (currentUser.type == User.Type.ADMIN) MAX_OPTION_NUMBER_ADMIN
-        else MAX_OPTION_NUMBER_MATE
-        val input = cliReader.getValidUserNumberInRange(maxVisibleOptionNumber)
+    private fun printLn(message: String) = cliPrinter.cliPrintLn(message)
 
-        when (input) {
-            "1" -> {
-                projectTasksView.manageTasks(currentProject.id)
-                printProjectMenu()
-                handleUserInput()
-            }
-
-            "2" -> {
-                viewProjectLogs()
-                printProjectMenu()
-                handleUserInput()
-            }
-
-            "3" -> if (currentUser.type == User.Type.ADMIN) {
-                currentProject = editProjectView.editProject(currentProject)
-                viewExceptionHandler.tryCall {
-                    currentProject = projectUseCases.getProjectById(currentProject.id)
-                }
-                printProjectMenu()
-                handleUserInput()
-            } else return
-
-            "4" -> {
-                if (currentUser.type == User.Type.ADMIN) {
-                    deleteProjectView.deleteProject(currentProject)
-                    return
-                } else return
-            }
-
-            "0" -> return
-        }
-        start(currentProject.id)
-    }
-
-    private fun viewProjectLogs() {
-        logsView.printLogsByEntityId(currentProject.id)
-    }
-
-    companion object {
-        const val ERROR_MESSAGE = "Error: No project selected or user not logged in."
-        const val MAX_OPTION_NUMBER_ADMIN = 4
-        const val MAX_OPTION_NUMBER_MATE = 2
+    private companion object {
+        const val MAX_OPTION_NUMBER_ADMIN = 5
+        const val MAX_OPTION_NUMBER_MATE = 3
     }
 }

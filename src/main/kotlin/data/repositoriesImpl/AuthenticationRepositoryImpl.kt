@@ -5,6 +5,8 @@ import data.csvDataSource.DtoMapper
 import data.security.hashing.HashingAlgorithm
 import logic.entities.User
 import logic.exceptions.notFoundExecption.UserNotFoundException
+import logic.exceptions.UserNotFoundException
+import logic.exceptions.UserNameAlreadyTakenException
 import logic.repositories.AuthenticationRepository
 import java.util.*
 
@@ -48,17 +50,15 @@ class AuthenticationRepositoryImpl(
             ?: throw UserNotFoundException()
     }
 
-    override fun logout(): Boolean {
+    override fun logout() {
         usersDataSource.clearLoggedInUser()
-        return true
     }
 
-    override fun addMate(userName: String, password: String): Boolean {
+    override fun addMate(userName: String, password: String) {
         usersDataSource.addMate(
             userName,
             hashingAlgorithm.hashData(password)
         )
-        return true
     }
 
     override fun getLoggedInUser(): User {

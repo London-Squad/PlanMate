@@ -4,11 +4,11 @@ import logic.exceptions.authenticationExceptions.InvalidPasswordException
 import logic.exceptions.authenticationExceptions.InvalidUserNameLengthException
 
 class CredentialValidator {
-    fun takeIfValidNameOrThrowException(username: String) {
+    fun validateUserName(username: String) {
         if (!username.isValidUserName()) throw InvalidUserNameLengthException()
     }
 
-    fun takeIfValidPasswordOrThrowException(password: String) {
+    fun validatePassword(password: String) {
         if (!password.isValidPassword()) throw InvalidPasswordException()
     }
 

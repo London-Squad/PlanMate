@@ -21,7 +21,6 @@ class LogsView(
 
     }
 
-
     private fun printLogs(entityId: UUID) {
         viewExceptionHandler.tryCall {
             val logs = getLogsByEntityIdUseCase.getLogsByEntityId(entityId)

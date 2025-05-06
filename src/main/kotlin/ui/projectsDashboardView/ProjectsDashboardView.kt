@@ -1,7 +1,7 @@
 package ui.projectsDashboardView
 
+import logic.entities.Project
 import logic.entities.User
-import logic.useCases.GetLoggedInUserUseCase
 import logic.useCases.ProjectUseCases
 import ui.cliPrintersAndReaders.CLIPrinter
 import ui.cliPrintersAndReaders.CLIReader
@@ -13,96 +13,102 @@ class ProjectsDashboardView(
     private val cliPrinter: CLIPrinter,
     private val cliReader: CLIReader,
     private val projectUseCases: ProjectUseCases,
-    private val getLoggedInUserUseCase: GetLoggedInUserUseCase,
     private val projectView: ProjectDetailsView,
     private val exceptionHandler: ViewExceptionHandler,
     private val cliTablePrinter: CLITablePrinter = CLITablePrinter(cliPrinter),
 ) {
-    fun start() {
-        exceptionHandler.tryCall {
-            getLoggedInUserUseCase.getLoggedInUser()
-                .let { user ->
-                    printHeader()
-                    printProjects()
-                    goToNextUi(user)
-                }
-        }
+
+    private lateinit var loggedInUserType: User.Type
+    private var projects: List<Project> = emptyList()
+
+    fun start(loggedInUserType: User.Type) {
+        this.loggedInUserType = loggedInUserType
+        printHeader()
+        getProjects()
+        printProjects()
+        printOptions()
+        goToNextView()
     }
 
     private fun printHeader() {
-        cliPrinter.printHeader("Projects Menu")
+        cliPrinter.printHeader("Projects Dashboard Menu")
+    }
+
+    private fun getProjects() {
+        exceptionHandler.tryCall {
+            projects = projectUseCases.getAllProjects()
+        }.also { if (!it) return }
     }
 
     private fun printProjects() {
-        exceptionHandler.tryCall {
-            val projects = projectUseCases.getAllProjects()
-            if (projects.isEmpty()) {
-                cliPrinter.cliPrintLn("No projects found.")
-            } else {
-                val headers = listOf("Project #", "Title", "Description")
-                val data = projects.mapIndexed { index, project ->
-                    listOf(
-                        (index + 1).toString(), project.title, project.description
-                    )
-                }
-                val columnsWidth = listOf(null, null, null)
-                cliTablePrinter(headers, data, columnsWidth)
+
+        if (projects.isEmpty()) {
+            cliPrinter.cliPrintLn("No projects found.")
+            return
+        }
+
+        val headers = listOf("#", "Title", "Description")
+        val data = projects.mapIndexed { index, project ->
+            listOf(
+                (index + 1).toString(), project.title, project.description
+            )
+        }
+        val columnsWidth = listOf(5, 30, null)
+
+        cliTablePrinter(headers, data, columnsWidth)
+    }
+
+    private fun printOptions() {
+        printLn("1. select a project")
+        // TODO : add option to view all logs for all projects at once
+        if (loggedInUserType == User.Type.ADMIN) printLn("2. create a new project")
+        printLn("0. Exit Projects Dashboard")
+    }
+
+    private fun goToNextView() {
+
+        when (getValidUserInput()) {
+            1 -> selectProject()
+            2 -> createProject()
+            0 -> {
+                printLn("\nExiting Projects Dashboard ..."); return
             }
-
         }
+        start(loggedInUserType)
     }
 
-    private fun goToNextUi(user: User) {
-        printInputInstruction(user)
-        handleProjectSelection(user)
+    private fun getValidUserInput(): Int {
+        val maxOptionNumberAllowed =
+            if (loggedInUserType == User.Type.ADMIN) MAX_OPTION_NUMBER_ADMIN
+            else MAX_OPTION_NUMBER_MATE
+
+        return cliReader.getValidUserNumberInRange(maxOptionNumberAllowed)
     }
 
-    private fun printInputInstruction(user: User) {
-        val promptMessage = if (user.type == User.Type.ADMIN) {
-            "Enter the project number to select, 'new' to create a new project, or 'back' to return:"
-        } else {
-            "Enter the project number to select or 'back' to return: "
+    private fun selectProject() {
+        if (projects.isEmpty()) {
+            printLn("No projects available to select.")
+            return
         }
-        cliPrinter.cliPrintLn(promptMessage)
-    }
-
-    private fun handleProjectSelection(user: User) {
-        cliReader.getUserInput("Choice: ").trim().lowercase()
-            .let { input ->
-                when (input) {
-                    "back" -> return
-                    "new" -> handleNewProject(user)
-                    else -> handleProjectSelectionInput(input)
-                }
-            }
-        start()
-    }
-
-    private fun handleNewProject(user: User) {
-        if (user.type == User.Type.ADMIN) {
-            createProject()
-        } else {
-            cliPrinter.cliPrintLn("Invalid option. Please enter a project number or 'back'.")
-        }
-    }
-
-    private fun handleProjectSelectionInput(input: String) {
-        exceptionHandler.tryCall {
-            val projects = projectUseCases.getAllProjects()
-            input.toInt()
-                .takeIf { it in 1..projects.size }
-                ?.let { number -> projects[number - 1] }
-                ?.let { project -> projectView.start(project.id) }
-        }
+        printLn("Select a project by number:")
+        val input = cliReader.getValidUserNumberInRange(projects.size)
+        projectView.start(projects[input - 1].id, loggedInUserType)
     }
 
     private fun createProject() {
+        cliPrinter.printHeader("Create Project")
+        val title = cliReader.getValidTitle()
+        val description = cliReader.getValidDescription()
         exceptionHandler.tryCall {
-            cliPrinter.printHeader("Create Project")
-            val title = cliReader.getValidTitle()
-            val description = cliReader.getValidDescription()
             projectUseCases.createProject(title, description)
-                .also { cliPrinter.cliPrintLn("Project created successfully.") }
+            cliPrinter.cliPrintLn("Project created successfully.")
         }
+    }
+
+    private fun printLn(message: String) = cliPrinter.cliPrintLn(message)
+
+    private companion object {
+        const val MAX_OPTION_NUMBER_ADMIN = 2
+        const val MAX_OPTION_NUMBER_MATE = 1
     }
 }

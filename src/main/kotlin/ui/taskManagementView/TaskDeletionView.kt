@@ -13,7 +13,7 @@ class TaskDeletionView(
     private val viewExceptionHandler: ViewExceptionHandler
 ) {
     fun deleteTask(task: Task) {
-        if (isCancelDelete()) {
+        if (isDeletionCanceled()) {
             cliPrinter.cliPrintLn("deletion canceled")
             return
         }
@@ -25,6 +25,5 @@ class TaskDeletionView(
         }
     }
 
-    private fun isCancelDelete(): Boolean =
-        cliReader.getUserConfirmation() == "n"
+    private fun isDeletionCanceled(): Boolean = !cliReader.getUserConfirmation()
 }

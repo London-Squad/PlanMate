@@ -2,6 +2,7 @@ package data.repositoriesImpl
 
 import data.dataSources.TasksStatesDataSource
 import data.csvDataSource.DtoMapper
+import data.dataSources.TasksDataSource
 import logic.entities.TaskState
 import logic.exceptions.notFoundExecption.TaskStateNotFoundException
 import logic.repositories.TasksStatesRepository
@@ -9,6 +10,7 @@ import java.util.*
 
 class TasksStatesRepositoryImpl(
     private val tasksStatesDataSource: TasksStatesDataSource,
+    private val tasksDataSource: TasksDataSource,
     private val mapper: DtoMapper
 ) : TasksStatesRepository {
     override fun getTasksStatesByProjectId(projectId: UUID, includeDeleted: Boolean): List<TaskState> {
@@ -42,5 +44,8 @@ class TasksStatesRepositoryImpl(
 
     override fun deleteTaskState(stateId: UUID) {
         tasksStatesDataSource.deleteTaskState(stateId)
+        tasksDataSource.getAllTasks().forEach { taskDto ->
+            if (taskDto.stateId == stateId) tasksDataSource.deleteTask(taskDto.id)
+        }
     }
 }

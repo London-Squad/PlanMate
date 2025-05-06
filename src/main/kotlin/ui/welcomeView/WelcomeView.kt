@@ -1,5 +1,6 @@
 package ui.welcomeView
 
+import logic.exceptions.NoLoggedInUserFoundException
 import logic.useCases.GetLoggedInUserUseCase
 import ui.ViewExceptionHandler
 import ui.cliPrintersAndReaders.CLIPrinter
@@ -18,21 +19,24 @@ class WelcomeView(
 
     fun start() {
         viewExceptionHandler.tryCall {
-            getLoggedInUserUseCase.getLoggedInUser()
-            mainMenuView.start()
-            start()
+            try { // try to skip login if user is already logged in
+                val loggedInUserType = getLoggedInUserUseCase.getLoggedInUser().type
+                mainMenuView.start(loggedInUserType)
+                start()
+            } catch (_: NoLoggedInUserFoundException) {
+                startNormalWelcomeView()
+            }
         }
-        showWelcomeFlow()
     }
 
-    private fun showWelcomeFlow() {
+    private fun startNormalWelcomeView() {
         printWelcomeMessage()
         printOptions()
         goToNextView()
     }
 
     private fun printWelcomeMessage() {
-        cliPrinter.printHeader("Welcome to PlanMate v1.0")
+        cliPrinter.printHeader("Welcome to PlanMate")
     }
 
     private fun printOptions() {
@@ -41,16 +45,13 @@ class WelcomeView(
     }
 
     private fun goToNextView() {
-        cliReader.getValidUserNumberInRange(MAX_OPTION_NUMBER)
-            .let { input ->
-                when (input) {
-                    "1" -> loginView.start()
-                    "0" -> {
-                        cliPrinter.cliPrintLn("Exiting the app...")
-                        return
-                    }
-                }
+        when (cliReader.getValidUserNumberInRange(MAX_OPTION_NUMBER)) {
+            1 -> loginView.start()
+            0 -> {
+                cliPrinter.cliPrintLn("Exiting the app...")
+                return
             }
+        }
         start()
     }
 
