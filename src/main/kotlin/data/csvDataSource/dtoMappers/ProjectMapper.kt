@@ -1,26 +1,25 @@
 package data.csvDataSource.dtoMappers
 
-import data.dto.TaskDto
+import data.dto.ProjectDto
+import logic.entities.Project
 import logic.entities.Task
 import logic.entities.TaskState
-import java.util.UUID
 
-fun TaskDto.toTask(taskState: TaskState): Task {
-    return Task(
+fun ProjectDto.toProject(tasks: List<Task>, tasksStates: List<TaskState>): Project {
+    return Project(
         id = this.id,
         title = this.title,
         description = this.description,
-        taskState = taskState
+        tasks = tasks,
+        tasksStates = tasksStates
     )
 }
 
-fun Task.toTaskDto(projectId: UUID, isDeleted: Boolean = false): TaskDto {
-    return TaskDto(
+fun Project.toProjectDto(isDeleted: Boolean = false): ProjectDto {
+    return ProjectDto(
         id = this.id,
         title = this.title,
         description = this.description,
-        stateId = this.taskState.id,
-        projectId = projectId,
         isDeleted = isDeleted
     )
 }

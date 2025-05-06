@@ -1,7 +1,10 @@
 package data.repositoriesImpl
 
+import data.csvDataSource.dtoMappers.toLog
+import data.csvDataSource.dtoMappers.toLogDto
+import data.csvDataSource.dtoMappers.toTaskState
+import data.csvDataSource.dtoMappers.toUser
 import data.dataSources.*
-import data.csvDataSource.DtoMapper
 import logic.entities.Log
 import logic.entities.PlanEntity
 import logic.entities.Project
@@ -16,21 +19,19 @@ class LogsRepositoryImpl(
     private val projectsRepository: ProjectsRepository,
     private val tasksStatesDataSource: TasksStatesDataSource,
     private val taskRepository: TaskRepository,
-    private val usersDataSource: UsersDataSource,
-    private val mapper: DtoMapper
+    private val usersDataSource: UsersDataSource
 ) : LogsRepository {
     override fun getAllLogs(): List<Log> {
         return logsDataSource.getAllLogs()
-            .map { mapper.mapToLog(it, getUserById(it.userId), getEntityById(it.planEntityId)) }
+            .map { it.toLog(getUserById(it.userId), getEntityById(it.planEntityId)) }
     }
 
     private fun getUserById(userId: UUID): User {
         val admin = usersDataSource.getAdmin()
         if (userId == admin.id) {
-            return mapper.mapToUser(admin)
+            return admin.toUser()
         }
-        return usersDataSource.getMates().first() { it.id == userId }
-            .let(mapper::mapToUser)
+        return usersDataSource.getMates().first { it.id == userId }.toUser()
     }
 
     private fun getEntityById(entityId: UUID): PlanEntity {
@@ -38,8 +39,7 @@ class LogsRepositoryImpl(
             .firstOrNull { it.id == entityId }
 
             ?: tasksStatesDataSource.getAllTasksStates()
-                .firstOrNull { it.id == entityId }
-                ?.let { mapper.mapToTaskState(it) }
+                        .firstOrNull { it.id == entityId }?.toTaskState()
 
             ?: taskRepository.getTaskByID(entityId, includeDeleted = true)
     }
@@ -67,6 +67,6 @@ class LogsRepositoryImpl(
     }
 
     override fun addLog(log: Log) {
-        logsDataSource.addLog(mapper.mapToLogDto(log))
+        logsDataSource.addLog(log.toLogDto())
     }
 }

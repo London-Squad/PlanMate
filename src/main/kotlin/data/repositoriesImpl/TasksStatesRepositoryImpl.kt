@@ -1,7 +1,8 @@
 package data.repositoriesImpl
 
+import data.csvDataSource.dtoMappers.toTaskState
+import data.csvDataSource.dtoMappers.toTaskStateDto
 import data.dataSources.TasksStatesDataSource
-import data.csvDataSource.DtoMapper
 import data.dataSources.TasksDataSource
 import logic.entities.TaskState
 import logic.exceptions.TaskStateNotFoundException
@@ -10,27 +11,25 @@ import java.util.*
 
 class TasksStatesRepositoryImpl(
     private val tasksStatesDataSource: TasksStatesDataSource,
-    private val tasksDataSource: TasksDataSource,
-    private val mapper: DtoMapper
+    private val tasksDataSource: TasksDataSource
 ) : TasksStatesRepository {
     override fun getTasksStatesByProjectId(projectId: UUID, includeDeleted: Boolean): List<TaskState> {
         return tasksStatesDataSource.getAllTasksStates()
             .filter { it.projectId == projectId }
             .filter { if (includeDeleted) true else !it.isDeleted }
-            .map(mapper::mapToTaskState)
+            .map { it.toTaskState() }
     }
 
     override fun getTaskStateById(stateId: UUID, includeDeleted: Boolean): TaskState {
         return tasksStatesDataSource.getAllTasksStates()
-            .filter { if (includeDeleted) true else !it.isDeleted }
-            .firstOrNull { it.id == stateId }
-            ?.let(mapper::mapToTaskState)
+                .filter { if (includeDeleted) true else !it.isDeleted }
+                .firstOrNull { it.id == stateId }?.toTaskState()
             ?: throw TaskStateNotFoundException()
     }
 
     override fun addNewTaskState(taskState: TaskState, projectId: UUID) {
         tasksStatesDataSource.addNewTaskState(
-            mapper.mapToTaskStateDto(taskState, projectId)
+            taskState.toTaskStateDto(projectId)
         )
     }
 
