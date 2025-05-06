@@ -6,8 +6,8 @@ import ui.welcomeView.WelcomeView
 fun main() {
     startKoin {
         modules(
-            csvStorageModule,
-            // mongodbStorageModule,
+//            csvStorageModule,
+            mongoStorageModule,
             uiModule,
             dataModule,
             logicModule

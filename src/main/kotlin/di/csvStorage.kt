@@ -4,10 +4,10 @@ import data.csvDataSource.*
 import data.csvDataSource.fileIO.CsvFileHandler
 import data.csvDataSource.fileIO.Parser
 import data.dataSources.*
+import data.mongoDBDataSource.MongoDBProjectsDataSource
 import org.koin.core.qualifier.named
 import org.koin.dsl.module
 import java.io.File
-import java.nio.MappedByteBuffer
 
 val csvStorageModule = module {
 
@@ -42,11 +42,11 @@ val csvStorageModule = module {
     }
 
     single { Parser() }
-    single { DtoMapper() }
 
     single<TasksDataSource> { CsvTasksDataSource(get(named("tasksFileHandler")), get()) }
     single<TasksStatesDataSource> { CsvTasksStatesDataSource(get(named("taskStatesFileHandler")), get()) }
     single<ProjectsDataSource> { CsvProjectsDataSource(get(named("projectsFileHandler")), get()) }
+    single<ProjectsDataSource> { MongoDBProjectsDataSource(get()) }
     single<UsersDataSource> {
         CsvUsersDataSource(
             get(named("usersFileHandler")),
