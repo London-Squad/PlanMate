@@ -5,7 +5,12 @@ import logic.repositories.AuthenticationRepository
 import java.util.*
 
 class MongoDBAuthenticationDataSource() : AuthenticationRepository {
-    override fun getMates(): List<User> {
+
+    override fun getMates(includeDeleted: Boolean): List<User> {
+        TODO("Not yet implemented")
+    }
+
+    override fun getAdmin(): User {
         TODO("Not yet implemented")
     }
 
@@ -21,11 +26,7 @@ class MongoDBAuthenticationDataSource() : AuthenticationRepository {
         TODO("Not yet implemented")
     }
 
-    override fun register(userName: String, password: String): Boolean {
-        TODO("Not yet implemented")
-    }
-
-    override fun changePassword(userName: String, currentPassword: String, newPassword: String): Boolean {
+    override fun addMate(userName: String, password: String): Boolean {
         TODO("Not yet implemented")
     }
 

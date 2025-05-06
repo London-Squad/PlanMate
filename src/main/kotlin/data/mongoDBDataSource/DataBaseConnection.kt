@@ -3,7 +3,6 @@ package data.mongoDBDataSource
 import com.mongodb.reactivestreams.client.MongoClients
 import com.mongodb.reactivestreams.client.MongoCollection
 import com.mongodb.reactivestreams.client.MongoDatabase
-import io.github.cdimascio.dotenv.dotenv
 import org.bson.Document
 
 object DataBaseConnection {
@@ -13,8 +12,7 @@ object DataBaseConnection {
     private const val taskStatesCollectionName = "task_states"
     private const val logsCollectionName = "logs"
 
-    private val dotenv = dotenv()
-    private val mongoUri = dotenv["MONGO_URI"] ?: error("MONGO_URI not set in .env")
+    private val mongoUri = System.getenv("MONGO_URI") ?: error("MONGO_URI not set in environment variables")
 
     private val client = MongoClients.create(mongoUri)
     private val database: MongoDatabase = client.getDatabase(dbName)

@@ -5,9 +5,11 @@ import logic.entities.User
 import logic.exceptions.NoLoggedInUserIsSavedInCacheException
 import logic.useCases.GetLoggedInUserUseCase
 import logic.useCases.ProjectUseCases
+import ui.ViewExceptionHandler
 import ui.cliPrintersAndReaders.CLIPrinter
 import ui.cliPrintersAndReaders.CLIReader
 import ui.logsView.LogsView
+import java.util.UUID
 
 class ProjectDetailsView(
     private val cliPrinter: CLIPrinter,
@@ -18,13 +20,14 @@ class ProjectDetailsView(
     private val deleteProjectView: DeleteProjectView,
     private val projectTasksView: ProjectTasksView,
     private val projectUseCases: ProjectUseCases,
-    private val logsView: LogsView
+    private val logsView: LogsView,
+    private val viewExceptionHandler: ViewExceptionHandler
 ) {
 
     private lateinit var currentProject: Project
 
-    fun start(project: Project) {
-        currentProject = project
+    fun start(projectId: UUID) {
+        currentProject = projectUseCases.getProjectById(projectId)
 
         try {
             getLoggedInUserUseCase.getLoggedInUser()
@@ -57,8 +60,7 @@ class ProjectDetailsView(
 
         when (input) {
             "1" -> {
-                currentProject = projectTasksView.manageTasks(currentProject)
-                currentProject = projectUseCases.getProjectById(currentProject.id) ?: currentProject
+                projectTasksView.manageTasks(currentProject.id)
                 printProjectMenu()
                 handleUserInput()
             }
@@ -71,7 +73,9 @@ class ProjectDetailsView(
 
             "3" -> if (currentUser.type == User.Type.ADMIN) {
                 currentProject = editProjectView.editProject(currentProject)
-                currentProject = projectUseCases.getProjectById(currentProject.id) ?: currentProject
+                viewExceptionHandler.tryCall {
+                    currentProject = projectUseCases.getProjectById(currentProject.id)
+                }
                 printProjectMenu()
                 handleUserInput()
             } else return
@@ -85,7 +89,7 @@ class ProjectDetailsView(
 
             "0" -> return
         }
-        start(currentProject)
+        start(currentProject.id)
     }
 
     private fun viewProjectLogs() {

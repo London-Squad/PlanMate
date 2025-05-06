@@ -2,8 +2,8 @@ package ui.taskManagementView
 
 import logic.entities.Project
 import logic.entities.Task
-import logic.exceptions.NotFoundException
 import logic.repositories.TaskRepository
+import ui.ViewExceptionHandler
 import ui.cliPrintersAndReaders.CLIPrinter
 import ui.cliPrintersAndReaders.CLIReader
 import ui.logsView.LogsView
@@ -17,19 +17,16 @@ class TaskManagementView(
     private val taskStateEditionView: TaskStateEditionView,
     private val taskDeletionView: TaskDeletionView,
     private val taskRepository: TaskRepository,
-    private val logsView: LogsView
+    private val logsView: LogsView,
+    private val viewExceptionHandler: ViewExceptionHandler
 ) {
 
     private lateinit var currentTask: Task
     private lateinit var currentProject: Project
     fun start(taskID: UUID, project: Project) {
 
-        try {
-
+        viewExceptionHandler.tryCall {
             currentTask = taskRepository.getTaskByID(taskID)
-        } catch (e: NotFoundException) {
-            cliPrinter.cliPrintLn(e.message ?: "task not found")
-            return
         }
 
         currentProject = project
@@ -41,7 +38,7 @@ class TaskManagementView(
     private fun printTask() {
         printLn("Task: ${currentTask.title}")
         printLn("Description: ${currentTask.description}")
-        printLn("State: ${currentTask.state.title}")
+        printLn("State: ${currentTask.taskState.title}")
     }
 
     private fun printOptions() {
@@ -66,7 +63,7 @@ class TaskManagementView(
             }
 
             "3" -> {
-                taskStateEditionView.editState(currentTask, currentProject.states)
+                taskStateEditionView.editState(currentTask, currentProject.tasksStates)
                 start(currentTask.id, currentProject)
             }
 

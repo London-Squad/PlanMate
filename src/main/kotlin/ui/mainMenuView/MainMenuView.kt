@@ -4,6 +4,7 @@ import logic.entities.User
 import logic.exceptions.NoLoggedInUserIsSavedInCacheException
 import logic.useCases.GetLoggedInUserUseCase
 import logic.useCases.LogoutUseCase
+import ui.ViewExceptionHandler
 import ui.cliPrintersAndReaders.CLIPrinter
 import ui.cliPrintersAndReaders.CLIReader
 import ui.matesManagementView.MatesManagementView
@@ -16,6 +17,7 @@ class MainMenuView(
     private val projectsView: ProjectsDashboardView,
     private val matesManagementView: MatesManagementView,
     private val logoutUseCase: LogoutUseCase,
+    private val viewExceptionHandler: ViewExceptionHandler
 ) {
 
     private lateinit var loggedInUserType: User.Type
@@ -28,13 +30,15 @@ class MainMenuView(
     }
 
     private fun saveUserType(): Boolean {
-        return try {
-            loggedInUserType = getLoggedInUserUseCase.getLoggedInUser().type
-            true
-        } catch (e: NoLoggedInUserIsSavedInCacheException) {
-            printLn("please login to continue")
-            false
+        var success = false
+        viewExceptionHandler.tryCall {
+            getLoggedInUserUseCase.getLoggedInUser()
+                .also { user ->
+                    loggedInUserType = user.type
+                    success = true
+                }
         }
+        return success
     }
 
     private fun printMainMenuTitle() {
@@ -53,15 +57,16 @@ class MainMenuView(
             "2" -> matesManagementView.start()
             "0" -> {
                 printLn("\nLogging out ...")
-                logoutUseCase()
-                return // exit main menu
+                viewExceptionHandler.tryCall { logoutUseCase() }
+                return
             }
         }
         start() // start main menu again after going back from options
     }
 
     private fun getValidUserInput(): String {
-        val MAX_OPTION_NUMBER = MAX_OPTION_NUMBER_ADMIN.takeIf { loggedInUserType == User.Type.ADMIN } ?: MAX_OPTION_NUMBER_MATE
+        val MAX_OPTION_NUMBER =
+            MAX_OPTION_NUMBER_ADMIN.takeIf { loggedInUserType == User.Type.ADMIN } ?: MAX_OPTION_NUMBER_MATE
         return cliReader.getValidUserNumberInRange(MAX_OPTION_NUMBER)
     }
 

@@ -1,31 +1,28 @@
 package data.mongoDBDataSource
 
-import logic.entities.State
-import logic.repositories.StatesRepository
+import data.dataSources.TasksStatesDataSource
+import data.dto.TaskStateDto
 import java.util.*
 
-class MongoDBTaskStatesDataSource() : StatesRepository {
-    override fun getAllStatesByProjectId(projectId: UUID): List<State> {
+class MongoDBTaskStatesDataSource : TasksStatesDataSource {
+
+    override fun getAllTasksStates(): List<TaskStateDto> {
         TODO("Not yet implemented")
     }
 
-    override fun getStateById(stateId: UUID): State {
+    override fun addNewTaskState(taskStateDto: TaskStateDto) {
         TODO("Not yet implemented")
     }
 
-    override fun addNewState(state: State, projectId: UUID) {
+    override fun editTaskStateTitle(stateId: UUID, newTitle: String) {
         TODO("Not yet implemented")
     }
 
-    override fun editStateTitle(stateId: UUID, newTitle: String) {
+    override fun editTaskStateDescription(stateId: UUID, newDescription: String) {
         TODO("Not yet implemented")
     }
 
-    override fun editStateDescription(stateId: UUID, newDescription: String) {
-        TODO("Not yet implemented")
-    }
-
-    override fun deleteState(stateId: UUID) {
+    override fun deleteTaskState(stateId: UUID) {
         TODO("Not yet implemented")
     }
 
