@@ -9,7 +9,7 @@ import org.bson.Document
 import java.util.UUID
 
 class MongoDBProjectsDataSource(
-    private val collection: MongoCollection<Document> = DatabaseConnection.getUsersCollection()
+    private val projectsCollection: MongoCollection<Document> = DatabaseConnection.getUsersCollection()
 ) : ProjectsDataSource {
 
     companion object {
@@ -20,7 +20,7 @@ class MongoDBProjectsDataSource(
     }
 
     override fun getAllProjects(): List<ProjectDto> {
-        return collection.find().map { doc ->
+        return projectsCollection.find().map { doc ->
             ProjectDto(
                 id = UUID.fromString(doc.getString(ID_FIELD)),
                 title = doc.getString(TITLE_FIELD),
@@ -35,22 +35,22 @@ class MongoDBProjectsDataSource(
             .append(TITLE_FIELD, project.title)
             .append(DESCRIPTION_FIELD, project.description)
             .append(IS_DELETED_FIELD, project.isDeleted)
-        collection.insertOne(doc)
+        projectsCollection.insertOne(doc)
     }
 
     override fun editProjectTitle(projectId: UUID, newTitle: String) {
-        collection.updateOne(Filters.eq(ID_FIELD, projectId.toString()), Updates.set(TITLE_FIELD, newTitle))
+        projectsCollection.updateOne(Filters.eq(ID_FIELD, projectId.toString()), Updates.set(TITLE_FIELD, newTitle))
     }
 
     override fun editProjectDescription(projectId: UUID, newDescription: String) {
-        collection.updateOne(
+        projectsCollection.updateOne(
             Filters.eq(ID_FIELD, projectId.toString()),
             Updates.set(DESCRIPTION_FIELD, newDescription)
         )
     }
 
     override fun deleteProject(projectId: UUID) {
-        collection.updateOne(
+        projectsCollection.updateOne(
             Filters.eq(ID_FIELD, projectId.toString()),
             Updates.set(IS_DELETED_FIELD, true)
         )
