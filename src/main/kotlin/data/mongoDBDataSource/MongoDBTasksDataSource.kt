@@ -12,15 +12,6 @@ class MongoDBTasksDataSource(
     private val collection: MongoCollection<Document> = DatabaseConnection.getTasksCollection()
 ) : TasksDataSource {
 
-    companion object {
-        private const val ID_FIELD = "id"
-        private const val TITLE_FIELD = "title"
-        private const val DESCRIPTION_FIELD = "description"
-        private const val STATE_ID_FIELD = "stateId"
-        private const val PROJECT_ID_FIELD = "projectId"
-        private const val IS_DELETED_FIELD = "isDeleted"
-    }
-
     override fun getAllTasks(): List<TaskDto> {
         return collection.find().map { doc ->
             TaskDto(
@@ -58,5 +49,14 @@ class MongoDBTasksDataSource(
 
     override fun deleteTask(taskId: UUID) {
         collection.deleteOne(Filters.eq(ID_FIELD, taskId.toString()))
+    }
+
+    companion object {
+        private const val ID_FIELD = "id"
+        private const val TITLE_FIELD = "title"
+        private const val DESCRIPTION_FIELD = "description"
+        private const val STATE_ID_FIELD = "stateId"
+        private const val PROJECT_ID_FIELD = "projectId"
+        private const val IS_DELETED_FIELD = "isDeleted"
     }
 }

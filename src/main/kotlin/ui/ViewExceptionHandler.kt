@@ -11,7 +11,7 @@ class ViewExceptionHandler(private val cliPrinter: CLIPrinter) {
         } catch (e: NoLoggedInUserFoundException) {
             cliPrinter.cliPrintLn("Error: No user logged in. Please log in first.")
         } catch (e: UserNotFoundException) {
-            cliPrinter.cliPrintLn("Error: No user is logged in.")
+            cliPrinter.cliPrintLn("Error: user was not found.")
         } catch (e: IndexOutOfBoundsException) {
             cliPrinter.cliPrintLn("Error: Selected index is out of bounds.")
         } catch (e: NotFoundException) {

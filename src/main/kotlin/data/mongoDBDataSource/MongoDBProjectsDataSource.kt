@@ -12,13 +12,6 @@ class MongoDBProjectsDataSource(
     private val projectsCollection: MongoCollection<Document> = DatabaseConnection.getUsersCollection()
 ) : ProjectsDataSource {
 
-    companion object {
-        private const val ID_FIELD = "id"
-        private const val TITLE_FIELD = "title"
-        private const val DESCRIPTION_FIELD = "description"
-        private const val IS_DELETED_FIELD = "isDeleted"
-    }
-
     override fun getAllProjects(): List<ProjectDto> {
         return projectsCollection.find().map { doc ->
             ProjectDto(
@@ -54,5 +47,12 @@ class MongoDBProjectsDataSource(
             Filters.eq(ID_FIELD, projectId.toString()),
             Updates.set(IS_DELETED_FIELD, true)
         )
+    }
+
+    companion object {
+        private const val ID_FIELD = "id"
+        private const val TITLE_FIELD = "title"
+        private const val DESCRIPTION_FIELD = "description"
+        private const val IS_DELETED_FIELD = "isDeleted"
     }
 }

@@ -42,11 +42,10 @@ val csvStorageModule = module {
     }
 
     single { Parser() }
-    single { DtoMapper() }
 
     single<TasksDataSource> { CsvTasksDataSource(get(named("tasksFileHandler")), get()) }
     single<TasksStatesDataSource> { CsvTasksStatesDataSource(get(named("taskStatesFileHandler")), get()) }
-//    single<ProjectsDataSource> { CsvProjectsDataSource(get(named("projectsFileHandler")), get()) }
+    single<ProjectsDataSource> { CsvProjectsDataSource(get(named("projectsFileHandler")), get()) }
     single<ProjectsDataSource> { MongoDBProjectsDataSource(get()) }
     single<UsersDataSource> {
         CsvUsersDataSource(
@@ -55,6 +54,6 @@ val csvStorageModule = module {
             get()
         )
     }
-//    single<LogsDataSource> { CsvLogsDataSource(get(named("LogsFileHandler")), get()) }
+    single<LogsDataSource> { CsvLogsDataSource(get(named("LogsFileHandler")), get()) }
 
 }

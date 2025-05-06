@@ -1,12 +1,10 @@
 package di
 
 import com.mongodb.client.MongoDatabase
-import data.csvDataSource.fileIO.CsvFileHandler
 import data.dataSources.*
 import data.mongoDBDataSource.*
 import org.koin.core.qualifier.named
 import org.koin.dsl.module
-import java.io.File
 
 val mongoStorageModule = module {
     single { DatabaseConnection }
@@ -18,14 +16,19 @@ val mongoStorageModule = module {
     single(named("logsCollection")) {
         DatabaseConnection.getLogsCollection()
     }
-//    factory { DatabaseConnection.getTasksCollection() }
-//    factory { DatabaseConnection.getTaskStatesCollection() }
-//    factory { DatabaseConnection.getLogsCollection() }
-//    factory { DatabaseConnection.getUsersCollection() }
+    single(named("tasksCollection")) {
+        DatabaseConnection.getTasksCollection()
+    }
+    single(named("taskStatesCollection")) {
+        DatabaseConnection.getTaskStatesCollection()
+    }
+    single(named("usersCollection")) {
+        DatabaseConnection.getUsersCollection()
+    }
 
-//    single<TasksDataSource> { MongoDBTasksDataSource(get()) }
-//    single<TasksStatesDataSource> { MongoDBTaskStatesDataSource(get()) }
+    single<TasksDataSource> { MongoDBTasksDataSource(get(named("tasksCollection"))) }
+    single<TasksStatesDataSource> { MongoDBTaskStatesDataSource(get(named("taskStatesCollection"))) }
     single<ProjectsDataSource> { MongoDBProjectsDataSource(get(named("projectsCollection"))) }
     single<LogsDataSource> { MongoDBLogsDataSource(get(named("logsCollection"))) }
-//    single<UsersDataSource> { MongoDBUsersDataSource(get()) }
+    single<UsersDataSource> { MongoDBUsersDataSource(get(named("usersCollection"))) }
 }

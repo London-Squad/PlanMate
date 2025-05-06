@@ -6,9 +6,6 @@ import com.mongodb.client.model.Filters
 import com.mongodb.client.model.Updates
 import data.dataSources.TasksStatesDataSource
 import data.dto.TaskStateDto
-import kotlinx.coroutines.CoroutineScope
-import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.launch
 import org.bson.Document
 import java.util.UUID
 
@@ -26,51 +23,39 @@ class MongoDBTaskStatesDataSource(
     }
 
     override fun getAllTasksStates(): List<TaskStateDto> {
-        var result: List<TaskStateDto> = emptyList()
-        CoroutineScope(Dispatchers.IO).launch {
-            result = collection.find().map { doc ->
-                TaskStateDto(
-                    id = UUID.fromString(doc.getString(ID_FIELD)),
-                    title = doc.getString(TITLE_FIELD),
-                    description = doc.getString(DESCRIPTION_FIELD),
-                    projectId = UUID.fromString(doc.getString(PROJECT_ID_FIELD)),
-                    isDeleted = doc.getBoolean(IS_DELETED_FIELD) ?: false
-                )
-            }.toList()
-        }
-        return result
+        return collection.find().map { doc ->
+            TaskStateDto(
+                id = UUID.fromString(doc.getString(ID_FIELD)),
+                title = doc.getString(TITLE_FIELD),
+                description = doc.getString(DESCRIPTION_FIELD),
+                projectId = UUID.fromString(doc.getString(PROJECT_ID_FIELD)),
+                isDeleted = doc.getBoolean(IS_DELETED_FIELD) ?: false
+            )
+        }.toList()
+
     }
 
     override fun addNewTaskState(taskStateDto: TaskStateDto) {
-        CoroutineScope(Dispatchers.IO).launch {
-            val doc = Document(ID_FIELD, taskStateDto.id.toString())
-                .append(TITLE_FIELD, taskStateDto.title)
-                .append(DESCRIPTION_FIELD, taskStateDto.description)
-                .append(PROJECT_ID_FIELD, taskStateDto.projectId.toString())
-                .append(IS_DELETED_FIELD, taskStateDto.isDeleted)
-            collection.insertOne(doc)
-        }
+        val doc = Document(ID_FIELD, taskStateDto.id.toString())
+            .append(TITLE_FIELD, taskStateDto.title)
+            .append(DESCRIPTION_FIELD, taskStateDto.description)
+            .append(PROJECT_ID_FIELD, taskStateDto.projectId.toString())
+            .append(IS_DELETED_FIELD, taskStateDto.isDeleted)
+        collection.insertOne(doc)
     }
 
     override fun editTaskStateTitle(stateId: UUID, newTitle: String) {
-        CoroutineScope(Dispatchers.IO).launch {
-            collection.updateOne(Filters.eq(ID_FIELD, stateId.toString()), Updates.set(TITLE_FIELD, newTitle))
-        }
+        collection.updateOne(Filters.eq(ID_FIELD, stateId.toString()), Updates.set(TITLE_FIELD, newTitle))
     }
 
     override fun editTaskStateDescription(stateId: UUID, newDescription: String) {
-        CoroutineScope(Dispatchers.IO).launch {
-
-            collection.updateOne(
-                Filters.eq(ID_FIELD, stateId.toString()),
-                Updates.set(DESCRIPTION_FIELD, newDescription)
-            )
-        }
+        collection.updateOne(
+            Filters.eq(ID_FIELD, stateId.toString()),
+            Updates.set(DESCRIPTION_FIELD, newDescription)
+        )
     }
 
     override fun deleteTaskState(stateId: UUID) {
-        CoroutineScope(Dispatchers.IO).launch {
-            collection.deleteOne(Filters.eq(ID_FIELD, stateId.toString()))
-        }
+        collection.deleteOne(Filters.eq(ID_FIELD, stateId.toString()))
     }
 }
