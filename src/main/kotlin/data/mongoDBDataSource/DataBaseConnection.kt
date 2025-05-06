@@ -1,9 +1,10 @@
 package data.mongoDBDataSource
 
-import com.mongodb.reactivestreams.client.MongoClients
-import com.mongodb.reactivestreams.client.MongoCollection
-import com.mongodb.reactivestreams.client.MongoDatabase
+import com.mongodb.client.MongoClients
+import com.mongodb.client.MongoCollection
+import com.mongodb.client.MongoDatabase
 import org.bson.Document
+
 
 object DataBaseConnection {
     private const val dbName = "LondonSquad-PlanMate"

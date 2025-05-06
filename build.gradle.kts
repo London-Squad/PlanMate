@@ -18,11 +18,14 @@ dependencies {
     testImplementation("org.junit.jupiter:junit-jupiter-params:5.12.1")
     testImplementation("io.mockk:mockk:1.14.0")
 
-    // Kotlin coroutine dependency
-    implementation("org.jetbrains.kotlinx:kotlinx-coroutines-core:1.6.4")
-
-    // MongoDB Kotlin driver dependency
     implementation("org.mongodb:mongodb-driver-sync:4.11.1")
+//    implementation("org.slf4j:slf4j-simple:2.0.12")
+
+//    // Kotlin coroutine dependency
+//    implementation("org.jetbrains.kotlinx:kotlinx-coroutines-core:1.6.4")
+//
+//    // MongoDB Kotlin driver dependency
+//    implementation("org.mongodb:mongodb-driver-kotlin-coroutine:4.10.1")
 }
 
 tasks.test {
