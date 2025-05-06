@@ -1,9 +1,9 @@
 package data.repositoriesImpl
 
+import data.csvDataSource.dtoMappers.*
 import data.dataSources.ProjectsDataSource
 import data.dataSources.TasksDataSource
 import data.dataSources.TasksStatesDataSource
-import data.csvDataSource.DtoMapper
 import logic.entities.Project
 import logic.exceptions.ProjectNotFoundException
 import logic.exceptions.TaskStateNotFoundException
@@ -13,8 +13,7 @@ import java.util.*
 class ProjectsRepositoryImpl(
     private val projectsDataSource: ProjectsDataSource,
     private val tasksStatesDataSource: TasksStatesDataSource,
-    private val tasksDataSource: TasksDataSource,
-    private val mapper: DtoMapper
+    private val tasksDataSource: TasksDataSource
 ) : ProjectsRepository {
 
     override fun getAllProjects(includeDeleted: Boolean): List<Project> {
@@ -27,22 +26,20 @@ class ProjectsRepositoryImpl(
 
         return projectsData
             .map { projectData ->
-
-            val taskStatesOfProject = taskStatesData
+                val taskStatesOfProject = taskStatesData
                     .filter { it.projectId == projectData.id }
-                    .map(mapper::mapToTaskState)
+                    .map { it.toTaskState() }
 
                 val tasksOfProject = tasksData
                     .filter { it.projectId == projectData.id }
                     .map { taskData ->
-                        mapper.mapToTask(
-                            taskData,
+                        taskData.toTask(
                             taskStatesOfProject
-                                .firstOrNull() { it.id == taskData.stateId } ?: throw TaskStateNotFoundException()
+                                .firstOrNull { it.id == taskData.stateId } ?: throw TaskStateNotFoundException()
                         )
                     }
 
-                mapper.mapToProject(projectData, tasksOfProject, taskStatesOfProject)
+                projectData.toProject(tasksOfProject, taskStatesOfProject)
             }
     }
 
@@ -53,13 +50,13 @@ class ProjectsRepositoryImpl(
 
     override fun addNewProject(project: Project) {
         projectsDataSource.addNewProject(
-            mapper.mapToProjectDto(project)
+            project.toProjectDto()
         )
         project.tasks
-            .map({ task -> mapper.mapToTaskDto(task, project.id) })
+            .map { task -> task.toTaskDto(project.id) }
             .forEach(tasksDataSource::addNewTask)
         project.tasksStates
-            .map({ taskState -> mapper.mapToTaskStateDto(taskState, project.id) })
+            .map { taskState -> taskState.toTaskStateDto(project.id) }
             .forEach(tasksStatesDataSource::addNewTaskState)
     }
 

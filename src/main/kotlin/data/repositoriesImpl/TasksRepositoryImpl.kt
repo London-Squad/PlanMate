@@ -1,6 +1,7 @@
 package data.repositoriesImpl
 
-import data.csvDataSource.DtoMapper
+import data.csvDataSource.dtoMappers.toTask
+import data.csvDataSource.dtoMappers.toTaskDto
 import data.dataSources.TasksDataSource
 import logic.entities.TaskState
 import logic.entities.Task
@@ -11,8 +12,7 @@ import java.util.*
 
 class TasksRepositoryImpl(
     private val tasksDataSource: TasksDataSource,
-    private val tasksStatesRepository: TasksStatesRepository,
-    private val mapper: DtoMapper
+    private val tasksStatesRepository: TasksStatesRepository
 ) : TaskRepository {
 
     override fun getTasksByProjectID(projectId: UUID, includeDeleted: Boolean): List<Task> {
@@ -21,7 +21,7 @@ class TasksRepositoryImpl(
             .filter { it.projectId == projectId }
             .map { taskData ->
                 val taskState = tasksStatesRepository.getTaskStateById(taskData.stateId)
-                mapper.mapToTask(taskData, taskState)
+                taskData.toTask(taskState)
             }
     }
 
@@ -31,14 +31,13 @@ class TasksRepositoryImpl(
             .firstOrNull { it.id == taskId }
             ?.let {
                 val taskState = tasksStatesRepository.getTaskStateById(it.stateId)
-                return mapper.mapToTask(it, taskState)
+                it.toTask(taskState)
             } ?: throw TaskNotFoundException()
     }
 
-
     override fun addNewTask(task: Task, projectId: UUID) {
         tasksDataSource.addNewTask(
-            mapper.mapToTaskDto(task, projectId)
+            task.toTaskDto(projectId)
         )
     }
 
