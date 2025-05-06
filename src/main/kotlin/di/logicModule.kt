@@ -17,4 +17,5 @@ val logicModule = module {
     single { CredentialValidator() }
     single { UserInputValidator() }
     single { LogoutUseCase(get()) }
+    single { GetAllMatesUseCase(get()) }
 }
