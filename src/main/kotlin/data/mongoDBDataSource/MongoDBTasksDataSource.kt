@@ -6,33 +6,6 @@ import data.dto.TaskDto
 import org.bson.Document
 import java.util.*
 
-
-fun main() {
-    val db = DataBaseConnection.getProjectCollection()
-    val repository = MongoDBTasksDataSource(db)
-    addProjectUI(repository)
-
-    repository.getAllTasks().forEach { println(it) }
-
-}
-
-private fun addProjectUI(repository: MongoDBTasksDataSource) {
-
-    println("Enter task name:")
-    val name = readln()
-    println("Enter task description:")
-    val description = readln()
-    val task = TaskDto(
-        UUID.randomUUID(), name, description,
-        stateId = UUID.randomUUID(),
-        projectId = UUID.randomUUID(),
-        isDeleted = true
-    )
-    repository.addNewTask(task)
-    println("Task saved!")
-}
-
-
 class MongoDBTasksDataSource(
     private val collection: MongoCollection<Document>
 ) : TasksDataSource {
