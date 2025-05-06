@@ -14,16 +14,16 @@ class DeleteProjectView(
 
 ) {
     fun deleteProject(project: Project) {
-        if (isCancelDelete()) {
+        if (isDeletionCanceled()) {
             cliPrinter.cliPrintLn("Project deletion canceled")
             return
         }
+
         viewExceptionHandler.tryCall {
             projectUseCases.deleteProject(project.id)
+            cliPrinter.cliPrintLn("Project ${project.id} was deleted successfully.")
         }
-        cliPrinter.cliPrintLn("Project ${project.id} was deleted successfully.")
     }
 
-    private fun isCancelDelete(): Boolean =
-        cliReader.getUserConfirmation() == "n"
+    private fun isDeletionCanceled(): Boolean = !cliReader.getUserConfirmation()
 }

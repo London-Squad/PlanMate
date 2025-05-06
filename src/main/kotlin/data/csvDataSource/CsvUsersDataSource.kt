@@ -5,7 +5,7 @@ import data.csvDataSource.fileIO.Parser
 import data.dataSources.UsersDataSource
 import data.dto.UserDto
 import logic.entities.User
-import logic.exceptions.NoLoggedInUserIsSavedInCacheException
+import logic.exceptions.NoLoggedInUserFoundException
 import java.util.*
 
 class CsvUsersDataSource(
@@ -50,7 +50,7 @@ class CsvUsersDataSource(
     }
 
     override fun getLoggedInUser(): UserDto {
-        return loggedInUser ?: throw NoLoggedInUserIsSavedInCacheException()
+        return loggedInUser ?: throw NoLoggedInUserFoundException()
     }
 
     override fun setLoggedInUser(user: UserDto) {

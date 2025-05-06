@@ -9,8 +9,8 @@ class LoginUseCase(
     private val credentialValidator: CredentialValidator
 ) {
     operator fun invoke(userName: String, password: String): User {
-        credentialValidator.takeIfValidNameOrThrowException(userName)
-        credentialValidator.takeIfValidPasswordOrThrowException(password)
+        credentialValidator.validateUserName(userName)
+        credentialValidator.validatePassword(password)
         return authenticationRepository.login(userName, password)
     }
 }

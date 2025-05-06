@@ -1,11 +1,9 @@
 package logic.useCases
 
-import logic.entities.Delete
-import logic.entities.Edit
-import logic.entities.Log
-import logic.entities.TaskState
+import logic.entities.*
 import logic.repositories.AuthenticationRepository
 import logic.repositories.LogsRepository
+import logic.repositories.ProjectsRepository
 import logic.repositories.TaskRepository
 import java.util.*
 
@@ -13,10 +11,31 @@ class ManageTaskUseCase(
     private val taskRepository: TaskRepository,
     private val authenticationRepository: AuthenticationRepository,
     private val logsRepository: LogsRepository,
+    private val projectsRepository: ProjectsRepository
 ) {
 
+    fun createNewTask(title: String, description: String, projectId: UUID) {
+        val taskState = projectsRepository.getProjectById(projectId).tasksStates.first()
+
+        val newTask = Task(
+            id = UUID.randomUUID(),
+            title = title,
+            description = description,
+            taskState = taskState
+        )
+
+        taskRepository.addNewTask(newTask, projectId)
+
+        logsRepository.addLog(
+            Log(
+                user = authenticationRepository.getLoggedInUser(),
+                action = Create(newTask)
+            )
+        )
+    }
+
     fun editTaskTitle(taskID: UUID, newTitle: String) {
-            val task = taskRepository.getTaskByID(taskID)
+        val task = taskRepository.getTaskByID(taskID)
 
         taskRepository.editTaskTitle(taskID, newTitle)
             taskRepository.editTaskTitle(taskID, newTitle)

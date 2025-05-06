@@ -1,7 +1,6 @@
 package ui.taskManagementView
 
 import logic.entities.Task
-import logic.exceptions.NotFoundException
 import logic.useCases.ManageTaskUseCase
 import ui.ViewExceptionHandler
 import ui.cliPrintersAndReaders.CLIPrinter
@@ -14,7 +13,7 @@ class TaskDeletionView(
     private val viewExceptionHandler: ViewExceptionHandler
 ) {
     fun deleteTask(task: Task) {
-        if (isCancelDelete()) {
+        if (isDeletionCanceled()) {
             cliPrinter.cliPrintLn("deletion canceled")
             return
         }
@@ -26,6 +25,5 @@ class TaskDeletionView(
         }
     }
 
-    private fun isCancelDelete(): Boolean =
-        cliReader.getUserConfirmation() == "n"
+    private fun isDeletionCanceled(): Boolean = !cliReader.getUserConfirmation()
 }

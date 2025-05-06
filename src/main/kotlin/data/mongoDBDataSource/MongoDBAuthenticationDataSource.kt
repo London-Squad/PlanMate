@@ -22,11 +22,11 @@ class MongoDBAuthenticationDataSource() : AuthenticationRepository {
         TODO("Not yet implemented")
     }
 
-    override fun logout(): Boolean {
+    override fun logout() {
         TODO("Not yet implemented")
     }
 
-    override fun addMate(userName: String, password: String): Boolean {
+    override fun addMate(userName: String, password: String) {
         TODO("Not yet implemented")
     }
 
