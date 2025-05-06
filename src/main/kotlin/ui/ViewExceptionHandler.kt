@@ -1,5 +1,6 @@
 package ui
 
+import data.exceptions.DataRetrievalFailureException
 import data.exceptions.NoLoggedInUserException
 import logic.exceptions.authenticationExceptions.AuthenticationException
 import logic.exceptions.authenticationExceptions.InvalidPasswordException
@@ -35,6 +36,8 @@ class ViewExceptionHandler(private val cliPrinter: CLIPrinter) {
         } catch (e: UnauthorizedAccessException) {
             cliPrinter.cliPrintLn("Unexpected error: ${e.message}")
         } catch (e: RegistrationFailedException) {
+            cliPrinter.cliPrintLn("Unexpected error: ${e.message}")
+        }catch(e: DataRetrievalFailureException){
             cliPrinter.cliPrintLn("Unexpected error: ${e.message}")
         } catch (e: Exception) {
             cliPrinter.cliPrintLn("Unexpected error: ${e.message}")

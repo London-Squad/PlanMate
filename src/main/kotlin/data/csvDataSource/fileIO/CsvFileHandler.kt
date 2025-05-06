@@ -1,8 +1,5 @@
 package data.csvDataSource.fileIO
-
-import data.exceptions.IOException
-import data.exceptions.csvDataException.CSVDataException
-import data.exceptions.csvDataException.*
+import data.exceptions.DataRetrievalFailureException
 import java.io.File
 
 class CsvFileHandler(
@@ -22,16 +19,16 @@ class CsvFileHandler(
     fun readRecords(): List<List<String>> {
         try {
             return file.readLines().map(::decodeRecord)
-        } catch (e: IOException) {
-            throw FileNotFound("Failed to read CSV file at ${file.path}")
+        } catch (e: Exception) {
+            throw DataRetrievalFailureException("Failed to read CSV file at ${file.path}")
         }
     }
 
     fun appendRecord(record: List<String>) {
         try {
             file.appendText("${encodeRecord(record)}\n")
-        } catch (e: IOException) {
-            throw WriteFailure("Failed to append record to CSV file at ${file.path}")
+        } catch (e: Exception) {
+            throw DataRetrievalFailureException("Failed to append record to CSV file at ${file.path}")
         }
     }
 
@@ -40,8 +37,8 @@ class CsvFileHandler(
             file.writeText("")
             if (records.isEmpty()) return
             records.forEach(::appendRecord)
-        } catch (e: IOException) {
-            throw WriteFailure("Failed to rewrite CSV file at ${file.path}")
+        } catch (e: Exception) {
+            throw DataRetrievalFailureException("Failed to rewrite CSV file at ${file.path}")
         }
     }
 
