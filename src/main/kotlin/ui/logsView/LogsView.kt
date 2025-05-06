@@ -11,7 +11,6 @@ import java.time.format.DateTimeFormatter
 import java.util.*
 
 class LogsView(
-    private val cliPrinter: CLIPrinter,
     private val cliReader: CLIReader,
     private val getLogsByEntityIdUseCase: GetLogsByEntityIdUseCase,
     private val cliTablePrinter: CLITablePrinter,

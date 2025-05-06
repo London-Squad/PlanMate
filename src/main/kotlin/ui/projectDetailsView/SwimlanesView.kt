@@ -3,7 +3,6 @@ package ui.projectDetailsView
 import logic.entities.Project
 import ui.cliPrintersAndReaders.CLIPrinter
 import ui.cliPrintersAndReaders.cliTable.CLITablePrinter
-import ui.cliPrintersAndReaders.cliTable.InvalidTableInput
 import logic.entities.TaskState
 import logic.entities.Task
 
@@ -80,10 +79,6 @@ class SwimlanesView(
     }
 
     private fun displayTable(headers: List<String>, data: List<List<String>>, columnWidths: List<Int>) {
-        try {
             cliTablePrinter(headers, data, columnWidths)
-        } catch (e: InvalidTableInput) {
-            cliPrinter.cliPrintLn("Error displaying swimlanes: ${e.message}")
-        }
     }
 }

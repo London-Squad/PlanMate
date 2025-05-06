@@ -18,9 +18,9 @@ class CLITablePrinter(private val cliPrinter: CLIPrinter) {
 
     private fun validateInput(headers: List<String>, data: List<List<String>>, columnsWidth: List<Int?>) {
         data.takeIf { it.isNotEmpty() }?.let { nonEmptyData ->
-            check(headers.size == nonEmptyData[0].size) { throw InvalidHeaderLengthException() }
-            check(nonEmptyData.all { it.size == nonEmptyData[0].size }) { throw InvalidDataShapeException() }
-            check(columnsWidth.size == nonEmptyData[0].size) { throw InvalidColumnWidthLengthException() }
+            check(headers.size == nonEmptyData[0].size)
+            check(nonEmptyData.all { it.size == nonEmptyData[0].size })
+            check(columnsWidth.size == nonEmptyData[0].size)
         }
     }
 
