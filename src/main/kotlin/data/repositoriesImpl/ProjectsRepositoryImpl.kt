@@ -5,8 +5,8 @@ import data.dataSources.TasksDataSource
 import data.dataSources.TasksStatesDataSource
 import data.csvDataSource.DtoMapper
 import logic.entities.Project
-import logic.exceptions.ProjectNotFoundException
-import logic.exceptions.TaskStateNotFoundException
+import logic.exceptions.notFoundExecption.ProjectNotFoundException
+import logic.exceptions.notFoundExecption.TaskStateNotFoundException
 import logic.repositories.ProjectsRepository
 import java.util.*
 

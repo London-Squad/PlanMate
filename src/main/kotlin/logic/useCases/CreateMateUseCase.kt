@@ -2,6 +2,9 @@ package logic.useCases
 
 import logic.entities.User
 import logic.exceptions.*
+import logic.exceptions.authenticationExceptions.RegistrationFailedException
+import logic.exceptions.authenticationExceptions.UnauthorizedAccessException
+import logic.exceptions.notFoundExecption.UserNotFoundException
 import logic.repositories.AuthenticationRepository
 import logic.validation.CredentialValidator
 

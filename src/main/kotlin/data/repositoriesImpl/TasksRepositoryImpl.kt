@@ -4,7 +4,7 @@ import data.csvDataSource.DtoMapper
 import data.dataSources.TasksDataSource
 import logic.entities.TaskState
 import logic.entities.Task
-import logic.exceptions.TaskNotFoundException
+import logic.exceptions.notFoundExecption.TaskNotFoundException
 import logic.repositories.TaskRepository
 import logic.repositories.TasksStatesRepository
 import java.util.*

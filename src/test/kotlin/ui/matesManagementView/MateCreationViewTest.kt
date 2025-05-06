@@ -5,6 +5,11 @@ import io.mockk.mockk
 import io.mockk.verify
 import logic.entities.User
 import logic.exceptions.*
+import logic.exceptions.authenticationExceptions.InvalidPasswordException
+import logic.exceptions.authenticationExceptions.InvalidUserNameLengthException
+import logic.exceptions.authenticationExceptions.RegistrationFailedException
+import logic.exceptions.authenticationExceptions.UnauthorizedAccessException
+import logic.exceptions.notFoundExecption.UserNotFoundException
 import logic.useCases.CreateMateUseCase
 import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Test

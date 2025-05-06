@@ -3,8 +3,8 @@ package logic.useCases
 import com.google.common.truth.Truth.assertThat
 import io.mockk.every
 import io.mockk.mockk
-import logic.exceptions.InvalidPasswordException
-import logic.exceptions.InvalidUserNameLengthException
+import logic.exceptions.authenticationExceptions.InvalidPasswordException
+import logic.exceptions.authenticationExceptions.InvalidUserNameLengthException
 import logic.repositories.AuthenticationRepository
 import logic.repository.DummyAuthData
 import logic.validation.CredentialValidator

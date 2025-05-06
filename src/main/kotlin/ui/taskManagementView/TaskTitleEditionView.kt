@@ -1,10 +1,8 @@
 package ui.taskManagementView
 
 import logic.entities.Task
-import logic.exceptions.NotFoundException
 import logic.useCases.ManageTaskUseCase
 import ui.ViewExceptionHandler
-import ui.cliPrintersAndReaders.CLIPrinter
 import ui.cliPrintersAndReaders.CLIReader
 
 class TaskTitleEditionView(

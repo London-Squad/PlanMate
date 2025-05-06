@@ -4,7 +4,7 @@ import data.dataSources.UsersDataSource
 import data.csvDataSource.DtoMapper
 import data.security.hashing.HashingAlgorithm
 import logic.entities.User
-import logic.exceptions.UserNotFoundException
+import logic.exceptions.notFoundExecption.UserNotFoundException
 import logic.exceptions.UsernameTakenException
 import logic.repositories.AuthenticationRepository
 import java.util.*

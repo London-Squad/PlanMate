@@ -1,6 +1,13 @@
 package ui
 
 import logic.exceptions.*
+import logic.exceptions.authenticationExceptions.AuthenticationException
+import logic.exceptions.authenticationExceptions.InvalidPasswordException
+import logic.exceptions.authenticationExceptions.InvalidUserNameLengthException
+import logic.exceptions.authenticationExceptions.RegistrationFailedException
+import logic.exceptions.authenticationExceptions.UnauthorizedAccessException
+import logic.exceptions.notFoundExecption.NotFoundException
+import logic.exceptions.notFoundExecption.UserNotFoundException
 import ui.cliPrintersAndReaders.CLIPrinter
 
 class ViewExceptionHandler(private val cliPrinter: CLIPrinter) {

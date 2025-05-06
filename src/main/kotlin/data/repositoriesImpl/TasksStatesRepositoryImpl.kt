@@ -3,7 +3,7 @@ package data.repositoriesImpl
 import data.dataSources.TasksStatesDataSource
 import data.csvDataSource.DtoMapper
 import logic.entities.TaskState
-import logic.exceptions.TaskStateNotFoundException
+import logic.exceptions.notFoundExecption.TaskStateNotFoundException
 import logic.repositories.TasksStatesRepository
 import java.util.*
 
