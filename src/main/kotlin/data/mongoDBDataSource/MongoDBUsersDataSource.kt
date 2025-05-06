@@ -6,6 +6,7 @@ import com.mongodb.client.model.Updates
 import data.dataSources.UsersDataSource
 import data.dto.UserDto
 import logic.exceptions.NoLoggedInUserFoundException
+import logic.exceptions.UserNameAlreadyTakenException
 import org.bson.Document
 import java.util.UUID
 

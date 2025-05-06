@@ -2,20 +2,17 @@ package logic.exceptions
 
 open class AuthenticationException(message: String) : Exception(message)
 
-class InvalidUserNameLengthException : AuthenticationException("Username should be 4 or more characters")
+class InvalidUserNameLengthException :
+    AuthenticationException("Username should have more than 3 characters and less than 12")
 class InvalidPasswordException : AuthenticationException("Invalid password")
-class UserAlreadyExistException : AuthenticationException("User Already exist")
-class UnauthorizedAccessException : AuthenticationException("Unauthorized Access")
 class UserNameAlreadyTakenException : AuthenticationException("Username Taken Exception")
-class RegistrationFailedException : AuthenticationException("Registration Failed Exception")
 
+open class RetrievingDataFailureException(message: String) : Exception(message)
+open class StoringDataFailureException(message: String) : Exception(message)
 
-open class NotFoundException(message: String) : Exception(message)
-class NoLoggedInUserFoundException() : Exception("no logged in user found")
-class UserNotFoundException : NotFoundException("User Not found")
-class TaskNotFoundException : NotFoundException("Task Not found")
-class TaskStateNotFoundException : NotFoundException("TaskState Not found")
+open class NotFoundException(message: String) : RetrievingDataFailureException(message)
+class NoLoggedInUserFoundException() : NotFoundException("no logged in user found")
+class UserNotFoundException(message: String = "User Not found") : NotFoundException(message)
+class TaskNotFoundException(message: String = "Task Not found") : NotFoundException(message)
+class TaskStateNotFoundException(message: String = "TaskState Not found") : NotFoundException(message)
 class ProjectNotFoundException(message: String = "Project Not found") : NotFoundException(message)
-
-
-class RetrievingDataFailureException(message: String) : Exception(message)
