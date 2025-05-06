@@ -17,6 +17,14 @@ dependencies {
     testImplementation("com.google.truth:truth:1.4.4")
     testImplementation("org.junit.jupiter:junit-jupiter-params:5.12.1")
     testImplementation("io.mockk:mockk:1.14.0")
+
+
+    // Kotlin coroutine dependency
+    implementation("org.mongodb:mongodb-driver-sync:5.1.1")
+    implementation("org.jetbrains.kotlinx:kotlinx-coroutines-core:1.6.4")
+//    implementation("org.slf4j:slf4j-simple:2.0.12")
+    implementation("org.slf4j:slf4j-nop:1.7.36")
+
 }
 
 tasks.test {

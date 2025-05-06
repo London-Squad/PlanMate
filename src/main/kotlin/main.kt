@@ -1,3 +1,21 @@
+import di.*
+import org.koin.core.context.startKoin
+import org.koin.java.KoinJavaComponent.getKoin
+import ui.welcomeView.WelcomeView
+
 fun main() {
-    println("hello world!, I'm plan mate v1.0")
+
+    startKoin {
+        modules(
+//            csvStorageModule,
+            mongoStorageModule,
+            uiModule,
+            dataModule,
+            logicModule
+        )
+    }
+
+    val ui: WelcomeView = getKoin().get()
+
+    ui.start()
 }
