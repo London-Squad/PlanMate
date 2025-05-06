@@ -1,7 +1,7 @@
 package data.csvDataSource.fileIO
 
 import data.dto.*
-import logic.exceptions.RetrievingDataFailureException
+import data.exceptions.DataRetrievalFailureException
 import java.time.LocalDateTime
 import java.util.*
 
@@ -16,9 +16,8 @@ class Parser {
             taskDto.isDeleted.toString()
         )
     }
-
     fun recordToTaskDto(record: List<String>): TaskDto {
-        if (record.size != 6) throw RetrievingDataFailureException("Invalid TaskData record size")
+        if (record.size != 6) throw DataRetrievalFailureException("Invalid TaskData record size")
         return TaskDto(
             id = UUID.fromString(record[0]),
             title = record[1],
@@ -40,7 +39,7 @@ class Parser {
     }
 
     fun recordToTaskStateDto(record: List<String>): TaskStateDto {
-        if (record.size != 5) throw RetrievingDataFailureException("Invalid StateData record size")
+        if (record.size != 5) throw DataRetrievalFailureException("Invalid StateData record size")
         return TaskStateDto(
             id = UUID.fromString(record[0]),
             title = record[1],
@@ -60,7 +59,7 @@ class Parser {
     }
 
     fun recordToProjectDto(record: List<String>): ProjectDto {
-        if (record.size != 4) throw RetrievingDataFailureException("Invalid ProjectData record size")
+        if (record.size != 4) throw DataRetrievalFailureException("Invalid ProjectData record size")
         return ProjectDto(
             id = UUID.fromString(record[0]),
             title = record[1],
@@ -80,7 +79,7 @@ class Parser {
     }
 
     fun recordToUserDto(record: List<String>): UserDto {
-        if (record.size != 5) throw RetrievingDataFailureException("Invalid UserData record size")
+        if (record.size != 5) throw DataRetrievalFailureException("Invalid UserData record size")
         return UserDto(
             id = UUID.fromString(record[0]),
             userName = record[1],
@@ -104,7 +103,7 @@ class Parser {
     }
 
     fun recordToLogDto(record: List<String>): LogDto {
-        if (record.size != 8) throw RetrievingDataFailureException("Invalid LogData record size")
+        if (record.size != 8) throw DataRetrievalFailureException("Invalid LogData record size")
         return LogDto(
             id = UUID.fromString(record[0]),
             userId = UUID.fromString(record[1]),

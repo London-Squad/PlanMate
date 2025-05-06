@@ -4,10 +4,10 @@ import data.exceptions.DataAccessException
 
 open class CSVDataException(message: String) : DataAccessException(message)
 
-class FileNotFound : CSVDataException("CSV file could not be found or accessed")
+class FileNotFound(message: String = "CSV file could not be found or accessed") : CSVDataException(message)
 
-class InvalidFormat : CSVDataException("CSV file has invalid format or corrupt data")
+class InvalidFormat(message: String = "CSV file has invalid format or corrupt data") : CSVDataException(message)
 
-class WriteFailure : CSVDataException("Failed to write to CSV file")
+class WriteFailure(message: String = "Failed to write to CSV file") : CSVDataException(message)
 
-class ValidationFailure : CSVDataException("CSV data failed validation checks")
+class ValidationFailure(message: String = "CSV data failed validation checks") : CSVDataException(message)

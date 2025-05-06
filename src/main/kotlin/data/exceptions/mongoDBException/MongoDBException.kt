@@ -4,4 +4,4 @@ import data.exceptions.DataAccessException
 
 open class MongoDBException(message: String) : DataAccessException(message)
 
-class ConnectionDBFailure : MongoDBException("Failed to connect to MongoDB")
+class ConnectionDBFailure(message: String = "Failed to connect to MongoDB") : MongoDBException(message)
