@@ -1,6 +1,7 @@
 package di
 
 import com.mongodb.client.MongoDatabase
+import data.csvDataSource.fileIO.CsvParser
 import data.dataSources.*
 import data.mongoDBDataSource.*
 import org.koin.core.qualifier.named
@@ -26,9 +27,11 @@ val mongoStorageModule = module {
         DatabaseConnection.getUsersCollection()
     }
 
-    single<TasksDataSource> { MongoDBTasksDataSource(get(named("tasksCollection"))) }
-    single<TasksStatesDataSource> { MongoDBTaskStatesDataSource(get(named("taskStatesCollection"))) }
-    single<ProjectsDataSource> { MongoDBProjectsDataSource(get(named("projectsCollection"))) }
-    single<LogsDataSource> { MongoDBLogsDataSource(get(named("logsCollection"))) }
-    single<UsersDataSource> { MongoDBUsersDataSource(get(named("usersCollection"))) }
+    single { MongoDBParse() }
+
+    single<TasksDataSource> { MongoDBTasksDataSource(get(named("tasksCollection")), get()) }
+    single<TasksStatesDataSource> { MongoDBTaskStatesDataSource(get(named("taskStatesCollection")), get()) }
+    single<ProjectsDataSource> { MongoDBProjectsDataSource(get(named("projectsCollection")), get()) }
+    single<LogsDataSource> { MongoDBLogsDataSource(get(named("logsCollection")), get()) }
+    single<UsersDataSource> { MongoDBUsersDataSource(get(named("usersCollection")), get()) }
 }
