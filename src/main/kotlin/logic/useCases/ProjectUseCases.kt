@@ -4,14 +4,12 @@ import logic.entities.*
 import logic.repositories.AuthenticationRepository
 import logic.repositories.LogsRepository
 import logic.repositories.ProjectsRepository
-import logic.repositories.TaskRepository
 import java.util.*
 
 class ProjectUseCases(
     private val projectsRepository: ProjectsRepository,
     private val logsRepository: LogsRepository,
     private val authenticationRepository: AuthenticationRepository,
-    private val taskRepository: TaskRepository
 ) {
 
     fun getAllProjects(): List<Project> {
@@ -51,6 +49,9 @@ class ProjectUseCases(
 
     fun editProjectTitle(projectId: UUID, newTitle: String) {
         val project = projectsRepository.getProjectById(projectId)
+
+        projectsRepository.editProjectTitle(projectId, newTitle)
+
         logsRepository.addLog(
             Log(
                 user = authenticationRepository.getLoggedInUser(),
@@ -62,11 +63,13 @@ class ProjectUseCases(
                 )
             )
         )
-        projectsRepository.editProjectTitle(projectId, newTitle)
     }
 
     fun editProjectDescription(projectId: UUID, newDescription: String) {
         val project = projectsRepository.getProjectById(projectId)
+
+        projectsRepository.editProjectDescription(projectId, newDescription)
+
         logsRepository.addLog(
             Log(
                 user = authenticationRepository.getLoggedInUser(),
@@ -78,30 +81,17 @@ class ProjectUseCases(
                 )
             )
         )
-        projectsRepository.editProjectDescription(projectId, newDescription)
     }
 
     fun deleteProject(projectId: UUID) {
         val project = projectsRepository.getProjectById(projectId)
+
+        projectsRepository.deleteProject(projectId)
+
         logsRepository.addLog(
             Log(
                 user = authenticationRepository.getLoggedInUser(),
                 action = Delete(entity = project)
-            )
-        )
-        projectsRepository.deleteProject(projectId)
-    }
-
-    fun addNewTask(task: Task, projectId: UUID) {
-        taskRepository.addNewTask(task, projectId)
-        logTaskCreation(task)
-    }
-
-    private fun logTaskCreation(task: Task) {
-        logsRepository.addLog(
-            Log(
-                user = authenticationRepository.getLoggedInUser(),
-                action = Create(task)
             )
         )
     }

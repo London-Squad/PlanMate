@@ -1,11 +1,9 @@
 package logic.useCases
 
-import logic.entities.Delete
-import logic.entities.Edit
-import logic.entities.Log
-import logic.entities.TaskState
+import logic.entities.*
 import logic.repositories.AuthenticationRepository
 import logic.repositories.LogsRepository
+import logic.repositories.ProjectsRepository
 import logic.repositories.TaskRepository
 import java.util.*
 
@@ -13,30 +11,56 @@ class ManageTaskUseCase(
     private val taskRepository: TaskRepository,
     private val authenticationRepository: AuthenticationRepository,
     private val logsRepository: LogsRepository,
+    private val projectsRepository: ProjectsRepository
 ) {
 
-    fun editTaskTitle(taskID: UUID, newTitle: String) {
-            val task = taskRepository.getTaskByID(taskID)
+    fun createNewTask(title: String, description: String, projectId: UUID) {
 
-        taskRepository.editTaskTitle(taskID, newTitle)
-            taskRepository.editTaskTitle(taskID, newTitle)
-            logsRepository.addLog(
-                Log(
-                    user = authenticationRepository.getLoggedInUser(),
-                    action = Edit(
-                        entity = task,
-                        property = "title",
-                        oldValue = task.title,
-                        newValue = newTitle
-                    )
-                )
+        val newTask = buildNewTask(title, description, projectId)
+
+        taskRepository.addNewTask(newTask, projectId)
+
+        logsRepository.addLog(
+            Log(
+                user = authenticationRepository.getLoggedInUser(),
+                action = Create(newTask)
             )
+        )
     }
 
-    fun editTaskDescription(taskID: UUID, newDescription: String) {
-        val task = taskRepository.getTaskByID(taskID)
+    private fun buildNewTask(
+        title: String,
+        description: String,
+        projectId: UUID
+    ): Task {
+        return Task(
+            title = title,
+            description = description,
+            taskState = projectsRepository.getProjectById(projectId).tasksStates.first()
+        )
+    }
 
-        taskRepository.editTaskDescription(taskID, newDescription)
+    fun editTaskTitle(taskId: UUID, newTitle: String) {
+        val task = taskRepository.getTaskByID(taskId)
+
+        taskRepository.editTaskTitle(taskId, newTitle)
+        logsRepository.addLog(
+            Log(
+                user = authenticationRepository.getLoggedInUser(),
+                action = Edit(
+                    entity = task,
+                    property = "title",
+                    oldValue = task.title,
+                    newValue = newTitle
+                )
+            )
+        )
+    }
+
+    fun editTaskDescription(taskId: UUID, newDescription: String) {
+        val task = taskRepository.getTaskByID(taskId)
+
+        taskRepository.editTaskDescription(taskId, newDescription)
         logsRepository.addLog(
             Log(
                 user = authenticationRepository.getLoggedInUser(),
@@ -50,10 +74,10 @@ class ManageTaskUseCase(
         )
     }
 
-    fun editTaskState(taskID: UUID, newTaskState: TaskState) {
-        val task = taskRepository.getTaskByID(taskID)
+    fun editTaskState(taskId: UUID, newTaskState: TaskState) {
+        val task = taskRepository.getTaskByID(taskId)
 
-        taskRepository.editTaskState(taskID, newTaskState)
+        taskRepository.editTaskState(taskId, newTaskState)
         logsRepository.addLog(
             Log(
                 user = authenticationRepository.getLoggedInUser(),

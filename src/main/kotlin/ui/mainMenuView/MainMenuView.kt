@@ -1,8 +1,6 @@
 package ui.mainMenuView
 
 import logic.entities.User
-import logic.exceptions.NoLoggedInUserIsSavedInCacheException
-import logic.useCases.GetLoggedInUserUseCase
 import logic.useCases.LogoutUseCase
 import ui.ViewExceptionHandler
 import ui.cliPrintersAndReaders.CLIPrinter
@@ -13,8 +11,7 @@ import ui.projectsDashboardView.ProjectsDashboardView
 class MainMenuView(
     private val cliPrinter: CLIPrinter,
     private val cliReader: CLIReader,
-    private val getLoggedInUserUseCase: GetLoggedInUserUseCase,
-    private val projectsView: ProjectsDashboardView,
+    private val projectsDashboardView: ProjectsDashboardView,
     private val matesManagementView: MatesManagementView,
     private val logoutUseCase: LogoutUseCase,
     private val viewExceptionHandler: ViewExceptionHandler
@@ -22,23 +19,11 @@ class MainMenuView(
 
     private lateinit var loggedInUserType: User.Type
 
-    fun start() {
+    fun start(loggedInUserType: User.Type) {
+        this.loggedInUserType = loggedInUserType
         printMainMenuTitle()
-        if (!saveUserType()) return
         printOptions()
-        goToNextUI()
-    }
-
-    private fun saveUserType(): Boolean {
-        var success = false
-        viewExceptionHandler.tryCall {
-            getLoggedInUserUseCase.getLoggedInUser()
-                .also { user ->
-                    loggedInUserType = user.type
-                    success = true
-                }
-        }
-        return success
+        goToNextView()
     }
 
     private fun printMainMenuTitle() {
@@ -51,23 +36,23 @@ class MainMenuView(
         printLn("0. Logout")
     }
 
-    private fun goToNextUI() {
+    private fun goToNextView() {
         when (getValidUserInput()) {
-            "1" -> projectsView.start()
-            "2" -> matesManagementView.start()
-            "0" -> {
+            1 -> projectsDashboardView.start(loggedInUserType)
+            2 -> matesManagementView.start()
+            0 -> {
                 printLn("\nLogging out ...")
                 viewExceptionHandler.tryCall { logoutUseCase() }
                 return
             }
         }
-        start() // start main menu again after going back from options
+        start(loggedInUserType)
     }
 
-    private fun getValidUserInput(): String {
-        val MAX_OPTION_NUMBER =
+    private fun getValidUserInput(): Int {
+        val maxOptionNumberAllowed =
             MAX_OPTION_NUMBER_ADMIN.takeIf { loggedInUserType == User.Type.ADMIN } ?: MAX_OPTION_NUMBER_MATE
-        return cliReader.getValidUserNumberInRange(MAX_OPTION_NUMBER)
+        return cliReader.getValidUserNumberInRange(maxOptionNumberAllowed)
     }
 
     private fun printLn(message: String) = cliPrinter.cliPrintLn(message)

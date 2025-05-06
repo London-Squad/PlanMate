@@ -17,7 +17,7 @@ class EditProjectView(
 
     lateinit var currentProject: Project
 
-    fun editProject(project: Project): Project {
+    fun editProject(project: Project) {
         currentProject = project
         cliPrinter.printHeader("Edit Project: ${currentProject.title}")
         cliPrinter.cliPrintLn("1. Edit title")
@@ -25,16 +25,12 @@ class EditProjectView(
         cliPrinter.cliPrintLn("3. States management")
         cliPrinter.cliPrintLn("0. Back to project")
 
-        val input = cliReader.getValidUserNumberInRange(MAX_OPTION_NUMBER)
-
-
-        when (input) {
-            "1" -> editProjectTitle()
-            "2" -> editProjectDescription()
-            "3" -> statesManagement()
-            "0" -> return currentProject
+        when (cliReader.getValidUserNumberInRange(MAX_OPTION_NUMBER)) {
+            1 -> editProjectTitle()
+            2 -> editProjectDescription()
+            3 -> statesManagement()
+            0 -> return
         }
-        return currentProject
     }
 
     private fun editProjectTitle() {
