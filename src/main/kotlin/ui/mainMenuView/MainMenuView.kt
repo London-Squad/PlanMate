@@ -1,7 +1,6 @@
 package ui.mainMenuView
 
 import logic.entities.User
-import logic.exceptions.NoLoggedInUserIsSavedInCacheException
 import logic.useCases.GetLoggedInUserUseCase
 import logic.useCases.LogoutUseCase
 import ui.ViewExceptionHandler
@@ -61,7 +60,7 @@ class MainMenuView(
                 return
             }
         }
-        start() // start main menu again after going back from options
+        start()
     }
 
     private fun getValidUserInput(): String {

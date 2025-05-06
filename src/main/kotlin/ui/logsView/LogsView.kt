@@ -3,7 +3,6 @@ package ui.logsView
 import logic.entities.*
 import logic.useCases.GetLogsByEntityIdUseCase
 import ui.ViewExceptionHandler
-import ui.cliPrintersAndReaders.CLIPrinter
 import ui.cliPrintersAndReaders.CLIReader
 import ui.cliPrintersAndReaders.cliTable.CLITablePrinter
 import java.time.LocalDateTime

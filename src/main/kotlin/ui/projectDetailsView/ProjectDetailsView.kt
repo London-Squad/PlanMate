@@ -1,8 +1,8 @@
 package ui.projectDetailsView
 
+import data.exceptions.NoLoggedInUserException
 import logic.entities.Project
 import logic.entities.User
-import logic.exceptions.NoLoggedInUserIsSavedInCacheException
 import logic.useCases.GetLoggedInUserUseCase
 import logic.useCases.ProjectUseCases
 import ui.ViewExceptionHandler
@@ -31,7 +31,7 @@ class ProjectDetailsView(
 
         try {
             getLoggedInUserUseCase.getLoggedInUser()
-        } catch (e: NoLoggedInUserIsSavedInCacheException) {
+        } catch (e: NoLoggedInUserException) {
             cliPrinter.cliPrintLn(ERROR_MESSAGE)
             return
         }

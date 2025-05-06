@@ -2,8 +2,10 @@ package logic.useCases
 
 import logic.entities.User
 import logic.exceptions.*
+import logic.exceptions.authenticationExceptions.AuthenticationException
 import logic.exceptions.authenticationExceptions.RegistrationFailedException
 import logic.exceptions.authenticationExceptions.UnauthorizedAccessException
+import logic.exceptions.authenticationExceptions.UseNameAlreadyExistException
 import logic.exceptions.notFoundExecption.UserNotFoundException
 import logic.repositories.AuthenticationRepository
 import logic.validation.CredentialValidator
@@ -29,20 +31,13 @@ class CreateMateUseCase(
         authenticationRepository.getMates()
             .any { it.userName == username }
             .takeIf { it }?.let {
-                throw UsernameTakenException()
+                throw UseNameAlreadyExistException()
             }
-        val registered = try {
+        try {
             authenticationRepository.addMate(username, password)
-        } catch (e: UserAlreadyExistException) {
-            throw UsernameTakenException()
-        } catch (e: Exception) {
+        }catch(_: AuthenticationException){
             throw RegistrationFailedException()
         }
-
-        if (!registered) {
-            throw RegistrationFailedException()
-        }
-
     }
 
 

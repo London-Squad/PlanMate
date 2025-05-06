@@ -4,10 +4,10 @@ import logic.exceptions.PlaneMateException
 
 open class NotFoundException(message: String) : PlaneMateException(message)
 
-class UserNotFoundException : NotFoundException("User could not be found")
+class UserNotFoundException(message: String = "User could not be found") : NotFoundException(message)
 
-class TaskNotFoundException : NotFoundException("Task could not be found")
+class TaskNotFoundException(message: String = "Task could not be found") : NotFoundException(message)
 
-class TaskStateNotFoundException : NotFoundException("Task state could not be found")
+class TaskStateNotFoundException(message: String = "Task state could not be found") : NotFoundException(message)
 
-class ProjectNotFoundException : NotFoundException("Project could not be found")
+class ProjectNotFoundException(message: String = "Project could not be found") : NotFoundException(message)

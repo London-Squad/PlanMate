@@ -8,7 +8,6 @@ import ui.cliPrintersAndReaders.CLIReader
 
 class TaskDescriptionEditionView(
     private val cliReader: CLIReader,
-    private val cliPrinter: CLIPrinter,
     private val manageTaskUseCase: ManageTaskUseCase,
     private val viewExceptionHandler: ViewExceptionHandler
 ) {

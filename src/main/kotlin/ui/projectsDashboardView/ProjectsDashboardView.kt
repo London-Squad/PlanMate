@@ -2,7 +2,6 @@ package ui.projectsDashboardView
 
 import logic.entities.User
 import logic.useCases.GetLoggedInUserUseCase
-import logic.exceptions.*
 import logic.useCases.ProjectUseCases
 import ui.cliPrintersAndReaders.CLIPrinter
 import ui.cliPrintersAndReaders.CLIReader
