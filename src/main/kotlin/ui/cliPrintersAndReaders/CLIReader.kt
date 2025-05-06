@@ -43,19 +43,15 @@ class CLIReader(
 /**
  * @return "y" or "n" string
  **/
-    fun getUserConfirmation(): String {
-        return getValidUserInput(
-            message = "Do you want to confirm? (y/n): ",
-            invalidInputMessage = "Invalid input",
-            isValidInput = { it in listOf("y", "n") }
-        )
+fun getUserConfirmation(): Boolean {
+    return getUserInput("Do you confirm? (y/n): ") == "y"
     }
 
-    fun getValidUserNumberInRange(max: Int, min: Int = 0): String {
+    fun getValidUserNumberInRange(max: Int, min: Int = 0): Int {
         return getValidUserInput(
             message = "Your choice: ",
             invalidInputMessage = "Invalid input",
-            isValidInput = { it.toIntOrNull() in min..max })
-
+            isValidInput = { it.trim().toIntOrNull() in min..max }
+        ).trim().toInt()
     }
 }

@@ -11,16 +11,12 @@ import org.koin.dsl.module
 
 val dataModule = module {
 
-    // Security
     single<HashingAlgorithm> { MD5HashingAlgorithm() }
 
-
-    // Repository Implementations
     single<TaskRepository> { TasksRepositoryImpl(get(), get(), get()) }
-    single<TasksStatesRepository> { TasksStatesRepositoryImpl(get(), get()) }
+    single<TasksStatesRepository> { TasksStatesRepositoryImpl(get(), get(), get()) }
     single<ProjectsRepository> { ProjectsRepositoryImpl(get(), get(), get(), get()) }
     single<AuthenticationRepository> { AuthenticationRepositoryImpl(get(), get(), get()) }
     single<LogsRepository> { LogsRepositoryImpl(get(), get(), get(), get(), get(), get()) }
-
 
 }

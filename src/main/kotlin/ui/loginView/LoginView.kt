@@ -1,5 +1,6 @@
 package ui.loginView
 
+import logic.entities.User
 import logic.useCases.LoginUseCase
 import ui.ViewExceptionHandler
 import ui.cliPrintersAndReaders.CLIPrinter
@@ -25,11 +26,14 @@ class LoginView(
     }
 
     private fun processLogin(username: String, password: String) {
+        var loggedInUserType = User.Type.MATE
+
         viewExceptionHandler.tryCall {
-            loginUseCase(username, password)
-            println("Login successful")
-            mainMenuView.start()
-        }
+            loggedInUserType = loginUseCase(username, password).type
+        }.also { if (!it) return }
+
+        println("Login successful")
+        mainMenuView.start(loggedInUserType)
     }
 
     private fun println(message: String) = cliPrinter.cliPrintLn(message)

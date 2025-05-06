@@ -5,19 +5,19 @@ import logic.useCases.ProjectUseCases
 import ui.ViewExceptionHandler
 import ui.cliPrintersAndReaders.CLIPrinter
 import ui.cliPrintersAndReaders.CLIReader
-import ui.statesView.StatesView
+import ui.tasksStatesView.TasksStatesView
 
 class EditProjectView(
     private val cliPrinter: CLIPrinter,
     private val cliReader: CLIReader,
     private val projectUseCases: ProjectUseCases,
-    private val statesView: StatesView,
+    private val tasksStatesView: TasksStatesView,
     private val viewExceptionHandler: ViewExceptionHandler
 ) {
 
     lateinit var currentProject: Project
 
-    fun editProject(project: Project): Project {
+    fun editProject(project: Project) {
         currentProject = project
         cliPrinter.printHeader("Edit Project: ${currentProject.title}")
         cliPrinter.cliPrintLn("1. Edit title")
@@ -25,16 +25,12 @@ class EditProjectView(
         cliPrinter.cliPrintLn("3. States management")
         cliPrinter.cliPrintLn("0. Back to project")
 
-        val input = cliReader.getValidUserNumberInRange(MAX_OPTION_NUMBER)
-
-
-        when (input) {
-            "1" -> editProjectTitle()
-            "2" -> editProjectDescription()
-            "3" -> statesManagement()
-            "0" -> return currentProject
+        when (cliReader.getValidUserNumberInRange(MAX_OPTION_NUMBER)) {
+            1 -> editProjectTitle()
+            2 -> editProjectDescription()
+            3 -> statesManagement()
+            0 -> return
         }
-        return currentProject
     }
 
     private fun editProjectTitle() {
@@ -57,7 +53,7 @@ class EditProjectView(
     }
 
     private fun statesManagement() {
-        statesView.start(currentProject.id)
+        tasksStatesView.start(currentProject.id)
     }
 
     private companion object {

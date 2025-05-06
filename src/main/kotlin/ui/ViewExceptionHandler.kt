@@ -4,10 +4,11 @@ import logic.exceptions.*
 import ui.cliPrintersAndReaders.CLIPrinter
 
 class ViewExceptionHandler(private val cliPrinter: CLIPrinter) {
-    fun  tryCall(anyFunction: () -> Unit) {
+    fun tryCall(anyFunction: () -> Unit): Boolean {
         try {
             anyFunction()
-        } catch (e: NoLoggedInUserIsSavedInCacheException) {
+            return true
+        } catch (e: NoLoggedInUserFoundException) {
             cliPrinter.cliPrintLn("Error: No user logged in. Please log in first.")
         } catch (e: UserNotFoundException) {
             cliPrinter.cliPrintLn("Error: No user is logged in.")
@@ -25,12 +26,13 @@ class ViewExceptionHandler(private val cliPrinter: CLIPrinter) {
             cliPrinter.cliPrintLn("Unexpected error: ${e.message}")
         } catch (e: UnauthorizedAccessException) {
             cliPrinter.cliPrintLn("Unexpected error: ${e.message}")
-        } catch (e: UsernameTakenException) {
+        } catch (e: UserNameAlreadyTakenException) {
             cliPrinter.cliPrintLn("Unexpected error: ${e.message}")
         } catch (e: RegistrationFailedException) {
             cliPrinter.cliPrintLn("Unexpected error: ${e.message}")
         } catch (e: Exception) {
             cliPrinter.cliPrintLn("Unexpected error: ${e.message}")
         }
+        return false
     }
 }

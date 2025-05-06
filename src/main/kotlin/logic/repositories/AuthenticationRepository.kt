@@ -13,9 +13,9 @@ interface AuthenticationRepository {
 
     fun login(userName: String, password: String): User
 
-    fun logout(): Boolean
+    fun logout()
 
-    fun addMate(userName: String, password: String): Boolean
+    fun addMate(userName: String, password: String)
 
     fun getLoggedInUser(): User
 }

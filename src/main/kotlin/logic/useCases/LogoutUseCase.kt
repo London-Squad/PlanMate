@@ -5,9 +5,7 @@ import logic.repositories.AuthenticationRepository
 class LogoutUseCase(
     private val authenticationRepository: AuthenticationRepository,
 ) {
-    operator fun invoke(): Boolean {
-        if (!authenticationRepository.logout()) return false
+    operator fun invoke() {
         authenticationRepository.logout()
-        return true
     }
 }

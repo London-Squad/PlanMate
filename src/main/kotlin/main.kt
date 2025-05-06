@@ -6,7 +6,13 @@ import java.io.File
 
 fun main() {
     startKoin {
-        modules(csvStorageModule, uiModule, dataModule, logicModule, mongoStorageModule)
+        modules(
+            csvStorageModule,
+            // mongodbStorageModule,
+            uiModule,
+            dataModule,
+            logicModule
+        )
     }
 
     val ui: WelcomeView = getKoin().get()
