@@ -13,7 +13,7 @@ import ui.matesManagementView.MateCreationView
 import ui.matesManagementView.MatesManagementView
 import ui.projectDetailsView.*
 import ui.projectsDashboardView.ProjectsDashboardView
-import ui.statesView.StatesView
+import ui.tasksStatesView.TasksStatesView
 import ui.taskManagementView.*
 import ui.welcomeView.WelcomeView
 
@@ -33,7 +33,7 @@ val uiModule = module {
     single { SwimlanesView(get()) }
     single { EditProjectView(get(), get(), get(), get(), get()) }
     single { DeleteProjectView(get(), get(), get(), get()) }
-    single { StatesView(get(), get(), get(), get()) }
+    single { TasksStatesView(get(), get(), get(), get()) }
 
     single { TaskTitleEditionView(get(), get(), get()) }
     single { TaskDescriptionEditionView(get(), get(), get(), get()) }

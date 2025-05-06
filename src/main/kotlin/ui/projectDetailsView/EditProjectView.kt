@@ -5,13 +5,13 @@ import logic.useCases.ProjectUseCases
 import ui.ViewExceptionHandler
 import ui.cliPrintersAndReaders.CLIPrinter
 import ui.cliPrintersAndReaders.CLIReader
-import ui.statesView.StatesView
+import ui.tasksStatesView.TasksStatesView
 
 class EditProjectView(
     private val cliPrinter: CLIPrinter,
     private val cliReader: CLIReader,
     private val projectUseCases: ProjectUseCases,
-    private val statesView: StatesView,
+    private val tasksStatesView: TasksStatesView,
     private val viewExceptionHandler: ViewExceptionHandler
 ) {
 
@@ -53,7 +53,7 @@ class EditProjectView(
     }
 
     private fun statesManagement() {
-        statesView.start(currentProject.id)
+        tasksStatesView.start(currentProject.id)
     }
 
     private companion object {
