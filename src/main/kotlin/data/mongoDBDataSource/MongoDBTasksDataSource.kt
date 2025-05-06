@@ -10,7 +10,6 @@ class MongoDBTasksDataSource(
     private val collection: MongoCollection<Document>
 ) : TasksDataSource {
 
-
     override fun getAllTasks(): List<TaskDto> {
         return collection.find().map { doc ->
             TaskDto(
@@ -35,21 +34,21 @@ class MongoDBTasksDataSource(
 
     override fun editTaskTitle(taskId: UUID, newTitle: String) {
         val updateDoc = Document("\$set", Document(TITLE_FIELD, newTitle))
-        collection.updateOne(Document(ID_FIELD, taskId), updateDoc)
+        collection.updateOne(Document(ID_FIELD, taskId.toString()), updateDoc)
     }
 
     override fun editTaskDescription(taskId: UUID, newDescription: String) {
         val updateDoc = Document("\$set", Document(DESCRIPTION_FIELD, newDescription))
-        collection.updateOne(Document(ID_FIELD, taskId), updateDoc)
+        collection.updateOne(Document(ID_FIELD, taskId.toString()), updateDoc)
     }
 
     override fun editTaskState(taskId: UUID, newStateId: UUID) {
-        val updateDoc = Document("\$set", Document(STATE_ID_FIELD, newStateId))
-        collection.updateOne(Document(ID_FIELD, taskId), updateDoc)
+        val updateDoc = Document("\$set", Document(STATE_ID_FIELD, newStateId.toString()))
+        collection.updateOne(Document(ID_FIELD, taskId.toString()), updateDoc)
     }
 
     override fun deleteTask(taskId: UUID) {
-        collection.deleteOne(Document(ID_FIELD, taskId))
+        collection.deleteOne(Document(ID_FIELD, taskId.toString()))
     }
 
     companion object {
