@@ -19,7 +19,7 @@ dependencies {
     testImplementation("io.mockk:mockk:1.14.0")
 
     implementation("org.mongodb:mongodb-driver-sync:4.11.1")
-//    implementation("org.slf4j:slf4j-simple:2.0.12")
+    implementation("org.slf4j:slf4j-simple:2.0.12")
 
 //    // Kotlin coroutine dependency
 //    implementation("org.jetbrains.kotlinx:kotlinx-coroutines-core:1.6.4")

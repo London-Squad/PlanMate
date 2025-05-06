@@ -52,10 +52,10 @@ class MongoDBTasksDataSource(
     }
 
     override fun addNewTask(taskDto: TaskDto) {
-        val doc = Document(ID_FIELD, taskDto.id).append(TITLE_FIELD, taskDto.title)
+        val doc = Document(ID_FIELD, taskDto.id.toString()).append(TITLE_FIELD, taskDto.title)
             .append(DESCRIPTION_FIELD, taskDto.description)
-            .append(STATE_ID_FIELD, taskDto.stateId)
-            .append(PROJECT_ID_FIELD, taskDto.projectId)
+            .append(STATE_ID_FIELD, taskDto.stateId.toString())
+            .append(PROJECT_ID_FIELD, taskDto.projectId.toString())
             .append(IS_DELETED_FIELD, taskDto.isDeleted)
         collection.insertOne(doc)
     }
