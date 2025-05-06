@@ -28,6 +28,7 @@ class MatesManagementView(
 
     private fun printOptions() {
         printLn("Mates Management Menu")
+        listAllMates()
         printLn("1. Create New Mate")
         printLn("0. Back")
     }
@@ -36,7 +37,7 @@ class MatesManagementView(
         val userInput = cliReader.getValidUserNumberInRange(MAX_OPTION_NUMBER)
 
         when (userInput) {
-            1 -> createNewMateWithViewAllMates()
+            1 -> mateCreationView.createMate()
             0 -> return
         }
         start()
@@ -57,10 +58,6 @@ class MatesManagementView(
 
         cliTablePrinter(headers, data, columnWidths)
     }
-    private fun createNewMateWithViewAllMates(){
-        listAllMates()
-        mateCreationView.createMate()
-    }
 
     private fun printLn(message: String) {
         cliPrinter.cliPrintLn(message)
@@ -69,5 +66,4 @@ class MatesManagementView(
     private companion object {
         const val MAX_OPTION_NUMBER = 1
     }
-
 }
