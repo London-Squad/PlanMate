@@ -25,7 +25,7 @@ class EditProjectView(
         cliPrinter.cliPrintLn("3. States management")
         cliPrinter.cliPrintLn("0. Back to project")
 
-        when (cliReader.getValidUserNumberInRange(MAX_OPTION_NUMBER)) {
+        when (cliReader.getValidInputNumberInRange(MAX_OPTION_NUMBER)) {
             1 -> editProjectTitle()
             2 -> editProjectDescription()
             3 -> statesManagement()
@@ -34,7 +34,7 @@ class EditProjectView(
     }
 
     private fun editProjectTitle() {
-        val newTitle = cliReader.getValidTitle()
+        val newTitle = cliReader.getValidProjectTitle()
         viewExceptionHandler.tryCall {
             projectUseCases.editProjectTitle(currentProject.id, newTitle)
         }
@@ -44,7 +44,7 @@ class EditProjectView(
     }
 
     private fun editProjectDescription() {
-        val newDescription = cliReader.getValidDescription()
+        val newDescription = cliReader.getValidProjectDescription()
         viewExceptionHandler.tryCall {
             projectUseCases.editProjectDescription(currentProject.id, newDescription)
         }

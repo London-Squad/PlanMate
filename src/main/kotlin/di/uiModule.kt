@@ -20,7 +20,7 @@ import ui.welcomeView.WelcomeView
 val uiModule = module {
 
     single { CLIPrinter() }
-    single { CLIReader(get(), get()) }
+    single { CLIReader(get(), get(), get(), get()) }
     single { CLITablePrinter(get()) }
     single { ViewExceptionHandler(get()) }
 

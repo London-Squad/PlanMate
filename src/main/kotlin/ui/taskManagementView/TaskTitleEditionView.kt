@@ -12,7 +12,7 @@ class TaskTitleEditionView(
 
 ) {
     fun editTitle(task: Task) {
-        val newTitle = cliReader.getValidTitle()
+        val newTitle = cliReader.getValidTaskTitle()
         viewExceptionHandler.tryCall {
             manageTaskUseCase.editTaskTitle(task.id, newTitle)
         }

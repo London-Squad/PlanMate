@@ -38,7 +38,7 @@ class TasksStatesView(
 
     private fun goToNextView() {
         printLn("Select an option:")
-        when (cliReader.getValidUserNumberInRange(3)) {
+        when (cliReader.getValidInputNumberInRange(3)) {
             1 -> addState()
             2 -> editState()
             3 -> deleteState()
@@ -69,8 +69,8 @@ class TasksStatesView(
     }
 
     private fun addState() {
-        val title = cliReader.getValidTitle()
-        val desc = cliReader.getValidDescription()
+        val title = cliReader.getValidTaskStateTitle()
+        val desc = cliReader.getValidTaskStateTitle()
         useCase.addState(TaskState(title = title, description = desc), projectId)
         printLn("Task state added successfully.")
     }
@@ -82,26 +82,26 @@ class TasksStatesView(
         }
 
         printLn("select a task state by number.")
-        val index = cliReader.getValidUserNumberInRange(tasksStates.size, min = 1) - 1
+        val index = cliReader.getValidInputNumberInRange(tasksStates.size, min = 1) - 1
         val selectedState = tasksStates[index]
 
         printLn("1. Edit Title")
         printLn("2. Edit Description")
 
-        when (cliReader.getValidUserNumberInRange(2, min = 1)) {
+        when (cliReader.getValidInputNumberInRange(2, min = 1)) {
             1 -> editTaskStateTitle(selectedState)
             2 -> editTaskStateDescription(selectedState)
         }
     }
 
     private fun editTaskStateTitle(state: TaskState) {
-        val newTitle = cliReader.getUserInput("New title: ")
+        val newTitle = cliReader.getValidTaskStateTitle()
         useCase.editStateTitle(state.id, newTitle)
         printLn("Title updated.")
     }
 
     private fun editTaskStateDescription(state: TaskState) {
-        val newDescription = cliReader.getUserInput("New description: ")
+        val newDescription = cliReader.getValidTaskStateDescription()
         useCase.editStateDescription(state.id, newDescription)
         printLn("Description updated.")
     }
@@ -112,11 +112,11 @@ class TasksStatesView(
             return
         }
         printLn("select a task state by number.")
-        val index = cliReader.getValidUserNumberInRange(tasksStates.size, min = 1) - 1
+        val index = cliReader.getValidInputNumberInRange(tasksStates.size, min = 1) - 1
         val selectedState = tasksStates[index]
 
-        val confirm = cliReader.getUserInput("Are you sure you want to delete this task state? (y/n): ")
-        if (confirm.lowercase() == "y") {
+        val confirm = cliReader.getUserConfirmation()
+        if (confirm) {
             useCase.deleteState(selectedState.id)
             printLn("Task state deleted.")
         } else {

@@ -12,7 +12,7 @@ class TaskDescriptionEditionView(
 ) {
 
     fun editDescription(task: Task) {
-        val newDescription = cliReader.getValidDescription()
+        val newDescription = cliReader.getValidTaskDescription()
         viewExceptionHandler.tryCall {
             manageTaskUseCase.editTaskDescription(task.id, newDescription)
         }

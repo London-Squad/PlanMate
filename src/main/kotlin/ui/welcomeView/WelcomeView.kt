@@ -45,7 +45,7 @@ class WelcomeView(
     }
 
     private fun goToNextView() {
-        when (cliReader.getValidUserNumberInRange(MAX_OPTION_NUMBER)) {
+        when (cliReader.getValidInputNumberInRange(MAX_OPTION_NUMBER)) {
             1 -> loginView.start()
             0 -> {
                 cliPrinter.cliPrintLn("Exiting the app...")

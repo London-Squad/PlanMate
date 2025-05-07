@@ -52,7 +52,7 @@ class MainMenuView(
     private fun getValidUserInput(): Int {
         val maxOptionNumberAllowed =
             MAX_OPTION_NUMBER_ADMIN.takeIf { loggedInUserType == User.Type.ADMIN } ?: MAX_OPTION_NUMBER_MATE
-        return cliReader.getValidUserNumberInRange(maxOptionNumberAllowed)
+        return cliReader.getValidInputNumberInRange(maxOptionNumberAllowed)
     }
 
     private fun printLn(message: String) = cliPrinter.cliPrintLn(message)

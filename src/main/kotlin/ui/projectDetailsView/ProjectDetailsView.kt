@@ -69,7 +69,7 @@ class ProjectDetailsView(
             if (loggedInUserType == User.Type.ADMIN) MAX_OPTION_NUMBER_ADMIN
             else MAX_OPTION_NUMBER_MATE
 
-        return cliReader.getValidUserNumberInRange(maxOptionNumberAllowed)
+        return cliReader.getValidInputNumberInRange(maxOptionNumberAllowed)
     }
 
     private fun selectTask() {
@@ -78,13 +78,13 @@ class ProjectDetailsView(
             return
         }
         printLn("Select a task by number:")
-        val input = cliReader.getValidUserNumberInRange(project.tasks.size)
+        val input = cliReader.getValidInputNumberInRange(project.tasks.size)
         taskManagementView.start(project.tasks[input - 1].id, project)
     }
 
     private fun createNewTask() {
-        val title = cliReader.getValidTitle()
-        val description = cliReader.getValidDescription()
+        val title = cliReader.getValidTaskTitle()
+        val description = cliReader.getValidTaskDescription()
 
         manageTaskUseCase.createNewTask(title, description, project.id)
     }

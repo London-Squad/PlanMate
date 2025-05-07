@@ -82,7 +82,7 @@ class ProjectsDashboardView(
             if (loggedInUserType == User.Type.ADMIN) MAX_OPTION_NUMBER_ADMIN
             else MAX_OPTION_NUMBER_MATE
 
-        return cliReader.getValidUserNumberInRange(maxOptionNumberAllowed)
+        return cliReader.getValidInputNumberInRange(maxOptionNumberAllowed)
     }
 
     private fun selectProject() {
@@ -91,14 +91,14 @@ class ProjectsDashboardView(
             return
         }
         printLn("Select a project by number:")
-        val input = cliReader.getValidUserNumberInRange(projects.size)
+        val input = cliReader.getValidInputNumberInRange(projects.size)
         projectView.start(projects[input - 1].id, loggedInUserType)
     }
 
     private fun createProject() {
         cliPrinter.printHeader("Create Project")
-        val title = cliReader.getValidTitle()
-        val description = cliReader.getValidDescription()
+        val title = cliReader.getValidProjectTitle()
+        val description = cliReader.getValidProjectDescription()
         exceptionHandler.tryCall {
             projectUseCases.createProject(title, description)
             cliPrinter.cliPrintLn("Project created successfully.")

@@ -54,7 +54,7 @@ class TaskManagementView(
     }
 
     private fun selectNextUI() {
-        when (cliReader.getValidUserNumberInRange(MAX_OPTION_NUMBER)) {
+        when (cliReader.getValidInputNumberInRange(MAX_OPTION_NUMBER)) {
             1 -> {
                 taskTitleEditionView.editTitle(currentTask)
                 start(currentTask.id, currentProject)
