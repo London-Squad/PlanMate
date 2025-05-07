@@ -3,6 +3,7 @@ package data.csvDataSource
 import data.csvDataSource.fileIO.CsvFileHandler
 import data.csvDataSource.fileIO.CsvParser
 import data.dataSources.TaskStatesDataSource
+import data.dataSources.getDefaultTaskStates
 import data.dto.TaskStateDto
 import java.util.UUID
 
@@ -17,23 +18,7 @@ class CsvTaskStatesDataSource(
     }
 
     override fun getDefaultTasksStates(projectId: UUID): List<TaskStateDto> {
-        return listOf(
-            TaskStateDto(
-                id = UUID.randomUUID(), title = "TODO", description = "TO DO TASKS",
-                projectId = projectId,
-                isDeleted = false
-            ),
-            TaskStateDto(
-                id = UUID.randomUUID(), title = "InProgress", description = "INPROGRESS TASKS",
-                projectId = projectId,
-                isDeleted = false
-            ),
-            TaskStateDto(
-                id = UUID.randomUUID(), title = "Done", description = "FINISHED TASKS",
-                projectId = projectId,
-                isDeleted = false
-            )
-        )
+        return getDefaultTaskStates(projectId)
     }
 
     override fun addNewTaskState(taskStateDto: TaskStateDto) {
