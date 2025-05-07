@@ -16,6 +16,26 @@ class CsvTasksStatesDataSource(
             .map(csvParser::recordToTaskStateDto)
     }
 
+    override fun getDefaultTasksStates(projectId: UUID): List<TaskStateDto> {
+        return listOf(
+            TaskStateDto(
+                id = UUID.randomUUID(), title = "TODO", description = "TO DO TASKS",
+                projectId = projectId,
+                isDeleted = false
+            ),
+            TaskStateDto(
+                id = UUID.randomUUID(), title = "InProgress", description = "INPROGRESS TASKS",
+                projectId = projectId,
+                isDeleted = false
+            ),
+            TaskStateDto(
+                id = UUID.randomUUID(), title = "Done", description = "FINISHED TASKS",
+                projectId = projectId,
+                isDeleted = false
+            )
+        )
+    }
+
     override fun addNewTaskState(taskStateDto: TaskStateDto) {
         tasksStatesCsvFileHandler.appendRecord(
             csvParser.taskStateDtoToRecord(taskStateDto)

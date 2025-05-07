@@ -4,10 +4,12 @@ import logic.entities.*
 import logic.repositories.AuthenticationRepository
 import logic.repositories.LogsRepository
 import logic.repositories.ProjectsRepository
+import logic.repositories.TasksStatesRepository
 import java.util.*
 
 class ProjectUseCases(
     private val projectsRepository: ProjectsRepository,
+    private val tasksStatesRepository: TasksStatesRepository,
     private val logsRepository: LogsRepository,
     private val authenticationRepository: AuthenticationRepository,
 ) {
@@ -21,14 +23,11 @@ class ProjectUseCases(
     }
 
     fun createProject(title: String, description: String) {
-        val defaultTasksStates = listOf(
-            TaskState(id = UUID.randomUUID(), title = "TODO", description = "TO DO TASKS"),
-            TaskState(id = UUID.randomUUID(), title = "InProgress", description = "INPROGRESS TASKS"),
-            TaskState(id = UUID.randomUUID(), title = "Done", description = "FINISHED TASKS")
-        )
+        val projectId = UUID.randomUUID()
+        val defaultTasksStates = tasksStatesRepository.getDefaultTaskStates(projectId)
 
         val project = Project(
-            id = UUID.randomUUID(),
+            id = projectId,
             title = title,
             description = description,
             tasks = emptyList(),

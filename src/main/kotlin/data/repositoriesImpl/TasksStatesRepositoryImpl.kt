@@ -20,6 +20,10 @@ class TasksStatesRepositoryImpl(
             .map { it.toTaskState() }
     }
 
+    override fun getDefaultTaskStates(projectId: UUID): List<TaskState> {
+        return tasksStatesDataSource.getDefaultTasksStates(projectId).map { it.toTaskState() }
+    }
+
     override fun getTaskStateById(stateId: UUID, includeDeleted: Boolean): TaskState {
         return tasksStatesDataSource.getAllTasksStates()
                 .filter { if (includeDeleted) true else !it.isDeleted }

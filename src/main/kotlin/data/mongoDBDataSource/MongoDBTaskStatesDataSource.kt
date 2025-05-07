@@ -19,6 +19,26 @@ class MongoDBTaskStatesDataSource(
         }.toList()
     }
 
+    override fun getDefaultTasksStates(projectId: UUID): List<TaskStateDto> {
+        return listOf(
+            TaskStateDto(
+                id = UUID.randomUUID(), title = "TODO", description = "TO DO TASKS",
+                projectId = projectId,
+                isDeleted = false
+            ),
+            TaskStateDto(
+                id = UUID.randomUUID(), title = "InProgress", description = "INPROGRESS TASKS",
+                projectId = projectId,
+                isDeleted = false
+            ),
+            TaskStateDto(
+                id = UUID.randomUUID(), title = "Done", description = "FINISHED TASKS",
+                projectId = projectId,
+                isDeleted = false
+            )
+        )
+    }
+
     override fun addNewTaskState(taskStateDto: TaskStateDto) {
         val doc = mongoParser.taskStateDtoToDocument(taskStateDto)
         collection.insertOne(doc)
