@@ -8,9 +8,10 @@ import org.koin.dsl.module
 
 val logicModule = module {
     single { GetLogsByEntityIdUseCase(get()) }
-    single { AddLogUseCase(get(), get()) }
+    single { CreateLogUseCase(get(), get()) }
     single { GetLoggedInUserUseCase(get()) }
-    single { ManageProjectUseCase(get(), get(), get()) }
+    single { ManageProjectUseCase(get(), get()) }
+    single { CreateProjectUseCase(get(), get(), get()) }
     single { LoginUseCase(get()) }
     single { ManageTaskUseCase(get(), get(), get()) }
     single { ManageStateUseCase(get(), get()) }

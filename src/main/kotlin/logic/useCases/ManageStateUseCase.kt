@@ -6,14 +6,14 @@ import java.util.*
 
 class ManageStateUseCase(
     private val taskStatesRepository: TaskStatesRepository,
-    private val addLogUseCase: AddLogUseCase,
+    private val createLogUseCase: CreateLogUseCase,
 ) {
 
     fun addState(title: String, description: String, projectID: UUID) {
         val taskState = buildNewTaskState(UUID.randomUUID(), title, description)
 
         taskStatesRepository.addNewTaskState(taskState, projectID)
-        addLogUseCase.logEntityCreation(taskState)
+        createLogUseCase.logEntityCreation(taskState)
     }
 
     private fun buildNewTaskState(
@@ -32,14 +32,14 @@ class ManageStateUseCase(
         val oldState = taskStatesRepository.getTaskStateById(stateID)
 
         taskStatesRepository.editTaskStateTitle(stateID, newTitle)
-        addLogUseCase.logEntityTitleEdition(oldState, oldState.title, newTitle)
+        createLogUseCase.logEntityTitleEdition(oldState, oldState.title, newTitle)
     }
 
     fun editStateDescription(stateID: UUID, newDescription: String) {
         val oldState = taskStatesRepository.getTaskStateById(stateID)
 
         taskStatesRepository.editTaskStateDescription(stateID, newDescription)
-        addLogUseCase.logEntityDescriptionEdition(oldState, oldState.description, newDescription)
+        createLogUseCase.logEntityDescriptionEdition(oldState, oldState.description, newDescription)
     }
 
     fun deleteState(stateID: UUID) {
@@ -47,7 +47,7 @@ class ManageStateUseCase(
         if (oldState.id == TaskState.NoTaskState.id) return
 
         taskStatesRepository.deleteTaskState(stateID)
-        addLogUseCase.logEntityDeletion(oldState)
+        createLogUseCase.logEntityDeletion(oldState)
     }
 
     fun getTaskStatesByProjectId(projectId: UUID): List<TaskState> {

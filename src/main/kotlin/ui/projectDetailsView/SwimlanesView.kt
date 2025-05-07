@@ -8,7 +8,7 @@ import logic.entities.TaskState
 
 class SwimlanesView(
     private val cliPrinter: CLIPrinter,
-    private val cliTablePrinter: CLITablePrinter = CLITablePrinter(cliPrinter)
+    private val cliTablePrinter: CLITablePrinter
 ) {
 
     fun displaySwimlanes(project: Project) {

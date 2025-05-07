@@ -28,12 +28,12 @@ val uiModule = module {
     single { LoginView(get(), get(), get(), get(), get()) }
     single { MainMenuView(get(), get(), get(), get(), get(), get()) }
 
-    single { ProjectsDashboardView(get(), get(), get(), get(), get(), get()) }
+    single { ProjectsDashboardView(get(), get(), get(), get(), get(), get(), get()) }
     single { ProjectDetailsView(get(), get(), get(), get(), get(), get(), get(), get(), get(), get()) }
-    single { SwimlanesView(get()) }
+    single { SwimlanesView(get(), get()) }
     single { EditProjectView(get(), get(), get(), get(), get()) }
     single { DeleteProjectView(get(), get(), get(), get()) }
-    single { TaskStatesView(get(), get(), get(), get()) }
+    single { TaskStatesView(get(), get(), get(), get(), get()) }
 
     single { TaskTitleEditionView(get(), get(), get()) }
     single { TaskDescriptionEditionView(get(), get(), get()) }

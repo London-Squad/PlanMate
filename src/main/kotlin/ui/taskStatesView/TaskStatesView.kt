@@ -13,7 +13,7 @@ class TaskStatesView(
     private val cliReader: CLIReader,
     private val useCase: ManageStateUseCase,
     private val viewExceptionHandler: ViewExceptionHandler,
-    private val cliTablePrinter: CLITablePrinter = CLITablePrinter(cliPrinter)
+    private val cliTablePrinter: CLITablePrinter
 ) {
 
     private lateinit var projectId: UUID
