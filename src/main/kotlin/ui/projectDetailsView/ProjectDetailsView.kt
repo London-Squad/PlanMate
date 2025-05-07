@@ -7,6 +7,7 @@ import logic.useCases.ProjectUseCases
 import ui.ViewExceptionHandler
 import ui.cliPrintersAndReaders.CLIPrinter
 import ui.cliPrintersAndReaders.CLIReader
+import ui.cliPrintersAndReaders.TaskInputReader
 import ui.logsView.LogsView
 import ui.taskManagementView.TaskManagementView
 import java.util.UUID
@@ -18,6 +19,7 @@ class ProjectDetailsView(
     private val editProjectView: EditProjectView,
     private val deleteProjectView: DeleteProjectView,
     private val projectUseCases: ProjectUseCases,
+    private val taskInputReader: TaskInputReader,
     private val taskManagementView: TaskManagementView,
     private val logsView: LogsView,
     private val viewExceptionHandler: ViewExceptionHandler,
@@ -83,8 +85,8 @@ class ProjectDetailsView(
     }
 
     private fun createNewTask() {
-        val title = cliReader.getValidTaskTitle()
-        val description = cliReader.getValidTaskDescription()
+        val title = taskInputReader.getValidTaskTitle()
+        val description = taskInputReader.getValidTaskDescription()
 
         manageTaskUseCase.createNewTask(title, description, project.id)
     }

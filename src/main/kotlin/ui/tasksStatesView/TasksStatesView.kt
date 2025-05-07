@@ -5,12 +5,14 @@ import logic.useCases.ManageStateUseCase
 import ui.ViewExceptionHandler
 import ui.cliPrintersAndReaders.CLIPrinter
 import ui.cliPrintersAndReaders.CLIReader
+import ui.cliPrintersAndReaders.TaskStateInputReader
 import ui.cliPrintersAndReaders.cliTable.CLITablePrinter
 import java.util.*
 
 class TasksStatesView(
     private val cliPrinter: CLIPrinter,
     private val cliReader: CLIReader,
+    private val taskStateInputReader: TaskStateInputReader,
     private val useCase: ManageStateUseCase,
     private val viewExceptionHandler: ViewExceptionHandler,
     private val cliTablePrinter: CLITablePrinter = CLITablePrinter(cliPrinter)
@@ -69,8 +71,8 @@ class TasksStatesView(
     }
 
     private fun addState() {
-        val title = cliReader.getValidTaskStateTitle()
-        val desc = cliReader.getValidTaskStateTitle()
+        val title = taskStateInputReader.getValidTaskStateTitle()
+        val desc = taskStateInputReader.getValidTaskStateTitle()
         useCase.addState(TaskState(title = title, description = desc), projectId)
         printLn("Task state added successfully.")
     }
@@ -95,13 +97,13 @@ class TasksStatesView(
     }
 
     private fun editTaskStateTitle(state: TaskState) {
-        val newTitle = cliReader.getValidTaskStateTitle()
+        val newTitle = taskStateInputReader.getValidTaskStateTitle()
         useCase.editStateTitle(state.id, newTitle)
         printLn("Title updated.")
     }
 
     private fun editTaskStateDescription(state: TaskState) {
-        val newDescription = cliReader.getValidTaskStateDescription()
+        val newDescription = taskStateInputReader.getValidTaskStateDescription()
         useCase.editStateDescription(state.id, newDescription)
         printLn("Description updated.")
     }
