@@ -4,7 +4,7 @@ import logic.entities.*
 import logic.repositories.AuthenticationRepository
 import logic.repositories.LogsRepository
 
-class AddLogUseCase(
+class CreateLogUseCase(
     private val logsRepository: LogsRepository,
     private val authenticationRepository: AuthenticationRepository,
 ) {
