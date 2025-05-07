@@ -1,4 +1,4 @@
-package ui.tasksStatesView
+package ui.taskStatesView
 
 import logic.entities.TaskState
 import logic.useCases.ManageStateUseCase
@@ -8,7 +8,7 @@ import ui.cliPrintersAndReaders.CLIReader
 import ui.cliPrintersAndReaders.cliTable.CLITablePrinter
 import java.util.*
 
-class TasksStatesView(
+class TaskStatesView(
     private val cliPrinter: CLIPrinter,
     private val cliReader: CLIReader,
     private val useCase: ManageStateUseCase,
@@ -49,7 +49,7 @@ class TasksStatesView(
 
     private fun getTaskStates() {
         viewExceptionHandler.tryCall {
-            tasksStates = useCase.getStates(projectId)
+            tasksStates = useCase.getTaskStatesByProjectId(projectId)
         }
     }
 
@@ -71,7 +71,7 @@ class TasksStatesView(
     private fun addState() {
         val title = cliReader.getValidTitle()
         val desc = cliReader.getValidDescription()
-        useCase.addState(TaskState(title = title, description = desc), projectId)
+        useCase.addState(title, desc, projectId)
         printLn("Task state added successfully.")
     }
 

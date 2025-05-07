@@ -2,14 +2,14 @@ package data.csvDataSource
 
 import data.csvDataSource.fileIO.CsvFileHandler
 import data.csvDataSource.fileIO.CsvParser
-import data.dataSources.TasksStatesDataSource
+import data.dataSources.TaskStatesDataSource
 import data.dto.TaskStateDto
 import java.util.UUID
 
-class CsvTasksStatesDataSource(
+class CsvTaskStatesDataSource(
     private val tasksStatesCsvFileHandler: CsvFileHandler,
     private val csvParser: CsvParser
-) : TasksStatesDataSource {
+) : TaskStatesDataSource {
 
     override fun getAllTasksStates(): List<TaskStateDto> {
         return tasksStatesCsvFileHandler.readRecords()

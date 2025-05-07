@@ -3,7 +3,7 @@ package data.dataSources
 import data.dto.TaskStateDto
 import java.util.UUID
 
-interface TasksStatesDataSource {
+interface TaskStatesDataSource {
     fun getAllTasksStates(): List<TaskStateDto>
 
     fun getDefaultTasksStates(projectId: UUID): List<TaskStateDto>

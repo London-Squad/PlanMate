@@ -1,70 +1,56 @@
 package logic.useCases
 
 import logic.entities.*
-import logic.repositories.AuthenticationRepository
-import logic.repositories.LogsRepository
-import logic.repositories.TasksStatesRepository
-import java.time.LocalDateTime
+import logic.repositories.TaskStatesRepository
 import java.util.*
 
 class ManageStateUseCase(
-    private val tasksStatesRepository: TasksStatesRepository,
-    private val logsRepository: LogsRepository,
-    private val authenticationRepository: AuthenticationRepository
+    private val taskStatesRepository: TaskStatesRepository,
+    private val addLogUseCase: AddLogUseCase,
 ) {
 
-    fun addState(taskState: TaskState, projectID: UUID) {
-        if (taskState.title.isBlank()) return
-        tasksStatesRepository.addNewTaskState(taskState, projectID)
-        logAction(Create(taskState))
+    fun addState(title: String, description: String, projectID: UUID) {
+        val taskState = buildNewTaskState(UUID.randomUUID(), title, description)
+
+        taskStatesRepository.addNewTaskState(taskState, projectID)
+        addLogUseCase.logEntityCreation(taskState)
+    }
+
+    private fun buildNewTaskState(
+        id: UUID,
+        title: String,
+        description: String,
+    ): TaskState {
+        return TaskState(
+            id = id,
+            title = title,
+            description = description,
+        )
     }
 
     fun editStateTitle(stateID: UUID, newTitle: String) {
-        val oldState = tasksStatesRepository.getTaskStateById(stateID) ?: return
-        if (newTitle.isBlank()) return
-        tasksStatesRepository.editTaskStateTitle(stateID, newTitle)
-        logAction(
-            Edit(
-                entity = oldState.copy(title = newTitle),
-                property = "title",
-                oldValue = oldState.title,
-                newValue = newTitle
-            )
-        )
+        val oldState = taskStatesRepository.getTaskStateById(stateID)
+
+        taskStatesRepository.editTaskStateTitle(stateID, newTitle)
+        addLogUseCase.logEntityTitleEdition(oldState, oldState.title, newTitle)
     }
 
     fun editStateDescription(stateID: UUID, newDescription: String) {
-        val oldState = tasksStatesRepository.getTaskStateById(stateID) ?: return
-        if (newDescription.isBlank()) return
-        tasksStatesRepository.editTaskStateDescription(stateID, newDescription)
-        logAction(
-            Edit(
-                entity = oldState.copy(description = newDescription),
-                property = "description",
-                oldValue = oldState.description,
-                newValue = newDescription
-            )
-        )
+        val oldState = taskStatesRepository.getTaskStateById(stateID)
+
+        taskStatesRepository.editTaskStateDescription(stateID, newDescription)
+        addLogUseCase.logEntityDescriptionEdition(oldState, oldState.description, newDescription)
     }
 
     fun deleteState(stateID: UUID) {
-        val oldState = tasksStatesRepository.getTaskStateById(stateID) ?: return
+        val oldState = taskStatesRepository.getTaskStateById(stateID)
         if (oldState.id == TaskState.NoTaskState.id) return
-        tasksStatesRepository.deleteTaskState(stateID)
-        logAction(Delete(oldState))
+
+        taskStatesRepository.deleteTaskState(stateID)
+        addLogUseCase.logEntityDeletion(oldState)
     }
 
-    fun getStates(projectId: UUID): List<TaskState> {
-        return tasksStatesRepository.getTasksStatesByProjectId(projectId)
-    }
-
-    private fun logAction(action: Action) {
-        logsRepository.addLog(
-            Log(
-                user = authenticationRepository.getLoggedInUser(),
-                time = LocalDateTime.now(),
-                action = action
-            )
-        )
+    fun getTaskStatesByProjectId(projectId: UUID): List<TaskState> {
+        return taskStatesRepository.getTaskStatesByProjectId(projectId)
     }
 }

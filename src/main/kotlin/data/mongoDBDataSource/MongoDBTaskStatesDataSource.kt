@@ -3,7 +3,7 @@ package data.mongoDBDataSource
 import com.mongodb.client.MongoCollection
 import com.mongodb.client.model.Filters
 import com.mongodb.client.model.Updates
-import data.dataSources.TasksStatesDataSource
+import data.dataSources.TaskStatesDataSource
 import data.dto.TaskStateDto
 import org.bson.Document
 import java.util.UUID
@@ -11,7 +11,7 @@ import java.util.UUID
 class MongoDBTaskStatesDataSource(
     private val collection: MongoCollection<Document>,
     private val mongoParser: MongoDBParse
-) : TasksStatesDataSource {
+) : TaskStatesDataSource {
 
     override fun getAllTasksStates(): List<TaskStateDto> {
         return collection.find().map { doc ->

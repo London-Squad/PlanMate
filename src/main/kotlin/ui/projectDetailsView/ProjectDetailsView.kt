@@ -3,7 +3,7 @@ package ui.projectDetailsView
 import logic.entities.Project
 import logic.entities.User
 import logic.useCases.ManageTaskUseCase
-import logic.useCases.ProjectUseCases
+import logic.useCases.ManageProjectUseCase
 import ui.ViewExceptionHandler
 import ui.cliPrintersAndReaders.CLIPrinter
 import ui.cliPrintersAndReaders.CLIReader
@@ -17,7 +17,7 @@ class ProjectDetailsView(
     private val swimlanesView: SwimlanesView,
     private val editProjectView: EditProjectView,
     private val deleteProjectView: DeleteProjectView,
-    private val projectUseCases: ProjectUseCases,
+    private val manageProjectUseCase: ManageProjectUseCase,
     private val taskManagementView: TaskManagementView,
     private val logsView: LogsView,
     private val viewExceptionHandler: ViewExceptionHandler,
@@ -30,7 +30,7 @@ class ProjectDetailsView(
     fun start(projectId: UUID, loggedInUserType: User.Type) {
         this.loggedInUserType = loggedInUserType
 
-        viewExceptionHandler.tryCall { project = projectUseCases.getProjectById(projectId) }
+        viewExceptionHandler.tryCall { project = manageProjectUseCase.getProjectById(projectId) }
             .also { if (!it) return }
 
         swimlanesView.displaySwimlanes(project)
@@ -86,7 +86,7 @@ class ProjectDetailsView(
         val title = cliReader.getValidTitle()
         val description = cliReader.getValidDescription()
 
-        manageTaskUseCase.createNewTask(title, description, project.id)
+        manageTaskUseCase.addNewTask(title, description, project.id)
     }
 
     private fun printLn(message: String) = cliPrinter.cliPrintLn(message)

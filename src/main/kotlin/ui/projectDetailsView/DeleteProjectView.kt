@@ -1,7 +1,7 @@
 package ui.projectDetailsView
 
 import logic.entities.Project
-import logic.useCases.ProjectUseCases
+import logic.useCases.ManageProjectUseCase
 import ui.ViewExceptionHandler
 import ui.cliPrintersAndReaders.CLIPrinter
 import ui.cliPrintersAndReaders.CLIReader
@@ -9,7 +9,7 @@ import ui.cliPrintersAndReaders.CLIReader
 class DeleteProjectView(
     private val cliPrinter: CLIPrinter,
     private val cliReader: CLIReader,
-    private val projectUseCases: ProjectUseCases,
+    private val manageProjectUseCase: ManageProjectUseCase,
     private val viewExceptionHandler: ViewExceptionHandler
 
 ) {
@@ -20,7 +20,7 @@ class DeleteProjectView(
         }
 
         viewExceptionHandler.tryCall {
-            projectUseCases.deleteProject(project.id)
+            manageProjectUseCase.deleteProject(project.id)
             cliPrinter.cliPrintLn("Project ${project.id} was deleted successfully.")
         }
     }
