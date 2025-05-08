@@ -6,9 +6,9 @@ import logic.exceptions.RetrievingDataFailureException
 
 fun LogDto.toLog(user: User, planEntity: PlanEntity): Log {
     val action = when (this.action.lowercase()) {
-        "create" -> LogCreate(entity = planEntity)
-        "delete" -> LogDelete(entity = planEntity)
-        "edit" -> LogEdit(
+        "create" -> EntityCreationLog(entity = planEntity)
+        "delete" -> EntityDeletionLog(entity = planEntity)
+        "edit" -> EntityEditionLog(
             entity = planEntity,
             property = this.planEntityProperty,
             oldValue = this.oldValue,
@@ -28,9 +28,9 @@ fun LogDto.toLog(user: User, planEntity: PlanEntity): Log {
 
 fun Log.toLogDto(): LogDto {
     val action = when (this.logEntry) {
-        is LogCreate -> "create"
-        is LogDelete -> "delete"
-        is LogEdit -> "edit"
+        is EntityCreationLog -> "create"
+        is EntityDeletionLog -> "delete"
+        is EntityEditionLog -> "edit"
     }
 
     return LogDto(
@@ -39,8 +39,8 @@ fun Log.toLogDto(): LogDto {
         time = this.time,
         action = action,
         planEntityId = this.logEntry.entity.id,
-        planEntityProperty = if (this.logEntry is LogEdit) this.logEntry.property else "Nan",
-        oldValue = if (this.logEntry is LogEdit) this.logEntry.oldValue else "Nan",
-        newValue = if (this.logEntry is LogEdit) this.logEntry.newValue else "Nan"
+        planEntityProperty = if (this.logEntry is EntityEditionLog) this.logEntry.property else "Nan",
+        oldValue = if (this.logEntry is EntityEditionLog) this.logEntry.oldValue else "Nan",
+        newValue = if (this.logEntry is EntityEditionLog) this.logEntry.newValue else "Nan"
     )
 }
