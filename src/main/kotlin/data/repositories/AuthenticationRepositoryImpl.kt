@@ -5,9 +5,7 @@ import data.repositories.dtoMappers.toUser
 import data.security.hashing.HashingAlgorithm
 import logic.entities.User
 import logic.exceptions.UserNotFoundException
-import logic.exceptions.UserNameAlreadyTakenException
 import logic.repositories.AuthenticationRepository
-import java.util.*
 
 class AuthenticationRepositoryImpl(
     private val usersDataSource: UsersDataSource,
