@@ -58,7 +58,7 @@ class ManageStateUseCase(
         return tasksStatesRepository.getTasksStatesByProjectId(projectId)
     }
 
-    private fun logAction(action: LogEntry) {
+    private fun logAction(action: LoggedAction) {
         logsRepository.addLog(
             Log(
                 user = authenticationRepository.getLoggedInUser(),

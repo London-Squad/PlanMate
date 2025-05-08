@@ -36,7 +36,7 @@ class LogsView(
         }
     }
 
-    private fun actionToString(action: LogEntry): String {
+    private fun actionToString(action: LoggedAction): String {
         return when (action) {
             is LogCreate -> "created ${entityName(action.entity)} (${action.entity.title})"
             is LogDelete -> "deleted ${entityName(action.entity)} (${action.entity.title})"
