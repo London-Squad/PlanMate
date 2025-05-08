@@ -1,6 +1,6 @@
 package di
 
-import data.repositoriesImpl.*
+import data.repositories.*
 import data.security.hashing.HashingAlgorithm
 import data.security.hashing.MD5HashingAlgorithm
 import logic.repositories.*

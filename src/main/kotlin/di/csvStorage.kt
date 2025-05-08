@@ -1,9 +1,9 @@
 package di
 
-import data.csvDataSource.*
-import data.csvDataSource.fileIO.CsvFileHandler
-import data.csvDataSource.fileIO.CsvParser
-import data.dataSources.*
+import data.dataSources.csvDataSource.*
+import data.dataSources.csvDataSource.fileIO.CsvFileHandler
+import data.dataSources.csvDataSource.fileIO.CsvParser
+import data.repositories.*
 import org.koin.core.qualifier.named
 import org.koin.dsl.module
 import java.io.File
