@@ -1,11 +1,7 @@
 package ui.cliPrintersAndReaders
 
-import logic.validation.UserInputValidator
-
-
 class CLIReader(
     private val cliPrinter: CLIPrinter,
-    private val userInputValidator: UserInputValidator
 ) {
 
     fun getUserInput(message: String): String {
@@ -24,30 +20,14 @@ class CLIReader(
         return getValidUserInput(isValidInput, message, invalidInputMessage)
     }
 
-    fun getValidTitle(): String {
+    fun getUserConfirmation(): Boolean {
         return getValidUserInput(
-            message = "Enter title: ",
-            invalidInputMessage = UserInputValidator.INVALID_TITLE_MESSAGE,
-            isValidInput = userInputValidator::isValidTitle
-        )
+            { it in listOf("y", "n") },
+            "Do you confirm? (y/n): "
+        ) == "y"
     }
 
-    fun getValidDescription(): String {
-        return getValidUserInput(
-            message = "Enter description: ",
-            invalidInputMessage = UserInputValidator.INVALID_DESCRIPTION_MESSAGE,
-            isValidInput = userInputValidator::isValidDescription
-        )
-    }
-
-/**
- * @return "y" or "n" string
- **/
-fun getUserConfirmation(): Boolean {
-    return getUserInput("Do you confirm? (y/n): ") == "y"
-    }
-
-    fun getValidUserNumberInRange(max: Int, min: Int = 0): Int {
+    fun getValidInputNumberInRange(max: Int, min: Int = 0): Int {
         return getValidUserInput(
             message = "Your choice: ",
             invalidInputMessage = "Invalid input",
