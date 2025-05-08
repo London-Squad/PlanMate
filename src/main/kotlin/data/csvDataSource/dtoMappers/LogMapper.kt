@@ -22,12 +22,12 @@ fun LogDto.toLog(user: User, planEntity: PlanEntity): Log {
         id = this.id,
         user = user,
         time = this.time,
-        logEntry = action
+        loggedAction = action
     )
 }
 
 fun Log.toLogDto(): LogDto {
-    val action = when (this.logEntry) {
+    val action = when (this.loggedAction) {
         is EntityCreationLog -> "create"
         is EntityDeletionLog -> "delete"
         is EntityEditionLog -> "edit"
@@ -38,9 +38,9 @@ fun Log.toLogDto(): LogDto {
         userId = this.user.id,
         time = this.time,
         action = action,
-        planEntityId = this.logEntry.entity.id,
-        planEntityProperty = if (this.logEntry is EntityEditionLog) this.logEntry.property else "Nan",
-        oldValue = if (this.logEntry is EntityEditionLog) this.logEntry.oldValue else "Nan",
-        newValue = if (this.logEntry is EntityEditionLog) this.logEntry.newValue else "Nan"
+        planEntityId = this.loggedAction.entity.id,
+        planEntityProperty = if (this.loggedAction is EntityEditionLog) this.loggedAction.property else "Nan",
+        oldValue = if (this.loggedAction is EntityEditionLog) this.loggedAction.oldValue else "Nan",
+        newValue = if (this.loggedAction is EntityEditionLog) this.loggedAction.newValue else "Nan"
     )
 }

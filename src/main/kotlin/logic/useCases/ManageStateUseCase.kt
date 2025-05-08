@@ -63,7 +63,7 @@ class ManageStateUseCase(
             Log(
                 user = authenticationRepository.getLoggedInUser(),
                 time = LocalDateTime.now(),
-                logEntry = action
+                loggedAction = action
             )
         )
     }

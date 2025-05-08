@@ -28,7 +28,7 @@ class LogsView(
             val data = logs.map { log ->
                 listOf(
                     log.id.toString(),
-                    "user (${log.user.userName}) ${actionToString(log.logEntry)} at ${formatedTime(log.time)}"
+                    "user (${log.user.userName}) ${actionToString(log.loggedAction)} at ${formatedTime(log.time)}"
                 )
             }
             val columnWidths = listOf(36, null)
