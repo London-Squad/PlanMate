@@ -1,6 +1,8 @@
 package logic.useCases
 
+import io.mockk.every
 import io.mockk.mockk
+import io.mockk.mockkStatic
 import io.mockk.verify
 import logic.entities.Task
 import logic.entities.TaskState
@@ -26,6 +28,18 @@ class ManageTaskUseCaseTest {
     }
 
     private val task = Task(UUID.randomUUID(), "test", description = "description")
+
+    @Test
+    fun `addNewTask should call taskRepository addNewTask`() {
+        val projectId = UUID.randomUUID()
+        every { projectsRepository.getProjectById(any()).tasksStates.first() } returns TaskState.NoTaskState
+        mockkStatic(UUID::class)
+        every { UUID.randomUUID() } returns task.id
+
+        manageTaskUseCase.addNewTask(task.title, task.description, projectId)
+
+        verify(exactly = 1) { taskRepository.addNewTask(task, projectId) }
+    }
 
     @Test
     fun `editTaskTitle should call taskRepository editTaskTitle`() {
