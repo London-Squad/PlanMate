@@ -3,7 +3,7 @@ package di
 import com.mongodb.client.MongoDatabase
 import data.dataSources.mongoDBDataSource.*
 import data.dataSources.mongoDBDataSource.mongoDBParse.MongoDBParse
-import data.repositories.*
+import data.repositories.dataSourceInterfaces.*
 import org.koin.core.qualifier.named
 import org.koin.dsl.module
 

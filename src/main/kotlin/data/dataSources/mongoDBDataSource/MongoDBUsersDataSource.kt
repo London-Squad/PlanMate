@@ -4,7 +4,7 @@ import com.mongodb.client.MongoCollection
 import com.mongodb.client.model.Filters
 import com.mongodb.client.model.Updates
 import data.dataSources.mongoDBDataSource.mongoDBParse.MongoDBParse
-import data.repositories.UsersDataSource
+import data.repositories.dataSourceInterfaces.UsersDataSource
 import data.dto.UserDto
 import logic.exceptions.NoLoggedInUserFoundException
 import org.bson.Document

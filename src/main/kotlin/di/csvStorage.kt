@@ -3,7 +3,7 @@ package di
 import data.dataSources.csvDataSource.*
 import data.dataSources.csvDataSource.fileIO.CsvFileHandler
 import data.dataSources.csvDataSource.fileIO.CsvParser
-import data.repositories.*
+import data.repositories.dataSourceInterfaces.*
 import org.koin.core.qualifier.named
 import org.koin.dsl.module
 import java.io.File

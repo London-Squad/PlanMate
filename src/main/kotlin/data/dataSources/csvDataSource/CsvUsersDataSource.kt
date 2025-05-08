@@ -2,7 +2,7 @@ package data.dataSources.csvDataSource
 
 import data.dataSources.csvDataSource.fileIO.CsvFileHandler
 import data.dataSources.csvDataSource.fileIO.CsvParser
-import data.repositories.UsersDataSource
+import data.repositories.dataSourceInterfaces.UsersDataSource
 import data.dto.UserDto
 import logic.entities.User
 import logic.exceptions.NoLoggedInUserFoundException

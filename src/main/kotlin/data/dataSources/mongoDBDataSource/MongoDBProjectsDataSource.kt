@@ -4,7 +4,7 @@ import com.mongodb.client.MongoCollection
 import com.mongodb.client.model.Filters
 import com.mongodb.client.model.Updates
 import data.dataSources.mongoDBDataSource.mongoDBParse.MongoDBParse
-import data.repositories.ProjectsDataSource
+import data.repositories.dataSourceInterfaces.ProjectsDataSource
 import data.dto.ProjectDto
 import org.bson.Document
 import java.util.UUID

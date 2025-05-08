@@ -2,7 +2,7 @@ package data.dataSources.csvDataSource
 
 import data.dataSources.csvDataSource.fileIO.CsvFileHandler
 import data.dataSources.csvDataSource.fileIO.CsvParser
-import data.repositories.LogsDataSource
+import data.repositories.dataSourceInterfaces.LogsDataSource
 import data.dto.LogDto
 
 class CsvLogsDataSource(

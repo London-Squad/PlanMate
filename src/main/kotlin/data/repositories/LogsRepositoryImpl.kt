@@ -1,5 +1,8 @@
 package data.repositories
 
+import data.repositories.dataSourceInterfaces.LogsDataSource
+import data.repositories.dataSourceInterfaces.TaskStatesDataSource
+import data.repositories.dataSourceInterfaces.UsersDataSource
 import data.repositories.dtoMappers.toLog
 import data.repositories.dtoMappers.toLogDto
 import data.repositories.dtoMappers.toTaskState

@@ -2,7 +2,7 @@ package data.dataSources.mongoDBDataSource
 
 import com.mongodb.client.MongoCollection
 import data.dataSources.mongoDBDataSource.mongoDBParse.MongoDBParse
-import data.repositories.LogsDataSource
+import data.repositories.dataSourceInterfaces.LogsDataSource
 import data.dto.LogDto
 import org.bson.Document
 

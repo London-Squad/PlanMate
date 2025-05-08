@@ -1,5 +1,8 @@
 package data.repositories
 
+import data.repositories.dataSourceInterfaces.ProjectsDataSource
+import data.repositories.dataSourceInterfaces.TaskStatesDataSource
+import data.repositories.dataSourceInterfaces.TasksDataSource
 import data.repositories.dtoMappers.*
 import logic.entities.Project
 import logic.exceptions.ProjectNotFoundException

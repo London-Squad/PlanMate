@@ -1,4 +1,4 @@
-package data.repositories
+package data.repositories.dataSourceInterfaces
 
 import data.dto.UserDto
 import java.util.UUID
