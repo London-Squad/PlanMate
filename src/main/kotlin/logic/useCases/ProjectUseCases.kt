@@ -42,7 +42,7 @@ class ProjectUseCases(
         logsRepository.addLog(
             Log(
                 user = authenticationRepository.getLoggedInUser(),
-                action = Create(project)
+                logEntry = LogCreate(project)
             )
         )
     }
@@ -55,7 +55,7 @@ class ProjectUseCases(
         logsRepository.addLog(
             Log(
                 user = authenticationRepository.getLoggedInUser(),
-                action = Edit(
+                logEntry = LogEdit(
                     entity = project,
                     property = "title",
                     oldValue = project.title,
@@ -73,7 +73,7 @@ class ProjectUseCases(
         logsRepository.addLog(
             Log(
                 user = authenticationRepository.getLoggedInUser(),
-                action = Edit(
+                logEntry = LogEdit(
                     entity = project,
                     property = "description",
                     oldValue = project.description,
@@ -91,7 +91,7 @@ class ProjectUseCases(
         logsRepository.addLog(
             Log(
                 user = authenticationRepository.getLoggedInUser(),
-                action = Delete(entity = project)
+                logEntry = LogDelete(entity = project)
             )
         )
     }

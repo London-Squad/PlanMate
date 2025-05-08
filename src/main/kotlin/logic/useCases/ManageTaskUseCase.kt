@@ -23,7 +23,7 @@ class ManageTaskUseCase(
         logsRepository.addLog(
             Log(
                 user = authenticationRepository.getLoggedInUser(),
-                action = Create(newTask)
+                logEntry = LogCreate(newTask)
             )
         )
     }
@@ -47,7 +47,7 @@ class ManageTaskUseCase(
         logsRepository.addLog(
             Log(
                 user = authenticationRepository.getLoggedInUser(),
-                action = Edit(
+                logEntry = LogEdit(
                     entity = task,
                     property = "title",
                     oldValue = task.title,
@@ -64,7 +64,7 @@ class ManageTaskUseCase(
         logsRepository.addLog(
             Log(
                 user = authenticationRepository.getLoggedInUser(),
-                action = Edit(
+                logEntry = LogEdit(
                     entity = task,
                     property = "description",
                     oldValue = task.description,
@@ -81,7 +81,7 @@ class ManageTaskUseCase(
         logsRepository.addLog(
             Log(
                 user = authenticationRepository.getLoggedInUser(),
-                action = Edit(
+                logEntry = LogEdit(
                     entity = task,
                     property = "state",
                     oldValue = task.taskState.title,
@@ -99,7 +99,7 @@ class ManageTaskUseCase(
         logsRepository.addLog(
             Log(
                 user = authenticationRepository.getLoggedInUser(),
-                action = Delete(
+                logEntry = LogDelete(
                     entity = task,
                 )
             )

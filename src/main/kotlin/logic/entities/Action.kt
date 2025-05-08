@@ -1,14 +1,14 @@
 package logic.entities
 
-sealed class Action(open val entity: PlanEntity)
+sealed class LogEntry(open val entity: PlanEntity)
 
-data class Create(override val entity: PlanEntity) : Action(entity)
+data class LogCreate(override val entity: PlanEntity) : LogEntry(entity)
 
-data class Delete(override val entity: PlanEntity) : Action(entity)
+data class LogDelete(override val entity: PlanEntity) : LogEntry(entity)
 
-data class Edit(
+data class LogEdit(
     override val entity: PlanEntity,
     val property: String,
     val oldValue: String,
     val newValue: String
-) : Action(entity)
+) : LogEntry(entity)

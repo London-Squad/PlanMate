@@ -46,14 +46,14 @@ class LogsRepositoryImpl(
 
     override fun getLogsByEntityId(entityId: UUID): List<Log> {
         var result: List<Log>
-        result = getAllLogs().filter { it.action.entity.id == entityId }
+        result = getAllLogs().filter { it.logEntry.entity.id == entityId }
 
         result.forEach { log ->
-            if (log.action.entity is Project) {
-                (log.action.entity as Project).tasks.forEach { task ->
+            if (log.logEntry.entity is Project) {
+                (log.logEntry.entity as Project).tasks.forEach { task ->
                     result = result + getLogsByEntityId(task.id)
                 }
-                (log.action.entity as Project).tasksStates.forEach { state ->
+                (log.logEntry.entity as Project).tasksStates.forEach { state ->
                     result = result + getLogsByEntityId(state.id)
                 }
             }
