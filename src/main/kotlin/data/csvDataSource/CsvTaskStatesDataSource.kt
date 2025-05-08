@@ -2,18 +2,29 @@ package data.csvDataSource
 
 import data.csvDataSource.fileIO.CsvFileHandler
 import data.csvDataSource.fileIO.CsvParser
-import data.dataSources.TasksStatesDataSource
+import data.dataSources.TaskStatesDataSource
+import data.dataSources.defaultTaskStatesTitleAndDescription
 import data.dto.TaskStateDto
 import java.util.UUID
 
-class CsvTasksStatesDataSource(
+class CsvTaskStatesDataSource(
     private val tasksStatesCsvFileHandler: CsvFileHandler,
     private val csvParser: CsvParser
-) : TasksStatesDataSource {
+) : TaskStatesDataSource {
 
     override fun getAllTasksStates(): List<TaskStateDto> {
         return tasksStatesCsvFileHandler.readRecords()
             .map(csvParser::recordToTaskStateDto)
+    }
+
+    override fun createDefaultTaskStatesForProject(projectId: UUID): List<TaskStateDto> {
+        return defaultTaskStatesTitleAndDescription.map {
+            TaskStateDto(
+                id = UUID.randomUUID(), title = it[0], description = it[1],
+                projectId = projectId,
+                isDeleted = false
+            )
+        }
     }
 
     override fun addNewTaskState(taskStateDto: TaskStateDto) {

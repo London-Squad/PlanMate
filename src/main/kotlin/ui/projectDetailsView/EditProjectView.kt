@@ -1,19 +1,19 @@
 package ui.projectDetailsView
 
 import logic.entities.Project
-import logic.useCases.ProjectUseCases
+import logic.useCases.ManageProjectUseCase
 import ui.ViewExceptionHandler
 import ui.cliPrintersAndReaders.CLIPrinter
 import ui.cliPrintersAndReaders.CLIReader
 import ui.cliPrintersAndReaders.ProjectInputReader
-import ui.tasksStatesView.TasksStatesView
+import ui.taskStatesView.TaskStatesView
 
 class EditProjectView(
     private val cliPrinter: CLIPrinter,
     private val cliReader: CLIReader,
     private val projectInputReader: ProjectInputReader,
-    private val projectUseCases: ProjectUseCases,
-    private val tasksStatesView: TasksStatesView,
+    private val manageProjectUseCase: ManageProjectUseCase,
+    private val taskStatesView: TaskStatesView,
     private val viewExceptionHandler: ViewExceptionHandler
 ) {
 
@@ -38,7 +38,7 @@ class EditProjectView(
     private fun editProjectTitle() {
         val newTitle = projectInputReader.getValidProjectTitle()
         viewExceptionHandler.tryCall {
-            projectUseCases.editProjectTitle(currentProject.id, newTitle)
+            manageProjectUseCase.editProjectTitle(currentProject.id, newTitle)
         }
         currentProject = currentProject.copy(title = newTitle)
         cliPrinter.cliPrintLn("Project title updated.")
@@ -48,14 +48,14 @@ class EditProjectView(
     private fun editProjectDescription() {
         val newDescription = projectInputReader.getValidProjectDescription()
         viewExceptionHandler.tryCall {
-            projectUseCases.editProjectDescription(currentProject.id, newDescription)
+            manageProjectUseCase.editProjectDescription(currentProject.id, newDescription)
         }
         currentProject = currentProject.copy(description = newDescription)
         cliPrinter.cliPrintLn("Project description updated.")
     }
 
     private fun statesManagement() {
-        tasksStatesView.start(currentProject.id)
+        taskStatesView.start(currentProject.id)
     }
 
     private companion object {

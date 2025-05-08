@@ -7,12 +7,12 @@ import logic.entities.TaskState
 import logic.entities.Task
 import logic.exceptions.TaskNotFoundException
 import logic.repositories.TaskRepository
-import logic.repositories.TasksStatesRepository
+import logic.repositories.TaskStatesRepository
 import java.util.*
 
 class TasksRepositoryImpl(
     private val tasksDataSource: TasksDataSource,
-    private val tasksStatesRepository: TasksStatesRepository
+    private val taskStatesRepository: TaskStatesRepository
 ) : TaskRepository {
 
     override fun getTasksByProjectID(projectId: UUID, includeDeleted: Boolean): List<Task> {
@@ -20,7 +20,7 @@ class TasksRepositoryImpl(
             .filter { if (includeDeleted) true else !it.isDeleted }
             .filter { it.projectId == projectId }
             .map { taskData ->
-                val taskState = tasksStatesRepository.getTaskStateById(taskData.stateId)
+                val taskState = taskStatesRepository.getTaskStateById(taskData.stateId)
                 taskData.toTask(taskState)
             }
     }
@@ -30,7 +30,7 @@ class TasksRepositoryImpl(
             .filter { if (includeDeleted) true else !it.isDeleted }
             .firstOrNull { it.id == taskId }
             ?.let {
-                val taskState = tasksStatesRepository.getTaskStateById(it.stateId)
+                val taskState = taskStatesRepository.getTaskStateById(it.stateId)
                 it.toTask(taskState)
             } ?: throw TaskNotFoundException()
     }

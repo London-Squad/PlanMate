@@ -3,7 +3,7 @@ package data.repositoriesImpl
 import data.csvDataSource.dtoMappers.*
 import data.dataSources.ProjectsDataSource
 import data.dataSources.TasksDataSource
-import data.dataSources.TasksStatesDataSource
+import data.dataSources.TaskStatesDataSource
 import logic.entities.Project
 import logic.exceptions.ProjectNotFoundException
 import logic.exceptions.TaskStateNotFoundException
@@ -12,7 +12,7 @@ import java.util.*
 
 class ProjectsRepositoryImpl(
     private val projectsDataSource: ProjectsDataSource,
-    private val tasksStatesDataSource: TasksStatesDataSource,
+    private val taskStatesDataSource: TaskStatesDataSource,
     private val tasksDataSource: TasksDataSource
 ) : ProjectsRepository {
 
@@ -21,7 +21,7 @@ class ProjectsRepositoryImpl(
             .filter { if (includeDeleted) true else !it.isDeleted }
         val tasksData = tasksDataSource.getAllTasks()
             .filter { if (includeDeleted) true else !it.isDeleted }
-        val taskStatesData = tasksStatesDataSource.getAllTasksStates()
+        val taskStatesData = taskStatesDataSource.getAllTasksStates()
             .filter { if (includeDeleted) true else !it.isDeleted }
 
         return projectsData
@@ -57,7 +57,7 @@ class ProjectsRepositoryImpl(
             .forEach(tasksDataSource::addNewTask)
         project.tasksStates
             .map { taskState -> taskState.toTaskStateDto(project.id) }
-            .forEach(tasksStatesDataSource::addNewTaskState)
+            .forEach(taskStatesDataSource::addNewTaskState)
     }
 
     override fun editProjectTitle(projectId: UUID, newTitle: String) {

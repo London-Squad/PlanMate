@@ -12,7 +12,7 @@ import ui.matesManagementView.MateCreationView
 import ui.matesManagementView.MatesManagementView
 import ui.projectDetailsView.*
 import ui.projectsDashboardView.ProjectsDashboardView
-import ui.tasksStatesView.TasksStatesView
+import ui.taskStatesView.TaskStatesView
 import ui.taskManagementView.*
 import ui.welcomeView.WelcomeView
 
@@ -30,12 +30,12 @@ val uiModule = module {
     single { LoginView(get(), get(), get(), get(), get()) }
     single { MainMenuView(get(), get(), get(), get(), get(), get()) }
 
-    single { ProjectsDashboardView(get(), get(), get(), get(), get(), get()) }
+    single { ProjectsDashboardView(get(), get(), get(), get(), get(), get(), get(), get()) }
     single { ProjectDetailsView(get(), get(), get(), get(), get(), get(), get(), get(), get(), get(), get()) }
-    single { SwimlanesView(get()) }
+    single { SwimlanesView(get(), get()) }
     single { EditProjectView(get(), get(), get(), get(), get(), get()) }
     single { DeleteProjectView(get(), get(), get(), get()) }
-    single { TasksStatesView(get(), get(), get(), get(), get()) }
+    single { TaskStatesView(get(), get(), get(), get(), get(), get()) }
 
     single { TaskTitleEditionView(get(), get(), get()) }
     single { TaskDescriptionEditionView(get(), get(), get()) }

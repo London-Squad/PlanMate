@@ -3,11 +3,13 @@ package logic.repositories
 import logic.entities.TaskState
 import java.util.UUID
 
-interface TasksStatesRepository {
+interface TaskStatesRepository {
 
-    fun getTasksStatesByProjectId(projectId: UUID, includeDeleted: Boolean = false): List<TaskState>
+    fun getTaskStatesByProjectId(projectId: UUID, includeDeleted: Boolean = false): List<TaskState>
 
     fun getTaskStateById(stateId: UUID, includeDeleted: Boolean = false): TaskState
+
+    fun getDefaultTaskStates(projectId: UUID): List<TaskState>
 
     fun addNewTaskState(taskState: TaskState, projectId: UUID)
 

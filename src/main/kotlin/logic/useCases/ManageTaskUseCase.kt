@@ -1,39 +1,32 @@
 package logic.useCases
 
 import logic.entities.*
-import logic.repositories.AuthenticationRepository
-import logic.repositories.LogsRepository
 import logic.repositories.ProjectsRepository
 import logic.repositories.TaskRepository
 import java.util.*
 
 class ManageTaskUseCase(
     private val taskRepository: TaskRepository,
-    private val authenticationRepository: AuthenticationRepository,
-    private val logsRepository: LogsRepository,
+    private val createLogUseCase: CreateLogUseCase,
     private val projectsRepository: ProjectsRepository
 ) {
 
-    fun createNewTask(title: String, description: String, projectId: UUID) {
+    fun addNewTask(title: String, description: String, projectId: UUID) {
 
-        val newTask = buildNewTask(title, description, projectId)
+        val newTask = buildNewTask(UUID.randomUUID(), title, description, projectId)
 
         taskRepository.addNewTask(newTask, projectId)
-
-        logsRepository.addLog(
-            Log(
-                user = authenticationRepository.getLoggedInUser(),
-                loggedAction = EntityCreationLog(newTask)
-            )
-        )
+        createLogUseCase.logEntityCreation(newTask)
     }
 
     private fun buildNewTask(
+        id: UUID,
         title: String,
         description: String,
         projectId: UUID
     ): Task {
         return Task(
+            id = id,
             title = title,
             description = description,
             taskState = projectsRepository.getProjectById(projectId).tasksStates.first()
@@ -41,69 +34,30 @@ class ManageTaskUseCase(
     }
 
     fun editTaskTitle(taskId: UUID, newTitle: String) {
-        val task = taskRepository.getTaskByID(taskId)
+        val oldTask = taskRepository.getTaskByID(taskId)
 
         taskRepository.editTaskTitle(taskId, newTitle)
-        logsRepository.addLog(
-            Log(
-                user = authenticationRepository.getLoggedInUser(),
-                loggedAction = EntityEditionLog(
-                    entity = task,
-                    property = "title",
-                    oldValue = task.title,
-                    newValue = newTitle
-                )
-            )
-        )
+        createLogUseCase.logEntityTitleEdition(oldTask, oldTask.title, newTitle)
     }
 
     fun editTaskDescription(taskId: UUID, newDescription: String) {
-        val task = taskRepository.getTaskByID(taskId)
+        val oldTask = taskRepository.getTaskByID(taskId)
 
         taskRepository.editTaskDescription(taskId, newDescription)
-        logsRepository.addLog(
-            Log(
-                user = authenticationRepository.getLoggedInUser(),
-                loggedAction = EntityEditionLog(
-                    entity = task,
-                    property = "description",
-                    oldValue = task.description,
-                    newValue = newDescription
-                )
-            )
-        )
+        createLogUseCase.logEntityDescriptionEdition(oldTask, oldTask.description, newDescription)
     }
 
     fun editTaskState(taskId: UUID, newTaskState: TaskState) {
-        val task = taskRepository.getTaskByID(taskId)
+        val oldTask = taskRepository.getTaskByID(taskId)
 
         taskRepository.editTaskState(taskId, newTaskState)
-        logsRepository.addLog(
-            Log(
-                user = authenticationRepository.getLoggedInUser(),
-                loggedAction = EntityEditionLog(
-                    entity = task,
-                    property = "state",
-                    oldValue = task.taskState.title,
-                    newValue = newTaskState.title
-                )
-            )
-        )
+        createLogUseCase.logTaskStateEdition(oldTask, oldTask.taskState.title, newTaskState.title)
     }
 
     fun deleteTask(taskID: UUID) {
         val task = taskRepository.getTaskByID(taskID)
 
         taskRepository.deleteTask(taskID)
-
-        logsRepository.addLog(
-            Log(
-                user = authenticationRepository.getLoggedInUser(),
-                loggedAction = EntityDeletionLog(
-                    entity = task,
-                )
-            )
-        )
+        createLogUseCase.logEntityDeletion(task)
     }
-
 }

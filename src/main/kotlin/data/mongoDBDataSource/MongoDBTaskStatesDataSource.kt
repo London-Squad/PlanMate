@@ -3,7 +3,8 @@ package data.mongoDBDataSource
 import com.mongodb.client.MongoCollection
 import com.mongodb.client.model.Filters
 import com.mongodb.client.model.Updates
-import data.dataSources.TasksStatesDataSource
+import data.dataSources.TaskStatesDataSource
+import data.dataSources.defaultTaskStatesTitleAndDescription
 import data.dto.TaskStateDto
 import org.bson.Document
 import java.util.UUID
@@ -11,12 +12,22 @@ import java.util.UUID
 class MongoDBTaskStatesDataSource(
     private val collection: MongoCollection<Document>,
     private val mongoParser: MongoDBParse
-) : TasksStatesDataSource {
+) : TaskStatesDataSource {
 
     override fun getAllTasksStates(): List<TaskStateDto> {
         return collection.find().map { doc ->
             mongoParser.documentToTaskStateDto(doc)
         }.toList()
+    }
+
+    override fun createDefaultTaskStatesForProject(projectId: UUID): List<TaskStateDto> {
+        return defaultTaskStatesTitleAndDescription.map {
+            TaskStateDto(
+                id = UUID.randomUUID(), title = it[0], description = it[1],
+                projectId = projectId,
+                isDeleted = false
+            )
+        }
     }
 
     override fun addNewTaskState(taskStateDto: TaskStateDto) {

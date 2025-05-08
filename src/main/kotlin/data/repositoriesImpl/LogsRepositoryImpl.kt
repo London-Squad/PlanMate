@@ -17,7 +17,7 @@ import java.util.*
 class LogsRepositoryImpl(
     private val logsDataSource: LogsDataSource,
     private val projectsRepository: ProjectsRepository,
-    private val tasksStatesDataSource: TasksStatesDataSource,
+    private val taskStatesDataSource: TaskStatesDataSource,
     private val taskRepository: TaskRepository,
     private val usersDataSource: UsersDataSource
 ) : LogsRepository {
@@ -38,7 +38,7 @@ class LogsRepositoryImpl(
         return projectsRepository.getAllProjects(includeDeleted = true)
             .firstOrNull { it.id == entityId }
 
-            ?: tasksStatesDataSource.getAllTasksStates()
+            ?: taskStatesDataSource.getAllTasksStates()
                         .firstOrNull { it.id == entityId }?.toTaskState()
 
             ?: taskRepository.getTaskByID(entityId, includeDeleted = true)

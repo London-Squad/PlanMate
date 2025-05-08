@@ -2,7 +2,8 @@ package ui.projectsDashboardView
 
 import logic.entities.Project
 import logic.entities.User
-import logic.useCases.ProjectUseCases
+import logic.useCases.CreateProjectUseCase
+import logic.useCases.ManageProjectUseCase
 import ui.cliPrintersAndReaders.CLIPrinter
 import ui.cliPrintersAndReaders.CLIReader
 import ui.cliPrintersAndReaders.cliTable.CLITablePrinter
@@ -14,10 +15,11 @@ class ProjectsDashboardView(
     private val cliPrinter: CLIPrinter,
     private val cliReader: CLIReader,
     private val projectInputReader: ProjectInputReader,
-    private val projectUseCases: ProjectUseCases,
+    private val manageProjectUseCase: ManageProjectUseCase,
+    private val createProjectUseCase: CreateProjectUseCase,
     private val projectView: ProjectDetailsView,
     private val exceptionHandler: ViewExceptionHandler,
-    private val cliTablePrinter: CLITablePrinter = CLITablePrinter(cliPrinter),
+    private val cliTablePrinter: CLITablePrinter
 ) {
 
     private lateinit var loggedInUserType: User.Type
@@ -38,7 +40,7 @@ class ProjectsDashboardView(
 
     private fun getProjects() {
         exceptionHandler.tryCall {
-            projects = projectUseCases.getAllProjects()
+            projects = manageProjectUseCase.getAllProjects()
         }.also { if (!it) return }
     }
 
@@ -102,7 +104,7 @@ class ProjectsDashboardView(
         val title = projectInputReader.getValidProjectTitle()
         val description = projectInputReader.getValidProjectDescription()
         exceptionHandler.tryCall {
-            projectUseCases.createProject(title, description)
+            createProjectUseCase.createProject(title, description)
             cliPrinter.cliPrintLn("Project created successfully.")
         }
     }
