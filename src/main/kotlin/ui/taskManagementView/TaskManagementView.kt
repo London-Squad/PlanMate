@@ -57,17 +57,14 @@ class TaskManagementView(
         when (cliReader.getValidInputNumberInRange(MAX_OPTION_NUMBER)) {
             1 -> {
                 taskTitleEditionView.editTitle(currentTask)
-                start(currentTask.id, currentProject)
             }
 
             2 -> {
                 taskDescriptionEditionView.editDescription(currentTask)
-                start(currentTask.id, currentProject)
             }
 
             3 -> {
                 taskStateEditionView.editState(currentTask, currentProject.tasksStates)
-                start(currentTask.id, currentProject)
             }
 
             4 -> {
@@ -77,11 +74,11 @@ class TaskManagementView(
 
             5 -> {
                 logsView.printLogsByEntityId(currentTask.id)
-                start(currentTask.id, currentProject)
             }
 
             0 -> return
         }
+        start(currentTask.id, currentProject)
     }
 
     private fun printLn(message: String) {
