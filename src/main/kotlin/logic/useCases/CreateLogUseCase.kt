@@ -13,7 +13,7 @@ class CreateLogUseCase(
         logsRepository.addLog(
             Log(
                 user = authenticationRepository.getLoggedInUser(),
-                action = Create(entity)
+                loggedAction = EntityCreationLog(entity)
             )
         )
     }
@@ -22,7 +22,7 @@ class CreateLogUseCase(
         logsRepository.addLog(
             Log(
                 user = authenticationRepository.getLoggedInUser(),
-                action = Edit(
+                loggedAction = EntityEditionLog(
                     entity = entity,
                     property = "title",
                     oldValue = oldValue,
@@ -36,7 +36,7 @@ class CreateLogUseCase(
         logsRepository.addLog(
             Log(
                 user = authenticationRepository.getLoggedInUser(),
-                action = Edit(
+                loggedAction = EntityEditionLog(
                     entity = entity,
                     property = "description",
                     oldValue = oldValue,
@@ -50,7 +50,7 @@ class CreateLogUseCase(
         logsRepository.addLog(
             Log(
                 user = authenticationRepository.getLoggedInUser(),
-                action = Edit(
+                loggedAction = EntityEditionLog(
                     entity = task,
                     property = "state",
                     oldValue = oldState,
@@ -64,7 +64,7 @@ class CreateLogUseCase(
         logsRepository.addLog(
             Log(
                 user = authenticationRepository.getLoggedInUser(),
-                action = Delete(entity)
+                loggedAction = EntityDeletionLog(entity)
             )
         )
     }

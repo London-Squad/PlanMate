@@ -17,7 +17,7 @@ class CsvTaskStatesDataSource(
             .map(csvParser::recordToTaskStateDto)
     }
 
-    override fun createDefaultTasksStatesForProject(projectId: UUID): List<TaskStateDto> {
+    override fun createDefaultTaskStatesForProject(projectId: UUID): List<TaskStateDto> {
         return defaultTaskStatesTitleAndDescription.map {
             TaskStateDto(
                 id = UUID.randomUUID(), title = it[0], description = it[1],
