@@ -3,7 +3,7 @@ package data.csvDataSource
 import data.csvDataSource.fileIO.CsvFileHandler
 import data.csvDataSource.fileIO.CsvParser
 import data.dataSources.TaskStatesDataSource
-import data.dataSources.getDefaultTaskStates
+import data.dataSources.defaultTaskStatesTitleAndDescription
 import data.dto.TaskStateDto
 import java.util.UUID
 
@@ -17,8 +17,14 @@ class CsvTaskStatesDataSource(
             .map(csvParser::recordToTaskStateDto)
     }
 
-    override fun getDefaultTasksStates(projectId: UUID): List<TaskStateDto> {
-        return getDefaultTaskStates(projectId)
+    override fun createDefaultTasksStatesForProject(projectId: UUID): List<TaskStateDto> {
+        return defaultTaskStatesTitleAndDescription.map {
+            TaskStateDto(
+                id = UUID.randomUUID(), title = it[0], description = it[1],
+                projectId = projectId,
+                isDeleted = false
+            )
+        }
     }
 
     override fun addNewTaskState(taskStateDto: TaskStateDto) {

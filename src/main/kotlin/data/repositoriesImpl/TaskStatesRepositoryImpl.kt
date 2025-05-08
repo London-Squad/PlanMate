@@ -21,7 +21,7 @@ class TaskStatesRepositoryImpl(
     }
 
     override fun getDefaultTaskStates(projectId: UUID): List<TaskState> {
-        return taskStatesDataSource.getDefaultTasksStates(projectId).map { it.toTaskState() }
+        return taskStatesDataSource.createDefaultTasksStatesForProject(projectId).map { it.toTaskState() }
     }
 
     override fun getTaskStateById(stateId: UUID, includeDeleted: Boolean): TaskState {
