@@ -21,7 +21,7 @@ class TaskStateEditionView(
             return
         }
         printProjectState(projectTasksStates)
-        val newStateIndex = cliReader.getValidUserNumberInRange(min = 1, max = projectTasksStates.size) - 1
+        val newStateIndex = cliReader.getValidInputNumberInRange(min = 1, max = projectTasksStates.size) - 1
 
         viewExceptionHandler.tryCall {
             manageTaskUseCase.editTaskState(task.id, projectTasksStates[newStateIndex])

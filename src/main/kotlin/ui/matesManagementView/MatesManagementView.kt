@@ -34,7 +34,7 @@ class MatesManagementView(
     }
 
     private fun selectNextUI() {
-        val userInput = cliReader.getValidUserNumberInRange(MAX_OPTION_NUMBER)
+        val userInput = cliReader.getValidInputNumberInRange(MAX_OPTION_NUMBER)
 
         when (userInput) {
             1 -> mateCreationView.createMate()

@@ -8,10 +8,12 @@ import ui.cliPrintersAndReaders.CLIReader
 import ui.cliPrintersAndReaders.cliTable.CLITablePrinter
 import ui.projectDetailsView.ProjectDetailsView
 import ui.ViewExceptionHandler
+import ui.cliPrintersAndReaders.ProjectInputReader
 
 class ProjectsDashboardView(
     private val cliPrinter: CLIPrinter,
     private val cliReader: CLIReader,
+    private val projectInputReader: ProjectInputReader,
     private val projectUseCases: ProjectUseCases,
     private val projectView: ProjectDetailsView,
     private val exceptionHandler: ViewExceptionHandler,
@@ -82,7 +84,7 @@ class ProjectsDashboardView(
             if (loggedInUserType == User.Type.ADMIN) MAX_OPTION_NUMBER_ADMIN
             else MAX_OPTION_NUMBER_MATE
 
-        return cliReader.getValidUserNumberInRange(maxOptionNumberAllowed)
+        return cliReader.getValidInputNumberInRange(maxOptionNumberAllowed)
     }
 
     private fun selectProject() {
@@ -91,14 +93,14 @@ class ProjectsDashboardView(
             return
         }
         printLn("Select a project by number:")
-        val input = cliReader.getValidUserNumberInRange(projects.size)
+        val input = cliReader.getValidInputNumberInRange(projects.size)
         projectView.start(projects[input - 1].id, loggedInUserType)
     }
 
     private fun createProject() {
         cliPrinter.printHeader("Create Project")
-        val title = cliReader.getValidTitle()
-        val description = cliReader.getValidDescription()
+        val title = projectInputReader.getValidProjectTitle()
+        val description = projectInputReader.getValidProjectDescription()
         exceptionHandler.tryCall {
             projectUseCases.createProject(title, description)
             cliPrinter.cliPrintLn("Project created successfully.")
