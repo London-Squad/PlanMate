@@ -80,7 +80,6 @@ class LoginViewTest {
 
     @Test
     fun `should go to welcome when login fail`() {
-//        every { loginUseCase(any(), any()) } throws UserNotFoundException()
         every { viewExceptionHandler.tryCall(any()) } answers {
             firstArg<() -> Unit>().invoke()
             false
