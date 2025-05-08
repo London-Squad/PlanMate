@@ -9,7 +9,7 @@ import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.params.ParameterizedTest
 import org.junit.jupiter.params.provider.MethodSource
 
-class GetLoggedInUserDtoUseCaseTest {
+class GetLoggedInUserUseCaseTest {
 
     private lateinit var getLoggedInUserUseCase: GetLoggedInUserUseCase
     private lateinit var authenticationRepository: AuthenticationRepository
@@ -22,7 +22,7 @@ class GetLoggedInUserDtoUseCaseTest {
     }
 
     @ParameterizedTest
-    @MethodSource("getUsersList")
+    @MethodSource("getFakeUsers")
     fun `getLoggedInUser should return logged in user when user is logged in`(user: User) {
         every { authenticationRepository.getLoggedInUser() } returns user
 
@@ -31,12 +31,9 @@ class GetLoggedInUserDtoUseCaseTest {
         assertThat(result).isEqualTo(user)
     }
 
-    private companion object {
-        val fakeAdminUser = User(userName = "fake admin user", type = User.Type.ADMIN)
-        val fakeMateUser = User(userName = "fake mate user", type = User.Type.MATE)
-
+    companion object {
         @JvmStatic
-        fun getUsersList(): List<User> = listOf(fakeAdminUser, fakeMateUser)
+        fun getFakeUsers() = fakeData.users
     }
 
 }

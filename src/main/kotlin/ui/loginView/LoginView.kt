@@ -30,7 +30,12 @@ class LoginView(
 
         viewExceptionHandler.tryCall {
             loggedInUserType = loginUseCase(username, password).type
-        }.also { if (!it) return }
+        }.also {
+            if (!it) {
+                println("Login failed, going back to the welcome screen")
+                return
+            }
+        }
 
         println("Login successful")
         mainMenuView.start(loggedInUserType)
