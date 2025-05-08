@@ -1,16 +1,16 @@
 package logic.useCases.mateUseCase
 
-import logic.repositories.AuthenticationRepository
+import logic.repositories.UserRepository
 import logic.validation.CredentialValidator
 
 class CreateMateUseCase(
-    private val authenticationRepository: AuthenticationRepository,
+    private val userRepository: UserRepository,
     private val credentialValidator: CredentialValidator
 ) {
     fun createMate(username: String, password: String) {
         credentialValidator.validateUserName(username)
         credentialValidator.validatePassword(password)
 
-        authenticationRepository.addMate(username, password)
+        userRepository.addMate(username, password)
     }
 }

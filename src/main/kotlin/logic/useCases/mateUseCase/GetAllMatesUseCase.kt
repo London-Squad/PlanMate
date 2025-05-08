@@ -1,12 +1,12 @@
 package logic.useCases
 
 import logic.entities.User
-import logic.repositories.AuthenticationRepository
+import logic.repositories.UserRepository
 
 class GetAllMatesUseCase(
-    private val authenticationRepository: AuthenticationRepository
+    private val userRepository: UserRepository
 ) {
     fun getAllMates(): List<User> {
-        return authenticationRepository.getMates()
+        return userRepository.getMates()
     }
 }
