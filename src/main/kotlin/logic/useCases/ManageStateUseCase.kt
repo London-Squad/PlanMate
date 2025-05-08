@@ -16,7 +16,7 @@ class ManageStateUseCase(
     fun addState(taskState: TaskState, projectID: UUID) {
         if (taskState.title.isBlank()) return
         tasksStatesRepository.addNewTaskState(taskState, projectID)
-        logAction(Create(taskState))
+        logAction(EntityCreationLog(taskState))
     }
 
     fun editStateTitle(stateID: UUID, newTitle: String) {
@@ -24,7 +24,7 @@ class ManageStateUseCase(
         if (newTitle.isBlank()) return
         tasksStatesRepository.editTaskStateTitle(stateID, newTitle)
         logAction(
-            Edit(
+            EntityEditionLog(
                 entity = oldState.copy(title = newTitle),
                 property = "title",
                 oldValue = oldState.title,
@@ -38,7 +38,7 @@ class ManageStateUseCase(
         if (newDescription.isBlank()) return
         tasksStatesRepository.editTaskStateDescription(stateID, newDescription)
         logAction(
-            Edit(
+            EntityEditionLog(
                 entity = oldState.copy(description = newDescription),
                 property = "description",
                 oldValue = oldState.description,
@@ -51,19 +51,19 @@ class ManageStateUseCase(
         val oldState = tasksStatesRepository.getTaskStateById(stateID) ?: return
         if (oldState.id == TaskState.NoTaskState.id) return
         tasksStatesRepository.deleteTaskState(stateID)
-        logAction(Delete(oldState))
+        logAction(EntityDeletionLog(oldState))
     }
 
     fun getStates(projectId: UUID): List<TaskState> {
         return tasksStatesRepository.getTasksStatesByProjectId(projectId)
     }
 
-    private fun logAction(action: Action) {
+    private fun logAction(action: LoggedAction) {
         logsRepository.addLog(
             Log(
                 user = authenticationRepository.getLoggedInUser(),
                 time = LocalDateTime.now(),
-                action = action
+                loggedAction = action
             )
         )
     }

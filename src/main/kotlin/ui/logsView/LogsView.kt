@@ -28,7 +28,7 @@ class LogsView(
             val data = logs.map { log ->
                 listOf(
                     log.id.toString(),
-                    "user (${log.user.userName}) ${actionToString(log.action)} at ${formatedTime(log.time)}"
+                    "user (${log.user.userName}) ${actionToString(log.loggedAction)} at ${formatedTime(log.time)}"
                 )
             }
             val columnWidths = listOf(36, null)
@@ -36,11 +36,11 @@ class LogsView(
         }
     }
 
-    private fun actionToString(action: Action): String {
+    private fun actionToString(action: LoggedAction): String {
         return when (action) {
-            is Create -> "created ${entityName(action.entity)} (${action.entity.title})"
-            is Delete -> "deleted ${entityName(action.entity)} (${action.entity.title})"
-            is Edit -> "edited ${entityName(action.entity)} (${action.entity.title}) ${action.property} from (${action.oldValue}) to (${action.newValue}) "
+            is EntityCreationLog -> "created ${entityName(action.entity)} (${action.entity.title})"
+            is EntityDeletionLog -> "deleted ${entityName(action.entity)} (${action.entity.title})"
+            is EntityEditionLog -> "edited ${entityName(action.entity)} (${action.entity.title}) ${action.property} from (${action.oldValue}) to (${action.newValue}) "
         }
     }
 
