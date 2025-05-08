@@ -22,7 +22,7 @@ class UserRepositoryImpl(
     override fun getAdmin(): User =
         usersDataSource.getAdmin().toUser()
 
-    override fun deleteUser(userId: UUID) {
+    override fun deleteMate(userId: UUID) {
         usersDataSource.deleteUser(userId)
     }
 
