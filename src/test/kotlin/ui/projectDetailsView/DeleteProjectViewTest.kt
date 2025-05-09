@@ -1,12 +1,11 @@
 package ui.projectDetailsView
 
 import io.mockk.*
-import logic.entities.Project
 import logic.useCases.ManageProjectUseCase
 import ui.ViewExceptionHandler
 import ui.cliPrintersAndReaders.CLIPrinter
 import ui.cliPrintersAndReaders.CLIReader
-import java.util.*
+import ui.taskManagementView.FakeProjectData
 import kotlin.test.BeforeTest
 import kotlin.test.Test
 
@@ -17,14 +16,6 @@ class DeleteProjectViewTest {
     private lateinit var manageProjectUseCase: ManageProjectUseCase
     private lateinit var viewExceptionHandler: ViewExceptionHandler
     private lateinit var deleteProjectView: DeleteProjectView
-
-    private val project = Project(
-        id = UUID.randomUUID(),
-        title = "Test",
-        description = "Test Description",
-        tasks = emptyList(),
-        tasksStates = emptyList()
-    )
 
     @BeforeTest
     fun setUp() {
@@ -44,10 +35,10 @@ class DeleteProjectViewTest {
         }
 
         // when
-        deleteProjectView.deleteProject(project)
+        deleteProjectView.deleteProject(FakeProjectData.project)
 
         // then
-        verify { manageProjectUseCase.deleteProject(project.id) }
+        verify { manageProjectUseCase.deleteProject(FakeProjectData.project.id) }
     }
 
     @Test
@@ -59,10 +50,10 @@ class DeleteProjectViewTest {
         }
 
         // when
-        deleteProjectView.deleteProject(project)
+        deleteProjectView.deleteProject(FakeProjectData.project)
 
         // then
-        verify { cliPrinter.cliPrintLn("Project ${project.id} was deleted successfully.") }
+        verify { cliPrinter.cliPrintLn("Project ${FakeProjectData.project.id} was deleted successfully.") }
     }
 
     @Test
@@ -71,7 +62,7 @@ class DeleteProjectViewTest {
         every { cliReader.getUserConfirmation() } returns false
 
         // when
-        deleteProjectView.deleteProject(project)
+        deleteProjectView.deleteProject(FakeProjectData.project)
 
         // then
         verify { cliPrinter.cliPrintLn("Project deletion canceled") }

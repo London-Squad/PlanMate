@@ -2,14 +2,13 @@ package ui.projectDetailsView
 
 import com.google.common.truth.Truth.assertThat
 import io.mockk.*
-import logic.entities.Project
 import logic.useCases.ManageProjectUseCase
 import ui.ViewExceptionHandler
 import ui.cliPrintersAndReaders.CLIPrinter
 import ui.cliPrintersAndReaders.CLIReader
 import ui.cliPrintersAndReaders.ProjectInputReader
+import ui.taskManagementView.FakeProjectData
 import ui.taskStatesView.TaskStatesView
-import java.util.*
 import kotlin.test.BeforeTest
 import kotlin.test.Test
 
@@ -23,14 +22,6 @@ class EditProjectViewTest {
     private lateinit var viewExceptionHandler: ViewExceptionHandler
     private lateinit var editProjectView: EditProjectView
 
-    private val project = Project(
-        id = UUID.randomUUID(),
-        title = "Old Title",
-        description = "Old Description",
-        tasks = emptyList(),
-        tasksStates = emptyList()
-    )
-
     @BeforeTest
     fun setUp() {
         cliPrinter = mockk(relaxed = true)
@@ -43,38 +34,38 @@ class EditProjectViewTest {
             cliPrinter, cliReader, projectInputReader,
             manageProjectUseCase, taskStatesView, viewExceptionHandler
         )
+
+        every { viewExceptionHandler.tryCall(any()) } answers {
+            (firstArg() as () -> Unit).invoke(); true
+        }
     }
 
     @Test
     fun `editProject should edit title when user selects 1`() {
         // given
+        val newTitle = "New Title"
         every { cliReader.getValidInputNumberInRange(any()) } returns 1
-        every { projectInputReader.getValidProjectTitle() } returns "New Title"
-        every { viewExceptionHandler.tryCall(any()) } answers {
-            (firstArg() as () -> Unit).invoke(); true
-        }
+        every { projectInputReader.getValidProjectTitle() } returns newTitle
 
         // when
-        editProjectView.editProject(project)
+        editProjectView.editProject(FakeProjectData.project)
 
         // then
-        verify { manageProjectUseCase.editProjectTitle(project.id, "New Title") }
+        verify { manageProjectUseCase.editProjectTitle(FakeProjectData.project.id, newTitle) }
     }
 
     @Test
     fun `editProject should edit description when user selects 2`() {
         // given
+        val newDesc = "New Desc"
         every { cliReader.getValidInputNumberInRange(any()) } returns 2
-        every { projectInputReader.getValidProjectDescription() } returns "New Desc"
-        every { viewExceptionHandler.tryCall(any()) } answers {
-            (firstArg() as () -> Unit).invoke(); true
-        }
+        every { projectInputReader.getValidProjectDescription() } returns newDesc
 
         // when
-        editProjectView.editProject(project)
+        editProjectView.editProject(FakeProjectData.project)
 
         // then
-        verify { manageProjectUseCase.editProjectDescription(project.id, "New Desc") }
+        verify { manageProjectUseCase.editProjectDescription(FakeProjectData.project.id, newDesc) }
     }
 
     @Test
@@ -83,10 +74,10 @@ class EditProjectViewTest {
         every { cliReader.getValidInputNumberInRange(any()) } returns 3
 
         // when
-        editProjectView.editProject(project)
+        editProjectView.editProject(FakeProjectData.project)
 
         // then
-        verify { taskStatesView.start(project.id) }
+        verify { taskStatesView.start(FakeProjectData.project.id) }
     }
 
     @Test
@@ -95,7 +86,7 @@ class EditProjectViewTest {
         every { cliReader.getValidInputNumberInRange(any()) } returns 0
 
         // when
-        val result = runCatching { editProjectView.editProject(project) }
+        val result = runCatching { editProjectView.editProject(FakeProjectData.project) }
 
         // then
         assertThat(result.isSuccess).isTrue()
