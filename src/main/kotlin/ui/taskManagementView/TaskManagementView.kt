@@ -3,6 +3,7 @@ package ui.taskManagementView
 import logic.entities.Project
 import logic.entities.Task
 import logic.repositories.TaskRepository
+import logic.useCases.ManageTaskUseCase
 import ui.ViewExceptionHandler
 import ui.cliPrintersAndReaders.CLIPrinter
 import ui.cliPrintersAndReaders.CLIReader
@@ -16,7 +17,7 @@ class TaskManagementView(
     private val taskDescriptionEditionView: TaskDescriptionEditionView,
     private val taskStateEditionView: TaskStateEditionView,
     private val taskDeletionView: TaskDeletionView,
-    private val taskRepository: TaskRepository,
+    private val manageTaskUseCase: ManageTaskUseCase,
     private val logsView: LogsView,
     private val viewExceptionHandler: ViewExceptionHandler
 ) {
@@ -26,7 +27,7 @@ class TaskManagementView(
 
     fun start(taskID: UUID, project: Project) {
         viewExceptionHandler.tryCall {
-            currentTask = taskRepository.getTaskByID(taskID)
+            currentTask = manageTaskUseCase.getTaskByID(taskID)
         }
 
         currentProject = project
@@ -55,27 +56,11 @@ class TaskManagementView(
 
     private fun selectNextUI() {
         when (cliReader.getValidInputNumberInRange(MAX_OPTION_NUMBER)) {
-            1 -> {
-                taskTitleEditionView.editTitle(currentTask)
-            }
-
-            2 -> {
-                taskDescriptionEditionView.editDescription(currentTask)
-            }
-
-            3 -> {
-                taskStateEditionView.editState(currentTask, currentProject.tasksStates)
-            }
-
-            4 -> {
-                taskDeletionView.deleteTask(currentTask)
-                return
-            }
-
-            5 -> {
-                logsView.printLogsByEntityId(currentTask.id)
-            }
-
+            1 -> taskTitleEditionView.editTitle(currentTask)
+            2 -> taskDescriptionEditionView.editDescription(currentTask)
+            3 -> taskStateEditionView.editState(currentTask, currentProject.tasksStates)
+            4 -> { taskDeletionView.deleteTask(currentTask); return }
+            5 -> logsView.printLogsByEntityId(currentTask.id)
             0 -> return
         }
         start(currentTask.id, currentProject)

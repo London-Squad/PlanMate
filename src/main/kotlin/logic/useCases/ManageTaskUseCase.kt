@@ -11,6 +11,10 @@ class ManageTaskUseCase(
     private val projectsRepository: ProjectsRepository
 ) {
 
+    fun getTaskByID(taskId: UUID): Task{
+        return taskRepository.getTaskByID(taskId)
+    }
+
     fun addNewTask(title: String, description: String, projectId: UUID) {
 
         val newTask = buildNewTask(UUID.randomUUID(), title, description, projectId)
