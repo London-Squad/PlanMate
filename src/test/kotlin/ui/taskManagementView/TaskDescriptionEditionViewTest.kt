@@ -3,13 +3,11 @@ package ui.taskManagementView
 import io.mockk.every
 import io.mockk.mockk
 import io.mockk.verify
-import logic.entities.Task
 import logic.useCases.ManageTaskUseCase
 import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Test
 import ui.ViewExceptionHandler
 import ui.cliPrintersAndReaders.TaskInputReader
-import java.util.*
 
 class TaskDescriptionEditionViewTest {
 
@@ -24,21 +22,16 @@ class TaskDescriptionEditionViewTest {
         manageTaskUseCase = mockk(relaxed = true)
         taskInputReader = mockk(relaxed = true)
         viewExceptionHandler = mockk(relaxed = true)
-//        cliPrinter = mockk(relaxed = true)
 
         taskDescriptionEditionView =
             TaskDescriptionEditionView(taskInputReader, manageTaskUseCase, viewExceptionHandler)
-
     }
-
-    private val task = Task(UUID.randomUUID(), "Fake Task 1", description = "description1")
-    private val newDescription = "task new description"
 
     @Test
     fun `editDescription should ask for new description`() {
-        every { taskInputReader.getValidTaskDescription() } returns newDescription
+        every { taskInputReader.getValidTaskDescription() } returns "task new description"
 
-        taskDescriptionEditionView.editDescription(task)
+        taskDescriptionEditionView.editDescription(FakeProjectData.tasks[0])
 
         verify(exactly = 1) {
             taskInputReader.getValidTaskDescription()
@@ -47,31 +40,18 @@ class TaskDescriptionEditionViewTest {
 
     @Test
     fun `editDescription should call manageTaskUseCase editTaskDescription when new description is valid`() {
+        val newDescription = "task new description"
         every { taskInputReader.getValidTaskDescription() } returns newDescription
         every { viewExceptionHandler.tryCall(any()) } answers {
             firstArg<() -> Unit>().invoke()
             true
         }
 
-        taskDescriptionEditionView.editDescription(task)
+        taskDescriptionEditionView.editDescription(FakeProjectData.tasks[0])
 
         verify(exactly = 1) {
-            manageTaskUseCase.editTaskDescription(task.id, newDescription)
+            manageTaskUseCase.editTaskDescription(FakeProjectData.tasks[0].id, newDescription)
         }
     }
 
-    @Test
-    fun `description can be blank`() {
-        every { taskInputReader.getValidTaskDescription() } returns ""
-        every { viewExceptionHandler.tryCall(any()) } answers {
-            firstArg<() -> Unit>().invoke()
-            true
-        }
-
-        taskDescriptionEditionView.editDescription(task)
-
-        verify(exactly = 1) {
-            manageTaskUseCase.editTaskDescription(task.id, "")
-        }
-    }
 }

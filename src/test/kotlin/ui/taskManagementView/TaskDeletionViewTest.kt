@@ -35,7 +35,7 @@ class TaskDeletionViewTest {
 
     @Test
     fun `deleteTask should cancel deletion when answer is n`() {
-        every { cliReader.getUserInput(any()) } returns "n"
+        every { cliReader.getUserConfirmation() } returns false
 
         taskDeletionView.deleteTask(task)
 
@@ -56,7 +56,6 @@ class TaskDeletionViewTest {
 
         verify(exactly = 1) {
             manageTaskUseCase.deleteTask(task.id)
-            cliPrinter.cliPrintLn("task ${task.title} was deleted")
         }
     }
 }

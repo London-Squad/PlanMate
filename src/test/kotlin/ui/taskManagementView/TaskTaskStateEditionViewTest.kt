@@ -3,17 +3,14 @@ package ui.taskManagementView
 import io.mockk.every
 import io.mockk.mockk
 import io.mockk.verify
-import logic.entities.TaskState
-import logic.entities.Task
 import logic.useCases.ManageTaskUseCase
 import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Test
 import ui.ViewExceptionHandler
 import ui.cliPrintersAndReaders.CLIPrinter
 import ui.cliPrintersAndReaders.CLIReader
-import java.util.*
 
-class TaskTaskStateEditionViewTest {
+class TaskStateEditionViewTest {
 
     private lateinit var taskStateEditionView: TaskStateEditionView
     private lateinit var viewExceptionHandler: ViewExceptionHandler
@@ -37,17 +34,10 @@ class TaskTaskStateEditionViewTest {
         }
     }
 
-    private val task = Task(UUID.randomUUID(), "Fake Task 1", description = "description1")
-    private val taskStatesLists = listOf(
-        TaskState(UUID.randomUUID(), "Todo", "Todo description"),
-        TaskState(UUID.randomUUID(), "Done", "Done description"),
-        TaskState(UUID.randomUUID(), "In-progress", "In-progress description"),
-    )
-
     @Test
     fun `editState should return when no state are available`() {
 
-        taskStateEditionView.editState(task, emptyList())
+        taskStateEditionView.editState(FakeProjectData.tasks[0], emptyList())
 
         verify(exactly = 1) {
             cliPrinter.cliPrintLn("no states available")
@@ -55,15 +45,13 @@ class TaskTaskStateEditionViewTest {
     }
 
     @Test
-    fun `editState should print states when available`() {
+    fun `editState should call manageTaskUseCase editTaskState and pass the right parameters`() {
         every { cliReader.getValidInputNumberInRange(any(), any()) } returns 1
 
-        taskStateEditionView.editState(task, taskStatesLists)
+        taskStateEditionView.editState(FakeProjectData.tasks[0], FakeProjectData.taskStatesLists)
 
         verify(exactly = 1) {
-            taskStatesLists.forEachIndexed { index, state ->
-                cliPrinter.cliPrintLn("${index + 1}. ${state.title}")
-            }
+            manageTaskUseCase.editTaskState(FakeProjectData.tasks[0].id, FakeProjectData.taskStatesLists.first())
         }
     }
 }

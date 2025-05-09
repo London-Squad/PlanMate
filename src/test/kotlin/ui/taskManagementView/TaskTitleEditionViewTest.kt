@@ -34,8 +34,6 @@ class TaskTitleEditionViewTest {
 
     @Test
     fun `editTaskTitle should ask for new title`() {
-        every { taskInputReader.getValidTaskTitle() } returns newTitle
-
         taskTitleEditionView.editTitle(task)
 
         verify(exactly = 1) {
