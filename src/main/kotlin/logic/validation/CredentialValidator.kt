@@ -1,7 +1,7 @@
 package logic.validation
 
-import logic.exceptions.InvalidPasswordException
-import logic.exceptions.InvalidUserNameLengthException
+import logic.planeMateException.InvalidPasswordException
+import logic.planeMateException.InvalidUserNameLengthException
 
 class CredentialValidator {
     fun validateUserName(username: String) {

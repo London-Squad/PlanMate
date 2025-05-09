@@ -2,7 +2,7 @@ package data.repositories.dtoMappers
 
 import data.dto.LogDto
 import logic.entities.*
-import logic.exceptions.RetrievingDataFailureException
+import logic.planeMateException.RetrievingDataFailureException
 
 fun LogDto.toLog(user: User, planEntity: PlanEntity): Log {
     val action = when (this.action.lowercase()) {

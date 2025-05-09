@@ -3,6 +3,7 @@ package data.dataSources.mongoDBDataSource
 import com.mongodb.client.MongoClients
 import com.mongodb.client.MongoCollection
 import com.mongodb.client.MongoDatabase
+import data.exceptions.DataConnectionException
 import org.bson.Document
 
 object DatabaseConnection {
@@ -13,7 +14,7 @@ object DatabaseConnection {
     private const val LOGS_COLLECTION_NAME = "logs"
     private const val USERS_COLLECTION_NAME = "users"
 
-    private val mongoUri: String = System.getenv("MONGO_URI")
+    private val mongoUri: String = System.getenv("MONGO_URI")?:throw DataConnectionException("MONGO_URI environment variable not set")
 
     private val client = MongoClients.create(mongoUri)
 

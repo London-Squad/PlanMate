@@ -1,6 +1,6 @@
 package ui.welcomeView
 
-import logic.exceptions.NoLoggedInUserFoundException
+import logic.planeMateException.NoLoggedInUserFoundException
 import logic.useCases.GetLoggedInUserUseCase
 import ui.ViewExceptionHandler
 import ui.cliPrintersAndReaders.CLIPrinter

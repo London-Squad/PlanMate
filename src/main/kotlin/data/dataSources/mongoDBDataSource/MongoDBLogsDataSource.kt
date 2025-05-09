@@ -4,6 +4,7 @@ import com.mongodb.client.MongoCollection
 import data.dataSources.mongoDBDataSource.mongoDBParse.MongoDBParse
 import data.repositories.dataSourceInterfaces.LogsDataSource
 import data.dto.LogDto
+import data.exceptions.*
 import org.bson.Document
 
 class MongoDBLogsDataSource(
@@ -12,9 +13,18 @@ class MongoDBLogsDataSource(
 ) : LogsDataSource {
 
     override fun getAllLogs(): List<LogDto> {
-        return collection.find().map { doc ->
-            mongoParser.documentToLogDto(doc)
-        }.toList()
+        return try{
+            collection.find().map { doc ->
+                try {
+                    mongoParser.documentToLogDto(doc)
+                } catch (e: DataAccessException) {
+                    throw DataParsingException("Failed to parse document: ${e.message}")
+                }
+            }.toList()
+        }catch(e: DataAccessException){
+            throw DataConnectionException("Unexpected error while retrieving logs: ${e.message}")
+
+        }
     }
 
     override fun addLog(logDto: LogDto) {

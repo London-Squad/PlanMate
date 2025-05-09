@@ -5,7 +5,7 @@ import data.repositories.dtoMappers.toTask
 import data.repositories.dtoMappers.toTaskDto
 import logic.entities.TaskState
 import logic.entities.Task
-import logic.exceptions.TaskNotFoundException
+import logic.planeMateException.TaskNotFoundException
 import logic.repositories.TaskRepository
 import logic.repositories.TaskStatesRepository
 import java.util.*

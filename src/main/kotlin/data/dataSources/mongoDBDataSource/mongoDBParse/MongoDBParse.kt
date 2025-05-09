@@ -1,7 +1,7 @@
 package data.dataSources.mongoDBDataSource.mongoDBParse
 
 import data.dto.*
-import logic.exceptions.RetrievingDataFailureException
+import logic.planeMateException.RetrievingDataFailureException
 import org.bson.Document
 import java.time.LocalDateTime
 import java.util.*

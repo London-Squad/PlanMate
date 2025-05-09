@@ -1,7 +1,7 @@
 package data.dataSources.csvDataSource.fileIO
 
 import data.dto.*
-import logic.exceptions.RetrievingDataFailureException
+import logic.planeMateException.RetrievingDataFailureException
 import java.time.LocalDateTime
 import java.util.*
 

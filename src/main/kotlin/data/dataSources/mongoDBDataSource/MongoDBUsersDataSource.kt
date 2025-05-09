@@ -6,7 +6,8 @@ import com.mongodb.client.model.Updates
 import data.dataSources.mongoDBDataSource.mongoDBParse.MongoDBParse
 import data.repositories.dataSourceInterfaces.UsersDataSource
 import data.dto.UserDto
-import logic.exceptions.NoLoggedInUserFoundException
+import data.exceptions.DataOperationException
+import logic.planeMateException.NoLoggedInUserFoundException
 import org.bson.Document
 import java.util.UUID
 
@@ -35,7 +36,7 @@ class MongoDBUsersDataSource(
 
     override fun addMate(userName: String, hashedPassword: String) {
         val existingUser = collection.find(Filters.eq(MongoDBParse.USERNAME_FIELD, userName)).first()
-        if (existingUser != null) throw IllegalStateException("User with username '$userName' already exists")
+        if (existingUser != null) throw DataOperationException("User with username '$userName' already exists")
         val doc = mongoParser.userDtoToDocument(
             UserDto(
                 UUID.randomUUID(),

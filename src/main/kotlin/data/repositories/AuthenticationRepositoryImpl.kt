@@ -4,7 +4,7 @@ import data.repositories.dataSourceInterfaces.UsersDataSource
 import data.repositories.dtoMappers.toUser
 import data.security.hashing.HashingAlgorithm
 import logic.entities.User
-import logic.exceptions.UserNotFoundException
+import logic.planeMateException.UserNotFoundException
 import logic.repositories.AuthenticationRepository
 
 class AuthenticationRepositoryImpl(
