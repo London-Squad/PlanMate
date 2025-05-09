@@ -4,6 +4,8 @@ import com.mongodb.client.MongoClients
 import com.mongodb.client.MongoCollection
 import com.mongodb.client.MongoDatabase
 import data.exceptions.DataConnectionException
+import data.exceptions.handleException
+import data.exceptions.sharedOperationTypes.MongoOperationName
 import org.bson.Document
 
 object DatabaseConnection {
@@ -14,7 +16,7 @@ object DatabaseConnection {
     private const val LOGS_COLLECTION_NAME = "logs"
     private const val USERS_COLLECTION_NAME = "users"
 
-    private val mongoUri: String = System.getenv("MONGO_URI")?:throw DataConnectionException("MONGO_URI environment variable not set")
+    private val mongoUri: String = System.getenv("MONGO_URI")?:throw DataConnectionException()
 
     private val client = MongoClients.create(mongoUri)
 
@@ -33,6 +35,8 @@ object DatabaseConnection {
     fun getUsersCollection(): MongoCollection<Document> = usersCollection
 
     fun close() {
-        client.close()
+        handleException(MongoOperationName.CLOSE_MONGO_CONNECTION) {
+            client.close()
+        }
     }
 }
