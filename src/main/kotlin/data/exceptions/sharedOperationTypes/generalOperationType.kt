@@ -11,7 +11,8 @@ enum class MongoOperationName {
     DELETE_TASK,
     DELETE_TASK_STATE,
     CONNECT_TO_MONGO,
-    CLOSE_MONGO_CONNECTION
+    CLOSE_MONGO_CONNECTION,
+    INSERT_USER
 }
 enum class CSVOperationName {
     READ_CSV_DATA,

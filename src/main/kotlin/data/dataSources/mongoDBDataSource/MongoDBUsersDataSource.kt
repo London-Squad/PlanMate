@@ -7,6 +7,8 @@ import data.dataSources.mongoDBDataSource.mongoDBParse.MongoDBParse
 import data.repositories.dataSourceInterfaces.UsersDataSource
 import data.dto.UserDto
 import data.exceptions.DataOperationException
+import data.exceptions.handleException
+import data.exceptions.sharedOperationTypes.MongoOperationName
 import logic.planeMateException.NoLoggedInUserFoundException
 import org.bson.Document
 import java.util.UUID
@@ -19,34 +21,39 @@ class MongoDBUsersDataSource(
     private var loggedInUser: UserDto? = null
 
     override fun getMates(): List<UserDto> {
-        return collection.find(Filters.eq(MongoDBParse.IS_DELETED_FIELD, false)).map { doc ->
-            mongoParser.documentToUserDto(doc)
-        }.toList()
+        return handleException(MongoOperationName.RETRIEVE_PROJECTS) {
+            collection.find(Filters.eq(MongoDBParse.IS_DELETED_FIELD, false)).map { doc ->
+                mongoParser.documentToUserDto(doc)
+            }.toList()
+        }
     }
 
     override fun getAdmin(): UserDto = ADMIN
 
     override fun deleteUser(userId: UUID) {
-        collection.updateOne(
-            Filters.eq(MongoDBParse.ID_FIELD, userId.toString()),
-            Updates.set(MongoDBParse.IS_DELETED_FIELD, true)
-        )
-
+        handleException(MongoOperationName.DELETE_USER) {
+            collection.updateOne(
+                Filters.eq(MongoDBParse.ID_FIELD, userId.toString()),
+                Updates.set(MongoDBParse.IS_DELETED_FIELD, true)
+            )
+        }
     }
 
     override fun addMate(userName: String, hashedPassword: String) {
-        val existingUser = collection.find(Filters.eq(MongoDBParse.USERNAME_FIELD, userName)).first()
-        if (existingUser != null) throw DataOperationException("User with username '$userName' already exists")
-        val doc = mongoParser.userDtoToDocument(
-            UserDto(
-                UUID.randomUUID(),
-                userName,
-                hashedPassword,
-                "MATE",
-                isDeleted = false
+        handleException(MongoOperationName.INSERT_USER) {
+            val existingUser = collection.find(Filters.eq(MongoDBParse.USERNAME_FIELD, userName)).first()
+            if (existingUser != null) throw DataOperationException("User with username '$userName' already exists")
+            val doc = mongoParser.userDtoToDocument(
+                UserDto(
+                    UUID.randomUUID(),
+                    userName,
+                    hashedPassword,
+                    "MATE",
+                    isDeleted = false
+                )
             )
-        )
-        collection.insertOne(doc)
+            collection.insertOne(doc)
+        }
     }
 
     override fun getLoggedInUser(): UserDto {
