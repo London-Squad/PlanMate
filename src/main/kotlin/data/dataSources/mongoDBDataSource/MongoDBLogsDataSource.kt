@@ -2,18 +2,20 @@ package data.dataSources.mongoDBDataSource
 
 import com.mongodb.client.MongoCollection
 import data.dataSources.mongoDBDataSource.mongoDBParse.MongoDBParse
-import data.repositories.dataSourceInterfaces.LogsDataSource
 import data.dto.LogDto
-import data.exceptions.*
+import data.exceptions.DataAccessException
+import data.exceptions.DataParsingException
+import data.exceptions.handleException
+import data.exceptions.sharedOperationTypes.MongoOperationName
+import data.repositories.dataSourceInterfaces.LogsDataSource
 import org.bson.Document
 
 class MongoDBLogsDataSource(
-    private val collection: MongoCollection<Document>,
-    private val mongoParser: MongoDBParse
+    private val collection: MongoCollection<Document>, private val mongoParser: MongoDBParse
 ) : LogsDataSource {
 
     override fun getAllLogs(): List<LogDto> {
-        return try{
+        return handleException(MongoOperationName.RETRIEVE_PROJECTS) {
             collection.find().map { doc ->
                 try {
                     mongoParser.documentToLogDto(doc)
@@ -21,9 +23,6 @@ class MongoDBLogsDataSource(
                     throw DataParsingException("Failed to parse document: ${e.message}")
                 }
             }.toList()
-        }catch(e: DataAccessException){
-            throw DataConnectionException("Unexpected error while retrieving logs: ${e.message}")
-
         }
     }
 

@@ -25,7 +25,10 @@ private fun determineMongoOperationType(operation: MongoOperationName): GeneralO
     MongoOperationName.INSERT_PROJECT,
     MongoOperationName.UPDATE_PROJECT_TITLE,
     MongoOperationName.UPDATE_PROJECT_DESCRIPTION,
-    MongoOperationName.DELETE_PROJECT -> GeneralOperationType.MODIFICATION
+    MongoOperationName.DELETE_PROJECT,
+    MongoOperationName.DELETE_USER,
+    MongoOperationName.DELETE_TASK,
+    MongoOperationName.DELETE_TASK_STATE -> GeneralOperationType.MODIFICATION
     MongoOperationName.CONNECT_TO_MONGO -> GeneralOperationType.CONNECTION
     MongoOperationName.CLOSE_MONGO_CONNECTION -> GeneralOperationType.CLOSING
 }
