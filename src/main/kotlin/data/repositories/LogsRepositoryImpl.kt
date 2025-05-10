@@ -8,7 +8,6 @@ import data.repositories.dtoMappers.toLogDto
 import data.repositories.dtoMappers.toTaskState
 import data.repositories.dtoMappers.toUser
 import logic.entities.Log
-import logic.entities.PlanEntity
 import logic.entities.Project
 import logic.entities.User
 import logic.repositories.LogsRepository
