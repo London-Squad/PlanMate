@@ -34,18 +34,11 @@ class SwimlanesView(
     private fun groupTasksByState(tasks: List<Task>, taskStates: List<TaskState>): Map<UUID, List<String>> {
         return taskStates.associate { state ->
             state.id to tasks
-                .filter { it.taskStateId == state.id }
-                .mapIndexed { index, task -> "${index + 1}. ${task.title}" }
+                .mapIndexed { index, task -> Pair(task.taskStateId, "${index + 1}. ${task.title}") }
+                .filter { it.first == state.id }
+                .map { it.second }
         }
     }
-
-//    private fun getMaxTaskCount(tasksByTaskState: Map<TaskState, List<String>>): Int {
-//        return tasksByTaskState.values.maxOfOrNull { it.size } ?: 0
-//    }
-//
-//    private fun getHeaders(tasksStates: List<TaskState>): List<String> {
-//        return tasksStates.map { it.title }
-//    }
 
     private fun buildData(
         tasksByState: Map<UUID, List<String>>,
