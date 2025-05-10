@@ -15,4 +15,3 @@ class TaskStateNotFoundException(message: String = "Task state could not be foun
 
 class ProjectNotFoundException(message: String = "Project could not be found") : NotFoundException(message)
 
-class CorruptedDataException(message: String = "Corrupted data encountered") : RetrievingDataFailureException(message)
