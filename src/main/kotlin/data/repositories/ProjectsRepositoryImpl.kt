@@ -2,7 +2,6 @@ package data.repositories
 
 import data.dto.ProjectDto
 import data.repositories.dataSourceInterfaces.ProjectsDataSource
-import data.repositories.dataSourceInterfaces.TaskStatesDataSource
 import data.repositories.dtoMappers.*
 import logic.entities.Project
 import logic.exceptions.ProjectNotFoundException
@@ -11,7 +10,6 @@ import java.util.*
 
 class ProjectsRepositoryImpl(
     private val projectsDataSource: ProjectsDataSource,
-    private val taskStatesDataSource: TaskStatesDataSource,
 ) : ProjectsRepository {
 
     override fun getAllProjects(includeDeleted: Boolean): List<Project> {
@@ -30,7 +28,6 @@ class ProjectsRepositoryImpl(
         projectsDataSource.addNewProject(
             project.toProjectDto()
         )
-        taskStatesDataSource.createDefaultTaskStatesForProject(project.id)
     }
 
     override fun editProjectTitle(projectId: UUID, newTitle: String) {
