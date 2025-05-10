@@ -9,7 +9,7 @@ interface TaskStatesRepository {
 
     fun getTaskStateById(stateId: UUID, includeDeleted: Boolean = false): TaskState
 
-    fun getDefaultTaskStates(projectId: UUID): List<TaskState>
+    fun createProjectDefaultTaskStates(projectId: UUID)
 
     fun addNewTaskState(taskState: TaskState, projectId: UUID)
 

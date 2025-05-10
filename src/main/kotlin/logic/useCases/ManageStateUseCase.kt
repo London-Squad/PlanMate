@@ -9,45 +9,44 @@ class ManageStateUseCase(
     private val createLogUseCase: CreateLogUseCase,
 ) {
 
-    fun addState(title: String, description: String, projectID: UUID) {
-        val taskState = buildNewTaskState(UUID.randomUUID(), title, description)
+    fun addState(title: String, description: String, projectId: UUID) {
+        val taskState = buildNewTaskState(UUID.randomUUID(), title, description, projectId)
 
-        taskStatesRepository.addNewTaskState(taskState, projectID)
-        createLogUseCase.logEntityCreation(taskState)
+        taskStatesRepository.addNewTaskState(taskState, projectId)
+        createLogUseCase.logEntityCreation(taskState.id)
     }
 
     private fun buildNewTaskState(
         id: UUID,
         title: String,
         description: String,
+        projectId: UUID,
     ): TaskState {
         return TaskState(
             id = id,
             title = title,
             description = description,
+            projectId = projectId,
         )
     }
 
-    fun editStateTitle(stateID: UUID, newTitle: String) {
-        val oldState = taskStatesRepository.getTaskStateById(stateID)
+    fun editStateTitle(stateId: UUID, newTitle: String) {
+        val oldState = taskStatesRepository.getTaskStateById(stateId)
 
-        taskStatesRepository.editTaskStateTitle(stateID, newTitle)
-        createLogUseCase.logEntityTitleEdition(oldState, oldState.title, newTitle)
+        taskStatesRepository.editTaskStateTitle(stateId, newTitle)
+        createLogUseCase.logEntityTitleEdition(oldState.id, oldState.title, newTitle)
     }
 
-    fun editStateDescription(stateID: UUID, newDescription: String) {
-        val oldState = taskStatesRepository.getTaskStateById(stateID)
+    fun editStateDescription(stateId: UUID, newDescription: String) {
+        val oldState = taskStatesRepository.getTaskStateById(stateId)
 
-        taskStatesRepository.editTaskStateDescription(stateID, newDescription)
-        createLogUseCase.logEntityDescriptionEdition(oldState, oldState.description, newDescription)
+        taskStatesRepository.editTaskStateDescription(stateId, newDescription)
+        createLogUseCase.logEntityDescriptionEdition(oldState.id, oldState.description, newDescription)
     }
 
-    fun deleteState(stateID: UUID) {
-        val oldState = taskStatesRepository.getTaskStateById(stateID)
-        if (oldState.id == TaskState.NoTaskState.id) return
-
-        taskStatesRepository.deleteTaskState(stateID)
-        createLogUseCase.logEntityDeletion(oldState)
+    fun deleteState(stateId: UUID) {
+        taskStatesRepository.deleteTaskState(stateId)
+        createLogUseCase.logEntityDeletion(stateId)
     }
 
     fun getTaskStatesByProjectId(projectId: UUID): List<TaskState> {
