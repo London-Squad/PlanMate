@@ -7,19 +7,17 @@ import logic.entities.TaskState
 
 fun ProjectDto.toProject(tasks: List<Task>, tasksStates: List<TaskState>): Project {
     return Project(
-        id = this.id,
-        title = this.title,
-        description = this.description,
-        tasks = tasks,
-        tasksStates = tasksStates
+        id = id,
+        title = title,
+        description = description
     )
 }
 
 fun Project.toProjectDto(isDeleted: Boolean = false): ProjectDto {
     return ProjectDto(
-        id = this.id,
-        title = this.title,
-        description = this.description,
+        id = id,
+        title = title,
+        description = description,
         isDeleted = isDeleted
     )
 }
