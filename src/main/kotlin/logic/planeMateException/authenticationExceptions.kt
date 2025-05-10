@@ -16,3 +16,10 @@ class UserNameAlreadyExistException : AuthenticationException("A user with this 
 class UnauthorizedAccessException : AuthenticationException("You do not have permission to perform this action!")
 
 class RegistrationFailedException : AuthenticationException("Unable to register user, please try again or contact support.")
+
+private object AuthenticationConstraints {
+    const val MIN_USERNAME_LENGTH = 4
+    const val MAX_USERNAME_LENGTH = 12
+    const val MIN_PASSWORD_LENGTH = 6
+    const val MAX_PASSWORD_LENGTH = 12
+}

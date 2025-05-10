@@ -1,8 +1,7 @@
 package logic.planeMateException
 
-open class StoringDataFailureException(message: String) : PlaneMateException(message)
-
 open class RetrievingDataFailureException(message: String) : PlaneMateException(message)
+
 
 open class NotFoundException(message: String) : RetrievingDataFailureException(message)
 
@@ -15,3 +14,5 @@ class TaskNotFoundException(message: String = "Task could not be found") : NotFo
 class TaskStateNotFoundException(message: String = "Task state could not be found") : NotFoundException(message)
 
 class ProjectNotFoundException(message: String = "Project could not be found") : NotFoundException(message)
+
+class CorruptedDataException(message: String = "Corrupted data encountered") : RetrievingDataFailureException(message)
