@@ -1,156 +1,127 @@
-//package logic.useCases
-//
-//import io.mockk.every
-//import io.mockk.mockk
-//import logic.entities.*
-//import logic.repositories.AuthenticationRepository
-//import logic.repositories.LogsRepository
-//import logic.repositories.TasksStatesRepository
-//import org.junit.jupiter.api.BeforeEach
-//import org.junit.jupiter.api.Test
-//import java.util.*
-//import kotlin.test.assertEquals
-//import kotlin.test.assertNotNull
-//import kotlin.test.assertTrue
-//
-//class ManageTaskStateUseCaseTest {
-//
-//    private lateinit var useCase: ManageStateUseCase
-//    private lateinit var statesRepo: FakeTasksStatesRepository
-//    private lateinit var logsRepo: FakeLogsRepository
-//    private lateinit var authenticationRepository: AuthenticationRepository
-//    private val projectId = UUID.randomUUID()
-//    private val admin = User(UUID.randomUUID(), "admin", User.Type.ADMIN)
-//
-//    @BeforeEach
-//    fun setup() {
-//        statesRepo = FakeTasksStatesRepository()
-//        logsRepo = FakeLogsRepository()
-//
-//        authenticationRepository = mockk(relaxed = true)
-//        every { authenticationRepository.getLoggedInUser() } returns admin
-//
-//        useCase = ManageStateUseCase(statesRepo, logsRepo, authenticationRepository)
-//    }
-//
-//    @Test
-//    fun `should add state and log create action when given valid state and project ID`() {
-//        val taskState = TaskState(title = "New", description = "To do")
-//        useCase.addState(taskState, projectId)
-//
-//        val saved = statesRepo.getTasksStatesByProjectId(projectId)
-//        assertEquals(1, saved.size)
-//        assertEquals(taskState.title, saved.first().title)
-//        assertTrue(logsRepo.logs.any { it.action is Create })
-//    }
-//
-//    @Test
-//    fun `should edit state title and log edit action when state exists`() {
-//        val taskState = TaskState(title = "Old", description = "desc")
-//        statesRepo.addNewTaskState(taskState, projectId)
-//        useCase.editStateTitle(taskState.id, "Updated")
-//
-//        assertEquals("Updated", statesRepo.getStateById(taskState.id)?.title)
-//        assertTrue(logsRepo.logs.any { it.action is Edit })
-//    }
-//
-//    @Test
-//    fun `should edit state description and log edit action when state exists`() {
-//        val taskState = TaskState(title = "Old", description = "desc")
-//        statesRepo.addNewTaskState(taskState, projectId)
-//        useCase.editStateDescription(taskState.id, "New desc")
-//
-//        assertEquals("New desc", statesRepo.getStateById(taskState.id)?.description)
-//        assertTrue(logsRepo.logs.any { it.action is Edit })
-//    }
-//
-//    @Test
-//    fun `should not add state or log when title is blank`() {
-//        val taskState = TaskState(title = "", description = "desc")
-//        useCase.addState(taskState, projectId)
-//
-//        assertTrue(statesRepo.getTasksStatesByProjectId(projectId).isEmpty())
-//        assertTrue(logsRepo.logs.none { it.action is Create })
-//    }
-//
-//    @Test
-//    fun `should not edit title or log when new title is blank`() {
-//        val taskState = TaskState(title = "Real", description = "desc")
-//        statesRepo.addNewTaskState(taskState, projectId)
-//        useCase.editStateTitle(taskState.id, "")
-//
-//        assertEquals("Real", statesRepo.getStateById(taskState.id)?.title)
-//        assertTrue(logsRepo.logs.none { it.action is Edit })
-//    }
-//
-//    @Test
-//    fun `should not edit description or log when new description is blank`() {
-//        val taskState = TaskState(title = "Real", description = "desc")
-//        statesRepo.addNewTaskState(taskState, projectId)
-//        useCase.editStateDescription(taskState.id, "")
-//
-//        assertEquals("desc", statesRepo.getStateById(taskState.id)?.description)
-//        assertTrue(logsRepo.logs.none { it.action is Edit })
-//    }
-//
-//    @Test
-//    fun `should not delete or log when state does not exist`() {
-//        val unknownId = UUID.randomUUID()
-//        useCase.deleteState(unknownId)
-//        assertTrue(logsRepo.logs.none { it.action is Delete })
-//    }
-//
-//    @Test
-//    fun should_not_delete_or_log_when_state_is_NoState() {
-//        val noTaskState = TaskState.NoTaskState
-//        statesRepo.addNewTaskState(noTaskState, projectId)
-//        useCase.deleteState(noTaskState.id)
-//
-//        assertNotNull(statesRepo.getStateById(noTaskState.id))
-//        assertTrue(logsRepo.logs.none { it.action is Delete })
-//    }
-//
-//    // Fake implementations
-//    class FakeTasksStatesRepository : TasksStatesRepository {
-//        private val states = mutableMapOf<UUID, TaskState>()
-//        private val projectStates = mutableMapOf<UUID, MutableList<UUID>>()
-//
-//        override fun addNewTaskState(taskState: TaskState, projectId: UUID) {
-//            states[taskState.id] = taskState
-//            projectStates.getOrPut(projectId) { mutableListOf() }.add(taskState.id)
-//        }
-//
-//        override fun editTaskStateTitle(stateId: UUID, newTitle: String) {
-//            states[stateId]?.let { states[stateId] = it.copy(title = newTitle) }
-//        }
-//
-//        override fun editTaskStateDescription(stateId: UUID, newDescription: String) {
-//            states[stateId]?.let { states[stateId] = it.copy(description = newDescription) }
-//        }
-//
-//        override fun deleteTaskState(stateId: UUID) {
-//            states.remove(stateId)
-//            projectStates.values.forEach { it.remove(stateId) }
-//        }
-//
-//        override fun getTasksStatesByProjectId(projectId: UUID): List<TaskState> {
-//            return projectStates[projectId]?.mapNotNull { states[it] } ?: emptyList()
-//        }
-//
-//        override fun getStateById(stateId: UUID): TaskState {
-//            return states[stateId] ?: TaskState.NoTaskState
-//        }
-//    }
-//
-//    class FakeLogsRepository : LogsRepository {
-//        val logs = mutableListOf<Log>()
-//
-//        override fun addLog(log: Log) {
-//            logs.add(log)
-//        }
-//
-//        override fun getAllLogs(): List<Log> = logs
-//        override fun getLogsByEntityId(entityId: UUID): List<Log> = logs.filter { it.id == entityId }
-//
-//    }
-//}
+package logic.useCases
+
+import io.mockk.every
+import io.mockk.mockk
+import io.mockk.mockkStatic
+import io.mockk.verify
+import logic.entities.*
+import logic.repositories.TaskStatesRepository
+import org.junit.jupiter.api.BeforeEach
+import org.junit.jupiter.api.Test
+import ui.taskManagementView.FakeProjectData
+import java.util.*
+
+class ManageTaskStateUseCaseTest {
+
+    private lateinit var useCase: ManageStateUseCase
+    private lateinit var taskStatesRepo: TaskStatesRepository
+    private lateinit var createLogUseCase: CreateLogUseCase
+    private val projectId = UUID.randomUUID()
+
+    @BeforeEach
+    fun setup() {
+        taskStatesRepo = mockk(relaxed = true)
+        createLogUseCase = mockk(relaxed = true)
+
+        useCase = ManageStateUseCase(taskStatesRepo, createLogUseCase)
+    }
+
+    @Test
+    fun `addState should call taskStatesRepository addNewTaskState when given valid state and project ID`() {
+        mockkStatic(UUID::class)
+        every { UUID.randomUUID() } returns FakeProjectData.taskStatesLists[0].id
+
+        useCase.addState(
+            FakeProjectData.taskStatesLists[0].title,
+            FakeProjectData.taskStatesLists[0].description,
+            projectId
+        )
+
+        verify(exactly = 1) { taskStatesRepo.addNewTaskState(FakeProjectData.taskStatesLists[0], projectId) }
+    }
+
+    @Test
+    fun `addState should call createLogUseCase logEntityCreation when the state is added`() {
+        mockkStatic(UUID::class)
+        every { UUID.randomUUID() } returns FakeProjectData.taskStatesLists[0].id
+
+        useCase.addState(
+            FakeProjectData.taskStatesLists[0].title,
+            FakeProjectData.taskStatesLists[0].description,
+            projectId
+        )
+
+        verify(exactly = 1) { createLogUseCase.logEntityCreation(FakeProjectData.taskStatesLists[0]) }
+    }
+
+    @Test
+    fun `editStateTitle should call taskStatesRepository editTaskStateTitle when given a new title`() {
+        val newTitle = "state new title"
+        every { taskStatesRepo.getTaskStateById(FakeProjectData.taskStatesLists[0].id) } returns FakeProjectData.taskStatesLists[0]
+
+        useCase.editStateTitle(FakeProjectData.taskStatesLists[0].id, newTitle)
+
+        verify(exactly = 1) { taskStatesRepo.editTaskStateTitle(FakeProjectData.taskStatesLists[0].id, newTitle) }
+    }
+
+    @Test
+    fun `editStateTitle should call createLogUseCase logEntityTitleEdition when edit the title`() {
+        val newTitle = "state new title"
+        every { taskStatesRepo.getTaskStateById(FakeProjectData.taskStatesLists[0].id) } returns FakeProjectData.taskStatesLists[0]
+
+        useCase.editStateTitle(FakeProjectData.taskStatesLists[0].id, newTitle)
+
+        verify(exactly = 1) {
+            createLogUseCase.logEntityTitleEdition(
+                FakeProjectData.taskStatesLists[0],
+                FakeProjectData.taskStatesLists[0].title,
+                newTitle
+            )
+        }
+    }
+
+    @Test
+    fun `editStateDescription should call taskStatesRepository editTaskStateDescription when given a new description`() {
+        val newDesc = "state new description"
+        every { taskStatesRepo.getTaskStateById(FakeProjectData.taskStatesLists[0].id) } returns FakeProjectData.taskStatesLists[0]
+
+        useCase.editStateDescription(FakeProjectData.taskStatesLists[0].id, newDesc)
+
+        verify(exactly = 1) { taskStatesRepo.editTaskStateDescription(FakeProjectData.taskStatesLists[0].id, newDesc) }
+    }
+
+    @Test
+    fun `editStateDescription should call createLogUseCase logEntityDescriptionEdition when edit the description`() {
+        val newDesc = "state new description"
+        every { taskStatesRepo.getTaskStateById(FakeProjectData.taskStatesLists[0].id) } returns FakeProjectData.taskStatesLists[0]
+
+        useCase.editStateDescription(FakeProjectData.taskStatesLists[0].id, newDesc)
+
+        verify(exactly = 1) {
+            createLogUseCase.logEntityDescriptionEdition(
+                FakeProjectData.taskStatesLists[0],
+                FakeProjectData.taskStatesLists[0].description,
+                newDesc
+            )
+        }
+    }
+
+    @Test
+    fun `deleteState should call taskStatesRepository deleteTaskState when state is found and it is not No State`() {
+        every { taskStatesRepo.getTaskStateById(FakeProjectData.taskStatesLists[0].id) } returns FakeProjectData.taskStatesLists[0]
+
+        useCase.deleteState(FakeProjectData.taskStatesLists[0].id)
+
+        verify(exactly = 1) { taskStatesRepo.deleteTaskState(FakeProjectData.taskStatesLists[0].id) }
+    }
+
+    @Test
+    fun `deleteState should  not call taskStatesRepository deleteTaskState when state is No State`() {
+        val noTaskState = TaskState.NoTaskState
+        every { taskStatesRepo.getTaskStateById(FakeProjectData.taskStatesLists[0].id) } returns noTaskState
+
+        useCase.deleteState(noTaskState.id)
+
+        verify(exactly = 0) { taskStatesRepo.deleteTaskState(FakeProjectData.taskStatesLists[0].id) }
+    }
+}
