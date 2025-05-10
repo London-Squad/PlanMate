@@ -7,10 +7,10 @@ import java.util.*
 
 fun LogDto.toLog(): Log {
     val action = when (action.lowercase()) {
-        "create" -> EntityCreationLog(entityId = id)
-        "delete" -> EntityDeletionLog(entityId = id)
+        "create" -> EntityCreationLog(entityId = planEntityId)
+        "delete" -> EntityDeletionLog(entityId = planEntityId)
         "edit" -> EntityEditionLog(
-            entityId = id,
+            entityId = planEntityId,
             property = planEntityProperty,
             oldValue = oldValue,
             newValue = newValue
