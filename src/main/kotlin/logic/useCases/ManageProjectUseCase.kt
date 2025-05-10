@@ -22,7 +22,7 @@ class ManageProjectUseCase(
 
         projectsRepository.editProjectTitle(projectId, newTitle)
         createLogUseCase.logEntityTitleEdition(
-            projectBeforeEdition,
+            projectId,
             projectBeforeEdition.title,
             newTitle
         )
@@ -33,15 +33,13 @@ class ManageProjectUseCase(
 
         projectsRepository.editProjectDescription(projectId, newDescription)
         createLogUseCase.logEntityDescriptionEdition(
-            projectBeforeEdition,
+            projectId,
             projectBeforeEdition.description,
             newDescription
         )
     }
 
     suspend fun deleteProject(projectId: UUID) {
-        val project = projectsRepository.getProjectById(projectId)
-
         projectsRepository.deleteProject(projectId)
         createLogUseCase.logEntityDeletion(project)
     }

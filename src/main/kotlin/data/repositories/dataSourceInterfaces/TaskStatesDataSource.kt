@@ -6,9 +6,9 @@ import java.util.UUID
 interface TaskStatesDataSource {
     suspend fun getAllTasksStates(includeDeleted: Boolean): List<TaskStateDto>
 
-    suspend fun createDefaultTaskStatesForProject(projectId: UUID): List<TaskStateDto>
-
     suspend fun addNewTaskState(taskStateDto: TaskStateDto)
+
+    suspend fun createDefaultTaskStatesForProject(projectId: UUID): List<TaskStateDto>
 
     suspend fun editTaskStateTitle(stateId: UUID, newTitle: String)
 

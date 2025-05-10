@@ -7,6 +7,7 @@ import ui.cliPrintersAndReaders.CLIPrinter
 import ui.cliPrintersAndReaders.CLIReader
 import ui.cliPrintersAndReaders.ProjectInputReader
 import ui.taskStatesView.TaskStatesView
+import java.util.UUID
 
 class EditProjectView(
     private val cliPrinter: CLIPrinter,
@@ -19,8 +20,8 @@ class EditProjectView(
 
     private lateinit var currentProject: Project
 
-    fun editProject(project: Project) {
-        currentProject = project
+    fun editProject(projectId: UUID) {
+        currentProject = manageProjectUseCase.getProjectById(projectId)
         cliPrinter.printHeader("Edit Project: ${currentProject.title}")
         cliPrinter.cliPrintLn("1. Edit title")
         cliPrinter.cliPrintLn("2. Edit description")

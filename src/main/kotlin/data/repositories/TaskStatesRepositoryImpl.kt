@@ -26,8 +26,8 @@ class TaskStatesRepositoryImpl(
 
     override suspend fun getTaskStateById(stateId: UUID, includeDeleted: Boolean): TaskState {
         return taskStatesDataSource.getAllTasksStates(includeDeleted)
-                .filter { if (includeDeleted) true else !it.isDeleted }
-                .firstOrNull { it.id == stateId }?.toTaskState()
+            .filter { if (includeDeleted) true else !it.isDeleted }
+            .firstOrNull { it.id == stateId }?.toTaskState()
             ?: throw TaskStateNotFoundException()
     }
 

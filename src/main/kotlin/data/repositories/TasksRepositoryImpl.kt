@@ -1,5 +1,6 @@
 package data.repositories
 
+import data.dto.TaskDto
 import data.repositories.dataSourceInterfaces.TasksDataSource
 import data.repositories.dtoMappers.toTask
 import data.repositories.dtoMappers.toTaskDto
@@ -7,31 +8,24 @@ import logic.entities.TaskState
 import logic.entities.Task
 import logic.exceptions.TaskNotFoundException
 import logic.repositories.TaskRepository
-import logic.repositories.TaskStatesRepository
 import java.util.*
 
 class TasksRepositoryImpl(
     private val tasksDataSource: TasksDataSource,
-    private val taskStatesRepository: TaskStatesRepository
 ) : TaskRepository {
 
     override suspend fun getTasksByProjectID(projectId: UUID, includeDeleted: Boolean): List<Task> {
         return tasksDataSource.getAllTasks(includeDeleted)
             .filter { it.projectId == projectId }
-            .map { taskData ->
-                val taskState = taskStatesRepository.getTaskStateById(taskData.stateId)
-                taskData.toTask(taskState)
-            }
+            .map(TaskDto::toTask)
     }
 
     override suspend fun getTaskByID(taskId: UUID, includeDeleted: Boolean): Task {
         return tasksDataSource.getAllTasks(includeDeleted)
             .filter { if (includeDeleted) true else !it.isDeleted }
             .firstOrNull { it.id == taskId }
-            ?.let {
-                val taskState = taskStatesRepository.getTaskStateById(it.stateId)
-                it.toTask(taskState)
-            } ?: throw TaskNotFoundException()
+            ?.toTask()
+            ?: throw TaskNotFoundException()
     }
 
     override suspend fun addNewTask(task: Task, projectId: UUID) {

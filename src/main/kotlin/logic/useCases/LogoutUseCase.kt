@@ -8,4 +8,5 @@ class LogoutUseCase(
     suspend operator fun invoke() {
         authenticationRepository.logout()
     }
+
 }

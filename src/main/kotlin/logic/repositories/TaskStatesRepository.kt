@@ -9,9 +9,9 @@ interface TaskStatesRepository {
 
     suspend fun getTaskStateById(stateId: UUID, includeDeleted: Boolean = false): TaskState
 
-    suspend fun getDefaultTaskStates(projectId: UUID): List<TaskState>
-
     suspend fun addNewTaskState(taskState: TaskState, projectId: UUID)
+
+    suspend fun getDefaultTaskStates(projectId: UUID): List<TaskState>
 
     suspend fun editTaskStateTitle(stateId: UUID, newTitle: String)
 

@@ -25,4 +25,6 @@ val logicModule = module {
     single { TaskStateInputValidator() }
     single { LogoutUseCase(get()) }
     single { GetAllMatesUseCase(get()) }
+    single { GetProjectDetailsUseCase(get(), get(), get()) }
+    single { GetUsersUseCase(get()) }
 }
