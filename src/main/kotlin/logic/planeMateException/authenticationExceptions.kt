@@ -11,9 +11,9 @@ class InvalidPasswordException : AuthenticationException(
             "characters and include at least 1 lowercase and 1 uppercase letter"
 )
 
-class UserNameAlreadyExistException : AuthenticationException("A user with this username already exists")
+class UserNameAlreadyExistException(message: String="A user with this username already exists") : AuthenticationException(message)
 
-class UnauthorizedAccessException : AuthenticationException("You do not have permission to perform this action!")
+class UnauthorizedAccessException(message: String="You do not have permission to perform this action!") : AuthenticationException(message)
 
 class RegistrationFailedException : AuthenticationException("Unable to register user, please try again or contact support.")
 

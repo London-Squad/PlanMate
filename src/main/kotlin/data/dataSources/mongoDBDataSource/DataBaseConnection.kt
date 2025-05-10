@@ -13,7 +13,7 @@ object DatabaseConnection {
     private const val LOGS_COLLECTION_NAME = "logs"
     private const val USERS_COLLECTION_NAME = "users"
 
-    private val mongoUri: String = System.getenv("MONGO_URI")
+    private val mongoUri: String = System.getenv("MONGO_URI")?: throw IllegalStateException("MONGO_URI environment variable is missing")
 
     private val client = MongoClients.create(mongoUri)
 
