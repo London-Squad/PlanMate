@@ -1,8 +1,7 @@
 package ui.taskManagementView
 
-import logic.entities.Project
 import logic.entities.Task
-import logic.repositories.TaskRepository
+import logic.useCases.ManageStateUseCase
 import logic.useCases.ManageTaskUseCase
 import ui.ViewExceptionHandler
 import ui.cliPrintersAndReaders.CLIPrinter
@@ -18,29 +17,39 @@ class TaskManagementView(
     private val taskStateEditionView: TaskStateEditionView,
     private val taskDeletionView: TaskDeletionView,
     private val manageTaskUseCase: ManageTaskUseCase,
+    private val manageStateUseCase: ManageStateUseCase,
     private val logsView: LogsView,
     private val viewExceptionHandler: ViewExceptionHandler
 ) {
 
     private lateinit var currentTask: Task
-    private lateinit var currentProject: Project
+    private lateinit var taskProjectId: UUID
 
-    fun start(taskID: UUID, project: Project) {
+    fun start(taskId: UUID, projectId: UUID) {
+
+        taskProjectId = projectId
+
+        var taskState: String
         viewExceptionHandler.tryCall {
-            currentTask = manageTaskUseCase.getTaskByID(taskID)
+            currentTask = manageTaskUseCase.getTaskByID(taskId)
+            taskState = manageStateUseCase.getTaskStatesById(currentTask.taskStateId).title
+            printTask(taskState)
+        }.also {
+            if (!it) {
+                cliPrinter.cliPrintLn("something went wrong")
+                return
+            }
         }
 
-        currentProject = project
-        printTask()
         printOptions()
         selectNextUI()
     }
 
-    private fun printTask() {
+    private fun printTask(taskState: String) {
         cliPrinter.printHeader("Task: ${currentTask.title}")
         printLn("Details:")
         printLn("  - Description: ${currentTask.description}")
-        printLn("  - State: ${currentTask.taskState.title}")
+        printLn("  - State: $taskState")
         printLn("")
     }
 
@@ -56,14 +65,18 @@ class TaskManagementView(
 
     private fun selectNextUI() {
         when (cliReader.getValidInputNumberInRange(MAX_OPTION_NUMBER)) {
-            1 -> taskTitleEditionView.editTitle(currentTask)
-            2 -> taskDescriptionEditionView.editDescription(currentTask)
-            3 -> taskStateEditionView.editState(currentTask, currentProject.tasksStates)
-            4 -> { taskDeletionView.deleteTask(currentTask); return }
+            1 -> taskTitleEditionView.editTitle(currentTask.id)
+            2 -> taskDescriptionEditionView.editDescription(currentTask.id)
+            3 -> taskStateEditionView.editState(currentTask.id, taskProjectId)
+            4 -> {
+                taskDeletionView.deleteTask(currentTask.id)
+                return
+            }
+
             5 -> logsView.printLogsByEntityId(currentTask.id)
             0 -> return
         }
-        start(currentTask.id, currentProject)
+        start(currentTask.id, taskProjectId)
     }
 
     private fun printLn(message: String) {

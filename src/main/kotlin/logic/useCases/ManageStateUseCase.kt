@@ -52,4 +52,8 @@ class ManageStateUseCase(
     fun getTaskStatesByProjectId(projectId: UUID): List<TaskState> {
         return taskStatesRepository.getTaskStatesByProjectId(projectId)
     }
+
+    fun getTaskStatesById(stateId: UUID): TaskState {
+        return taskStatesRepository.getTaskStateById(stateId)
+    }
 }
