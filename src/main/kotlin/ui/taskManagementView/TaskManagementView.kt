@@ -46,7 +46,7 @@ class TaskManagementView(
     }
 
     private fun printTask(taskState: String) {
-        cliPrinter.printHeader("Task: ${currentTask.title}")
+        cliPrinter.printHeader("Task Title: ${currentTask.title}")
         printLn("Details:")
         printLn("  - Description: ${currentTask.description}")
         printLn("  - State: $taskState")
