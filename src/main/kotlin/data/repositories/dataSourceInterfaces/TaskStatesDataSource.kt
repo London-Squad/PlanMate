@@ -6,7 +6,7 @@ import java.util.UUID
 interface TaskStatesDataSource {
     fun getAllTasksStates(includeDeleted: Boolean): List<TaskStateDto>
 
-    fun createDefaultTaskStatesForProject(projectId: UUID): List<TaskStateDto>
+    fun createDefaultTaskStatesForProject(projectId: UUID)
 
     fun addNewTaskState(taskStateDto: TaskStateDto)
 
