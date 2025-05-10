@@ -10,8 +10,6 @@ fun ProjectDto.toProject(tasks: List<Task>, tasksStates: List<TaskState>): Proje
         id = this.id,
         title = this.title,
         description = this.description,
-        tasks = tasks,
-        tasksStates = tasksStates
     )
 }
 

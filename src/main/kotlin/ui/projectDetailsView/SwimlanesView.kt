@@ -5,25 +5,17 @@ import ui.cliPrintersAndReaders.CLIPrinter
 import ui.cliPrintersAndReaders.cliTable.CLITablePrinter
 import ui.cliPrintersAndReaders.cliTable.InvalidTableInput
 import logic.entities.TaskState
+import logic.useCases.GetProjectDetailsUseCase
 
 class SwimlanesView(
     private val cliPrinter: CLIPrinter,
-    private val cliTablePrinter: CLITablePrinter
+    private val cliTablePrinter: CLITablePrinter,
+    private val getProjectDetailsUseCase: GetProjectDetailsUseCase
 ) {
 
     fun displaySwimlanes(project: Project) {
         printHeader(project)
-
-        if (hasNoStates(project)) {
-            cliPrinter.cliPrintLn("No states defined for this project.")
-            return
-        }
-
-        val tasksByState = groupTasksTitlesByState(project)
-        val maxTasks = getMaxTaskCount(tasksByState)
-        val headers = getHeaders(project.tasksStates)
-        val data = buildData(tasksByState, maxTasks, project.tasksStates)
-        val columnWidths = List(project.tasksStates.size) { COLUMN_WIDTH }
+        val projectDetails = getProjectDetailsUseCase(project.id)
 
         displayTable(headers, data, columnWidths)
     }
