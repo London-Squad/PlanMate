@@ -4,6 +4,7 @@ import logic.entities.*
 import logic.repositories.TaskRepository
 import logic.repositories.TaskStatesRepository
 import java.util.*
+import kotlin.collections.List
 
 class ManageTaskUseCase(
     private val taskRepository: TaskRepository,
@@ -13,6 +14,11 @@ class ManageTaskUseCase(
 
     fun getTaskByID(taskId: UUID): Task {
         return taskRepository.getTaskByID(taskId)
+    }
+
+
+    fun getTasksByProjectID(projectId: UUID): List<Task> {
+        return taskRepository.getTasksByProjectID(projectId)
     }
 
     fun addNewTask(title: String, description: String, projectId: UUID) {
