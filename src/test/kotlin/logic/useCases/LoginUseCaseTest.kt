@@ -4,7 +4,7 @@
 //import io.mockk.every
 //import io.mockk.mockk
 //import logic.exceptions.InvalidPasswordException
-//import logic.exceptions.InvalidUserNameLengthException
+//import logic.exceptions.InvalidUserNameException
 //import logic.repositories.AuthenticationRepository
 //import logic.repository.DummyAuthData
 //import logic.validation.CredentialValidator
@@ -29,7 +29,7 @@
 //    @ParameterizedTest
 //    @CsvSource("a", "w1", "asw")
 //    fun `when we call invoke with invalid username validations should throw exception`(username: String) {
-//        assertThrows<InvalidUserNameLengthException> {
+//        assertThrows<InvalidUserNameException> {
 //            loginUseCase(username, "testPass1")
 //        }
 //    }
