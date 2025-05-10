@@ -49,12 +49,7 @@ class ProjectsRepositoryImpl(
         projectsDataSource.addNewProject(
             project.toProjectDto()
         )
-        project.tasks
-            .map { task -> task.toTaskDto(project.id) }
-            .forEach(tasksDataSource::addNewTask)
-        project.tasksStates
-            .map { taskState -> taskState.toTaskStateDto(project.id) }
-            .forEach(taskStatesDataSource::addNewTaskState)
+        taskStatesDataSource.createDefaultTaskStatesForProject(project.id)
     }
 
     override fun editProjectTitle(projectId: UUID, newTitle: String) {
