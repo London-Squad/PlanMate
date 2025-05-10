@@ -3,6 +3,7 @@ package ui.projectDetailsView
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
+import kotlinx.coroutines.runBlocking
 import logic.entities.Project
 import logic.entities.Task
 import logic.entities.User
@@ -38,7 +39,7 @@ class ProjectDetailsView(
 
         viewExceptionHandler.tryCall { project = manageProjectUseCase.getProjectById(projectId) }
             .also { if (!it) return }
-        CoroutineScope(Dispatchers.Main).launch {
+        runBlocking {
             swimlanesView.displaySwimlanes(project)
         }
 
@@ -81,7 +82,7 @@ class ProjectDetailsView(
 
     private fun selectTask() {
         var tasks = emptyList<Task>()
-        CoroutineScope(Dispatchers.Main).launch {
+        runBlocking {
             tasks = manageTaskUseCase.getTasksByProjectID(project.id)
         }
         if (tasks.isEmpty()) {
@@ -97,7 +98,7 @@ class ProjectDetailsView(
         val title = taskInputReader.getValidTaskTitle()
         val description = taskInputReader.getValidTaskDescription()
 
-        CoroutineScope(Dispatchers.Main).launch {
+        runBlocking {
             manageTaskUseCase.addNewTask(title, description, project.id)
         }
     }

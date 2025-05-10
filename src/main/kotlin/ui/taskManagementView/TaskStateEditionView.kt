@@ -3,6 +3,7 @@ package ui.taskManagementView
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
+import kotlinx.coroutines.runBlocking
 import logic.entities.TaskState
 import logic.useCases.ManageStateUseCase
 import logic.useCases.ManageTaskUseCase
@@ -21,8 +22,7 @@ class TaskStateEditionView(
 
     fun editState(taskId: UUID, projectId: UUID) {
         var projectTasksStates: List<TaskState> = emptyList()
-        CoroutineScope(Dispatchers.Main).launch {
-            projectTasksStates = manageStateUseCase.getTaskStatesByProjectId(projectId)
+            runBlocking {            projectTasksStates = manageStateUseCase.getTaskStatesByProjectId(projectId)
         }
         if (projectTasksStates.isEmpty()) {
             printLn("no states available")
