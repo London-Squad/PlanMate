@@ -22,16 +22,6 @@ class MongoDBTaskStatesDataSource(
             .filter { if (includeDeleted) true else !it.isDeleted }
     }
 
-    override fun createDefaultTaskStatesForProject(projectId: UUID): List<TaskStateDto> {
-        return defaultTaskStatesTitleAndDescription.map {
-            TaskStateDto(
-                id = UUID.randomUUID(), title = it[0], description = it[1],
-                projectId = projectId,
-                isDeleted = false
-            )
-        }
-    }
-
     override fun addNewTaskState(taskStateDto: TaskStateDto) {
         val doc = mongoParser.taskStateDtoToDocument(taskStateDto)
         collection.insertOne(doc)

@@ -10,11 +10,11 @@ val dataModule = module {
 
     single<HashingAlgorithm> { MD5HashingAlgorithm() }
 
-    single<TaskRepository> { TasksRepositoryImpl(get(), get()) }
+    single<TaskRepository> { TasksRepositoryImpl(get()) }
     single<TaskStatesRepository> { TaskStatesRepositoryImpl(get(), get()) }
-    single<ProjectsRepository> { ProjectsRepositoryImpl(get(), get(), get()) }
+    single<ProjectsRepository> { ProjectsRepositoryImpl(get()) }
     single<AuthenticationRepository> { AuthenticationRepositoryImpl(get(), get()) }
     single<UserRepository>{ UserRepositoryImpl(get(),get())}
-    single<LogsRepository> { LogsRepositoryImpl(get(), get(), get(), get(), get()) }
+    single<LogsRepository> { LogsRepositoryImpl(get(), get(), get(), get()) }
 
 }

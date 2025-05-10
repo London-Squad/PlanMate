@@ -57,8 +57,8 @@ class ProjectDetailsView(
             1 -> selectTask()
             2 -> createNewTask()
             3 -> logsView.printLogsByEntityId(project.id)
-            4 -> editProjectView.editProject(project)
-            5 -> deleteProjectView.deleteProject(project)
+            4 -> editProjectView.editProject(project.id)
+            5 -> deleteProjectView.deleteProject(project.id)
             0 -> {
                 printLn("\nExiting Project..."); return
             }
@@ -75,13 +75,14 @@ class ProjectDetailsView(
     }
 
     private fun selectTask() {
-        if (project.tasks.isEmpty()) {
+        val tasks = manageTaskUseCase.getTasksByProjectID(project.id)
+        if (tasks.isEmpty()) {
             printLn("No tasks available to select.")
             return
         }
         printLn("Select a task by number:")
-        val input = cliReader.getValidInputNumberInRange(project.tasks.size)
-        taskManagementView.start(project.tasks[input - 1].id, project)
+        val input = cliReader.getValidInputNumberInRange(tasks.size)
+        taskManagementView.start(tasks[input - 1].id, project.id)
     }
 
     private fun createNewTask() {
