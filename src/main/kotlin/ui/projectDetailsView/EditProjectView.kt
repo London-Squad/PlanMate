@@ -1,5 +1,8 @@
 package ui.projectDetailsView
 
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.launch
 import logic.entities.Project
 import logic.useCases.ManageProjectUseCase
 import ui.ViewExceptionHandler
@@ -21,7 +24,9 @@ class EditProjectView(
     private lateinit var currentProject: Project
 
     fun editProject(projectId: UUID) {
-        currentProject = manageProjectUseCase.getProjectById(projectId)
+        CoroutineScope(Dispatchers.Main).launch {
+            currentProject = manageProjectUseCase.getProjectById(projectId)
+        }
         cliPrinter.printHeader("Edit Project: ${currentProject.title}")
         cliPrinter.cliPrintLn("1. Edit title")
         cliPrinter.cliPrintLn("2. Edit description")

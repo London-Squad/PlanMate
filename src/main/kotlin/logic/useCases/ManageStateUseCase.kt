@@ -53,7 +53,7 @@ class ManageStateUseCase(
         return taskStatesRepository.getTaskStatesByProjectId(projectId)
     }
 
-    fun getTaskStatesById(stateId: UUID): TaskState {
+    suspend fun getTaskStatesById(stateId: UUID): TaskState {
         return taskStatesRepository.getTaskStateById(stateId)
     }
 }

@@ -19,13 +19,13 @@ class LogsRepositoryImpl(
     private val taskStatesDataSource: TaskStatesDataSource,
     private val taskRepository: TaskRepository,
 ) : LogsRepository {
-    override fun getAllLogs(): List<Log> {
+    override suspend fun getAllLogs(): List<Log> {
         return logsDataSource.getAllLogs()
             .map { it.toLog() }
     }
 
 
-    override fun getLogsByEntityId(entityId: UUID): List<Log> {
+    override suspend fun getLogsByEntityId(entityId: UUID): List<Log> {
         val allLogs = getAllLogs()
 
         var result = allLogs.filter { it.loggedAction.getEntityId() == entityId }
@@ -63,7 +63,7 @@ class LogsRepositoryImpl(
         }
     }
 
-    override fun addLog(log: Log) {
+    override suspend fun addLog(log: Log) {
         logsDataSource.addLog(log.toLogDto())
     }
 }

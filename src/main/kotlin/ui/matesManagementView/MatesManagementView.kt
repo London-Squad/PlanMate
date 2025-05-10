@@ -21,7 +21,7 @@ class MatesManagementView(
 
     fun start() {
         var currentUser: User? = null
-        CoroutineScope(Dispatchers.IO).launch {
+        CoroutineScope(Dispatchers.Main).launch {
             currentUser = getLoggedInUserUseCase.getLoggedInUser()
         }
         if (currentUser?.type != User.Type.ADMIN) {

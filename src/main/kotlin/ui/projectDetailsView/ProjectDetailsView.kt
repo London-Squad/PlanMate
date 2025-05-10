@@ -4,6 +4,7 @@ import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import logic.entities.Project
+import logic.entities.Task
 import logic.entities.User
 import logic.useCases.ManageTaskUseCase
 import logic.useCases.ManageProjectUseCase
@@ -37,8 +38,9 @@ class ProjectDetailsView(
 
         viewExceptionHandler.tryCall { project = manageProjectUseCase.getProjectById(projectId) }
             .also { if (!it) return }
-
-        swimlanesView.displaySwimlanes(project)
+        CoroutineScope(Dispatchers.Main).launch {
+            swimlanesView.displaySwimlanes(project)
+        }
 
         printOptions()
         goToNextView()
@@ -78,7 +80,10 @@ class ProjectDetailsView(
     }
 
     private fun selectTask() {
-        val tasks = manageTaskUseCase.getTasksByProjectID(project.id)
+        var tasks = emptyList<Task>()
+        CoroutineScope(Dispatchers.Main).launch {
+            tasks = manageTaskUseCase.getTasksByProjectID(project.id)
+        }
         if (tasks.isEmpty()) {
             printLn("No tasks available to select.")
             return
@@ -92,7 +97,7 @@ class ProjectDetailsView(
         val title = taskInputReader.getValidTaskTitle()
         val description = taskInputReader.getValidTaskDescription()
 
-        CoroutineScope(Dispatchers.IO).launch {
+        CoroutineScope(Dispatchers.Main).launch {
             manageTaskUseCase.addNewTask(title, description, project.id)
         }
     }

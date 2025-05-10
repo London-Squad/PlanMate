@@ -19,7 +19,7 @@ class GetProjectDetailsUseCase(
         val taskStates: List<TaskState>
     )
 
-    operator fun invoke(projectId: UUID, includeDeleted: Boolean = false): ProjectDetails {
+    suspend operator fun invoke(projectId: UUID, includeDeleted: Boolean = false): ProjectDetails {
         val project = projectsRepository.getProjectById(projectId, includeDeleted)
         val taskStates = taskStatesRepository.getTaskStatesByProjectId(projectId, includeDeleted)
         val tasks = taskRepository.getTasksByProjectID(projectId, includeDeleted)

@@ -76,7 +76,7 @@ class TaskStatesView(
     private fun addState() {
         val title = taskStateInputReader.getValidTaskStateTitle()
         val desc = taskStateInputReader.getValidTaskStateTitle()
-        CoroutineScope(Dispatchers.IO).launch {
+        CoroutineScope(Dispatchers.Main).launch {
             useCase.addState(title, desc, projectId)
         }
         printLn("Task state added successfully.")
@@ -103,7 +103,7 @@ class TaskStatesView(
 
     private fun editTaskStateTitle(state: TaskState) {
         val newTitle = taskStateInputReader.getValidTaskStateTitle()
-        CoroutineScope(Dispatchers.IO).launch {
+        CoroutineScope(Dispatchers.Main).launch {
             useCase.editStateTitle(state.id, newTitle)
         }
         printLn("Title updated.")
@@ -111,7 +111,7 @@ class TaskStatesView(
 
     private fun editTaskStateDescription(state: TaskState) {
         val newDescription = taskStateInputReader.getValidTaskStateDescription()
-        CoroutineScope(Dispatchers.IO).launch {
+        CoroutineScope(Dispatchers.Main).launch {
             useCase.editStateDescription(state.id, newDescription)
         }
         printLn("Description updated.")
@@ -128,7 +128,7 @@ class TaskStatesView(
 
         val confirm = cliReader.getUserConfirmation()
         if (confirm) {
-            CoroutineScope(Dispatchers.IO).launch {
+            CoroutineScope(Dispatchers.Main).launch {
                 useCase.deleteState(selectedState.id)
             }
             printLn("Task state deleted.")

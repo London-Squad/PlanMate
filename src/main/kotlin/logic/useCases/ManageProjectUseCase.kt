@@ -41,6 +41,6 @@ class ManageProjectUseCase(
 
     suspend fun deleteProject(projectId: UUID) {
         projectsRepository.deleteProject(projectId)
-        createLogUseCase.logEntityDeletion(project)
+        createLogUseCase.logEntityDeletion(projectId)
     }
 }

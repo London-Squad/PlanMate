@@ -38,11 +38,11 @@ class LogsView(
         }
     }
 
-    private fun buildLogMessage(log: Log): String {
+    private suspend fun buildLogMessage(log: Log): String {
         return "user (${getUserNameByLog(log)}) ${actionToString(log.loggedAction)} at ${formatedTime(log.time)}"
     }
 
-    private fun getUserNameByLog(log: Log): String {
+    private suspend fun getUserNameByLog(log: Log): String {
         return getUsersUseCase.getUsers()
             .firstOrNull { it.id == log.userId }
             ?.userName

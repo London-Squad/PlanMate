@@ -15,7 +15,7 @@ class SwimlanesView(
     private val getProjectDetailsUseCase: GetProjectDetailsUseCase
 ) {
 
-    fun displaySwimlanes(project: Project) {
+    suspend fun displaySwimlanes(project: Project) {
         printHeader(project)
         val projectDetails = getProjectDetailsUseCase(project.id)
         val taskStates = projectDetails.taskStates

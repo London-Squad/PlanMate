@@ -1,28 +1,29 @@
 package ui
 
-import kotlinx.coroutines.CoroutineScope
-import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.launch
+import kotlinx.coroutines.runBlocking
 import logic.exceptions.*
 import ui.cliPrintersAndReaders.CLIPrinter
 
 class ViewExceptionHandler(private val cliPrinter: CLIPrinter) {
     fun tryCall(anyFunction: suspend () -> Unit): Boolean {
-        try {
-            CoroutineScope(Dispatchers.IO).launch {
+        return try {
+            runBlocking {
                 anyFunction()
             }
-            return true
+            true
         } catch (e: AuthenticationException) {
             printLn(e.message ?: "something went wrong")
+            false
         } catch (e: RetrievingDataFailureException) {
             printLn(e.message ?: "something went wrong")
+            false
         } catch (e: StoringDataFailureException) {
             printLn(e.message ?: "something went wrong")
+            false
         } catch (e: Exception) {
             printLn("Unexpected error: ${e.message}")
+            false
         }
-        return false
     }
 
     private fun printLn(message: String) = cliPrinter.cliPrintLn(message)
