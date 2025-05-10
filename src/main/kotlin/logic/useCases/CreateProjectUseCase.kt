@@ -1,6 +1,8 @@
 package logic.useCases
 
+import data.dataSources.defaultTaskStatesTitleAndDescription
 import logic.entities.Project
+import logic.entities.TaskState
 import logic.repositories.ProjectsRepository
 import logic.repositories.TaskStatesRepository
 import java.util.*
@@ -19,7 +21,12 @@ class CreateProjectUseCase(
         projectsRepository.addNewProject(project)
         createLogUseCase.logEntityCreation(projectId)
 
-        taskStatesRepository.createProjectDefaultTaskStates(projectId)
+        defaultTaskStatesTitleAndDescription.map {
+            TaskState(
+                id = UUID.randomUUID(), title = it[0], description = it[1],
+                projectId = projectId,
+            )
+        }.forEach { taskStatesRepository.addNewTaskState(it, projectId) }
     }
 
     private fun buildNewProject(
