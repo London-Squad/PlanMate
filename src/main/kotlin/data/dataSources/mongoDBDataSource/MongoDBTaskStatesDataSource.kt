@@ -8,8 +8,8 @@ import data.dataSources.defaultTaskStatesTitleAndDescription
 import data.dataSources.mongoDBDataSource.mongoDBParse.MongoDBParse
 import data.dto.TaskStateDto
 import data.repositories.dataSourceInterfaces.TaskStatesDataSource
-import logic.planeMateException.RetrievingDataFailureException
-import logic.planeMateException.StoringDataFailureException
+import logic.exceptions.RetrievingDataFailureException
+import logic.exceptions.StoringDataFailureException
 import org.bson.Document
 import java.util.*
 

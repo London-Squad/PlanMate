@@ -5,7 +5,7 @@ import data.dataSources.csvDataSource.fileIO.CsvParser
 import data.repositories.dataSourceInterfaces.UsersDataSource
 import data.dto.UserDto
 import logic.entities.User
-import logic.planeMateException.NoLoggedInUserFoundException
+import logic.exceptions.NoLoggedInUserFoundException
 import java.util.*
 
 class CsvUsersDataSource(

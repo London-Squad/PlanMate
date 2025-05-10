@@ -1,6 +1,8 @@
 package data.dataSources.csvDataSource.fileIO
 
-import logic.planeMateException.FileIOException
+import logic.exceptions.DataSourceAccessException
+import logic.exceptions.RetrievingDataFailureException
+import logic.exceptions.StoringDataFailureException
 import java.io.File
 import java.io.IOException
 
@@ -18,12 +20,12 @@ class CsvFileHandler(
                 file.createNewFile()
             }
         }catch (e: IOException) {
-            throw FileIOException("Failed to initialize file: ${e.message}")
+            throw DataSourceAccessException("Failed to initialize file: ${e.message}")
         }
     }
 
     fun readRecords(): List<List<String>> {
-        if (!file.exists()) throw FileIOException("File does not exist: ${file.path}")
+        if (!file.exists()) throw RetrievingDataFailureException("File does not exist: ${file.path}")
         return file.readLines().map(::decodeRecord)
     }
 
@@ -31,7 +33,7 @@ class CsvFileHandler(
         try {
             file.appendText("${encodeRecord(record)}\n")
         }catch (e: IOException) {
-            throw FileIOException("Failed to append record: ${e.message}")
+            throw StoringDataFailureException("Failed to append record: ${e.message}")
         }
     }
 
@@ -41,7 +43,7 @@ class CsvFileHandler(
             if (records.isEmpty()) return
             records.forEach(::appendRecord)
         }catch (e: IOException) {
-            throw FileIOException("Failed to rewrite records: ${e.message}")
+            throw StoringDataFailureException("Failed to rewrite records: ${e.message}")
         }
     }
 

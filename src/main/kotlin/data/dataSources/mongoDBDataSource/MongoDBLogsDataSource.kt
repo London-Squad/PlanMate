@@ -5,8 +5,8 @@ import com.mongodb.client.MongoCollection
 import data.dataSources.mongoDBDataSource.mongoDBParse.MongoDBParse
 import data.dto.LogDto
 import data.repositories.dataSourceInterfaces.LogsDataSource
-import logic.planeMateException.RetrievingDataFailureException
-import logic.planeMateException.StoringDataFailureException
+import logic.exceptions.RetrievingDataFailureException
+import logic.exceptions.StoringDataFailureException
 import org.bson.Document
 
 class MongoDBLogsDataSource(

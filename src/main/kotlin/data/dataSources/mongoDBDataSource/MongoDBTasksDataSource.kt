@@ -7,8 +7,8 @@ import com.mongodb.client.model.Updates
 import data.dataSources.mongoDBDataSource.mongoDBParse.MongoDBParse
 import data.dto.TaskDto
 import data.repositories.dataSourceInterfaces.TasksDataSource
-import logic.planeMateException.RetrievingDataFailureException
-import logic.planeMateException.StoringDataFailureException
+import logic.exceptions.RetrievingDataFailureException
+import logic.exceptions.StoringDataFailureException
 import org.bson.Document
 import java.util.*
 

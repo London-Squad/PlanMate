@@ -7,10 +7,10 @@ import com.mongodb.client.model.Updates
 import data.dataSources.mongoDBDataSource.mongoDBParse.MongoDBParse
 import data.repositories.dataSourceInterfaces.UsersDataSource
 import data.dto.UserDto
-import logic.planeMateException.NoLoggedInUserFoundException
-import logic.planeMateException.RetrievingDataFailureException
-import logic.planeMateException.StoringDataFailureException
-import logic.planeMateException.UserNameAlreadyExistException
+import logic.exceptions.NoLoggedInUserFoundException
+import logic.exceptions.RetrievingDataFailureException
+import logic.exceptions.StoringDataFailureException
+import logic.exceptions.UserNameAlreadyExistException
 import org.bson.Document
 import java.util.UUID
 

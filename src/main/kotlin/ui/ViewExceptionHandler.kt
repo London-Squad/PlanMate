@@ -1,6 +1,6 @@
 package ui
 
-import logic.planeMateException.*
+import logic.exceptions.*
 import ui.cliPrintersAndReaders.CLIPrinter
 
 class ViewExceptionHandler(private val cliPrinter: CLIPrinter) {

@@ -7,9 +7,9 @@ import com.mongodb.client.model.Updates
 import data.dataSources.mongoDBDataSource.mongoDBParse.MongoDBParse
 import data.dto.ProjectDto
 import data.repositories.dataSourceInterfaces.ProjectsDataSource
-import logic.planeMateException.ProjectNotFoundException
-import logic.planeMateException.RetrievingDataFailureException
-import logic.planeMateException.StoringDataFailureException
+import logic.exceptions.ProjectNotFoundException
+import logic.exceptions.RetrievingDataFailureException
+import logic.exceptions.StoringDataFailureException
 import org.bson.Document
 import java.util.*
 
