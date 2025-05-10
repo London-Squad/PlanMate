@@ -5,7 +5,9 @@ import data.repositories.dataSourceInterfaces.TaskStatesDataSource
 import data.repositories.dataSourceInterfaces.UsersDataSource
 import data.repositories.dtoMappers.toLog
 import data.repositories.dtoMappers.toLogDto
-import logic.entities.Log
+import logic.entities.*
+import logic.exceptions.ProjectNotFoundException
+import logic.exceptions.RetrievingDataFailureException
 import logic.repositories.LogsRepository
 import logic.repositories.ProjectsRepository
 import logic.repositories.TaskRepository
@@ -16,7 +18,6 @@ class LogsRepositoryImpl(
     private val projectsRepository: ProjectsRepository,
     private val taskStatesDataSource: TaskStatesDataSource,
     private val taskRepository: TaskRepository,
-    private val usersDataSource: UsersDataSource
 ) : LogsRepository {
     override fun getAllLogs(): List<Log> {
         return logsDataSource.getAllLogs()
@@ -25,25 +26,41 @@ class LogsRepositoryImpl(
 
 
     override fun getLogsByEntityId(entityId: UUID): List<Log> {
-        //todo: should be seperated in multiple functions ByProjectId, ByTaskId, ByTaskStateId
-//        var result: List<Log>
-//        result = getAllLogs().filter { it.loggedAction.entityId == entityId }
-//
-//        result.forEach { log ->
-//            if (log.loggedAction.entity is Project) {
-//                (log.loggedAction.entity as Project).tasks.forEach { task ->
-//                    result = result + getLogsByEntityId(task.id)
-//                }
-//                (log.loggedAction.entity as Project).tasksStates.forEach { state ->
-//                    result = result + getLogsByEntityId(state.id)
-//                }
-//            }
-//        }
-//
-//        result = result.toSet().toList()
-//
-//        result = result.sortedBy { it.time }
-        return listOf()
+        val allLogs = getAllLogs()
+
+        var result = allLogs.filter { it.loggedAction.getEntityId() == entityId }
+
+        val project: Project
+        try {
+            project = projectsRepository.getProjectById(entityId)
+        } catch (e: ProjectNotFoundException) {
+            return result
+        }
+
+        val tasks = taskRepository.getTasksByProjectID(project.id, includeDeleted = true)
+        val taskStates = taskStatesDataSource.getAllTasksStates(includeDeleted = true)
+            .filter { it.projectId == project.id }
+
+        tasks.forEach { task ->
+            result = result + allLogs.filter { it.loggedAction.getEntityId() == task.id }
+        }
+        taskStates.forEach { state ->
+            result = result + allLogs.filter { it.loggedAction.getEntityId() == state.id }
+        }
+
+        result = result.toSet().toList()
+
+        result = result.sortedBy { it.time }
+
+        return result
+    }
+
+    private fun LoggedAction.getEntityId(): UUID {
+        return when (this) {
+            is EntityCreationLog -> entityId
+            is EntityDeletionLog -> entityId
+            is EntityEditionLog -> entityId
+        }
     }
 
     override fun addLog(log: Log) {
