@@ -5,7 +5,7 @@ import logic.entities.Project
 import logic.entities.Task
 import logic.entities.TaskState
 
-fun ProjectDto.toProject(tasks: List<Task>, tasksStates: List<TaskState>): Project {
+fun ProjectDto.toProject(): Project {
     return Project(
         id = id,
         title = title,

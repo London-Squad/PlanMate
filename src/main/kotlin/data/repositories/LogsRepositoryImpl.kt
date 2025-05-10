@@ -25,6 +25,7 @@ class LogsRepositoryImpl(
 
 
     override fun getLogsByEntityId(entityId: UUID): List<Log> {
+        //todo: should be seperated in multiple functions ByProjectId, ByTaskId, ByTaskStateId
 //        var result: List<Log>
 //        result = getAllLogs().filter { it.loggedAction.entityId == entityId }
 //
@@ -42,7 +43,6 @@ class LogsRepositoryImpl(
 //        result = result.toSet().toList()
 //
 //        result = result.sortedBy { it.time }
-        //todo: should be seperated in multiple functions ByProjectId, ByTaskId, ByTaskStateId
         return listOf()
     }
 
