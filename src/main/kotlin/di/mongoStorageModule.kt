@@ -1,9 +1,11 @@
 package di
 
-import com.mongodb.client.MongoDatabase
+import com.mongodb.kotlin.client.coroutine.MongoCollection
+import com.mongodb.kotlin.client.coroutine.MongoDatabase
 import data.dataSources.mongoDBDataSource.*
 import data.dataSources.mongoDBDataSource.mongoDBParse.MongoDBParse
 import data.repositories.dataSourceInterfaces.*
+import org.bson.Document
 import org.koin.core.qualifier.named
 import org.koin.dsl.module
 
@@ -11,19 +13,19 @@ val mongoStorageModule = module {
     single { DatabaseConnection }
     single<MongoDatabase> { DatabaseConnection.database }
 
-    single(named("projectsCollection")) {
+    single<MongoCollection<Document>>(named("projectsCollection")) {
         DatabaseConnection.getProjectCollection()
     }
-    single(named("logsCollection")) {
+    single<MongoCollection<Document>>(named("logsCollection")) {
         DatabaseConnection.getLogsCollection()
     }
-    single(named("tasksCollection")) {
+    single<MongoCollection<Document>>(named("tasksCollection")) {
         DatabaseConnection.getTasksCollection()
     }
-    single(named("taskStatesCollection")) {
+    single<MongoCollection<Document>>(named("taskStatesCollection")) {
         DatabaseConnection.getTaskStatesCollection()
     }
-    single(named("usersCollection")) {
+    single<MongoCollection<Document>>(named("usersCollection")) {
         DatabaseConnection.getUsersCollection()
     }
 

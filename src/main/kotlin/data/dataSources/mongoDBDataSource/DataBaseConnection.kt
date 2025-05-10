@@ -1,8 +1,8 @@
 package data.dataSources.mongoDBDataSource
 
-import com.mongodb.client.MongoClients
-import com.mongodb.client.MongoCollection
-import com.mongodb.client.MongoDatabase
+import com.mongodb.kotlin.client.coroutine.MongoClient
+import com.mongodb.kotlin.client.coroutine.MongoCollection
+import com.mongodb.kotlin.client.coroutine.MongoDatabase
 import org.bson.Document
 
 object DatabaseConnection {
@@ -13,10 +13,9 @@ object DatabaseConnection {
     private const val LOGS_COLLECTION_NAME = "logs"
     private const val USERS_COLLECTION_NAME = "users"
 
-    private val mongoUri: String = System.getenv("MONGO_URI")
+    private val mongoUri: String = System.getenv("MONGO_URI") ?: throw IllegalStateException("MONGO_URI not set")
 
-    private val client = MongoClients.create(mongoUri)
-
+    private val client = MongoClient.create(mongoUri)
     val database: MongoDatabase = client.getDatabase(DB_NAME)
 
     private val projectsCollection: MongoCollection<Document> = database.getCollection(PROJECTS_COLLECTION_NAME)

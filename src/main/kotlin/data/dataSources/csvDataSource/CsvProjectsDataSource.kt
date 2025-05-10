@@ -11,19 +11,19 @@ class CsvProjectsDataSource(
     private val csvParser: CsvParser,
 ) : ProjectsDataSource {
 
-    override fun getAllProjects(includeDeleted: Boolean): List<ProjectDto> {
+    override suspend fun getAllProjects(includeDeleted: Boolean): List<ProjectDto> {
         return projectsCsvFileHandler.readRecords()
             .map(csvParser::recordToProjectDto)
             .filter { if (includeDeleted) true else !it.isDeleted }
     }
 
-    override fun addNewProject(project: ProjectDto) {
+    override suspend fun addNewProject(project: ProjectDto) {
         projectsCsvFileHandler.appendRecord(
             csvParser.projectDtoToRecord(project)
         )
     }
 
-    override fun editProjectTitle(projectId: UUID, newTitle: String) {
+    override suspend fun editProjectTitle(projectId: UUID, newTitle: String) {
         projectsCsvFileHandler.readRecords()
             .map {
                 val projectData = csvParser.recordToProjectDto(it)
@@ -34,7 +34,7 @@ class CsvProjectsDataSource(
             .also(projectsCsvFileHandler::rewriteRecords)
     }
 
-    override fun editProjectDescription(projectId: UUID, newDescription: String) {
+    override suspend fun editProjectDescription(projectId: UUID, newDescription: String) {
         projectsCsvFileHandler.readRecords()
             .map {
                 val projectData = csvParser.recordToProjectDto(it)
@@ -45,7 +45,7 @@ class CsvProjectsDataSource(
             .also(projectsCsvFileHandler::rewriteRecords)
     }
 
-    override fun deleteProject(projectId: UUID) {
+    override suspend fun deleteProject(projectId: UUID) {
         projectsCsvFileHandler.readRecords()
             .map {
                 val projectData = csvParser.recordToProjectDto(it)

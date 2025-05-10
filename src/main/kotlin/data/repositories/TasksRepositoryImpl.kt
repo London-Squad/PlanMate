@@ -15,7 +15,7 @@ class TasksRepositoryImpl(
     private val taskStatesRepository: TaskStatesRepository
 ) : TaskRepository {
 
-    override fun getTasksByProjectID(projectId: UUID, includeDeleted: Boolean): List<Task> {
+    override suspend fun getTasksByProjectID(projectId: UUID, includeDeleted: Boolean): List<Task> {
         return tasksDataSource.getAllTasks(includeDeleted)
             .filter { it.projectId == projectId }
             .map { taskData ->
@@ -24,7 +24,7 @@ class TasksRepositoryImpl(
             }
     }
 
-    override fun getTaskByID(taskId: UUID, includeDeleted: Boolean): Task {
+    override suspend fun getTaskByID(taskId: UUID, includeDeleted: Boolean): Task {
         return tasksDataSource.getAllTasks(includeDeleted)
             .filter { if (includeDeleted) true else !it.isDeleted }
             .firstOrNull { it.id == taskId }
@@ -34,25 +34,25 @@ class TasksRepositoryImpl(
             } ?: throw TaskNotFoundException()
     }
 
-    override fun addNewTask(task: Task, projectId: UUID) {
+    override suspend fun addNewTask(task: Task, projectId: UUID) {
         tasksDataSource.addNewTask(
             task.toTaskDto(projectId)
         )
     }
 
-    override fun editTaskTitle(taskId: UUID, newTitle: String) {
+    override suspend fun editTaskTitle(taskId: UUID, newTitle: String) {
         tasksDataSource.editTaskTitle(taskId, newTitle)
     }
 
-    override fun editTaskDescription(taskId: UUID, newDescription: String) {
+    override suspend fun editTaskDescription(taskId: UUID, newDescription: String) {
         tasksDataSource.editTaskDescription(taskId, newDescription)
     }
 
-    override fun editTaskState(taskId: UUID, newTaskState: TaskState) {
+    override suspend fun editTaskState(taskId: UUID, newTaskState: TaskState) {
         tasksDataSource.editTaskState(taskId, newTaskState.id)
     }
 
-    override fun deleteTask(taskId: UUID) {
+    override suspend fun deleteTask(taskId: UUID) {
         tasksDataSource.deleteTask(taskId)
     }
 }

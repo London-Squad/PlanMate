@@ -16,7 +16,7 @@ class ProjectsRepositoryImpl(
     private val tasksDataSource: TasksDataSource
 ) : ProjectsRepository {
 
-    override fun getAllProjects(includeDeleted: Boolean): List<Project> {
+    override suspend fun getAllProjects(includeDeleted: Boolean): List<Project> {
         val projectsData = projectsDataSource.getAllProjects(includeDeleted)
         val tasksData = tasksDataSource.getAllTasks(includeDeleted)
         val taskStatesData = taskStatesDataSource.getAllTasksStates(includeDeleted)
@@ -40,32 +40,32 @@ class ProjectsRepositoryImpl(
             }
     }
 
-    override fun getProjectById(projectId: UUID, includeDeleted: Boolean): Project {
+    override suspend fun getProjectById(projectId: UUID, includeDeleted: Boolean): Project {
         return getAllProjects(includeDeleted).firstOrNull { it.id == projectId }
             ?: throw ProjectNotFoundException("Project with id $projectId not found")
     }
 
-    override fun addNewProject(project: Project) {
+    override suspend fun addNewProject(project: Project) {
         projectsDataSource.addNewProject(
             project.toProjectDto()
         )
         project.tasks
             .map { task -> task.toTaskDto(project.id) }
-            .forEach(tasksDataSource::addNewTask)
+            .forEach { task -> tasksDataSource.addNewTask(task) }
         project.tasksStates
             .map { taskState -> taskState.toTaskStateDto(project.id) }
-            .forEach(taskStatesDataSource::addNewTaskState)
+            .forEach { taskStateDto -> taskStatesDataSource.addNewTaskState(taskStateDto) }
     }
 
-    override fun editProjectTitle(projectId: UUID, newTitle: String) {
+    override suspend fun editProjectTitle(projectId: UUID, newTitle: String) {
         projectsDataSource.editProjectTitle(projectId, newTitle)
     }
 
-    override fun editProjectDescription(projectId: UUID, newDescription: String) {
+    override suspend fun editProjectDescription(projectId: UUID, newDescription: String) {
         projectsDataSource.editProjectDescription(projectId, newDescription)
     }
 
-    override fun deleteProject(projectId: UUID) {
+    override suspend fun deleteProject(projectId: UUID) {
         projectsDataSource.deleteProject(projectId)
     }
 }

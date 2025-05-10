@@ -5,10 +5,10 @@ import java.util.UUID
 
 interface LogsRepository {
 
-    fun getAllLogs(): List<Log>
+    suspend fun getAllLogs(): List<Log>
 
-    fun getLogsByEntityId(entityId: UUID): List<Log>
+    suspend fun getLogsByEntityId(entityId: UUID): List<Log>
 
-    fun addLog(log: Log)
+    suspend fun addLog(log: Log)
 
 }

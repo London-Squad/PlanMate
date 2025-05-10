@@ -23,12 +23,12 @@ class LogsRepositoryImpl(
     private val taskRepository: TaskRepository,
     private val usersDataSource: UsersDataSource
 ) : LogsRepository {
-    override fun getAllLogs(): List<Log> {
+    override suspend fun getAllLogs(): List<Log> {
         return logsDataSource.getAllLogs()
             .map { it.toLog(getUserById(it.userId), getEntityById(it.planEntityId)) }
     }
 
-    private fun getUserById(userId: UUID): User {
+    private suspend fun getUserById(userId: UUID): User {
         val admin = usersDataSource.getAdmin()
         if (userId == admin.id) {
             return admin.toUser()
@@ -36,7 +36,7 @@ class LogsRepositoryImpl(
         return usersDataSource.getMates().first { it.id == userId }.toUser()
     }
 
-    private fun getEntityById(entityId: UUID): PlanEntity {
+    private suspend fun getEntityById(entityId: UUID): PlanEntity {
         return projectsRepository.getAllProjects(includeDeleted = true)
             .firstOrNull { it.id == entityId }
 
@@ -46,7 +46,7 @@ class LogsRepositoryImpl(
             ?: taskRepository.getTaskByID(entityId, includeDeleted = true)
     }
 
-    override fun getLogsByEntityId(entityId: UUID): List<Log> {
+    override suspend fun getLogsByEntityId(entityId: UUID): List<Log> {
         var result: List<Log>
         result = getAllLogs().filter { it.loggedAction.entity.id == entityId }
 
@@ -68,7 +68,7 @@ class LogsRepositoryImpl(
         return result
     }
 
-    override fun addLog(log: Log) {
+    override suspend fun addLog(log: Log) {
         logsDataSource.addLog(log.toLogDto())
     }
 }

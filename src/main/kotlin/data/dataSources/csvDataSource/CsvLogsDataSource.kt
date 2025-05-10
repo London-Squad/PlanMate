@@ -10,12 +10,12 @@ class CsvLogsDataSource(
     private val csvParser: CsvParser
 ) : LogsDataSource {
 
-    override fun getAllLogs(): List<LogDto> {
+    override suspend fun getAllLogs(): List<LogDto> {
         return logsCsvFileHandler.readRecords()
             .map(csvParser::recordToLogDto)
     }
 
-    override fun addLog(logDto: LogDto) {
+    override suspend fun addLog(logDto: LogDto) {
         logsCsvFileHandler.appendRecord(
             csvParser.logDtoToRecord(logDto)
         )

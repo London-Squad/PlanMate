@@ -1,14 +1,17 @@
 package data.dataSources.mongoDBDataSource
 
-import com.mongodb.client.MongoCollection
 import com.mongodb.client.model.Filters
 import com.mongodb.client.model.Updates
+import com.mongodb.kotlin.client.coroutine.MongoCollection
 import data.dataSources.mongoDBDataSource.mongoDBParse.MongoDBParse
 import data.repositories.dataSourceInterfaces.UsersDataSource
 import data.dto.UserDto
+import kotlinx.coroutines.flow.first
+import kotlinx.coroutines.flow.map
 import logic.exceptions.NoLoggedInUserFoundException
 import org.bson.Document
 import java.util.UUID
+import kotlinx.coroutines.flow.toList
 
 class MongoDBUsersDataSource(
     private val collection: MongoCollection<Document>,
@@ -17,23 +20,22 @@ class MongoDBUsersDataSource(
 
     private var loggedInUser: UserDto? = null
 
-    override fun getMates(): List<UserDto> {
-        return collection.find(Filters.eq(MongoDBParse.IS_DELETED_FIELD, false)).map { doc ->
-            mongoParser.documentToUserDto(doc)
-        }.toList()
+    override suspend fun getMates(): List<UserDto> {
+        return collection.find(Filters.eq(MongoDBParse.IS_DELETED_FIELD, false))
+            .map { doc -> mongoParser.documentToUserDto(doc) }
+            .toList()
     }
 
-    override fun getAdmin(): UserDto = ADMIN
+    override suspend fun getAdmin(): UserDto = ADMIN
 
-    override fun deleteUser(userId: UUID) {
+    override suspend fun deleteUser(userId: UUID) {
         collection.updateOne(
             Filters.eq(MongoDBParse.ID_FIELD, userId.toString()),
             Updates.set(MongoDBParse.IS_DELETED_FIELD, true)
-        )
-
+        ).let { }
     }
 
-    override fun addMate(userName: String, hashedPassword: String) {
+    override suspend fun addMate(userName: String, hashedPassword: String) {
         val existingUser = collection.find(Filters.eq(MongoDBParse.USERNAME_FIELD, userName)).first()
         if (existingUser != null) throw IllegalStateException("User with username '$userName' already exists")
         val doc = mongoParser.userDtoToDocument(
@@ -45,18 +47,18 @@ class MongoDBUsersDataSource(
                 isDeleted = false
             )
         )
-        collection.insertOne(doc)
+        collection.insertOne(doc).let { }
     }
 
-    override fun getLoggedInUser(): UserDto {
+    override suspend fun getLoggedInUser(): UserDto {
         return loggedInUser ?: throw NoLoggedInUserFoundException()
     }
 
-    override fun setLoggedInUser(user: UserDto) {
+    override suspend fun setLoggedInUser(user: UserDto) {
         loggedInUser = user
     }
 
-    override fun clearLoggedInUser() {
+    override suspend fun clearLoggedInUser() {
         loggedInUser = null
     }
 

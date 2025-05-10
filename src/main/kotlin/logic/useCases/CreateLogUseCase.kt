@@ -9,7 +9,7 @@ class CreateLogUseCase(
     private val authenticationRepository: AuthenticationRepository,
 ) {
 
-    fun logEntityCreation(entity: PlanEntity) {
+    suspend fun logEntityCreation(entity: PlanEntity) {
         logsRepository.addLog(
             Log(
                 user = authenticationRepository.getLoggedInUser(),
@@ -18,7 +18,7 @@ class CreateLogUseCase(
         )
     }
 
-    fun logEntityTitleEdition(entity: PlanEntity, oldValue: String, newValue: String) {
+    suspend fun logEntityTitleEdition(entity: PlanEntity, oldValue: String, newValue: String) {
         logsRepository.addLog(
             Log(
                 user = authenticationRepository.getLoggedInUser(),
@@ -32,7 +32,7 @@ class CreateLogUseCase(
         )
     }
 
-    fun logEntityDescriptionEdition(entity: PlanEntity, oldValue: String, newValue: String) {
+    suspend fun logEntityDescriptionEdition(entity: PlanEntity, oldValue: String, newValue: String) {
         logsRepository.addLog(
             Log(
                 user = authenticationRepository.getLoggedInUser(),
@@ -46,7 +46,7 @@ class CreateLogUseCase(
         )
     }
 
-    fun logTaskStateEdition(task: Task, oldState: String, newState: String) {
+    suspend fun logTaskStateEdition(task: Task, oldState: String, newState: String) {
         logsRepository.addLog(
             Log(
                 user = authenticationRepository.getLoggedInUser(),
@@ -60,7 +60,7 @@ class CreateLogUseCase(
         )
     }
 
-    fun logEntityDeletion(entity: PlanEntity) {
+    suspend fun logEntityDeletion(entity: PlanEntity) {
         logsRepository.addLog(
             Log(
                 user = authenticationRepository.getLoggedInUser(),

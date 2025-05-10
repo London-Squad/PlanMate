@@ -9,15 +9,15 @@ class ManageProjectUseCase(
     private val createLogUseCase: CreateLogUseCase
 ) {
 
-    fun getAllProjects(): List<Project> {
+    suspend fun getAllProjects(): List<Project> {
         return projectsRepository.getAllProjects()
     }
 
-    fun getProjectById(projectId: UUID): Project {
+    suspend fun getProjectById(projectId: UUID): Project {
         return projectsRepository.getProjectById(projectId)
     }
 
-    fun editProjectTitle(projectId: UUID, newTitle: String) {
+    suspend fun editProjectTitle(projectId: UUID, newTitle: String) {
         val projectBeforeEdition = projectsRepository.getProjectById(projectId)
 
         projectsRepository.editProjectTitle(projectId, newTitle)
@@ -28,7 +28,7 @@ class ManageProjectUseCase(
         )
     }
 
-    fun editProjectDescription(projectId: UUID, newDescription: String) {
+    suspend fun editProjectDescription(projectId: UUID, newDescription: String) {
         val projectBeforeEdition = projectsRepository.getProjectById(projectId)
 
         projectsRepository.editProjectDescription(projectId, newDescription)
@@ -39,7 +39,7 @@ class ManageProjectUseCase(
         )
     }
 
-    fun deleteProject(projectId: UUID) {
+    suspend fun deleteProject(projectId: UUID) {
         val project = projectsRepository.getProjectById(projectId)
 
         projectsRepository.deleteProject(projectId)

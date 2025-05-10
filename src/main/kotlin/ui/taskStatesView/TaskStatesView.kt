@@ -1,5 +1,8 @@
 package ui.taskStatesView
 
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.launch
 import logic.entities.TaskState
 import logic.useCases.ManageStateUseCase
 import ui.ViewExceptionHandler
@@ -73,7 +76,9 @@ class TaskStatesView(
     private fun addState() {
         val title = taskStateInputReader.getValidTaskStateTitle()
         val desc = taskStateInputReader.getValidTaskStateTitle()
-        useCase.addState(title, desc, projectId)
+        CoroutineScope(Dispatchers.IO).launch {
+            useCase.addState(title, desc, projectId)
+        }
         printLn("Task state added successfully.")
     }
 
@@ -98,13 +103,17 @@ class TaskStatesView(
 
     private fun editTaskStateTitle(state: TaskState) {
         val newTitle = taskStateInputReader.getValidTaskStateTitle()
-        useCase.editStateTitle(state.id, newTitle)
+        CoroutineScope(Dispatchers.IO).launch {
+            useCase.editStateTitle(state.id, newTitle)
+        }
         printLn("Title updated.")
     }
 
     private fun editTaskStateDescription(state: TaskState) {
         val newDescription = taskStateInputReader.getValidTaskStateDescription()
-        useCase.editStateDescription(state.id, newDescription)
+        CoroutineScope(Dispatchers.IO).launch {
+            useCase.editStateDescription(state.id, newDescription)
+        }
         printLn("Description updated.")
     }
 
@@ -119,7 +128,9 @@ class TaskStatesView(
 
         val confirm = cliReader.getUserConfirmation()
         if (confirm) {
-            useCase.deleteState(selectedState.id)
+            CoroutineScope(Dispatchers.IO).launch {
+                useCase.deleteState(selectedState.id)
+            }
             printLn("Task state deleted.")
         } else {
             printLn("Deletion canceled.")

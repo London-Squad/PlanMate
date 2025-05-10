@@ -7,6 +7,6 @@ import java.util.UUID
 class GetLogsByEntityIdUseCase(
     private val logsRepository: LogsRepository
 ) {
-    fun getLogsByEntityId(entityId: UUID): List<Log> =
+    suspend fun getLogsByEntityId(entityId: UUID): List<Log> =
         logsRepository.getLogsByEntityId(entityId)
 }

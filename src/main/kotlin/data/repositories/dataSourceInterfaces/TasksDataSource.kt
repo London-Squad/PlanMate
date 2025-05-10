@@ -4,15 +4,15 @@ import data.dto.TaskDto
 import java.util.*
 
 interface TasksDataSource {
-    fun getAllTasks(includeDeleted: Boolean): List<TaskDto>
+    suspend fun getAllTasks(includeDeleted: Boolean): List<TaskDto>
 
-    fun addNewTask(taskDto: TaskDto)
+    suspend fun addNewTask(taskDto: TaskDto)
 
-    fun editTaskTitle(taskId: UUID, newTitle: String)
+    suspend fun editTaskTitle(taskId: UUID, newTitle: String)
 
-    fun editTaskDescription(taskId: UUID, newDescription: String)
+    suspend fun editTaskDescription(taskId: UUID, newDescription: String)
 
-    fun editTaskState(taskId: UUID, newStateId: UUID)
+    suspend fun editTaskState(taskId: UUID, newStateId: UUID)
 
-    fun deleteTask(taskId: UUID)
+    suspend fun deleteTask(taskId: UUID)
 }

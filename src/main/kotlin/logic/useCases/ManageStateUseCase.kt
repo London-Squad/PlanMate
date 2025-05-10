@@ -9,7 +9,7 @@ class ManageStateUseCase(
     private val createLogUseCase: CreateLogUseCase,
 ) {
 
-    fun addState(title: String, description: String, projectID: UUID) {
+    suspend fun addState(title: String, description: String, projectID: UUID) {
         val taskState = buildNewTaskState(UUID.randomUUID(), title, description)
 
         taskStatesRepository.addNewTaskState(taskState, projectID)
@@ -28,21 +28,21 @@ class ManageStateUseCase(
         )
     }
 
-    fun editStateTitle(stateID: UUID, newTitle: String) {
+    suspend fun editStateTitle(stateID: UUID, newTitle: String) {
         val oldState = taskStatesRepository.getTaskStateById(stateID)
 
         taskStatesRepository.editTaskStateTitle(stateID, newTitle)
         createLogUseCase.logEntityTitleEdition(oldState, oldState.title, newTitle)
     }
 
-    fun editStateDescription(stateID: UUID, newDescription: String) {
+    suspend fun editStateDescription(stateID: UUID, newDescription: String) {
         val oldState = taskStatesRepository.getTaskStateById(stateID)
 
         taskStatesRepository.editTaskStateDescription(stateID, newDescription)
         createLogUseCase.logEntityDescriptionEdition(oldState, oldState.description, newDescription)
     }
 
-    fun deleteState(stateID: UUID) {
+    suspend fun deleteState(stateID: UUID) {
         val oldState = taskStatesRepository.getTaskStateById(stateID)
         if (oldState.id == TaskState.NoTaskState.id) return
 
@@ -50,7 +50,7 @@ class ManageStateUseCase(
         createLogUseCase.logEntityDeletion(oldState)
     }
 
-    fun getTaskStatesByProjectId(projectId: UUID): List<TaskState> {
+    suspend fun getTaskStatesByProjectId(projectId: UUID): List<TaskState> {
         return taskStatesRepository.getTaskStatesByProjectId(projectId)
     }
 }

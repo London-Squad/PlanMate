@@ -1,5 +1,8 @@
 package ui.projectDetailsView
 
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.launch
 import logic.entities.Project
 import logic.entities.User
 import logic.useCases.ManageTaskUseCase
@@ -88,7 +91,9 @@ class ProjectDetailsView(
         val title = taskInputReader.getValidTaskTitle()
         val description = taskInputReader.getValidTaskDescription()
 
-        manageTaskUseCase.addNewTask(title, description, project.id)
+        CoroutineScope(Dispatchers.IO).launch {
+            manageTaskUseCase.addNewTask(title, description, project.id)
+        }
     }
 
     private fun printLn(message: String) = cliPrinter.cliPrintLn(message)

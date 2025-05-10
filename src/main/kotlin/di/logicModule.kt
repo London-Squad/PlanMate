@@ -2,6 +2,7 @@ package di
 
 import logic.useCases.*
 import logic.useCases.mateUseCase.CreateMateUseCase
+import logic.useCases.mateUseCase.GetAllMatesUseCase
 import logic.validation.CredentialValidator
 import logic.validation.ProjectInputValidator
 import logic.validation.TaskInputValidator

@@ -1,7 +1,10 @@
 package ui.matesManagementView
 
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.launch
 import logic.entities.User
-import logic.useCases.GetAllMatesUseCase
+import logic.useCases.mateUseCase.GetAllMatesUseCase
 import logic.useCases.GetLoggedInUserUseCase
 import ui.cliPrintersAndReaders.CLIPrinter
 import ui.cliPrintersAndReaders.CLIReader
@@ -17,8 +20,11 @@ class MatesManagementView(
 ) {
 
     fun start() {
-        val currentUser = getLoggedInUserUseCase.getLoggedInUser()
-        if (currentUser.type != User.Type.ADMIN) {
+        var currentUser: User? = null
+        CoroutineScope(Dispatchers.IO).launch {
+            currentUser = getLoggedInUserUseCase.getLoggedInUser()
+        }
+        if (currentUser?.type != User.Type.ADMIN) {
             printLn("Error: Only admins can manage mates.")
             return
         }
@@ -44,7 +50,10 @@ class MatesManagementView(
     }
 
     private fun listAllMates() {
-        val mates = getAllMatesUseCase.getAllMates()
+        var mates: List<User> = emptyList()
+        CoroutineScope(Dispatchers.Main).launch {
+            mates = getAllMatesUseCase.getAllMates()
+        }
         if (mates.isEmpty()) {
             printLn("No mates found.")
             return

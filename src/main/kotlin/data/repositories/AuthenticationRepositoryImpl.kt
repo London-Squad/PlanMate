@@ -12,14 +12,14 @@ class AuthenticationRepositoryImpl(
     private val hashingAlgorithm: HashingAlgorithm
 ) : AuthenticationRepository {
 
-    override fun login(userName: String, password: String): User {
+    override suspend fun login(userName: String, password: String): User {
         val hashedPassword = hashingAlgorithm.hashData(password)
 
         val admin = usersDataSource.getAdmin()
 
         if (userName == admin.userName && hashedPassword == admin.hashedPassword)
             return admin
-            .also(usersDataSource::setLoggedInUser).toUser()
+            .also { usersDataSource.setLoggedInUser(it) }.toUser()
 
         return usersDataSource.getMates()
                 .firstOrNull {
@@ -27,15 +27,15 @@ class AuthenticationRepositoryImpl(
                             && it.hashedPassword == hashedPassword
                             && !it.isDeleted
                 }
-                ?.also(usersDataSource::setLoggedInUser)?.toUser()
+                ?.also { usersDataSource.setLoggedInUser(it) }?.toUser()
             ?: throw UserNotFoundException()
     }
 
-    override fun logout() {
+    override suspend fun logout() {
         usersDataSource.clearLoggedInUser()
     }
 
-    override fun getLoggedInUser(): User {
+    override suspend fun getLoggedInUser(): User {
         return usersDataSource.getLoggedInUser().toUser()
     }
 }
