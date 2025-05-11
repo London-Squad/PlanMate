@@ -4,6 +4,9 @@ import data.dataSources.csvDataSource.*
 import data.dataSources.csvDataSource.fileIO.CsvFileHandler
 import data.dataSources.csvDataSource.fileIO.CsvParser
 import data.repositories.dataSourceInterfaces.*
+import logic.repositories.ProjectsRepository
+import logic.repositories.TaskRepository
+import logic.repositories.TaskStatesRepository
 import org.koin.core.qualifier.named
 import org.koin.dsl.module
 import java.io.File
@@ -42,10 +45,10 @@ val csvStorageModule = module {
 
     single { CsvParser() }
 
-    single<TasksDataSource> { CsvTasksDataSource(get(named("tasksFileHandler")), get()) }
-    single<TaskStatesDataSource> { CsvTaskStatesDataSource(get(named("taskStatesFileHandler")), get()) }
-    single<ProjectsDataSource> { CsvProjectsDataSource(get(named("projectsFileHandler")), get()) }
-    single<ProjectsDataSource> { CsvProjectsDataSource(get(), get()) }
+    single<TaskRepository> { CsvTasksDataSource(get(named("tasksFileHandler")), get()) }
+    single<TaskStatesRepository> { CsvTaskStatesDataSource(get(named("taskStatesFileHandler")), get()) }
+    single<ProjectsRepository> { CsvProjectsDataSource(get(named("projectsFileHandler")), get()) }
+    single<ProjectsRepository> { CsvProjectsDataSource(get(), get()) }
     single<UsersDataSource> {
         CsvUsersDataSource(
             get(named("usersFileHandler")),
@@ -53,6 +56,6 @@ val csvStorageModule = module {
             get()
         )
     }
-    single<LogsDataSource> { CsvLogsDataSource(get(named("LogsFileHandler")), get()) }
+    single<LogsDataSource> { CsvLogsDataSource(get(named("LogsFileHandler")), get(),get(),get(),get()) }
 
 }

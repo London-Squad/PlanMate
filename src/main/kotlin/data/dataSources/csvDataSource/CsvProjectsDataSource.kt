@@ -11,7 +11,6 @@ import java.util.UUID
 
 class CsvProjectsDataSource(
     private val projectsCsvFileHandler: CsvFileHandler,
-    private val projectsRepository: ProjectsRepository,
     private val csvParser: CsvParser,
 ) : ProjectsRepository {
 

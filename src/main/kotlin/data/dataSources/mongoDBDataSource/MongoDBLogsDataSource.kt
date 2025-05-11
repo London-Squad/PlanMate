@@ -3,14 +3,9 @@ package data.dataSources.mongoDBDataSource
 import com.mongodb.client.MongoCollection
 import data.dataSources.mongoDBDataSource.mongoDBParse.MongoDBParse
 import data.repositories.dataSourceInterfaces.LogsDataSource
-import data.dto.LogDto
 import data.repositories.dtoMappers.toLog
 import data.repositories.dtoMappers.toLogDto
-import logic.entities.EntityCreationLog
-import logic.entities.EntityDeletionLog
-import logic.entities.EntityEditionLog
 import logic.entities.Log
-import logic.entities.LoggedAction
 import logic.entities.Project
 import logic.exceptions.ProjectNotFoundException
 import logic.repositories.ProjectsRepository
