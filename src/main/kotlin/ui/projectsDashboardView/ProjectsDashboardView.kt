@@ -18,9 +18,8 @@ class ProjectsDashboardView(
     private val manageProjectUseCase: ManageProjectUseCase,
     private val createProjectUseCase: CreateProjectUseCase,
     private val projectView: ProjectDetailsView,
-    private val exceptionHandler: BaseView,
     private val cliTablePrinter: CLITablePrinter
-) {
+) : BaseView(cliPrinter) {
 
     private lateinit var loggedInUserType: User.Type
     private var projects: List<Project> = emptyList()
@@ -28,7 +27,7 @@ class ProjectsDashboardView(
     fun start(loggedInUserType: User.Type) {
         this.loggedInUserType = loggedInUserType
         printHeader()
-        getProjects()
+        tryCall({ fetchProjects() }).also { success -> if (!success) return }
         printProjects()
         printOptions()
         goToNextView()
@@ -38,10 +37,8 @@ class ProjectsDashboardView(
         cliPrinter.printHeader("Projects Dashboard Menu")
     }
 
-    private fun getProjects() {
-        exceptionHandler.tryCall {
-            projects = manageProjectUseCase.getAllProjects()
-        }.also { if (!it) return }
+    private fun fetchProjects() {
+        projects = manageProjectUseCase.getAllProjects()
     }
 
     private fun printProjects() {
@@ -63,10 +60,10 @@ class ProjectsDashboardView(
     }
 
     private fun printOptions() {
-        printLn("1. select a project")
+        cliPrinter.cliPrintLn("1. select a project")
         // TODO : add option to view all logs for all projects at once
-        if (loggedInUserType == User.Type.ADMIN) printLn("2. create a new project")
-        printLn("0. Exit Projects Dashboard")
+        if (loggedInUserType == User.Type.ADMIN) cliPrinter.cliPrintLn("2. create a new project")
+        cliPrinter.cliPrintLn("0. Exit Projects Dashboard")
     }
 
     private fun goToNextView() {
@@ -75,7 +72,7 @@ class ProjectsDashboardView(
             1 -> selectProject()
             2 -> createProject()
             0 -> {
-                printLn("\nExiting Projects Dashboard ..."); return
+                cliPrinter.cliPrintLn("\nExiting Projects Dashboard ..."); return
             }
         }
         start(loggedInUserType)
@@ -91,10 +88,10 @@ class ProjectsDashboardView(
 
     private fun selectProject() {
         if (projects.isEmpty()) {
-            printLn("No projects available to select.")
+            cliPrinter.cliPrintLn("No projects available to select.")
             return
         }
-        printLn("Select a project by number:")
+        cliPrinter.cliPrintLn("Select a project by number:")
         val input = cliReader.getValidInputNumberInRange(projects.size)
         projectView.start(projects[input - 1].id, loggedInUserType)
     }
@@ -103,13 +100,11 @@ class ProjectsDashboardView(
         cliPrinter.printHeader("Create Project")
         val title = projectInputReader.getValidProjectTitle()
         val description = projectInputReader.getValidProjectDescription()
-        exceptionHandler.tryCall {
+        tryCall({
             createProjectUseCase.createProject(title, description)
-            cliPrinter.cliPrintLn("Project created successfully.")
-        }
+            cliPrinter.cliPrintLn("Project (${title}) have been created successfully.")
+        })
     }
-
-    private fun printLn(message: String) = cliPrinter.cliPrintLn(message)
 
     private companion object {
         const val MAX_OPTION_NUMBER_ADMIN = 2

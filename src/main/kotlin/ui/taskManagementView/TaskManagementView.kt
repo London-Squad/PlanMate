@@ -19,68 +19,59 @@ class TaskManagementView(
     private val manageTaskUseCase: ManageTaskUseCase,
     private val manageStateUseCase: ManageStateUseCase,
     private val logsView: LogsView,
-    private val baseView: BaseView
-) {
+) : BaseView(cliPrinter) {
 
-    private lateinit var currentTask: Task
-    private lateinit var taskProjectId: UUID
+    private lateinit var task: Task
+    private lateinit var taskStateTitle: String
+    private lateinit var projectId: UUID
 
     fun start(taskId: UUID, projectId: UUID) {
 
-        taskProjectId = projectId
+        this.projectId = projectId
+        tryCall({ fetchTaskInfo(taskId) }).also { success -> if (!success) return }
 
-        var taskState: String
-        baseView.tryCall {
-            currentTask = manageTaskUseCase.getTaskByID(taskId)
-            taskState = manageStateUseCase.getTaskStatesById(currentTask.taskStateId).title
-            printTask(taskState)
-        }.also {
-            if (!it) {
-                cliPrinter.cliPrintLn("something went wrong")
-                return
-            }
-        }
-
+        printTask()
         printOptions()
         selectNextUI()
     }
 
-    private fun printTask(taskState: String) {
-        cliPrinter.printHeader("Task Title: ${currentTask.title}")
-        printLn("Details:")
-        printLn("  - Description: ${currentTask.description}")
-        printLn("  - State: $taskState")
-        printLn("")
+    private fun fetchTaskInfo(taskId: UUID) {
+        task = manageTaskUseCase.getTaskByID(taskId)
+        taskStateTitle = manageStateUseCase.getTaskStatesById(task.taskStateId).title
+    }
+
+    private fun printTask() {
+        cliPrinter.printHeader("Task Title: ${task.title}")
+        cliPrinter.cliPrintLn("Details:")
+        cliPrinter.cliPrintLn("  - Description: ${task.description}")
+        cliPrinter.cliPrintLn("  - State: $taskStateTitle")
+        cliPrinter.cliPrintLn("")
     }
 
     private fun printOptions() {
-        printLn("Options:")
-        printLn("1. Edit Title")
-        printLn("2. Edit description")
-        printLn("3. Edit state")
-        printLn("4. Delete task")
-        printLn("5. View task logs")
-        printLn("0. Back")
+        cliPrinter.cliPrintLn("Options:")
+        cliPrinter.cliPrintLn("1. Edit Title")
+        cliPrinter.cliPrintLn("2. Edit description")
+        cliPrinter.cliPrintLn("3. Edit state")
+        cliPrinter.cliPrintLn("4. Delete task")
+        cliPrinter.cliPrintLn("5. View task logs")
+        cliPrinter.cliPrintLn("0. Back")
     }
 
     private fun selectNextUI() {
         when (cliReader.getValidInputNumberInRange(MAX_OPTION_NUMBER)) {
-            1 -> taskTitleEditionView.editTitle(currentTask.id)
-            2 -> taskDescriptionEditionView.editDescription(currentTask.id)
-            3 -> taskStateEditionView.editState(currentTask.id, taskProjectId)
+            1 -> taskTitleEditionView.editTitle(task.id)
+            2 -> taskDescriptionEditionView.editDescription(task.id)
+            3 -> taskStateEditionView.editState(task.id, projectId)
             4 -> {
-                taskDeletionView.deleteTask(currentTask.id)
+                taskDeletionView.deleteTask(task.id)
                 return
             }
 
-            5 -> logsView.printLogsByEntityId(currentTask.id)
+            5 -> logsView.printLogsByEntityId(task.id)
             0 -> return
         }
-        start(currentTask.id, taskProjectId)
-    }
-
-    private fun printLn(message: String) {
-        cliPrinter.cliPrintLn(message)
+        start(task.id, projectId)
     }
 
     private companion object {

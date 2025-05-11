@@ -18,17 +18,18 @@ class WelcomeView(
 
     fun start() {
         tryCall(
-            functionToTry = {
-                val loggedInUserType = getLoggedInUserUseCase.getLoggedInUser().type
-                mainMenuView.start(loggedInUserType)
-                start()
-            },
-            onFailureFunction = { e: Exception ->
-                if (e is NoLoggedInUserFoundException) {
-                    startNormalWelcomeView()
-                } else handleExceptionsInDefaultWay(e)
+            functionToTry = (::goDirectlyToMainMenu),
+            onFailureFunction = { exception: Exception ->
+                if (exception is NoLoggedInUserFoundException) startNormalWelcomeView()
+                else handleExceptionsInDefaultWay(exception)
             }
         )
+    }
+
+    private fun goDirectlyToMainMenu() {
+        val loggedInUserType = getLoggedInUserUseCase.getLoggedInUser().type
+        mainMenuView.start(loggedInUserType)
+        start()
     }
 
     private fun startNormalWelcomeView() {

@@ -9,11 +9,13 @@ abstract class BaseView(
     fun tryCall(
         functionToTry: () -> Unit,
         onFailureFunction: (exception: Exception) -> Unit = (::handleExceptionsInDefaultWay)
-    ) {
-        try {
+    ): Boolean {
+        return try {
             functionToTry()
+            true
         } catch (exception: Exception) {
             onFailureFunction(exception)
+            false
         }
     }
 

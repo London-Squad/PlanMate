@@ -10,19 +10,17 @@ class TaskDeletionView(
     private val cliReader: CLIReader,
     private val cliPrinter: CLIPrinter,
     private val manageTaskUseCase: ManageTaskUseCase,
-    private val baseView: BaseView
-) {
+) : BaseView(cliPrinter) {
     fun deleteTask(taskId: UUID) {
         if (isDeletionCanceled()) {
             cliPrinter.cliPrintLn("deletion canceled")
             return
         }
 
-        baseView.tryCall {
-            manageTaskUseCase.deleteTask(taskId).also {
-                cliPrinter.cliPrintLn("task $taskId was deleted")
-            }
-        }
+        tryCall({
+            manageTaskUseCase.deleteTask(taskId)
+            cliPrinter.cliPrintLn("task $taskId was deleted")
+        })
     }
 
     private fun isDeletionCanceled(): Boolean = !cliReader.getUserConfirmation()

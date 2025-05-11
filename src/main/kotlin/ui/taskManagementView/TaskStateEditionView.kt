@@ -13,32 +13,39 @@ class TaskStateEditionView(
     private val cliPrinter: CLIPrinter,
     private val manageTaskUseCase: ManageTaskUseCase,
     private val manageStateUseCase: ManageStateUseCase,
-    private val baseView: BaseView
-) {
+) : BaseView(cliPrinter) {
+
+    private lateinit var tasksStatesOfProject: List<TaskState>
 
     fun editState(taskId: UUID, projectId: UUID) {
 
-        val projectTasksStates = manageStateUseCase.getTaskStatesByProjectId(projectId)
-        if (projectTasksStates.isEmpty()) {
-            printLn("no states available")
+        tryCall({ fetchTaskStates(projectId) }).also { success -> if (!success) return }
+
+        if (tasksStatesOfProject.isEmpty()) {
+            cliPrinter.cliPrintLn("no states available")
             return
         }
 
-        printProjectState(projectTasksStates)
-        val newStateIndex = cliReader.getValidInputNumberInRange(min = 1, max = projectTasksStates.size) - 1
+        printProjectState(tasksStatesOfProject)
 
-        baseView.tryCall {
-            manageTaskUseCase.editTaskState(taskId, projectTasksStates[newStateIndex].id)
-        }
+        val newStateIndex = getUserChoice() - 1
+
+        tryCall({
+            manageTaskUseCase.editTaskState(taskId, tasksStatesOfProject[newStateIndex].id)
+        })
+    }
+
+    private fun fetchTaskStates(projectId: UUID) {
+        tasksStatesOfProject = manageStateUseCase.getTaskStatesByProjectId(projectId)
+    }
+
+    private fun getUserChoice(): Int {
+        return cliReader.getValidInputNumberInRange(min = 1, max = tasksStatesOfProject.size)
     }
 
     private fun printProjectState(tasksStates: List<TaskState>) {
         tasksStates.forEachIndexed { index, state ->
-            printLn("${index + 1}. ${state.title}")
+            cliPrinter.cliPrintLn("${index + 1}. ${state.title}")
         }
-    }
-
-    private fun printLn(message: String) {
-        cliPrinter.cliPrintLn(message)
     }
 }

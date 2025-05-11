@@ -14,9 +14,8 @@ class TaskStatesView(
     private val cliReader: CLIReader,
     private val taskStateInputReader: TaskStateInputReader,
     private val useCase: ManageStateUseCase,
-    private val baseView: BaseView,
     private val cliTablePrinter: CLITablePrinter
-) {
+) : BaseView(cliPrinter) {
 
     private lateinit var projectId: UUID
     private var tasksStates: List<TaskState> = emptyList()
@@ -24,22 +23,23 @@ class TaskStatesView(
     fun start(projectId: UUID) {
         this.projectId = projectId
 
+        tryCall({ fetchTaskStates() }).also { success -> if (!success) return }
+
         cliPrinter.printHeader("Task States Management")
-        getTaskStates()
         printTaskStates()
         printOptions()
         goToNextView()
     }
 
     private fun printOptions() {
-        printLn("1. Add New Task State")
-        printLn("2. Edit Task State")
-        printLn("3. Delete Task State")
-        printLn("0. Back to Edit Project")
+        cliPrinter.cliPrintLn("1. create New Task State")
+        cliPrinter.cliPrintLn("2. Edit Task State")
+        cliPrinter.cliPrintLn("3. Delete Task State")
+        cliPrinter.cliPrintLn("0. Back to Edit Project")
     }
 
     private fun goToNextView() {
-        printLn("Select an option:")
+        cliPrinter.cliPrintLn("Select an option:")
         when (cliReader.getValidInputNumberInRange(3)) {
             1 -> addState()
             2 -> editState()
@@ -49,24 +49,19 @@ class TaskStatesView(
         start(projectId)
     }
 
-    private fun getTaskStates() {
-        baseView.tryCall {
+    private fun fetchTaskStates() {
             tasksStates = useCase.getTaskStatesByProjectId(projectId)
-        }
     }
 
     private fun printTaskStates() {
-        baseView.tryCall {
-
-            if (tasksStates.isEmpty()) {
-                printLn("No task states available.")
-            } else {
-                val headers = listOf("#", "Title", "Description")
-                val data = tasksStates.mapIndexed { index, state ->
-                    listOf((index + 1).toString(), state.title, state.description)
-                }
-                cliTablePrinter(headers, data, columnsWidth)
+        if (tasksStates.isEmpty()) {
+            cliPrinter.cliPrintLn("No task states available.")
+        } else {
+            val headers = listOf("#", "Title", "Description")
+            val data = tasksStates.mapIndexed { index, state ->
+                listOf((index + 1).toString(), state.title, state.description)
             }
+            cliTablePrinter(headers, data, columnsWidth)
         }
     }
 
@@ -74,21 +69,21 @@ class TaskStatesView(
         val title = taskStateInputReader.getValidTaskStateTitle()
         val desc = taskStateInputReader.getValidTaskStateTitle()
         useCase.addState(title, desc, projectId)
-        printLn("Task state added successfully.")
+        cliPrinter.cliPrintLn("Task state added successfully.")
     }
 
     private fun editState() {
         if (tasksStates.isEmpty()) {
-            printLn("No task states available to edit.")
+            cliPrinter.cliPrintLn("No task states available to edit.")
             return
         }
 
-        printLn("select a task state by number.")
+        cliPrinter.cliPrintLn("select a task state by number.")
         val index = cliReader.getValidInputNumberInRange(tasksStates.size, min = 1) - 1
         val selectedState = tasksStates[index]
 
-        printLn("1. Edit Title")
-        printLn("2. Edit Description")
+        cliPrinter.cliPrintLn("1. Edit Title")
+        cliPrinter.cliPrintLn("2. Edit Description")
 
         when (cliReader.getValidInputNumberInRange(2, min = 1)) {
             1 -> editTaskStateTitle(selectedState)
@@ -99,34 +94,32 @@ class TaskStatesView(
     private fun editTaskStateTitle(state: TaskState) {
         val newTitle = taskStateInputReader.getValidTaskStateTitle()
         useCase.editStateTitle(state.id, newTitle)
-        printLn("Title updated.")
+        cliPrinter.cliPrintLn("Title updated.")
     }
 
     private fun editTaskStateDescription(state: TaskState) {
         val newDescription = taskStateInputReader.getValidTaskStateDescription()
         useCase.editStateDescription(state.id, newDescription)
-        printLn("Description updated.")
+        cliPrinter.cliPrintLn("Description updated.")
     }
 
     private fun deleteState() {
         if (tasksStates.isEmpty()) {
-            printLn("No task states available to edit.")
+            cliPrinter.cliPrintLn("No task states available to edit.")
             return
         }
-        printLn("select a task state by number.")
+        cliPrinter.cliPrintLn("select a task state by number.")
         val index = cliReader.getValidInputNumberInRange(tasksStates.size, min = 1) - 1
         val selectedState = tasksStates[index]
 
         val confirm = cliReader.getUserConfirmation()
         if (confirm) {
             useCase.deleteState(selectedState.id)
-            printLn("Task state deleted.")
+            cliPrinter.cliPrintLn("Task state deleted.")
         } else {
-            printLn("Deletion canceled.")
+            cliPrinter.cliPrintLn("Deletion canceled.")
         }
     }
-
-    private fun printLn(message: String) = cliPrinter.cliPrintLn(message)
 
     private companion object {
         val columnsWidth = listOf(5, 30, null)
