@@ -23,12 +23,6 @@ class CsvTasksDataSource(
             .map(TaskDto::toTask)
     }
 
-    override fun getTasksByTaskStateID(taskStateId: UUID, includeDeleted: Boolean): List<Task> {
-        return getAllTasks(includeDeleted)
-            .filter { it.stateId == taskStateId }
-            .map(TaskDto::toTask)
-    }
-
     private fun getAllTasks(includeDeleted: Boolean): List<TaskDto> {
         return tasksCsvFileHandler.readRecords()
             .map(csvParser::recordToTaskDto)

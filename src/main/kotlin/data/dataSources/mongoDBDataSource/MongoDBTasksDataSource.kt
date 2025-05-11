@@ -1,4 +1,5 @@
 package data.dataSources.mongoDBDataSource
+
 import com.mongodb.MongoException
 import com.mongodb.client.MongoCollection
 import com.mongodb.client.model.Filters
@@ -17,8 +18,7 @@ import org.bson.Document
 import java.util.*
 
 class MongoDBTasksDataSource(
-    private val collection: MongoCollection<Document>,
-    private val mongoParser: MongoDBParse
+    private val collection: MongoCollection<Document>, private val mongoParser: MongoDBParse
 ) : TaskRepository {
 
     override fun getTasksByProjectID(projectId: UUID, includeDeleted: Boolean): List<Task> {
@@ -33,24 +33,16 @@ class MongoDBTasksDataSource(
 
     }
 
-    override fun getTasksByTaskStateID(
-        taskStateId: UUID,
-        includeDeleted: Boolean
-    ): List<Task> {
-        return getAllTasks(includeDeleted)
-            .filter { it.stateId == taskStateId }
-            .map(TaskDto::toTask)
-    }
-
-
     private fun getAllTasks(includeDeleted: Boolean): List<TaskDto> {
         try {
-            return collection.find().map { doc ->
-            mongoParser.documentToTaskDto(doc)
-        }.toList()
+            val filter = if (includeDeleted) Filters.empty()
+            else Filters.eq(MongoDBParse.IS_DELETED_FIELD, false)
+
+            return collection.find(filter).map(mongoParser::documentToTaskDto)
+                .toList()
         } catch (e: MongoException) {
-        throw RetrievingDataFailureException("Failed to retrieve tasks: ${e.message}")
-    }
+            throw RetrievingDataFailureException("Failed to retrieve tasks: ${e.message}")
+        }
     }
 
     override fun getTaskByID(taskId: UUID, includeDeleted: Boolean): Task {
@@ -64,19 +56,19 @@ class MongoDBTasksDataSource(
     }
 
     override fun addNewTask(task: Task, projectId: UUID) {
-        try{
-        val doc = mongoParser.taskDtoToDocument(task.toTaskDto(projectId))
-        collection.insertOne(doc)
-    } catch (e: MongoException) {
-        throw StoringDataFailureException("Failed to add task: ${e.message}")
-    }
+        try {
+            val doc = mongoParser.taskDtoToDocument(task.toTaskDto(projectId))
+            collection.insertOne(doc)
+        } catch (e: MongoException) {
+            throw StoringDataFailureException("Failed to add task: ${e.message}")
+        }
     }
 
     override fun editTaskTitle(taskId: UUID, newTitle: String) {
         try {
-        collection.updateOne(
-            Filters.eq(MongoDBParse.ID_FIELD, taskId.toString()), Updates.set(MongoDBParse.TITLE_FIELD, newTitle)
-        )
+            collection.updateOne(
+                Filters.eq(MongoDBParse.ID_FIELD, taskId.toString()), Updates.set(MongoDBParse.TITLE_FIELD, newTitle)
+            )
         } catch (e: MongoException) {
             throw StoringDataFailureException("Failed to edit task title: ${e.message}")
         }
@@ -99,21 +91,31 @@ class MongoDBTasksDataSource(
     }
 
     override fun editTaskState(taskId: UUID, newTaskState: TaskState) {
-        try{
-        collection.updateOne(
-            Filters.eq(MongoDBParse.ID_FIELD, taskId.toString()),
-            Updates.set(MongoDBParse.STATE_ID_FIELD, newTaskState.id.toString()))
-    } catch (e: MongoException) {
-        throw StoringDataFailureException("Failed to edit task state: ${e.message}")
-    }
+        try {
+            val result = collection.updateOne(
+                Filters.eq(MongoDBParse.ID_FIELD, taskId.toString()),
+                Updates.set(MongoDBParse.STATE_ID_FIELD, newTaskState.id.toString())
+            )
+            if (result.matchedCount.toInt() == 0) {
+                throw TaskNotFoundException("Task with ID $taskId not found")
+            }
+        } catch (e: MongoException) {
+            throw StoringDataFailureException("Failed to edit task state: ${e.message}")
+        }
 
     }
 
     override fun deleteTask(taskId: UUID) {
-        try{
-        collection.updateOne(
-            Filters.eq(MongoDBParse.ID_FIELD, taskId.toString()), Updates.set(MongoDBParse.IS_DELETED_FIELD, true)
-        )
+        try {
+            val result = collection.updateOne(
+                Filters.and(
+                    Filters.eq(MongoDBParse.ID_FIELD, taskId.toString()),
+                    Filters.eq(MongoDBParse.IS_DELETED_FIELD, false)
+                ), Updates.set(MongoDBParse.IS_DELETED_FIELD, true)
+            )
+            if (result.matchedCount.toInt() == 0) {
+                throw TaskNotFoundException("Task with ID $taskId not found")
+            }
         } catch (e: MongoException) {
             throw StoringDataFailureException("Failed to delete task: ${e.message}")
         }
