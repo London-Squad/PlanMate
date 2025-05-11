@@ -39,7 +39,8 @@ class MongoDBProjectsDataSource(
     override fun editProjectTitle(projectId: UUID, newTitle: String) {
         try {
             val result = projectsCollection.updateOne(
-                Filters.eq(MongoDBParse.ID_FIELD, projectId.toString()), Updates.set(MongoDBParse.TITLE_FIELD, newTitle)
+                Filters.eq(MongoDBParse.ID_FIELD, projectId.toString()),
+                Updates.set(MongoDBParse.TITLE_FIELD, newTitle)
             )
             if (result.matchedCount.toInt() == 0) {
                 throw ProjectNotFoundException("Project with ID $projectId not found")

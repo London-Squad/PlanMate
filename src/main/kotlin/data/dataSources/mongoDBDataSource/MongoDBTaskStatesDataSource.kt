@@ -8,6 +8,7 @@ import data.dataSources.defaultTaskStatesTitleAndDescription
 import data.dataSources.mongoDBDataSource.mongoDBParse.MongoDBParse
 import data.dto.TaskStateDto
 import data.repositories.dataSourceInterfaces.TaskStatesDataSource
+import logic.exceptions.TaskStateNotFoundException
 import logic.exceptions.RetrievingDataFailureException
 import logic.exceptions.StoringDataFailureException
 import org.bson.Document
@@ -45,9 +46,13 @@ class MongoDBTaskStatesDataSource(
 
     override fun editTaskStateTitle(stateId: UUID, newTitle: String) {
         try {
-            collection.updateOne(
-                Filters.eq(MongoDBParse.ID_FIELD, stateId.toString()), Updates.set(MongoDBParse.TITLE_FIELD, newTitle)
+            val result = collection.updateOne(
+                Filters.eq(MongoDBParse.ID_FIELD, stateId.toString()),
+                Updates.set(MongoDBParse.TITLE_FIELD, newTitle)
             )
+            if (result.matchedCount.toInt() == 0) {
+                throw TaskStateNotFoundException("Task State with ID $stateId not found")
+            }
         } catch (e: MongoException) {
             throw StoringDataFailureException("Failed to edit task state title: ${e.message}")
         }
@@ -55,10 +60,13 @@ class MongoDBTaskStatesDataSource(
 
     override fun editTaskStateDescription(stateId: UUID, newDescription: String) {
         try {
-            collection.updateOne(
+            val result = collection.updateOne(
                 Filters.eq(MongoDBParse.ID_FIELD, stateId.toString()),
                 Updates.set(MongoDBParse.DESCRIPTION_FIELD, newDescription)
             )
+            if (result.matchedCount.toInt() == 0) {
+                throw TaskStateNotFoundException("Task State with ID $stateId not found")
+            }
         } catch (e: MongoException) {
             throw StoringDataFailureException("Failed to edit task state description: ${e.message}")
         }
@@ -66,7 +74,13 @@ class MongoDBTaskStatesDataSource(
 
     override fun deleteTaskState(stateId: UUID) {
         try {
-            collection.deleteOne(Filters.eq(MongoDBParse.ID_FIELD, stateId.toString()))
+            val result = collection.updateOne(
+                Filters.eq(MongoDBParse.ID_FIELD, stateId.toString()),
+                Updates.set(MongoDBParse.IS_DELETED_FIELD, true)
+            )
+            if (result.matchedCount.toInt() == 0) {
+                throw TaskStateNotFoundException("Task State with ID $stateId not found")
+            }
         } catch (e: MongoException) {
             throw StoringDataFailureException("Failed to delete task state: ${e.message}")
         }

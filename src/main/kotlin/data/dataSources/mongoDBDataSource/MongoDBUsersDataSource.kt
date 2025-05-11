@@ -7,10 +7,7 @@ import com.mongodb.client.model.Updates
 import data.dataSources.mongoDBDataSource.mongoDBParse.MongoDBParse
 import data.repositories.dataSourceInterfaces.UsersDataSource
 import data.dto.UserDto
-import logic.exceptions.NoLoggedInUserFoundException
-import logic.exceptions.RetrievingDataFailureException
-import logic.exceptions.StoringDataFailureException
-import logic.exceptions.UserNameAlreadyExistException
+import logic.exceptions.*
 import org.bson.Document
 import java.util.UUID
 
@@ -35,10 +32,13 @@ class MongoDBUsersDataSource(
 
     override fun deleteUser(userId: UUID) {
         try {
-            collection.updateOne(
+            val result = collection.updateOne(
                 Filters.eq(MongoDBParse.ID_FIELD, userId.toString()),
                 Updates.set(MongoDBParse.IS_DELETED_FIELD, true)
             )
+            if (result.matchedCount.toInt() == 0) {
+                throw UserNotFoundException("User with ID $userId not found")
+            }
         }catch (e: MongoException) {
             throw StoringDataFailureException("Failed to delete user: ${e.message}")
         }

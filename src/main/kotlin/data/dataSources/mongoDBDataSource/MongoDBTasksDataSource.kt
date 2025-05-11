@@ -7,6 +7,7 @@ import com.mongodb.client.model.Updates
 import data.dataSources.mongoDBDataSource.mongoDBParse.MongoDBParse
 import data.dto.TaskDto
 import data.repositories.dataSourceInterfaces.TasksDataSource
+import logic.exceptions.TaskNotFoundException
 import logic.exceptions.RetrievingDataFailureException
 import logic.exceptions.StoringDataFailureException
 import org.bson.Document
@@ -37,9 +38,12 @@ class MongoDBTasksDataSource(
 
     override fun editTaskTitle(taskId: UUID, newTitle: String) {
         try {
-            collection.updateOne(
+            val result = collection.updateOne(
                 Filters.eq(MongoDBParse.ID_FIELD, taskId.toString()), Updates.set(MongoDBParse.TITLE_FIELD, newTitle)
             )
+            if (result.matchedCount.toInt() == 0) {
+                throw TaskNotFoundException("Task with ID $taskId not found")
+            }
         } catch (e: MongoException) {
             throw StoringDataFailureException("Failed to edit task title: ${e.message}")
         }
@@ -47,10 +51,13 @@ class MongoDBTasksDataSource(
 
     override fun editTaskDescription(taskId: UUID, newDescription: String) {
         try {
-            collection.updateOne(
+            val result =   collection.updateOne(
                 Filters.eq(MongoDBParse.ID_FIELD, taskId.toString()),
                 Updates.set(MongoDBParse.DESCRIPTION_FIELD, newDescription)
             )
+            if (result.matchedCount.toInt() == 0) {
+                throw TaskNotFoundException("Task with ID $taskId not found")
+            }
         } catch (e: MongoException) {
             throw StoringDataFailureException("Failed to edit task description: ${e.message}")
         }
@@ -58,10 +65,13 @@ class MongoDBTasksDataSource(
 
     override fun editTaskState(taskId: UUID, newStateId: UUID) {
         try {
-            collection.updateOne(
+            val result =   collection.updateOne(
                 Filters.eq(MongoDBParse.ID_FIELD, taskId.toString()),
                 Updates.set(MongoDBParse.STATE_ID_FIELD, newStateId.toString())
             )
+            if (result.matchedCount.toInt() == 0) {
+                throw TaskNotFoundException("Task with ID $taskId not found")
+            }
         } catch (e: MongoException) {
             throw StoringDataFailureException("Failed to edit task state: ${e.message}")
         }
@@ -69,7 +79,13 @@ class MongoDBTasksDataSource(
 
     override fun deleteTask(taskId: UUID) {
         try {
-            collection.deleteOne(Filters.eq(MongoDBParse.ID_FIELD, taskId.toString()))
+            val result = collection.updateOne(
+                Filters.eq(MongoDBParse.ID_FIELD, taskId.toString()),
+                Updates.set(MongoDBParse.IS_DELETED_FIELD, true)
+            )
+            if (result.matchedCount.toInt() == 0) {
+                throw TaskNotFoundException("Task with ID $taskId not found")
+            }
         } catch (e: MongoException) {
             throw StoringDataFailureException("Failed to delete task: ${e.message}")
         }
