@@ -2,7 +2,7 @@ package ui.logsView
 
 import logic.entities.*
 import logic.useCases.GetLogsByEntityIdUseCase
-import logic.useCases.GetUsersUseCase
+import logic.useCases.GetUserByIdUseCase
 import ui.ViewExceptionHandler
 import ui.cliPrintersAndReaders.CLIReader
 import ui.cliPrintersAndReaders.cliTable.CLITablePrinter
@@ -15,7 +15,7 @@ class LogsView(
     private val getLogsByEntityIdUseCase: GetLogsByEntityIdUseCase,
     private val cliTablePrinter: CLITablePrinter,
     private val viewExceptionHandler: ViewExceptionHandler,
-    private val getUsersUseCase: GetUsersUseCase,
+    private val getUserByIdUseCase: GetUserByIdUseCase,
 ) {
     fun printLogsByEntityId(entityId: UUID) {
         printLogs(entityId)
@@ -39,14 +39,15 @@ class LogsView(
     }
 
     private fun buildLogMessage(log: Log): String {
-        return "user (${getUserNameByLog(log)}) ${actionToString(log.loggedAction)} at ${formatedTime(log.time)}"
+        return "user (${getUserNameById(log.userId)}) ${actionToString(log.loggedAction)} at ${formatedTime(log.time)}"
     }
 
-    private fun getUserNameByLog(log: Log): String {
-        return getUsersUseCase.getUsers()
-            .firstOrNull { it.id == log.userId }
-            ?.userName
-            ?: "Unknown user"
+    private fun getUserNameById(useId: UUID): String? {
+        var userName: String? = null
+        viewExceptionHandler.tryCall {
+            userName = getUserByIdUseCase(useId).userName
+        }
+        return userName
     }
 
     private fun actionToString(action: LoggedAction): String {
