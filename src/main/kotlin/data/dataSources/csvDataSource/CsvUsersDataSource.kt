@@ -5,23 +5,18 @@ import data.dataSources.csvDataSource.fileIO.CsvParser
 import data.repositories.dataSourceInterfaces.UsersDataSource
 import data.dto.UserDto
 import logic.entities.User
-import logic.exceptions.NoLoggedInUserFoundException
+import logic.exceptions.UserNameAlreadyTakenException
 import java.util.*
 
 class CsvUsersDataSource(
     private val usersCsvFileHandler: CsvFileHandler,
-    private val loggedInUserCsvFileHandler: CsvFileHandler,
     private val csvParser: CsvParser
 ) : UsersDataSource {
-    private var loggedInUser: UserDto? = null
 
-    init {
-        loggedInUser = loadUserFromLocalFile()
-    }
-
-    override fun getMates(): List<UserDto> {
+    override fun getMates(includeDeleted: Boolean): List<UserDto> {
         return usersCsvFileHandler.readRecords()
             .map(csvParser::recordToUserDto)
+            .filter { if (includeDeleted) true else !it.isDeleted }
     }
 
     override fun getAdmin(): UserDto = ADMIN
@@ -38,6 +33,12 @@ class CsvUsersDataSource(
     }
 
     override fun addMate(userName: String, hashedPassword: String) {
+        usersCsvFileHandler.readRecords().forEach {
+            val userDto = csvParser.recordToUserDto(it)
+            if (userDto.userName == userName)
+                throw UserNameAlreadyTakenException("User with username '$userName' already exists")
+        }
+
         usersCsvFileHandler.appendRecord(
             UserDto(
                 id = UUID.randomUUID(),
@@ -47,30 +48,6 @@ class CsvUsersDataSource(
                 isDeleted = false
             ).let(csvParser::userDtoToRecord)
         )
-    }
-
-    override fun getLoggedInUser(): UserDto {
-        return loggedInUser ?: throw NoLoggedInUserFoundException()
-    }
-
-    override fun setLoggedInUser(user: UserDto) {
-        loggedInUserCsvFileHandler.rewriteRecords(
-            listOf(csvParser.userDtoToRecord(user))
-        )
-        loggedInUser = user
-    }
-
-    override fun clearLoggedInUser() {
-        loggedInUserCsvFileHandler.rewriteRecords(
-            listOf()
-        )
-        loggedInUser = null
-    }
-
-    private fun loadUserFromLocalFile(): UserDto? {
-        return loggedInUserCsvFileHandler.readRecords()
-            .takeIf { it.isNotEmpty() }
-            ?.let { csvParser.recordToUserDto(it[0]) }
     }
 
     companion object {

@@ -14,8 +14,15 @@ import org.bson.Document
 import java.util.*
 
 class MongoDBTasksDataSource(
-    private val collection: MongoCollection<Document>, private val mongoParser: MongoDBParse
+    private val collection: MongoCollection<Document>,
+    private val mongoParser: MongoDBParse
 ) : TaskRepository {
+
+    override fun getTasksByProjectID(projectId: UUID, includeDeleted: Boolean): List<Task> {
+        return getAllTasks(includeDeleted)
+            .filter { it.projectId == projectId }
+            .map(TaskDto::toTask)
+    }
 
     override fun getTasksByProjectID(projectId: UUID, includeDeleted: Boolean): List<Task> {
         val filter = Filters.and(
@@ -25,6 +32,23 @@ class MongoDBTasksDataSource(
         )
         return collection.find(filter).map { doc ->
             mongoParser.documentToTaskDto(doc).toTask()
+    override fun getTasksByTaskStateID(taskStateId: UUID, includeDeleted: Boolean): List<Task> {
+        return getAllTasks(includeDeleted)
+            .filter { it.stateId == taskStateId }
+            .map(TaskDto::toTask)
+    }
+
+    override fun getTaskByID(taskId: UUID, includeDeleted: Boolean): Task {
+        return getAllTasks(includeDeleted)
+            .filter { if (includeDeleted) true else !it.isDeleted }
+            .firstOrNull { it.id == taskId }
+            ?.toTask()
+            ?: throw TaskNotFoundException()
+    }
+
+    private fun getAllTasks(includeDeleted: Boolean): List<TaskDto> {
+        return collection.find().map { doc ->
+            mongoParser.documentToTaskDto(doc)
         }.toList()
     }
 

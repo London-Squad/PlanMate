@@ -4,6 +4,7 @@ import com.mongodb.client.MongoDatabase
 import data.dataSources.mongoDBDataSource.*
 import data.dataSources.mongoDBDataSource.mongoDBParse.MongoDBParse
 import data.repositories.dataSourceInterfaces.*
+import logic.repositories.TaskRepository
 import org.koin.core.qualifier.named
 import org.koin.dsl.module
 
@@ -29,7 +30,8 @@ val mongoStorageModule = module {
 
     single { MongoDBParse() }
 
-    single<TasksDataSource> { MongoDBTasksDataSource(get(named("tasksCollection")), get()) }
+    single<TaskRepository> { MongoDBTasksDataSource(get(named("tasksCollection")), get()) }
+
     single<TaskStatesDataSource> { MongoDBTaskStatesDataSource(get(named("taskStatesCollection")), get()) }
     single<ProjectsDataSource> { MongoDBProjectsDataSource(get(named("projectsCollection")), get()) }
     single<LogsDataSource> { MongoDBLogsDataSource(get(named("logsCollection")), get()) }

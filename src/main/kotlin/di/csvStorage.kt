@@ -2,7 +2,6 @@ package di
 
 import data.dataSources.csvDataSource.*
 import data.dataSources.csvDataSource.fileIO.CsvFileHandler
-import data.dataSources.csvDataSource.fileIO.CsvParser
 import data.repositories.dataSourceInterfaces.*
 import logic.repositories.ProjectsRepository
 import logic.repositories.TaskRepository
@@ -38,10 +37,6 @@ val csvStorageModule = module {
         CsvFileHandler(File(directory, "users.csv"))
     }
 
-    single(named("activeUserFileHandler")) {
-        val directory = File("csvFiles")
-        CsvFileHandler(File(directory, "activeUser.csv"))
-    }
 
     single { CsvParser() }
 
@@ -52,7 +47,6 @@ val csvStorageModule = module {
     single<UsersDataSource> {
         CsvUsersDataSource(
             get(named("usersFileHandler")),
-            get(named("activeUserFileHandler")),
             get()
         )
     }

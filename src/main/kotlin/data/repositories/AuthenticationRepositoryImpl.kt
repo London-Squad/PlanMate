@@ -1,5 +1,6 @@
 package data.repositories
 
+import data.repositories.dataSourceInterfaces.LoggedInUserCacheDataSource
 import data.repositories.dataSourceInterfaces.UsersDataSource
 import data.repositories.dtoMappers.toUser
 import data.security.hashing.HashingAlgorithm
@@ -9,6 +10,7 @@ import logic.repositories.AuthenticationRepository
 
 class AuthenticationRepositoryImpl(
     private val usersDataSource: UsersDataSource,
+    private val loggedInUserCacheDataSource: LoggedInUserCacheDataSource,
     private val hashingAlgorithm: HashingAlgorithm
 ) : AuthenticationRepository {
 
@@ -19,23 +21,21 @@ class AuthenticationRepositoryImpl(
 
         if (userName == admin.userName && hashedPassword == admin.hashedPassword)
             return admin
-            .also(usersDataSource::setLoggedInUser).toUser()
+                .also(loggedInUserCacheDataSource::setLoggedInUser)
+                .toUser()
 
-        return usersDataSource.getMates()
-                .firstOrNull {
-                    it.userName == userName
-                            && it.hashedPassword == hashedPassword
-                            && !it.isDeleted
-                }
-                ?.also(usersDataSource::setLoggedInUser)?.toUser()
+        return usersDataSource.getMates(includeDeleted = false)
+            .firstOrNull { it.userName == userName && it.hashedPassword == hashedPassword }
+            ?.also(loggedInUserCacheDataSource::setLoggedInUser)
+            ?.toUser()
             ?: throw UserNotFoundException()
     }
 
     override fun logout() {
-        usersDataSource.clearLoggedInUser()
+        loggedInUserCacheDataSource.clearLoggedInUser()
     }
 
     override fun getLoggedInUser(): User {
-        return usersDataSource.getLoggedInUser().toUser()
+        return loggedInUserCacheDataSource.getLoggedInUser().toUser()
     }
 }
