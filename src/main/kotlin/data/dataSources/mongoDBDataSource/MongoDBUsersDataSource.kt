@@ -1,11 +1,14 @@
 package data.dataSources.mongoDBDataSource
 
+import com.mongodb.MongoException
 import com.mongodb.client.MongoCollection
 import com.mongodb.client.model.Filters
 import com.mongodb.client.model.Updates
 import data.dataSources.mongoDBDataSource.mongoDBParse.MongoDBParse
 import data.repositories.dataSourceInterfaces.UsersDataSource
 import data.dto.UserDto
+import logic.exceptions.RetrievingDataFailureException
+import logic.exceptions.StoringDataFailureException
 import logic.exceptions.UserNameAlreadyTakenException
 import org.bson.Document
 import java.util.UUID
@@ -16,31 +19,41 @@ class MongoDBUsersDataSource(
 ) : UsersDataSource {
 
     override fun getMates(includeDeleted: Boolean): List<UserDto> {
-        if (includeDeleted) {
-            return collection.find()
-                .map(mongoParser::documentToUserDto)
+        try {
+            if (includeDeleted) {
+                return collection.find()
+                    .map(mongoParser::documentToUserDto)
                 .toList()
-        }
+            }
 
         return collection.find(
             Filters.eq(MongoDBParse.IS_DELETED_FIELD, false)
         )
             .map(mongoParser::documentToUserDto)
             .toList()
+       }catch (e: MongoException) {
+           throw RetrievingDataFailureException("Failed to retrieve users: ${e.message}")
+
+       }
     }
 
     override fun getAdmin(): UserDto = ADMIN
 
     override fun deleteUser(userId: UUID) {
+        try{
         collection.updateOne(
             Filters.eq(MongoDBParse.ID_FIELD, userId.toString()),
             Updates.set(MongoDBParse.IS_DELETED_FIELD, true)
         )
+    }catch (e: MongoException) {
+        throw StoringDataFailureException("Failed to delete user: ${e.message}")
+    }
     }
 
     override fun addMate(userName: String, hashedPassword: String) {
         val existingUser = collection.find(Filters.eq(MongoDBParse.USERNAME_FIELD, userName)).first()
         if (existingUser != null) throw UserNameAlreadyTakenException("User with username '$userName' already exists")
+        try{
         val doc = mongoParser.userDtoToDocument(
             UserDto(
                 UUID.randomUUID(),
@@ -51,6 +64,10 @@ class MongoDBUsersDataSource(
             )
         )
         collection.insertOne(doc)
+    }catch (e: MongoException) {
+            throw StoringDataFailureException("Failed to add mate: ${e.message}")
+        }
+
     }
 
     companion object {

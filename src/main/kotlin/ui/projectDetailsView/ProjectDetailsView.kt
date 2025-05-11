@@ -1,9 +1,8 @@
 package ui.projectDetailsView
 
-import logic.entities.Project
 import logic.entities.User
+import logic.useCases.GetProjectDetailsUseCase
 import logic.useCases.ManageTaskUseCase
-import logic.useCases.ManageProjectUseCase
 import ui.ViewExceptionHandler
 import ui.cliPrintersAndReaders.CLIPrinter
 import ui.cliPrintersAndReaders.CLIReader
@@ -15,30 +14,38 @@ import java.util.UUID
 class ProjectDetailsView(
     private val cliPrinter: CLIPrinter,
     private val cliReader: CLIReader,
-    private val swimlanesView: SwimlanesView,
     private val editProjectView: EditProjectView,
     private val deleteProjectView: DeleteProjectView,
-    private val manageProjectUseCase: ManageProjectUseCase,
+    private val getProjectDetailsUseCase: GetProjectDetailsUseCase,
+    private val swimlanesView: SwimlanesView,
     private val taskInputReader: TaskInputReader,
     private val taskManagementView: TaskManagementView,
+    private val manageTaskUseCase: ManageTaskUseCase,
     private val logsView: LogsView,
     private val viewExceptionHandler: ViewExceptionHandler,
-    private val manageTaskUseCase: ManageTaskUseCase
 ) {
 
     private lateinit var loggedInUserType: User.Type
-    private lateinit var project: Project
+    private lateinit var projectDetails: GetProjectDetailsUseCase.ProjectDetails
+
 
     fun start(projectId: UUID, loggedInUserType: User.Type) {
         this.loggedInUserType = loggedInUserType
 
-        viewExceptionHandler.tryCall { project = manageProjectUseCase.getProjectById(projectId) }
+        viewExceptionHandler.tryCall {
+            projectDetails = getProjectDetailsUseCase(projectId)
+        }
             .also { if (!it) return }
 
-        swimlanesView.displaySwimlanes(project)
+        printHeader(projectDetails.project.title)
+        swimlanesView.displaySwimlanes(projectDetails.tasks, projectDetails.taskStates)
 
         printOptions()
         goToNextView()
+    }
+
+    private fun printHeader(title: String) {
+        cliPrinter.printHeader("Project: $title")
     }
 
     private fun printOptions() {
@@ -56,14 +63,14 @@ class ProjectDetailsView(
         when (getValidUserInput()) {
             1 -> selectTask()
             2 -> createNewTask()
-            3 -> logsView.printLogsByEntityId(project.id)
-            4 -> editProjectView.editProject(project.id)
-            5 -> deleteProjectView.deleteProject(project.id)
+            3 -> logsView.printLogsByEntityId(projectDetails.project.id)
+            4 -> editProjectView.editProject(projectDetails.project.id)
+            5 -> deleteProjectView.deleteProject(projectDetails.project.id)
             0 -> {
                 printLn("\nExiting Project..."); return
             }
         }
-        start(project.id, loggedInUserType)
+        start(projectDetails.project.id, loggedInUserType)
     }
 
     private fun getValidUserInput(): Int {
@@ -75,21 +82,20 @@ class ProjectDetailsView(
     }
 
     private fun selectTask() {
-        val tasks = manageTaskUseCase.getTasksByProjectID(project.id)
-        if (tasks.isEmpty()) {
+        if (projectDetails.tasks.isEmpty()) {
             printLn("No tasks available to select.")
             return
         }
         printLn("Select a task by number:")
-        val input = cliReader.getValidInputNumberInRange(tasks.size)
-        taskManagementView.start(tasks[input - 1].id, project.id)
+        val input = cliReader.getValidInputNumberInRange(projectDetails.tasks.size)
+        taskManagementView.start(projectDetails.tasks[input - 1].id, projectDetails.project.id)
     }
 
     private fun createNewTask() {
         val title = taskInputReader.getValidTaskTitle()
         val description = taskInputReader.getValidTaskDescription()
 
-        manageTaskUseCase.addNewTask(title, description, project.id)
+        manageTaskUseCase.addNewTask(title, description, projectDetails.project.id)
     }
 
     private fun printLn(message: String) = cliPrinter.cliPrintLn(message)

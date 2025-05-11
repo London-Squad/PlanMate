@@ -1,5 +1,6 @@
 package data.dataSources.mongoDBDataSource
 
+import com.mongodb.MongoException
 import com.mongodb.client.MongoCollection
 import data.dataSources.mongoDBDataSource.mongoDBParse.MongoDBParse
 import data.repositories.dtoMappers.toLog
@@ -7,6 +8,7 @@ import data.repositories.dtoMappers.toLogDto
 import logic.entities.Log
 import logic.entities.Project
 import logic.exceptions.ProjectNotFoundException
+import logic.exceptions.StoringDataFailureException
 import logic.repositories.LogsRepository
 import logic.repositories.ProjectsRepository
 import logic.repositories.TaskRepository
@@ -29,9 +31,13 @@ class MongoDBLogsDataSource(
     }
 
     override fun addLog(log: Log) {
-        val logDto = log.toLogDto()
-        val doc = mongoParser.logDtoToDocument(logDto)
-        collection.insertOne(doc)
+        try {
+            val logDto = log.toLogDto()
+            val doc = mongoParser.logDtoToDocument(logDto)
+            collection.insertOne(doc)
+        } catch (e: MongoException) {
+            throw StoringDataFailureException("Failed to add log: ${e.message}")
+        }
     }
 
     override fun getLogsByEntityId(entityId: UUID): List<Log> {
