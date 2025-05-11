@@ -4,6 +4,7 @@ import com.mongodb.client.MongoCollection
 import com.mongodb.client.model.Filters
 import com.mongodb.client.model.Updates
 import data.dataSources.mongoDBDataSource.mongoDBParse.MongoDBParse
+import data.dto.TaskDto
 import data.repositories.dtoMappers.toTask
 import data.repositories.dtoMappers.toTaskDto
 import logic.entities.Task
@@ -19,12 +20,6 @@ class MongoDBTasksDataSource(
 ) : TaskRepository {
 
     override fun getTasksByProjectID(projectId: UUID, includeDeleted: Boolean): List<Task> {
-        return getAllTasks(includeDeleted)
-            .filter { it.projectId == projectId }
-            .map(TaskDto::toTask)
-    }
-
-    override fun getTasksByProjectID(projectId: UUID, includeDeleted: Boolean): List<Task> {
         val filter = Filters.and(
             Filters.eq(MongoDBParse.PROJECT_ID_FIELD, projectId.toString()),
             if (includeDeleted) Filters.exists(MongoDBParse.IS_DELETED_FIELD)
@@ -32,19 +27,19 @@ class MongoDBTasksDataSource(
         )
         return collection.find(filter).map { doc ->
             mongoParser.documentToTaskDto(doc).toTask()
-    override fun getTasksByTaskStateID(taskStateId: UUID, includeDeleted: Boolean): List<Task> {
+        }.toList()
+
+    }
+
+    override fun getTasksByTaskStateID(
+        taskStateId: UUID,
+        includeDeleted: Boolean
+    ): List<Task> {
         return getAllTasks(includeDeleted)
             .filter { it.stateId == taskStateId }
             .map(TaskDto::toTask)
     }
 
-    override fun getTaskByID(taskId: UUID, includeDeleted: Boolean): Task {
-        return getAllTasks(includeDeleted)
-            .filter { if (includeDeleted) true else !it.isDeleted }
-            .firstOrNull { it.id == taskId }
-            ?.toTask()
-            ?: throw TaskNotFoundException()
-    }
 
     private fun getAllTasks(includeDeleted: Boolean): List<TaskDto> {
         return collection.find().map { doc ->

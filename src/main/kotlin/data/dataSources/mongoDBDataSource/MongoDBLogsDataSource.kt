@@ -2,12 +2,12 @@ package data.dataSources.mongoDBDataSource
 
 import com.mongodb.client.MongoCollection
 import data.dataSources.mongoDBDataSource.mongoDBParse.MongoDBParse
-import data.repositories.dataSourceInterfaces.LogsDataSource
 import data.repositories.dtoMappers.toLog
 import data.repositories.dtoMappers.toLogDto
 import logic.entities.Log
 import logic.entities.Project
 import logic.exceptions.ProjectNotFoundException
+import logic.repositories.LogsRepository
 import logic.repositories.ProjectsRepository
 import logic.repositories.TaskRepository
 import logic.repositories.TaskStatesRepository
@@ -20,7 +20,7 @@ class MongoDBLogsDataSource(
     private val taskRepository: TaskRepository,
     private val taskStatesRepository: TaskStatesRepository,
     private val mongoParser: MongoDBParse
-) : LogsDataSource {
+) : LogsRepository {
 
     override fun getAllLogs(): List<Log> {
         return collection.find().map { doc ->

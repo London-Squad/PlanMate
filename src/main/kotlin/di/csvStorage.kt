@@ -3,6 +3,7 @@ package di
 import data.dataSources.csvDataSource.*
 import data.dataSources.csvDataSource.fileIO.CsvFileHandler
 import data.repositories.dataSourceInterfaces.*
+import logic.repositories.LogsRepository
 import logic.repositories.ProjectsRepository
 import logic.repositories.TaskRepository
 import logic.repositories.TaskStatesRepository
@@ -38,7 +39,6 @@ val csvStorageModule = module {
     }
 
 
-    single { CsvParser() }
 
     single<TaskRepository> { CsvTasksDataSource(get(named("tasksFileHandler")), get()) }
     single<TaskStatesRepository> { CsvTaskStatesDataSource(get(named("taskStatesFileHandler")), get()) }
@@ -50,6 +50,6 @@ val csvStorageModule = module {
             get()
         )
     }
-    single<LogsDataSource> { CsvLogsDataSource(get(named("LogsFileHandler")), get(),get(),get(),get()) }
+    single<LogsRepository> { CsvLogsDataSource(get(named("LogsFileHandler")), get(),get(),get(),get()) }
 
 }

@@ -2,11 +2,11 @@ package data.dataSources.csvDataSource
 
 import data.dataSources.csvDataSource.fileIO.CsvFileHandler
 import data.dataSources.csvDataSource.fileIO.CsvParser
-import data.repositories.dataSourceInterfaces.LogsDataSource
 import data.repositories.dtoMappers.toLog
 import data.repositories.dtoMappers.toLogDto
 import logic.entities.*
 import logic.exceptions.ProjectNotFoundException
+import logic.repositories.LogsRepository
 import logic.repositories.ProjectsRepository
 import logic.repositories.TaskRepository
 import logic.repositories.TaskStatesRepository
@@ -18,7 +18,7 @@ class CsvLogsDataSource(
     private val taskRepository: TaskRepository,
     private val taskStatesRepository: TaskStatesRepository,
     private val csvParser: CsvParser
-) : LogsDataSource {
+) : LogsRepository {
 
     override fun getAllLogs(): List<Log> {
         return logsCsvFileHandler.readRecords().map {
