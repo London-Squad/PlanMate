@@ -13,7 +13,9 @@ class ViewExceptionHandler(
         onError: suspend (Exception) -> Unit,
         operation: suspend () -> T
     ) {
-        onLoading()
+        CoroutineScope(Dispatchers.Default).launch {
+            onLoading()
+        }
         try {
             val result = withContext(Dispatchers.IO) {
                 operation()
