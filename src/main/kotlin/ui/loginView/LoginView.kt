@@ -27,12 +27,12 @@ class LoginView(
         val username = cliReader.getValidUserInput(
             { it.isNotBlank() },
             "Enter username: ",
-            "username cant be empty"
+            "username can not be empty"
         )
         val password = cliReader.getValidUserInput(
             { it.isNotBlank() },
             "Enter password: ",
-            "password cant be empty"
+            "password can not be empty"
         )
         return Pair(username, password)
     }

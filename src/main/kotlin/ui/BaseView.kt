@@ -8,7 +8,7 @@ open class BaseView(
 ) {
     fun tryCall(
         functionToTry: () -> Unit,
-        onFailureFunction: (exception: Exception) -> Unit = (::handleExceptionsInDefaultWay)
+        onFailureFunction: (exception: Exception) -> Unit = (::handleDefaultExceptions)
     ): Boolean {
         return try {
             functionToTry()
@@ -19,7 +19,7 @@ open class BaseView(
         }
     }
 
-    fun handleExceptionsInDefaultWay(exception: Exception) {
+    fun handleDefaultExceptions(exception: Exception) {
         when (exception) {
             is AuthenticationException -> cliPrinter.cliPrintLn(exception.message ?: "something went wrong")
             is RetrievingDataFailureException -> cliPrinter.cliPrintLn(exception.message ?: "something went wrong")

@@ -21,7 +21,7 @@ class WelcomeView(
             functionToTry = (::goDirectlyToMainMenu),
             onFailureFunction = { exception: Exception ->
                 if (exception is NoLoggedInUserFoundException) startNormalWelcomeView()
-                else handleExceptionsInDefaultWay(exception)
+                else handleDefaultExceptions(exception)
             }
         )
     }

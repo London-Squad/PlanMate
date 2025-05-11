@@ -7,7 +7,7 @@ class CLITablePrinter(private val cliPrinter: CLIPrinter) {
     operator fun invoke(
         headers: List<String>, data: List<List<String>>, columnsWidth: List<Int?>
     ) {
-        if (!areInputsValid(headers, data, columnsWidth)) {
+        if (!isInputsShapeValid(headers, data, columnsWidth)) {
             cliPrinter.cliPrintLn("invalid table inputs")
             return
         }
@@ -20,11 +20,10 @@ class CLITablePrinter(private val cliPrinter: CLIPrinter) {
         printBottomBorder(finalColumnWidths)
     }
 
-    private fun areInputsValid(headers: List<String>, data: List<List<String>>, columnsWidth: List<Int?>): Boolean {
-        if (data.isEmpty()) return false
-        if (columnsWidth.size != headers.size) return false
-        if (data.any { it.size != headers.size }) return false
-        return true
+    private fun isInputsShapeValid(headers: List<String>, data: List<List<String>>, columnsWidth: List<Int?>): Boolean {
+        return data.isNotEmpty()
+                && columnsWidth.size == headers.size
+                && data.all { it.size == headers.size }
     }
 
     private fun calculateColumnWidths(

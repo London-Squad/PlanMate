@@ -18,14 +18,15 @@ class TaskStatesView(
 ) : BaseView(cliPrinter) {
 
     private lateinit var projectId: UUID
-    private var tasksStates: List<TaskState> = emptyList()
+    private var taskStates: List<TaskState> = emptyList()
 
     fun start(projectId: UUID) {
         this.projectId = projectId
 
+        cliPrinter.printHeader("Task States Management")
+
         tryCall({ fetchTaskStates() }).also { success -> if (!success) return }
 
-        cliPrinter.printHeader("Task States Management")
         printTaskStates()
         printOptions()
         goToNextView()
@@ -50,15 +51,15 @@ class TaskStatesView(
     }
 
     private fun fetchTaskStates() {
-            tasksStates = useCase.getTaskStatesByProjectId(projectId)
+        taskStates = useCase.getTaskStatesByProjectId(projectId)
     }
 
     private fun printTaskStates() {
-        if (tasksStates.isEmpty()) {
+        if (taskStates.isEmpty()) {
             cliPrinter.cliPrintLn("No task states available.")
         } else {
             val headers = listOf("#", "Title", "Description")
-            val data = tasksStates.mapIndexed { index, state ->
+            val data = taskStates.mapIndexed { index, state ->
                 listOf((index + 1).toString(), state.title, state.description)
             }
             cliTablePrinter(headers, data, columnsWidth)
@@ -73,14 +74,14 @@ class TaskStatesView(
     }
 
     private fun editState() {
-        if (tasksStates.isEmpty()) {
+        if (taskStates.isEmpty()) {
             cliPrinter.cliPrintLn("No task states available to edit.")
             return
         }
 
         cliPrinter.cliPrintLn("select a task state by number.")
-        val index = cliReader.getValidInputNumberInRange(tasksStates.size, min = 1) - 1
-        val selectedState = tasksStates[index]
+        val index = cliReader.getValidInputNumberInRange(taskStates.size, min = 1) - 1
+        val selectedState = taskStates[index]
 
         cliPrinter.cliPrintLn("1. Edit Title")
         cliPrinter.cliPrintLn("2. Edit Description")
@@ -104,13 +105,13 @@ class TaskStatesView(
     }
 
     private fun deleteState() {
-        if (tasksStates.isEmpty()) {
+        if (taskStates.isEmpty()) {
             cliPrinter.cliPrintLn("No task states available to edit.")
             return
         }
         cliPrinter.cliPrintLn("select a task state by number.")
-        val index = cliReader.getValidInputNumberInRange(tasksStates.size, min = 1) - 1
-        val selectedState = tasksStates[index]
+        val index = cliReader.getValidInputNumberInRange(taskStates.size, min = 1) - 1
+        val selectedState = taskStates[index]
 
         val confirm = cliReader.getUserConfirmation()
         if (confirm) {
