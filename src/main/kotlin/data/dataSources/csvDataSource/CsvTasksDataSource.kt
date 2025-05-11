@@ -2,24 +2,49 @@ package data.dataSources.csvDataSource
 
 import data.dataSources.csvDataSource.fileIO.CsvFileHandler
 import data.dataSources.csvDataSource.fileIO.CsvParser
-import data.repositories.dataSourceInterfaces.TasksDataSource
 import data.dto.TaskDto
+import data.repositories.dtoMappers.toTask
+import data.repositories.dtoMappers.toTaskDto
+import logic.entities.Task
+import logic.entities.TaskState
+import logic.exceptions.TaskNotFoundException
+import logic.repositories.TaskRepository
 import java.util.*
 
 class CsvTasksDataSource(
     private val tasksCsvFileHandler: CsvFileHandler,
     private val csvParser: CsvParser
-) : TasksDataSource {
+) : TaskRepository {
 
-    override fun getAllTasks(includeDeleted: Boolean): List<TaskDto> {
+    override fun getTasksByProjectID(projectId: UUID, includeDeleted: Boolean): List<Task> {
+        return getAllTasks(includeDeleted)
+            .filter { it.projectId == projectId }
+            .map(TaskDto::toTask)
+    }
+
+    override fun getTasksByTaskStateID(taskStateId: UUID, includeDeleted: Boolean): List<Task> {
+        return getAllTasks(includeDeleted)
+            .filter { it.stateId == taskStateId }
+            .map(TaskDto::toTask)
+    }
+
+    override fun getTaskByID(taskId: UUID, includeDeleted: Boolean): Task {
+        return getAllTasks(includeDeleted)
+            .filter { if (includeDeleted) true else !it.isDeleted }
+            .firstOrNull { it.id == taskId }
+            ?.toTask()
+            ?: throw TaskNotFoundException()
+    }
+
+    private fun getAllTasks(includeDeleted: Boolean): List<TaskDto> {
         return tasksCsvFileHandler.readRecords()
             .map(csvParser::recordToTaskDto)
             .filter { if (includeDeleted) true else !it.isDeleted }
     }
 
-    override fun addNewTask(taskDto: TaskDto) {
+    override fun addNewTask(task: Task, projectId: UUID) {
         tasksCsvFileHandler.appendRecord(
-            csvParser.taskDtoToRecord(taskDto)
+            csvParser.taskDtoToRecord(task.toTaskDto(projectId))
         )
     }
 
@@ -45,12 +70,12 @@ class CsvTasksDataSource(
             .also(tasksCsvFileHandler::rewriteRecords)
     }
 
-    override fun editTaskState(taskId: UUID, newStateId: UUID) {
+    override fun editTaskState(taskId: UUID, newTaskState: TaskState) {
         tasksCsvFileHandler.readRecords()
             .map {
                 val taskData = csvParser.recordToTaskDto(it)
                 if (taskData.id == taskId) {
-                    csvParser.taskDtoToRecord(taskData.copy(stateId = newStateId))
+                    csvParser.taskDtoToRecord(taskData.copy(stateId = newTaskState.id))
                 } else it
             }
             .also(tasksCsvFileHandler::rewriteRecords)

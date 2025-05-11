@@ -1,17 +1,18 @@
 package data.repositories
 
 import data.repositories.dataSourceInterfaces.TaskStatesDataSource
-import data.repositories.dataSourceInterfaces.TasksDataSource
 import data.repositories.dtoMappers.toTaskState
 import data.repositories.dtoMappers.toTaskStateDto
+import logic.entities.Task
 import logic.entities.TaskState
 import logic.exceptions.TaskStateNotFoundException
+import logic.repositories.TaskRepository
 import logic.repositories.TaskStatesRepository
 import java.util.*
 
 class TaskStatesRepositoryImpl(
     private val taskStatesDataSource: TaskStatesDataSource,
-    private val tasksDataSource: TasksDataSource
+    private val tasksRepository: TaskRepository
 ) : TaskStatesRepository {
     override fun getTaskStatesByProjectId(projectId: UUID, includeDeleted: Boolean): List<TaskState> {
         return taskStatesDataSource.getAllTasksStates(includeDeleted)
@@ -43,8 +44,8 @@ class TaskStatesRepositoryImpl(
 
     override fun deleteTaskState(stateId: UUID) {
         taskStatesDataSource.deleteTaskState(stateId)
-        tasksDataSource.getAllTasks(false).forEach { taskDto ->
-            if (taskDto.stateId == stateId) tasksDataSource.deleteTask(taskDto.id)
-        }
+        tasksRepository.getTasksByTaskStateID(stateId, false)
+            .map(Task::id)
+            .forEach(tasksRepository::deleteTask)
     }
 }
