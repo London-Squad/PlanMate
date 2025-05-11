@@ -3,14 +3,13 @@ package ui.projectDetailsView
 import logic.entities.User
 import logic.useCases.GetProjectDetailsUseCase
 import logic.useCases.ManageTaskUseCase
-import logic.useCases.ManageProjectUseCase
 import ui.BaseView
 import ui.cliPrintersAndReaders.CLIPrinter
 import ui.cliPrintersAndReaders.CLIReader
 import ui.cliPrintersAndReaders.TaskInputReader
 import ui.logsView.LogsView
 import ui.taskManagementView.TaskManagementView
-import java.util.UUID
+import java.util.*
 
 class ProjectDetailsView(
     private val cliPrinter: CLIPrinter,
@@ -93,7 +92,9 @@ class ProjectDetailsView(
         val title = taskInputReader.getValidTaskTitle()
         val description = taskInputReader.getValidTaskDescription()
 
-        manageTaskUseCase.addNewTask(title, description, projectDetails.project.id)
+        tryCall({
+            manageTaskUseCase.addNewTask(title, description, projectDetails.project.id)
+        })
     }
 
     private companion object {

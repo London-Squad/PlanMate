@@ -41,7 +41,7 @@ class MainMenuView(
             2 -> matesManagementView.start()
             0 -> {
                 cliPrinter.cliPrintLn("\nLogging out ...")
-                tryCall({ logoutUseCase() }).also { success -> if (!success) return }
+                tryCall({ logoutUseCase() }).also { success -> if (success) return }
             }
         }
         start(loggedInUserType)

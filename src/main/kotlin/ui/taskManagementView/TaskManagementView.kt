@@ -7,7 +7,7 @@ import ui.BaseView
 import ui.cliPrintersAndReaders.CLIPrinter
 import ui.cliPrintersAndReaders.CLIReader
 import ui.logsView.LogsView
-import java.util.UUID
+import java.util.*
 
 class TaskManagementView(
     private val cliReader: CLIReader,
@@ -35,7 +35,7 @@ class TaskManagementView(
         selectNextUI()
     }
 
-    private fun fetchTaskInfo(taskId: UUID) {
+    private suspend fun fetchTaskInfo(taskId: UUID) {
         task = manageTaskUseCase.getTaskByID(taskId)
         taskStateTitle = manageStateUseCase.getTaskStatesById(task.taskStateId).title
     }

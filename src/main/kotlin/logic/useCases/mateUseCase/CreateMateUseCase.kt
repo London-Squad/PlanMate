@@ -7,7 +7,7 @@ class CreateMateUseCase(
     private val userRepository: UserRepository,
     private val credentialValidator: CredentialValidator
 ) {
-    fun createMate(username: String, password: String) {
+    suspend fun createMate(username: String, password: String) {
         credentialValidator.validateUserName(username)
         credentialValidator.validatePassword(password)
 

@@ -18,7 +18,7 @@ class WelcomeView(
 
     fun start() {
         tryCall(
-            functionToTry = (::goDirectlyToMainMenu),
+            functionToTry = { goDirectlyToMainMenu() },
             onFailureFunction = { exception: Exception ->
                 if (exception is NoLoggedInUserFoundException) startNormalWelcomeView()
                 else handleDefaultExceptions(exception)
@@ -26,7 +26,7 @@ class WelcomeView(
         )
     }
 
-    private fun goDirectlyToMainMenu() {
+    private suspend fun goDirectlyToMainMenu() {
         val loggedInUserType = getLoggedInUserUseCase.getLoggedInUser().type
         mainMenuView.start(loggedInUserType)
         start()

@@ -7,7 +7,7 @@ import ui.cliPrintersAndReaders.CLIPrinter
 import ui.cliPrintersAndReaders.CLIReader
 import ui.cliPrintersAndReaders.ProjectInputReader
 import ui.taskStatesView.TaskStatesView
-import java.util.UUID
+import java.util.*
 
 class EditProjectView(
     private val cliPrinter: CLIPrinter,
@@ -36,7 +36,7 @@ class EditProjectView(
         }
     }
 
-    private fun fetchProject(projectId: UUID) {
+    private suspend fun fetchProject(projectId: UUID) {
         currentProject = manageProjectUseCase.getProjectById(projectId)
     }
 

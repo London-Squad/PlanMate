@@ -1,10 +1,11 @@
 package data.dataSources.mongoDBDataSource
-
 import com.mongodb.MongoException
-import com.mongodb.client.MongoCollection
+import com.mongodb.kotlin.client.coroutine.MongoCollection
 import data.dataSources.mongoDBDataSource.mongoDBParse.MongoDBParse
 import data.dto.LogDto
 import data.repositories.dataSourceInterfaces.LogsDataSource
+import kotlinx.coroutines.flow.map
+import kotlinx.coroutines.flow.toList
 import logic.exceptions.RetrievingDataFailureException
 import logic.exceptions.StoringDataFailureException
 import org.bson.Document
@@ -12,7 +13,7 @@ import org.bson.Document
 class MongoDBLogsDataSource(
     private val collection: MongoCollection<Document>, private val mongoParser: MongoDBParse
 ) : LogsDataSource {
-    override fun getAllLogs(): List<LogDto> {
+    override suspend fun getAllLogs(): List<LogDto> {
         try {
             return collection.find().map { doc ->
                 mongoParser.documentToLogDto(doc)
@@ -22,7 +23,7 @@ class MongoDBLogsDataSource(
         }
     }
 
-    override fun addLog(logDto: LogDto) {
+    override suspend fun addLog(logDto: LogDto) {
         try {
             val doc = mongoParser.logDtoToDocument(logDto)
             collection.insertOne(doc)

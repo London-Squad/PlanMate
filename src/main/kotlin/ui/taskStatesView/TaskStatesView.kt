@@ -50,7 +50,7 @@ class TaskStatesView(
         start(projectId)
     }
 
-    private fun fetchTaskStates() {
+    private suspend fun fetchTaskStates() {
         taskStates = useCase.getTaskStatesByProjectId(projectId)
     }
 
@@ -69,7 +69,7 @@ class TaskStatesView(
     private fun addState() {
         val title = taskStateInputReader.getValidTaskStateTitle()
         val desc = taskStateInputReader.getValidTaskStateDescription()
-        useCase.addState(title, desc, projectId)
+        tryCall({ useCase.addState(title, desc, projectId) })
         cliPrinter.cliPrintLn("Task state added successfully.")
     }
 
@@ -94,13 +94,13 @@ class TaskStatesView(
 
     private fun editTaskStateTitle(state: TaskState) {
         val newTitle = taskStateInputReader.getValidTaskStateTitle()
-        useCase.editStateTitle(state.id, newTitle)
+        tryCall({ useCase.editStateTitle(state.id, newTitle) })
         cliPrinter.cliPrintLn("Title updated.")
     }
 
     private fun editTaskStateDescription(state: TaskState) {
         val newDescription = taskStateInputReader.getValidTaskStateDescription()
-        useCase.editStateDescription(state.id, newDescription)
+        tryCall({ useCase.editStateDescription(state.id, newDescription) })
         cliPrinter.cliPrintLn("Description updated.")
     }
 
@@ -115,7 +115,7 @@ class TaskStatesView(
 
         val confirm = cliReader.getUserConfirmation()
         if (confirm) {
-            useCase.deleteState(selectedState.id)
+            tryCall({ useCase.deleteState(selectedState.id) })
             cliPrinter.cliPrintLn("Task state deleted.")
         } else {
             cliPrinter.cliPrintLn("Deletion canceled.")

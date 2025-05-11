@@ -4,12 +4,12 @@ import logic.entities.Project
 import logic.entities.User
 import logic.useCases.CreateProjectUseCase
 import logic.useCases.ManageProjectUseCase
+import ui.BaseView
 import ui.cliPrintersAndReaders.CLIPrinter
 import ui.cliPrintersAndReaders.CLIReader
+import ui.cliPrintersAndReaders.ProjectInputReader
 import ui.cliPrintersAndReaders.cliTable.CLITablePrinter
 import ui.projectDetailsView.ProjectDetailsView
-import ui.BaseView
-import ui.cliPrintersAndReaders.ProjectInputReader
 
 class ProjectsDashboardView(
     private val cliPrinter: CLIPrinter,
@@ -26,8 +26,8 @@ class ProjectsDashboardView(
 
     fun start(loggedInUserType: User.Type) {
         this.loggedInUserType = loggedInUserType
-        printHeader()
         tryCall({ fetchProjects() }).also { success -> if (!success) return }
+        printHeader()
         printProjects()
         printOptions()
         goToNextView()
@@ -37,7 +37,7 @@ class ProjectsDashboardView(
         cliPrinter.printHeader("Projects Dashboard Menu")
     }
 
-    private fun fetchProjects() {
+    private suspend fun fetchProjects() {
         projects = manageProjectUseCase.getAllProjects()
     }
 

@@ -6,7 +6,7 @@ import logic.useCases.ManageTaskUseCase
 import ui.BaseView
 import ui.cliPrintersAndReaders.CLIPrinter
 import ui.cliPrintersAndReaders.CLIReader
-import java.util.UUID
+import java.util.*
 
 class TaskStateEditionView(
     private val cliReader: CLIReader,
@@ -35,7 +35,7 @@ class TaskStateEditionView(
         })
     }
 
-    private fun fetchTaskStates(projectId: UUID) {
+    private suspend fun fetchTaskStates(projectId: UUID) {
         taskStatesOfProject = manageStateUseCase.getTaskStatesByProjectId(projectId)
     }
 

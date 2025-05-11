@@ -1,16 +1,12 @@
 package data.repositories.dataSourceInterfaces
 
 import data.dto.TaskStateDto
-import java.util.UUID
+import java.util.*
 
 interface TaskStatesDataSource {
-    fun getAllTasksStates(includeDeleted: Boolean): List<TaskStateDto>
-
-    fun addNewTaskState(taskStateDto: TaskStateDto)
-
-    fun editTaskStateTitle(stateId: UUID, newTitle: String)
-
-    fun editTaskStateDescription(stateId: UUID, newDescription: String)
-
-    fun deleteTaskState(stateId: UUID)
+    suspend fun getAllTasksStates(includeDeleted: Boolean): List<TaskStateDto>
+    suspend fun addNewTaskState(taskStateDto: TaskStateDto)
+    suspend fun editTaskStateTitle(stateId: UUID, newTitle: String)
+    suspend fun editTaskStateDescription(stateId: UUID, newDescription: String)
+    suspend fun deleteTaskState(stateId: UUID)
 }

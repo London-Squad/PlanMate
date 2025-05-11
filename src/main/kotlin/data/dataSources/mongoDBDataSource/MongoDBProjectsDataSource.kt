@@ -1,12 +1,14 @@
 package data.dataSources.mongoDBDataSource
 
 import com.mongodb.MongoException
-import com.mongodb.client.MongoCollection
 import com.mongodb.client.model.Filters
 import com.mongodb.client.model.Updates
+import com.mongodb.kotlin.client.coroutine.MongoCollection
 import data.dataSources.mongoDBDataSource.mongoDBParse.MongoDBParse
 import data.dto.ProjectDto
 import data.repositories.dataSourceInterfaces.ProjectsDataSource
+import kotlinx.coroutines.flow.map
+import kotlinx.coroutines.flow.toList
 import logic.exceptions.ProjectNotFoundException
 import logic.exceptions.RetrievingDataFailureException
 import logic.exceptions.StoringDataFailureException
@@ -17,7 +19,7 @@ class MongoDBProjectsDataSource(
     private val projectsCollection: MongoCollection<Document>, private val mongoParse: MongoDBParse
 ) : ProjectsDataSource {
 
-    override fun getAllProjects(includeDeleted: Boolean): List<ProjectDto> {
+    override suspend fun getAllProjects(includeDeleted: Boolean): List<ProjectDto> {
         try {
             return projectsCollection.find().map { doc ->
                 mongoParse.documentToProjectDto(doc)
@@ -27,7 +29,7 @@ class MongoDBProjectsDataSource(
         }
     }
 
-    override fun addNewProject(project: ProjectDto) {
+    override suspend fun addNewProject(project: ProjectDto) {
         try {
             val doc = mongoParse.projectDtoToDocument(project)
             projectsCollection.insertOne(doc)
@@ -36,7 +38,7 @@ class MongoDBProjectsDataSource(
         }
     }
 
-    override fun editProjectTitle(projectId: UUID, newTitle: String) {
+    override suspend fun editProjectTitle(projectId: UUID, newTitle: String) {
         try {
             val result = projectsCollection.updateOne(
                 Filters.and(
@@ -52,7 +54,7 @@ class MongoDBProjectsDataSource(
         }
     }
 
-    override fun editProjectDescription(projectId: UUID, newDescription: String) {
+    override suspend fun editProjectDescription(projectId: UUID, newDescription: String) {
         try {
             val result = projectsCollection.updateOne(
                 Filters.and(
@@ -68,7 +70,7 @@ class MongoDBProjectsDataSource(
         }
     }
 
-    override fun deleteProject(projectId: UUID) {
+    override suspend fun deleteProject(projectId: UUID) {
         try {
             val result = projectsCollection.updateOne(
                 Filters.and(
