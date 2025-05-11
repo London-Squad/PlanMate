@@ -11,14 +11,15 @@ import ui.cliPrintersAndReaders.CLIPrinter
 abstract class BaseView(
     private val cliPrinter: CLIPrinter
 ) {
-    private val loadingScope = CoroutineScope(Dispatchers.Default)
     private var loading = false
 
     fun tryCall(
         functionToTry: suspend CoroutineScope.() -> Unit,
         onFailureFunction: (exception: Exception) -> Unit = { handleDefaultExceptions(it) }
     ): Boolean {
+
         var success = false
+
         CoroutineScope(Dispatchers.Default).launch {
             try {
                 functionToTry()
@@ -31,6 +32,7 @@ abstract class BaseView(
         }
 
         startPrintingLoadingMessage()
+
         return success
     }
 
@@ -46,20 +48,19 @@ abstract class BaseView(
     private fun startPrintingLoadingMessage() {
         loading = true
         Thread.sleep(LOADING_MESSAGE_PRINT_INTERVAL)
-        cliPrinter.cliPrint("Loading To Perform Your Request...")
-        while (true) {
+        if (loading) cliPrinter.cliPrint("Loading To Perform Your Request...")
+        while (loading) {
             Thread.sleep(LOADING_MESSAGE_PRINT_INTERVAL)
             cliPrinter.cliPrint(".")
         }
-
     }
 
     private fun stopPrintingLoadingMessage() {
-        loading = false
         cliPrinter.cliPrintLn("")
+        loading = false
     }
 
     private companion object {
-        const val LOADING_MESSAGE_PRINT_INTERVAL = 10L
+        const val LOADING_MESSAGE_PRINT_INTERVAL = 50L
     }
 }
