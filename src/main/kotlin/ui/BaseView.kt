@@ -1,6 +1,8 @@
 package ui
 
-import kotlinx.coroutines.*
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.launch
 import logic.exceptions.AuthenticationException
 import logic.exceptions.RetrievingDataFailureException
 import logic.exceptions.StoringDataFailureException
@@ -10,27 +12,26 @@ abstract class BaseView(
     private val cliPrinter: CLIPrinter
 ) {
     private val loadingScope = CoroutineScope(Dispatchers.Default)
+    private var loading = false
 
     fun tryCall(
         functionToTry: suspend CoroutineScope.() -> Unit,
         onFailureFunction: (exception: Exception) -> Unit = { handleDefaultExceptions(it) }
     ): Boolean {
+        var success = false
+        CoroutineScope(Dispatchers.Default).launch {
+            try {
+                functionToTry()
+                success = true
+                stopPrintingLoadingMessage()
+            } catch (exception: Exception) {
+                stopPrintingLoadingMessage()
+                onFailureFunction(exception)
+            }
+        }
 
         startPrintingLoadingMessage()
-
-        return try {
-
-            runBlocking {
-                functionToTry()
-                stopPrintingLoadingMessage()
-            }
-
-            true
-        } catch (exception: Exception) {
-            stopPrintingLoadingMessage()
-            onFailureFunction(exception)
-            false
-        }
+        return success
     }
 
     fun handleDefaultExceptions(exception: Exception) {
@@ -43,18 +44,18 @@ abstract class BaseView(
     }
 
     private fun startPrintingLoadingMessage() {
-        loadingScope.launch {
-            delay(LOADING_MESSAGE_PRINT_INTERVAL)
-            cliPrinter.cliPrint("Loading To Perform Your Request...")
-            while (true) {
-                delay(LOADING_MESSAGE_PRINT_INTERVAL)
-                cliPrinter.cliPrint(".")
-            }
+        loading = true
+        Thread.sleep(LOADING_MESSAGE_PRINT_INTERVAL)
+        cliPrinter.cliPrint("Loading To Perform Your Request...")
+        while (true) {
+            Thread.sleep(LOADING_MESSAGE_PRINT_INTERVAL)
+            cliPrinter.cliPrint(".")
         }
+
     }
 
     private fun stopPrintingLoadingMessage() {
-        loadingScope.cancel()
+        loading = false
         cliPrinter.cliPrintLn("")
     }
 
