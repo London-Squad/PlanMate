@@ -4,7 +4,7 @@ import logic.entities.Project
 import logic.entities.User
 import logic.useCases.ManageTaskUseCase
 import logic.useCases.ManageProjectUseCase
-import ui.ViewExceptionHandler
+import ui.BaseView
 import ui.cliPrintersAndReaders.CLIPrinter
 import ui.cliPrintersAndReaders.CLIReader
 import ui.cliPrintersAndReaders.TaskInputReader
@@ -22,7 +22,7 @@ class ProjectDetailsView(
     private val taskInputReader: TaskInputReader,
     private val taskManagementView: TaskManagementView,
     private val logsView: LogsView,
-    private val viewExceptionHandler: ViewExceptionHandler,
+    private val baseView: BaseView,
     private val manageTaskUseCase: ManageTaskUseCase
 ) {
 
@@ -32,7 +32,7 @@ class ProjectDetailsView(
     fun start(projectId: UUID, loggedInUserType: User.Type) {
         this.loggedInUserType = loggedInUserType
 
-        viewExceptionHandler.tryCall { project = manageProjectUseCase.getProjectById(projectId) }
+        baseView.tryCall { project = manageProjectUseCase.getProjectById(projectId) }
             .also { if (!it) return }
 
         swimlanesView.displaySwimlanes(project)

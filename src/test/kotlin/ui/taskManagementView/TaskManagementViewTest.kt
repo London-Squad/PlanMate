@@ -6,7 +6,7 @@ import io.mockk.verify
 import logic.useCases.ManageTaskUseCase
 import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Test
-import ui.ViewExceptionHandler
+import ui.BaseView
 import ui.cliPrintersAndReaders.CLIPrinter
 import ui.cliPrintersAndReaders.CLIReader
 import ui.logsView.LogsView
@@ -18,7 +18,7 @@ class TaskManagementViewTest {
     private lateinit var taskTitleEditionView: TaskTitleEditionView
     private lateinit var taskDescriptionEditionView: TaskDescriptionEditionView
     private lateinit var taskStateEditionView: TaskStateEditionView
-    private lateinit var viewExceptionHandler: ViewExceptionHandler
+    private lateinit var baseView: BaseView
     private lateinit var logsView: LogsView
     private lateinit var manageTaskUseCase: ManageTaskUseCase
     private lateinit var taskDeletionView: TaskDeletionView
@@ -30,7 +30,7 @@ class TaskManagementViewTest {
         taskTitleEditionView = mockk(relaxed = true)
         taskDescriptionEditionView = mockk(relaxed = true)
         taskStateEditionView = mockk(relaxed = true)
-        viewExceptionHandler = mockk(relaxed = true)
+        baseView = mockk(relaxed = true)
         logsView = mockk(relaxed = true)
         manageTaskUseCase = mockk(relaxed = true)
         taskDeletionView = mockk(relaxed = true)
@@ -46,11 +46,11 @@ class TaskManagementViewTest {
             taskDeletionView,
             manageTaskUseCase,
             logsView,
-            viewExceptionHandler
+            baseView
         )
 
         every { manageTaskUseCase.getTaskByID(any()) } returns FakeProjectData.tasks[0]
-        every { viewExceptionHandler.tryCall(any()) } answers {
+        every { baseView.tryCall(any()) } answers {
             firstArg<() -> Unit>().invoke()
             true
         }

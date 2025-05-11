@@ -6,14 +6,14 @@ import io.mockk.verify
 import logic.useCases.ManageTaskUseCase
 import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Test
-import ui.ViewExceptionHandler
+import ui.BaseView
 import ui.cliPrintersAndReaders.TaskInputReader
 
 class TaskDescriptionEditionViewTest {
 
     private lateinit var taskDescriptionEditionView: TaskDescriptionEditionView
     private lateinit var taskInputReader: TaskInputReader
-    private lateinit var viewExceptionHandler: ViewExceptionHandler
+    private lateinit var baseView: BaseView
     private lateinit var manageTaskUseCase: ManageTaskUseCase
 
     @BeforeEach
@@ -21,10 +21,10 @@ class TaskDescriptionEditionViewTest {
 
         manageTaskUseCase = mockk(relaxed = true)
         taskInputReader = mockk(relaxed = true)
-        viewExceptionHandler = mockk(relaxed = true)
+        baseView = mockk(relaxed = true)
 
         taskDescriptionEditionView =
-            TaskDescriptionEditionView(taskInputReader, manageTaskUseCase, viewExceptionHandler)
+            TaskDescriptionEditionView(taskInputReader, manageTaskUseCase, baseView)
     }
 
     @Test
@@ -42,7 +42,7 @@ class TaskDescriptionEditionViewTest {
     fun `editDescription should call manageTaskUseCase editTaskDescription when new description is valid`() {
         val newDescription = "task new description"
         every { taskInputReader.getValidTaskDescription() } returns newDescription
-        every { viewExceptionHandler.tryCall(any()) } answers {
+        every { baseView.tryCall(any()) } answers {
             firstArg<() -> Unit>().invoke()
             true
         }

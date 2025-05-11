@@ -2,7 +2,7 @@ package ui.mainMenuView
 
 import logic.entities.User
 import logic.useCases.LogoutUseCase
-import ui.ViewExceptionHandler
+import ui.BaseView
 import ui.cliPrintersAndReaders.CLIPrinter
 import ui.cliPrintersAndReaders.CLIReader
 import ui.matesManagementView.MatesManagementView
@@ -14,7 +14,7 @@ class MainMenuView(
     private val projectsDashboardView: ProjectsDashboardView,
     private val matesManagementView: MatesManagementView,
     private val logoutUseCase: LogoutUseCase,
-    private val viewExceptionHandler: ViewExceptionHandler
+    private val baseView: BaseView
 ) {
 
     private lateinit var loggedInUserType: User.Type
@@ -42,7 +42,7 @@ class MainMenuView(
             2 -> matesManagementView.start()
             0 -> {
                 printLn("\nLogging out ...")
-                viewExceptionHandler.tryCall { logoutUseCase() }
+                baseView.tryCall { logoutUseCase() }
                 return
             }
         }

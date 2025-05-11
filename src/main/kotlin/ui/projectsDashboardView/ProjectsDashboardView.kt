@@ -8,7 +8,7 @@ import ui.cliPrintersAndReaders.CLIPrinter
 import ui.cliPrintersAndReaders.CLIReader
 import ui.cliPrintersAndReaders.cliTable.CLITablePrinter
 import ui.projectDetailsView.ProjectDetailsView
-import ui.ViewExceptionHandler
+import ui.BaseView
 import ui.cliPrintersAndReaders.ProjectInputReader
 
 class ProjectsDashboardView(
@@ -18,7 +18,7 @@ class ProjectsDashboardView(
     private val manageProjectUseCase: ManageProjectUseCase,
     private val createProjectUseCase: CreateProjectUseCase,
     private val projectView: ProjectDetailsView,
-    private val exceptionHandler: ViewExceptionHandler,
+    private val exceptionHandler: BaseView,
     private val cliTablePrinter: CLITablePrinter
 ) {
 

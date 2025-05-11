@@ -1,7 +1,7 @@
 package di
 
 import org.koin.dsl.module
-import ui.ViewExceptionHandler
+import ui.BaseView
 import ui.cliPrintersAndReaders.*
 import ui.cliPrintersAndReaders.cliTable.CLITablePrinter
 import ui.projectDetailsView.ProjectDetailsView
@@ -24,7 +24,7 @@ val uiModule = module {
     single { TaskInputReader(get(), get()) }
     single { TaskStateInputReader(get(), get()) }
     single { CLITablePrinter(get()) }
-    single { ViewExceptionHandler(get()) }
+    single { BaseView(get()) }
 
     single { WelcomeView(get(), get(), get(), get(), get(), get()) }
     single { LoginView(get(), get(), get(), get(), get()) }

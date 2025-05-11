@@ -2,7 +2,7 @@ package ui.projectDetailsView
 
 import logic.entities.Project
 import logic.useCases.ManageProjectUseCase
-import ui.ViewExceptionHandler
+import ui.BaseView
 import ui.cliPrintersAndReaders.CLIPrinter
 import ui.cliPrintersAndReaders.CLIReader
 import ui.cliPrintersAndReaders.ProjectInputReader
@@ -15,7 +15,7 @@ class EditProjectView(
     private val projectInputReader: ProjectInputReader,
     private val manageProjectUseCase: ManageProjectUseCase,
     private val taskStatesView: TaskStatesView,
-    private val viewExceptionHandler: ViewExceptionHandler
+    private val baseView: BaseView
 ) {
 
     private lateinit var currentProject: Project
@@ -38,7 +38,7 @@ class EditProjectView(
 
     private fun editProjectTitle() {
         val newTitle = projectInputReader.getValidProjectTitle()
-        viewExceptionHandler.tryCall {
+        baseView.tryCall {
             manageProjectUseCase.editProjectTitle(currentProject.id, newTitle)
         }
         currentProject = currentProject.copy(title = newTitle)
@@ -48,7 +48,7 @@ class EditProjectView(
 
     private fun editProjectDescription() {
         val newDescription = projectInputReader.getValidProjectDescription()
-        viewExceptionHandler.tryCall {
+        baseView.tryCall {
             manageProjectUseCase.editProjectDescription(currentProject.id, newDescription)
         }
         currentProject = currentProject.copy(description = newDescription)

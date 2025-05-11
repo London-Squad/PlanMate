@@ -2,7 +2,7 @@ package ui.taskStatesView
 
 import logic.entities.TaskState
 import logic.useCases.ManageStateUseCase
-import ui.ViewExceptionHandler
+import ui.BaseView
 import ui.cliPrintersAndReaders.CLIPrinter
 import ui.cliPrintersAndReaders.CLIReader
 import ui.cliPrintersAndReaders.TaskStateInputReader
@@ -14,7 +14,7 @@ class TaskStatesView(
     private val cliReader: CLIReader,
     private val taskStateInputReader: TaskStateInputReader,
     private val useCase: ManageStateUseCase,
-    private val viewExceptionHandler: ViewExceptionHandler,
+    private val baseView: BaseView,
     private val cliTablePrinter: CLITablePrinter
 ) {
 
@@ -50,13 +50,13 @@ class TaskStatesView(
     }
 
     private fun getTaskStates() {
-        viewExceptionHandler.tryCall {
+        baseView.tryCall {
             tasksStates = useCase.getTaskStatesByProjectId(projectId)
         }
     }
 
     private fun printTaskStates() {
-        viewExceptionHandler.tryCall {
+        baseView.tryCall {
 
             if (tasksStates.isEmpty()) {
                 printLn("No task states available.")

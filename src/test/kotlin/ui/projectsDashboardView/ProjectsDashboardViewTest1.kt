@@ -4,7 +4,7 @@ import io.mockk.*
 import logic.entities.User
 import logic.useCases.CreateProjectUseCase
 import logic.useCases.ManageProjectUseCase
-import ui.ViewExceptionHandler
+import ui.BaseView
 import ui.cliPrintersAndReaders.*
 import ui.cliPrintersAndReaders.cliTable.CLITablePrinter
 import ui.projectDetailsView.ProjectDetailsView
@@ -20,7 +20,7 @@ class ProjectsDashboardViewTest {
     private lateinit var manageProjectUseCase: ManageProjectUseCase
     private lateinit var createProjectUseCase: CreateProjectUseCase
     private lateinit var projectView: ProjectDetailsView
-    private lateinit var exceptionHandler: ViewExceptionHandler
+    private lateinit var exceptionHandler: BaseView
     private lateinit var cliTablePrinter: CLITablePrinter
 
     private lateinit var dashboard: ProjectsDashboardView

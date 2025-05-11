@@ -3,7 +3,7 @@ package ui.taskManagementView
 import logic.entities.TaskState
 import logic.useCases.ManageStateUseCase
 import logic.useCases.ManageTaskUseCase
-import ui.ViewExceptionHandler
+import ui.BaseView
 import ui.cliPrintersAndReaders.CLIPrinter
 import ui.cliPrintersAndReaders.CLIReader
 import java.util.UUID
@@ -13,7 +13,7 @@ class TaskStateEditionView(
     private val cliPrinter: CLIPrinter,
     private val manageTaskUseCase: ManageTaskUseCase,
     private val manageStateUseCase: ManageStateUseCase,
-    private val viewExceptionHandler: ViewExceptionHandler
+    private val baseView: BaseView
 ) {
 
     fun editState(taskId: UUID, projectId: UUID) {
@@ -27,7 +27,7 @@ class TaskStateEditionView(
         printProjectState(projectTasksStates)
         val newStateIndex = cliReader.getValidInputNumberInRange(min = 1, max = projectTasksStates.size) - 1
 
-        viewExceptionHandler.tryCall {
+        baseView.tryCall {
             manageTaskUseCase.editTaskState(taskId, projectTasksStates[newStateIndex].id)
         }
     }

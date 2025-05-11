@@ -6,14 +6,14 @@ import io.mockk.verify
 import logic.useCases.ManageTaskUseCase
 import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Test
-import ui.ViewExceptionHandler
+import ui.BaseView
 import ui.cliPrintersAndReaders.CLIPrinter
 import ui.cliPrintersAndReaders.CLIReader
 
 class TaskStateEditionViewTest {
 
     private lateinit var taskStateEditionView: TaskStateEditionView
-    private lateinit var viewExceptionHandler: ViewExceptionHandler
+    private lateinit var baseView: BaseView
     private lateinit var cliPrinter: CLIPrinter
     private lateinit var cliReader: CLIReader
     private lateinit var manageTaskUseCase: ManageTaskUseCase
@@ -22,13 +22,13 @@ class TaskStateEditionViewTest {
     fun setup() {
 
         manageTaskUseCase = mockk(relaxed = true)
-        viewExceptionHandler = mockk(relaxed = true)
+        baseView = mockk(relaxed = true)
         cliPrinter = mockk(relaxed = true)
         cliReader = mockk(relaxed = true)
 
-        taskStateEditionView = TaskStateEditionView(cliReader, cliPrinter, manageTaskUseCase, viewExceptionHandler)
+        taskStateEditionView = TaskStateEditionView(cliReader, cliPrinter, manageTaskUseCase, baseView)
 
-        every { viewExceptionHandler.tryCall(any()) } answers {
+        every { baseView.tryCall(any()) } answers {
             firstArg<() -> Unit>().invoke()
             true
         }

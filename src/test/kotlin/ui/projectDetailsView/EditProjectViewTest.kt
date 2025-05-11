@@ -3,7 +3,7 @@ package ui.projectDetailsView
 import com.google.common.truth.Truth.assertThat
 import io.mockk.*
 import logic.useCases.ManageProjectUseCase
-import ui.ViewExceptionHandler
+import ui.BaseView
 import ui.cliPrintersAndReaders.CLIPrinter
 import ui.cliPrintersAndReaders.CLIReader
 import ui.cliPrintersAndReaders.ProjectInputReader
@@ -19,7 +19,7 @@ class EditProjectViewTest {
     private lateinit var projectInputReader: ProjectInputReader
     private lateinit var manageProjectUseCase: ManageProjectUseCase
     private lateinit var taskStatesView: TaskStatesView
-    private lateinit var viewExceptionHandler: ViewExceptionHandler
+    private lateinit var baseView: BaseView
     private lateinit var editProjectView: EditProjectView
 
     @BeforeTest
@@ -29,13 +29,13 @@ class EditProjectViewTest {
         projectInputReader = mockk()
         manageProjectUseCase = mockk(relaxed = true)
         taskStatesView = mockk(relaxed = true)
-        viewExceptionHandler = mockk()
+        baseView = mockk()
         editProjectView = EditProjectView(
             cliPrinter, cliReader, projectInputReader,
-            manageProjectUseCase, taskStatesView, viewExceptionHandler
+            manageProjectUseCase, taskStatesView, baseView
         )
 
-        every { viewExceptionHandler.tryCall(any()) } answers {
+        every { baseView.tryCall(any()) } answers {
             (firstArg() as () -> Unit).invoke(); true
         }
     }

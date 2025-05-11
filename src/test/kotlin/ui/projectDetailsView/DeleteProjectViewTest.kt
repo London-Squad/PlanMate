@@ -2,7 +2,7 @@ package ui.projectDetailsView
 
 import io.mockk.*
 import logic.useCases.ManageProjectUseCase
-import ui.ViewExceptionHandler
+import ui.BaseView
 import ui.cliPrintersAndReaders.CLIPrinter
 import ui.cliPrintersAndReaders.CLIReader
 import ui.taskManagementView.FakeProjectData
@@ -14,7 +14,7 @@ class DeleteProjectViewTest {
     private lateinit var cliPrinter: CLIPrinter
     private lateinit var cliReader: CLIReader
     private lateinit var manageProjectUseCase: ManageProjectUseCase
-    private lateinit var viewExceptionHandler: ViewExceptionHandler
+    private lateinit var baseView: BaseView
     private lateinit var deleteProjectView: DeleteProjectView
 
     @BeforeTest
@@ -22,15 +22,15 @@ class DeleteProjectViewTest {
         cliPrinter = mockk(relaxed = true)
         cliReader = mockk()
         manageProjectUseCase = mockk(relaxed = true)
-        viewExceptionHandler = mockk()
-        deleteProjectView = DeleteProjectView(cliPrinter, cliReader, manageProjectUseCase, viewExceptionHandler)
+        baseView = mockk()
+        deleteProjectView = DeleteProjectView(cliPrinter, cliReader, manageProjectUseCase, baseView)
     }
 
     @Test
     fun `deleteProject should call delete on use case if user confirms`() {
         // given
         every { cliReader.getUserConfirmation() } returns true
-        every { viewExceptionHandler.tryCall(any()) } answers {
+        every { baseView.tryCall(any()) } answers {
             (firstArg() as () -> Unit).invoke(); true
         }
 
@@ -45,7 +45,7 @@ class DeleteProjectViewTest {
     fun `deleteProject should print success message if deletion succeeds`() {
         // given
         every { cliReader.getUserConfirmation() } returns true
-        every { viewExceptionHandler.tryCall(any()) } answers {
+        every { baseView.tryCall(any()) } answers {
             (firstArg() as () -> Unit).invoke(); true
         }
 

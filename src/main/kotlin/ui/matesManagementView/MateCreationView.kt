@@ -1,7 +1,7 @@
 package ui.matesManagementView
 
 import logic.useCases.mateUseCase.CreateMateUseCase
-import ui.ViewExceptionHandler
+import ui.BaseView
 import ui.cliPrintersAndReaders.CLIPrinter
 import ui.cliPrintersAndReaders.CLIReader
 
@@ -9,11 +9,11 @@ class MateCreationView(
     private val createMateUseCase: CreateMateUseCase,
     private val cliPrinter: CLIPrinter,
     private val cliReader: CLIReader,
-    private val viewExceptionHandler: ViewExceptionHandler
+    private val baseView: BaseView
 ) {
     fun createMate() {
         cliPrinter.printHeader("Create New Mate")
-        viewExceptionHandler.tryCall {
+        baseView.tryCall {
             val username = cliReader.getValidUserInput(
                 { it.isNotBlank() },
                 "Enter username: ",

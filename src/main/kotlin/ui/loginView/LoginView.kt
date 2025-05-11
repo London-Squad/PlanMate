@@ -2,7 +2,7 @@ package ui.loginView
 
 import logic.entities.User
 import logic.useCases.LoginUseCase
-import ui.ViewExceptionHandler
+import ui.BaseView
 import ui.cliPrintersAndReaders.CLIPrinter
 import ui.cliPrintersAndReaders.CLIReader
 import ui.mainMenuView.MainMenuView
@@ -12,7 +12,7 @@ class LoginView(
     private val cliReader: CLIReader,
     private val loginUseCase: LoginUseCase,
     private val mainMenuView: MainMenuView,
-    private val viewExceptionHandler: ViewExceptionHandler
+    private val baseView: BaseView
 ) {
 
     fun start() {
@@ -28,7 +28,7 @@ class LoginView(
     private fun processLogin(username: String, password: String) {
         var loggedInUserType = User.Type.MATE
 
-        viewExceptionHandler.tryCall {
+        baseView.tryCall {
             loggedInUserType = loginUseCase(username, password).type
         }.also { if (!it) return }
 
