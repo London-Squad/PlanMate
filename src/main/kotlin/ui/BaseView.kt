@@ -24,14 +24,14 @@ abstract class BaseView(
             try {
                 functionToTry()
                 success = true
-                stopPrintingLoadingMessage()
+                stopLoading()
             } catch (exception: Exception) {
-                stopPrintingLoadingMessage()
+                stopLoading()
                 onFailureFunction(exception)
             }
         }
 
-        startPrintingLoadingMessage()
+        startLoading()
 
         return success
     }
@@ -45,19 +45,19 @@ abstract class BaseView(
         }
     }
 
-    private fun startPrintingLoadingMessage() {
+    private fun startLoading() {
         loading = true
         Thread.sleep(LOADING_MESSAGE_PRINT_INTERVAL)
         if (loading) cliPrinter.cliPrint("Loading To Perform Your Request...")
         while (loading) {
-            Thread.sleep(LOADING_MESSAGE_PRINT_INTERVAL)
             cliPrinter.cliPrint(".")
+            Thread.sleep(LOADING_MESSAGE_PRINT_INTERVAL)
         }
     }
 
-    private fun stopPrintingLoadingMessage() {
-        cliPrinter.cliPrintLn("")
+    private fun stopLoading() {
         loading = false
+        cliPrinter.cliPrintLn("")
     }
 
     private companion object {
