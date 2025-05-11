@@ -4,6 +4,7 @@ import logic.entities.*
 import logic.useCases.GetLogsByEntityIdUseCase
 import logic.useCases.GetUsersUseCase
 import ui.ViewExceptionHandler
+import ui.ViewState
 import ui.cliPrintersAndReaders.CLIReader
 import ui.cliPrintersAndReaders.cliTable.CLITablePrinter
 import java.time.LocalDateTime
@@ -17,25 +18,59 @@ class LogsView(
     private val viewExceptionHandler: ViewExceptionHandler,
     private val getUsersUseCase: GetUsersUseCase,
 ) {
-    fun printLogsByEntityId(entityId: UUID) {
-        printLogs(entityId)
-        cliReader.getUserInput("\npress enter to go back")
+    private var currentViewState: ViewState<List<Log>> = ViewState.Loading
 
+    suspend fun printLogsByEntityId(entityId: UUID, onComplete: suspend () -> Unit = {}) {
+        loadAndDisplayLogs(entityId, onComplete)
     }
 
-    private fun printLogs(entityId: UUID) {
-        viewExceptionHandler.tryCall {
-            val logs = getLogsByEntityIdUseCase.getLogsByEntityId(entityId)
-            val headers = listOf("Log ID", "Action Message")
-            val data = logs.map { log ->
-                listOf(
-                    log.id.toString(),
-                    buildLogMessage(log)
-                )
+    private suspend fun loadAndDisplayLogs(entityId: UUID, onComplete: suspend () -> Unit) {
+        viewExceptionHandler.executeWithState(
+            onLoading = {
+                currentViewState = ViewState.Loading
+            },
+            onSuccess = { logs ->
+                currentViewState = ViewState.Success(logs)
+                displayLogs(logs)
+                cliReader.getUserInput("\npress enter to go back")
+                onComplete()
+            },
+            onError = { exception ->
+                currentViewState = ViewState.Error(exception)
+                onComplete()
+            },
+            operation = {
+                getLogsByEntityIdUseCase.getLogsByEntityId(entityId)
             }
-            val columnWidths = listOf(36, null)
-            cliTablePrinter(headers, data, columnWidths)
-        }
+        )
+    }
+
+    private suspend fun displayLogs(logs: List<Log>) {
+        val headers = listOf("Log ID", "Action Message")
+        val columnWidths = listOf(36, null)
+
+
+        viewExceptionHandler.executeWithState(
+            onLoading = {
+            },
+            onSuccess = { logMessages ->
+                val data = logs.zip(logMessages).map { (log, message) ->
+                    listOf(log.id.toString(), message)
+                }
+                cliTablePrinter(headers, data, columnWidths)
+            },
+            onError = { exception ->
+                val data = logs.map { log ->
+                    listOf(log.id.toString(), "Error retrieving log details")
+                }
+                cliTablePrinter(headers, data, columnWidths)
+            },
+            operation = {
+                logs.map { log ->
+                    buildLogMessage(log)
+                }
+            }
+        )
     }
 
     private suspend fun buildLogMessage(log: Log): String {

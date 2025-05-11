@@ -34,4 +34,5 @@ class CLIReader(
             isValidInput = { it.trim().toIntOrNull() in min..max }
         ).trim().toInt()
     }
+
 }

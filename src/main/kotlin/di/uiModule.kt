@@ -37,7 +37,7 @@ val uiModule = module {
     single { DeleteProjectView(get(), get(), get(), get()) }
     single { TaskStatesView(get(), get(), get(), get(), get(), get()) }
 
-    single { TaskTitleEditionView(get(), get(), get()) }
+    single { TaskTitleEditionView(get(), get(), get(), get()) }
     single { TaskDescriptionEditionView(get(), get(), get()) }
     single { TaskStateEditionView(get(), get(), get(), get(), get()) }
     single { TaskDeletionView(get(), get(), get(), get()) }
@@ -46,5 +46,5 @@ val uiModule = module {
     single { LogsView(get(), get(), get(), get(), get()) }
 
     single { MateCreationView(get(), get(), get(), get()) }
-    single { MatesManagementView(get(), get(), get(), get(), get(), get()) }
+    single { MatesManagementView(get(), get(), get(), get(), get(), get(), get()) }
 }

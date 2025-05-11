@@ -4,12 +4,13 @@ import logic.entities.Project
 import logic.entities.User
 import logic.useCases.CreateProjectUseCase
 import logic.useCases.ManageProjectUseCase
+import ui.ViewExceptionHandler
+import ui.ViewState
 import ui.cliPrintersAndReaders.CLIPrinter
 import ui.cliPrintersAndReaders.CLIReader
+import ui.cliPrintersAndReaders.ProjectInputReader
 import ui.cliPrintersAndReaders.cliTable.CLITablePrinter
 import ui.projectDetailsView.ProjectDetailsView
-import ui.ViewExceptionHandler
-import ui.cliPrintersAndReaders.ProjectInputReader
 
 class ProjectsDashboardView(
     private val cliPrinter: CLIPrinter,
@@ -21,31 +22,44 @@ class ProjectsDashboardView(
     private val exceptionHandler: ViewExceptionHandler,
     private val cliTablePrinter: CLITablePrinter
 ) {
-
     private lateinit var loggedInUserType: User.Type
-    private var projects: List<Project> = emptyList()
+    private var currentViewState: ViewState<List<Project>> = ViewState.Loading
 
-    fun start(loggedInUserType: User.Type) {
+    suspend fun start(loggedInUserType: User.Type) {
         this.loggedInUserType = loggedInUserType
         printHeader()
-        getProjects()
-        printProjects()
-        printOptions()
-        goToNextView()
+        loadProjects()
     }
 
     private fun printHeader() {
         cliPrinter.printHeader("Projects Dashboard Menu")
     }
 
-    private fun getProjects() {
-        exceptionHandler.tryCall {
-            projects = manageProjectUseCase.getAllProjects()
-        }.also { if (!it) return }
+    private suspend fun loadProjects() {
+        exceptionHandler.executeWithState(
+            onLoading = {
+                printLn("Loading projects...")
+                currentViewState = ViewState.Loading
+            },
+            onSuccess = { projects ->
+                currentViewState = ViewState.Success(projects)
+                printProjects(projects)
+                printOptions()
+                goToNextView(projects)
+            },
+            onError = { exception ->
+                currentViewState = ViewState.Error(exception)
+                printLn("Failed to load projects: ${exception.message}")
+                printOptions()
+                goToNextView(emptyList())
+            },
+            operation = {
+                manageProjectUseCase.getAllProjects()
+            }
+        )
     }
 
-    private fun printProjects() {
-
+    private fun printProjects(projects: List<Project>) {
         if (projects.isEmpty()) {
             cliPrinter.cliPrintLn("No projects found.")
             return
@@ -63,19 +77,19 @@ class ProjectsDashboardView(
     }
 
     private fun printOptions() {
-        printLn("1. select a project")
+        printLn("1. Select a project")
         // TODO : add option to view all logs for all projects at once
-        if (loggedInUserType == User.Type.ADMIN) printLn("2. create a new project")
+        if (loggedInUserType == User.Type.ADMIN) printLn("2. Create a new project")
         printLn("0. Exit Projects Dashboard")
     }
 
-    private fun goToNextView() {
-
+    private suspend fun goToNextView(projects: List<Project>) {
         when (getValidUserInput()) {
-            1 -> selectProject()
+            1 -> selectProject(projects)
             2 -> createProject()
             0 -> {
-                printLn("\nExiting Projects Dashboard ..."); return
+                printLn("\nExiting Projects Dashboard ...")
+                return
             }
         }
         start(loggedInUserType)
@@ -86,27 +100,41 @@ class ProjectsDashboardView(
             if (loggedInUserType == User.Type.ADMIN) MAX_OPTION_NUMBER_ADMIN
             else MAX_OPTION_NUMBER_MATE
 
-        return cliReader.getValidInputNumberInRange(maxOptionNumberAllowed)
+        return cliReader.getValidInputNumberInRange(min = 0, max = maxOptionNumberAllowed)
     }
 
-    private fun selectProject() {
+    private suspend fun selectProject(projects: List<Project>) {
         if (projects.isEmpty()) {
             printLn("No projects available to select.")
             return
         }
         printLn("Select a project by number:")
-        val input = cliReader.getValidInputNumberInRange(projects.size)
+        val input = cliReader.getValidInputNumberInRange(min = 1, max = projects.size)
         projectView.start(projects[input - 1].id, loggedInUserType)
     }
 
-    private fun createProject() {
+    private suspend fun createProject() {
         cliPrinter.printHeader("Create Project")
         val title = projectInputReader.getValidProjectTitle()
         val description = projectInputReader.getValidProjectDescription()
-        exceptionHandler.tryCall {
-            createProjectUseCase.createProject(title, description)
-            cliPrinter.cliPrintLn("Project created successfully.")
-        }
+
+        exceptionHandler.executeWithState(
+            onLoading = {
+                printLn("Creating project...")
+                currentViewState = ViewState.Loading
+            },
+            onSuccess = {
+                currentViewState = ViewState.Success(emptyList())
+                printLn("Project created successfully.")
+            },
+            onError = { exception ->
+                currentViewState = ViewState.Error(exception)
+                printLn("Failed to create project: ${exception.message}")
+            },
+            operation = {
+                createProjectUseCase.createProject(title, description)
+            }
+        )
     }
 
     private fun printLn(message: String) = cliPrinter.cliPrintLn(message)

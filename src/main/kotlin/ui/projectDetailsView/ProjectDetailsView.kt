@@ -1,15 +1,10 @@
 package ui.projectDetailsView
 
-import kotlinx.coroutines.CoroutineScope
-import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.launch
-import kotlinx.coroutines.runBlocking
-import logic.entities.Project
-import logic.entities.Task
 import logic.entities.User
 import logic.useCases.GetProjectDetailsUseCase
 import logic.useCases.ManageTaskUseCase
 import ui.ViewExceptionHandler
+import ui.ViewState
 import ui.cliPrintersAndReaders.CLIPrinter
 import ui.cliPrintersAndReaders.CLIReader
 import ui.cliPrintersAndReaders.TaskInputReader
@@ -28,27 +23,59 @@ class ProjectDetailsView(
     private val taskManagementView: TaskManagementView,
     private val manageTaskUseCase: ManageTaskUseCase,
     private val logsView: LogsView,
-    private val viewExceptionHandler: ViewExceptionHandler,
+    private val viewExceptionHandler: ViewExceptionHandler
 ) {
-
+    private var currentState: ViewState<GetProjectDetailsUseCase.ProjectDetails> = ViewState.Loading
     private lateinit var loggedInUserType: User.Type
     private lateinit var projectDetails: GetProjectDetailsUseCase.ProjectDetails
 
-
-    fun start(projectId: UUID, loggedInUserType: User.Type) {
+    suspend fun start(projectId: UUID, loggedInUserType: User.Type, onComplete: () -> Unit = {}) {
         this.loggedInUserType = loggedInUserType
+        loadProjectDetails(projectId, onComplete)
+    }
 
-        viewExceptionHandler.tryCall {
-            projectDetails = getProjectDetailsUseCase(projectId)
-        }
-            .also { if (!it) return }
-        runBlocking {
-            printHeader(projectDetails.project.title)
-            swimlanesView.displaySwimlanes(projectDetails.tasks, projectDetails.taskStates)
-        }
+    private suspend fun loadProjectDetails(projectId: UUID, onComplete: () -> Unit) {
+        viewExceptionHandler.executeWithState(
+            onLoading = {
+                printLn("Loading project details...")
+                currentState = ViewState.Loading
+            },
+            onSuccess = { details ->
+                projectDetails = details
+                currentState = ViewState.Success(details)
+                displayProjectDetails(onComplete)
+            },
+            onError = { exception ->
+                currentState = ViewState.Error(exception)
+                printLn("Failed to load project details: ${exception.message}")
+                onComplete()
+            },
+            operation = {
+                getProjectDetailsUseCase(projectId)
+            }
+        )
+    }
 
+    private suspend fun displayProjectDetails(onComplete: () -> Unit) {
+        printHeader(projectDetails.project.title)
+        displaySwimlanes()
         printOptions()
-        goToNextView()
+        goToNextView(onComplete)
+    }
+
+    private suspend fun displaySwimlanes() {
+        viewExceptionHandler.executeWithState(
+            onLoading = {},
+            onSuccess = {
+                swimlanesView.displaySwimlanes(projectDetails.tasks, projectDetails.taskStates)
+            },
+            onError = { exception ->
+                printLn("Failed to display swimlanes: ${exception.message}")
+            },
+            operation = {
+                swimlanesView.displaySwimlanes(projectDetails.tasks, projectDetails.taskStates)
+            }
+        )
     }
 
     private fun printHeader(title: String) {
@@ -56,8 +83,8 @@ class ProjectDetailsView(
     }
 
     private fun printOptions() {
-        printLn("\n1. select a task")
-        printLn("2. create new tasks")
+        printLn("\n1. Select a task")
+        printLn("2. Create new task")
         printLn("3. View project logs")
         if (loggedInUserType == User.Type.ADMIN) {
             printLn("4. Edit project")
@@ -66,18 +93,18 @@ class ProjectDetailsView(
         printLn("0. Back to projects")
     }
 
-    private fun goToNextView() {
+    private suspend fun goToNextView(onComplete: () -> Unit) {
         when (getValidUserInput()) {
-            1 -> selectTask()
-            2 -> createNewTask()
-            3 -> logsView.printLogsByEntityId(projectDetails.project.id)
-            4 -> editProjectView.editProject(projectDetails.project.id)
-            5 -> deleteProjectView.deleteProject(projectDetails.project.id)
+            1 -> selectTask { start(projectDetails.project.id, loggedInUserType, onComplete) }
+            2 -> createNewTask { start(projectDetails.project.id, loggedInUserType, onComplete) }
+            3 -> viewLogs { start(projectDetails.project.id, loggedInUserType, onComplete) }
+            4 -> editProject { start(projectDetails.project.id, loggedInUserType, onComplete) }
+            5 -> deleteProject { onComplete() }  // After deletion, return to previous screen
             0 -> {
-                printLn("\nExiting Project..."); return
+                printLn("\nExiting Project...")
+                onComplete()
             }
         }
-        start(projectDetails.project.id, loggedInUserType)
     }
 
     private fun getValidUserInput(): Int {
@@ -85,29 +112,76 @@ class ProjectDetailsView(
             if (loggedInUserType == User.Type.ADMIN) MAX_OPTION_NUMBER_ADMIN
             else MAX_OPTION_NUMBER_MATE
 
-        return cliReader.getValidInputNumberInRange(maxOptionNumberAllowed)
+        return cliReader.getValidInputNumberInRange(
+            min = 0,
+            max = maxOptionNumberAllowed
+        )
     }
 
-    private fun selectTask() {
+    private suspend fun selectTask(onComplete: suspend () -> Unit) {
         if (projectDetails.tasks.isEmpty()) {
             printLn("No tasks available to select.")
+            onComplete()
             return
         }
+
         printLn("Select a task by number:")
-        val input = cliReader.getValidInputNumberInRange(projectDetails.tasks.size)
-        taskManagementView.start(projectDetails.tasks[input - 1].id, projectDetails.project.id)
+        val input = cliReader.getValidInputNumberInRange(
+            min = 1,
+            max = projectDetails.tasks.size
+        )
+
+        taskManagementView.start(
+            taskId = projectDetails.tasks[input - 1].id,
+            projectId = projectDetails.project.id
+        )
+        onComplete()
     }
 
-    private fun createNewTask() {
+    private suspend fun createNewTask(onComplete:suspend () -> Unit) {
         val title = taskInputReader.getValidTaskTitle()
         val description = taskInputReader.getValidTaskDescription()
 
-        runBlocking {
-            manageTaskUseCase.addNewTask(title, description, projectDetails.project.id)
+        viewExceptionHandler.executeWithState(
+            onLoading = {
+                printLn("Creating new task...")
+                currentState = ViewState.Loading
+            },
+            onSuccess = {
+                printLn("Task created successfully.")
+                onComplete()
+            },
+            onError = { exception ->
+                printLn("Failed to create task: ${exception.message}")
+                onComplete()
+            },
+            operation = {
+                manageTaskUseCase.addNewTask(title, description, projectDetails.project.id)
+            }
+        )
+    }
+
+    private suspend fun viewLogs(onComplete: suspend () -> Unit) {
+        logsView.printLogsByEntityId(projectDetails.project.id) {
+            onComplete()
         }
     }
 
-    private fun printLn(message: String) = cliPrinter.cliPrintLn(message)
+    private suspend fun editProject(onComplete: suspend () -> Unit) {
+        editProjectView.editProject(projectDetails.project.id) {
+            onComplete()
+        }
+    }
+
+    private suspend fun deleteProject(onComplete: () -> Unit) {
+        deleteProjectView.deleteProject(projectDetails.project.id) {
+            onComplete()
+        }
+    }
+
+    private fun printLn(message: String) {
+        cliPrinter.cliPrintLn(message)
+    }
 
     private companion object {
         const val MAX_OPTION_NUMBER_ADMIN = 5

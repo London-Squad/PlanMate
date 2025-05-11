@@ -1,12 +1,10 @@
 package ui.matesManagementView
 
-import kotlinx.coroutines.CoroutineScope
-import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.launch
-import kotlinx.coroutines.runBlocking
 import logic.entities.User
 import logic.useCases.mateUseCase.GetAllMatesUseCase
 import logic.useCases.GetLoggedInUserUseCase
+import ui.ViewExceptionHandler
+import ui.ViewState
 import ui.cliPrintersAndReaders.CLIPrinter
 import ui.cliPrintersAndReaders.CLIReader
 import ui.cliPrintersAndReaders.cliTable.CLITablePrinter
@@ -17,42 +15,64 @@ class MatesManagementView(
     private val getLoggedInUserUseCase: GetLoggedInUserUseCase,
     private val getAllMatesUseCase: GetAllMatesUseCase,
     private val cliTablePrinter: CLITablePrinter,
-    private val mateCreationView: MateCreationView
+    private val mateCreationView: MateCreationView,
+    private val viewExceptionHandler: ViewExceptionHandler
 ) {
+    private var currentState: ViewState<List<User>> = ViewState.Loading
 
-    fun start() {
-        var currentUser: User? = null
-            runBlocking {            currentUser = getLoggedInUserUseCase.getLoggedInUser()
-        }
-        if (currentUser?.type != User.Type.ADMIN) {
-            printLn("Error: Only admins can manage mates.")
-            return
-        }
+    suspend fun start() {
+        loadLoggedInUser()
+    }
+
+    private suspend fun loadLoggedInUser() {
+        viewExceptionHandler.executeWithState(
+            onLoading = {
+                printLn("Loading user information...")
+                currentState = ViewState.Loading
+            },
+            onSuccess = { currentUser ->
+                if (currentUser.type != User.Type.ADMIN) {
+                    printLn("Error: Only admins can manage mates.")
+                    return@executeWithState
+                }
+                loadMates()
+            },
+            onError = { exception ->
+                printLn("Failed to verify user permissions: ${exception.message}")
+            },
+            operation = {
+                getLoggedInUserUseCase.getLoggedInUser()
+            }
+        )
+    }
+
+    private suspend fun loadMates() {
+        viewExceptionHandler.executeWithState(
+            onLoading = {
+                printLn("Loading mates...")
+                currentState = ViewState.Loading
+            },
+            onSuccess = { mates ->
+                currentState = ViewState.Success(mates)
+                displayMatesManagementUI(mates)
+            },
+            onError = { exception ->
+                currentState = ViewState.Error(exception)
+                printLn("Failed to load mates: ${exception.message}")
+            },
+            operation = {
+                getAllMatesUseCase.getAllMates()
+            }
+        )
+    }
+
+    private suspend fun displayMatesManagementUI(mates: List<User>) {
+        displayMatesList(mates)
         printOptions()
         selectNextUI()
     }
 
-    private fun printOptions() {
-        printLn("Mates Management Menu")
-        listAllMates()
-        printLn("1. Create New Mate")
-        printLn("0. Back")
-    }
-
-    private fun selectNextUI() {
-        val userInput = cliReader.getValidInputNumberInRange(MAX_OPTION_NUMBER)
-
-        when (userInput) {
-            1 -> mateCreationView.createMate()
-            0 -> return
-        }
-        start()
-    }
-
-    private fun listAllMates() {
-        var mates: List<User> = emptyList()
-            runBlocking {            mates = getAllMatesUseCase.getAllMates()
-        }
+    private fun displayMatesList(mates: List<User>) {
         if (mates.isEmpty()) {
             printLn("No mates found.")
             return
@@ -65,6 +85,30 @@ class MatesManagementView(
         val columnWidths = listOf(null, null, null)
 
         cliTablePrinter(headers, data, columnWidths)
+    }
+
+    private fun printOptions() {
+        printLn("Mates Management Menu")
+        printLn("1. Create New Mate")
+        printLn("0. Back")
+    }
+
+    private suspend fun selectNextUI() {
+        val userInput = cliReader.getValidInputNumberInRange(
+            min = 0,
+            max = MAX_OPTION_NUMBER
+        )
+
+        when (userInput) {
+            1 -> createMate()
+            0 -> return
+        }
+    }
+
+    private suspend fun createMate() {
+        mateCreationView.createMate {
+            start()
+        }
     }
 
     private fun printLn(message: String) {

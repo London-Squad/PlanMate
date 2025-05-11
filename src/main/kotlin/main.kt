@@ -1,4 +1,7 @@
 import di.*
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.launch
 import org.koin.core.context.startKoin
 import org.koin.java.KoinJavaComponent.getKoin
 import ui.welcomeView.WelcomeView
@@ -16,6 +19,7 @@ fun main() {
     }
 
     val ui: WelcomeView = getKoin().get()
-
-    ui.start()
+    CoroutineScope(Dispatchers.Default).launch {
+        ui.start()
+    }
 }
