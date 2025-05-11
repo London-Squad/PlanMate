@@ -1,8 +1,5 @@
 package ui.taskManagementView
 
-import kotlinx.coroutines.CoroutineScope
-import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.Job
 import logic.entities.Task
 import logic.useCases.ManageStateUseCase
 import logic.useCases.ManageTaskUseCase
@@ -12,7 +9,6 @@ import ui.cliPrintersAndReaders.CLIPrinter
 import ui.cliPrintersAndReaders.CLIReader
 import ui.logsView.LogsView
 import java.util.UUID
-import kotlin.coroutines.CoroutineContext
 
 class TaskManagementView(
     private val cliReader: CLIReader,

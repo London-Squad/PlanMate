@@ -66,9 +66,7 @@ class ProjectDetailsView(
     private suspend fun displaySwimlanes() {
         viewExceptionHandler.executeWithState(
             onLoading = {},
-            onSuccess = {
-                swimlanesView.displaySwimlanes(projectDetails.tasks, projectDetails.taskStates)
-            },
+            onSuccess = {},
             onError = { exception ->
                 printLn("Failed to display swimlanes: ${exception.message}")
             },
@@ -99,7 +97,7 @@ class ProjectDetailsView(
             2 -> createNewTask { start(projectDetails.project.id, loggedInUserType, onComplete) }
             3 -> viewLogs { start(projectDetails.project.id, loggedInUserType, onComplete) }
             4 -> editProject { start(projectDetails.project.id, loggedInUserType, onComplete) }
-            5 -> deleteProject { onComplete() }  // After deletion, return to previous screen
+            5 -> deleteProject { onComplete() }
             0 -> {
                 printLn("\nExiting Project...")
                 onComplete()
@@ -138,7 +136,7 @@ class ProjectDetailsView(
         onComplete()
     }
 
-    private suspend fun createNewTask(onComplete:suspend () -> Unit) {
+    private suspend fun createNewTask(onComplete: suspend () -> Unit) {
         val title = taskInputReader.getValidTaskTitle()
         val description = taskInputReader.getValidTaskDescription()
 
