@@ -44,43 +44,6 @@ class ViewExceptionHandler(
         }
     }
 
-    suspend fun executeWithState(
-        onLoading: () -> Unit,
-        onSuccess: suspend () -> Unit,
-        onError: suspend (Exception) -> Unit,
-        operation: suspend () -> Unit
-    ) {
-        onLoading()
-        try {
-            withContext(Dispatchers.IO) {
-                operation()
-            }
-            withContext(Dispatchers.Default) {
-                onSuccess()
-            }
-        } catch (e: AuthenticationException) {
-            withContext(Dispatchers.Default) {
-                printLn(e.message ?: "Authentication error")
-                onError(e)
-            }
-        } catch (e: RetrievingDataFailureException) {
-            withContext(Dispatchers.Default) {
-                printLn(e.message ?: "Failed to retrieve data")
-                onError(e)
-            }
-        } catch (e: StoringDataFailureException) {
-            withContext(Dispatchers.Default) {
-                printLn(e.message ?: "Failed to store data")
-                onError(e)
-            }
-        } catch (e: Exception) {
-            withContext(Dispatchers.Default) {
-                printLn("Unexpected error: ${e.message}")
-                onError(e)
-            }
-        }
-    }
-
     private fun printLn(message: String) = cliPrinter.cliPrintLn(message)
 }
 
