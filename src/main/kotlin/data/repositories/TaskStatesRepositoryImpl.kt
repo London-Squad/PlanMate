@@ -1,7 +1,5 @@
 package data.repositories
 
-import data.repositories.dataSourceInterfaces.TaskStatesDataSource
-import data.repositories.dataSourceInterfaces.TasksDataSource
 import data.repositories.dtoMappers.toTaskState
 import data.repositories.dtoMappers.toTaskStateDto
 import logic.entities.TaskState

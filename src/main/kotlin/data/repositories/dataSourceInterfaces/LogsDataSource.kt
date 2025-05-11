@@ -1,8 +1,10 @@
 package data.repositories.dataSourceInterfaces
 
-import data.dto.LogDto
+import logic.entities.Log
+import java.util.UUID
 
 interface LogsDataSource {
-    fun getAllLogs(): List<LogDto>
-    fun addLog(logDto: LogDto)
+    fun getAllLogs(): List<Log>
+    fun addLog(log: Log)
+    fun getLogsByEntityId(entityId: UUID): List<Log>
 }
