@@ -11,4 +11,5 @@ interface UsersDataSource {
     fun getLoggedInUser(): UserDto
     fun setLoggedInUser(user: UserDto)
     fun clearLoggedInUser()
+    fun getUserById(userId: UUID): UserDto
 }

@@ -67,6 +67,13 @@ class CsvUsersDataSource(
         loggedInUser = null
     }
 
+    override fun getUserById(userId: UUID): UserDto {
+        return usersCsvFileHandler.readRecords()
+            .map(csvParser::recordToUserDto)
+            .firstOrNull { it.id == userId && !it.isDeleted }
+            ?: throw logic.exceptions.UserNotFoundException("User with ID $userId not found.")
+    }
+
     private fun loadUserFromLocalFile(): UserDto? {
         return loggedInUserCsvFileHandler.readRecords()
             .takeIf { it.isNotEmpty() }

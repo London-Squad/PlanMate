@@ -8,4 +8,5 @@ interface UserRepository {
     fun getAdmin(): User
     fun deleteMate(userId: UUID)
     fun addMate(userName: String, password: String)
+    fun getUserById(userId: UUID): User
 }

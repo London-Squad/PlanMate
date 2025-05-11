@@ -78,6 +78,24 @@ class MongoDBUsersDataSource(
         loggedInUser = null
     }
 
+    override fun getUserById(userId: UUID): UserDto {
+        try {
+            val doc = collection.find(
+                Filters.and(
+                    Filters.eq(MongoDBParse.ID_FIELD, userId.toString()),
+                    Filters.eq(MongoDBParse.IS_DELETED_FIELD, false)
+                )
+            ).first()
+
+            return doc?.let { mongoParser.documentToUserDto(it) }
+                ?: throw UserNotFoundException("User with ID $userId not found")
+        } catch (e: MongoException) {
+            throw RetrievingDataFailureException("Failed to retrieve user by ID: ${e.message}")
+        }
+    }
+
+
+
     companion object {
         private val ADMIN = UserDto(
             id = UUID.fromString("5750f82c-c1b6-454d-b160-5b14857bc9dc"),
