@@ -4,7 +4,6 @@ import com.mongodb.MongoException
 import com.mongodb.client.MongoCollection
 import com.mongodb.client.model.Filters
 import com.mongodb.client.model.Updates
-import data.dataSources.defaultTaskStatesTitleAndDescription
 import data.dataSources.mongoDBDataSource.mongoDBParse.MongoDBParse
 import data.dto.TaskStateDto
 import data.repositories.dataSourceInterfaces.TaskStatesDataSource
@@ -24,14 +23,6 @@ class MongoDBTaskStatesDataSource(
                 .filter { if (includeDeleted) true else !it.isDeleted }
         } catch (e: MongoException) {
             throw RetrievingDataFailureException("Failed to retrieve task states: ${e.message}")
-        }
-    }
-
-    override fun createDefaultTaskStatesForProject(projectId: UUID): List<TaskStateDto> {
-        return defaultTaskStatesTitleAndDescription.map {
-            TaskStateDto(
-                id = UUID.randomUUID(), title = it[0], description = it[1], projectId = projectId, isDeleted = false
-            )
         }
     }
 
