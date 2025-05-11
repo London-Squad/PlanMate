@@ -4,7 +4,6 @@ import logic.entities.*
 import logic.repositories.TaskRepository
 import logic.repositories.TaskStatesRepository
 import java.util.*
-import kotlin.collections.List
 
 class ManageTaskUseCase(
     private val taskRepository: TaskRepository,
@@ -16,12 +15,7 @@ class ManageTaskUseCase(
         return taskRepository.getTaskByID(taskId)
     }
 
-
-    suspend fun getTasksByProjectID(projectId: UUID): List<Task> {
-        return taskRepository.getTasksByProjectID(projectId)
-    }
-
-    suspend fun addNewTask(title: String, description: String, projectId: UUID) {
+   suspend fun addNewTask(title: String, description: String, projectId: UUID) {
 
         val newTask = buildNewTask(UUID.randomUUID(), title, description, projectId)
 

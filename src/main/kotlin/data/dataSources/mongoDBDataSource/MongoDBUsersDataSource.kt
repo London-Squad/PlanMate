@@ -1,11 +1,14 @@
 package data.dataSources.mongoDBDataSource
 
+import com.mongodb.MongoException
+import com.mongodb.client.MongoCollection
 import com.mongodb.client.model.Filters
 import com.mongodb.client.model.Updates
 import com.mongodb.kotlin.client.coroutine.MongoCollection
 import data.dataSources.mongoDBDataSource.mongoDBParse.MongoDBParse
 import data.repositories.dataSourceInterfaces.UsersDataSource
 import data.dto.UserDto
+import logic.exceptions.*
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.flow.map
 import logic.exceptions.NoLoggedInUserFoundException
@@ -20,24 +23,38 @@ class MongoDBUsersDataSource(
 
     private var loggedInUser: UserDto? = null
 
-    override suspend fun getMates(): List<UserDto> {
-        return collection.find(Filters.eq(MongoDBParse.IS_DELETED_FIELD, false))
-            .map { doc -> mongoParser.documentToUserDto(doc) }
-            .toList()
+        override suspend fun getMates(): List<UserDto> {
+        try {
+            return collection.find(Filters.eq(MongoDBParse.IS_DELETED_FIELD, false)).map { doc ->
+                mongoParser.documentToUserDto(doc)
+            }.toList()
+        }catch (e: MongoException) {
+            throw RetrievingDataFailureException("Failed to retrieve users: ${e.message}")
+        }
     }
 
     override suspend fun getAdmin(): UserDto = ADMIN
 
     override suspend fun deleteUser(userId: UUID) {
-        collection.updateOne(
-            Filters.eq(MongoDBParse.ID_FIELD, userId.toString()),
-            Updates.set(MongoDBParse.IS_DELETED_FIELD, true)
-        ).let { }
+        try {
+            val result = collection.updateOne(
+                Filters.and(
+                    Filters.eq(MongoDBParse.ID_FIELD, userId.toString()),
+                    Filters.eq(MongoDBParse.IS_DELETED_FIELD, false)
+                ), Updates.set(MongoDBParse.IS_DELETED_FIELD, true)
+            )
+            if (result.matchedCount.toInt() == 0) {
+                throw UserNotFoundException("User with ID $userId not found")
+            }
+        }catch (e: MongoException) {
+            throw StoringDataFailureException("Failed to delete user: ${e.message}")
+        }
     }
 
     override suspend fun addMate(userName: String, hashedPassword: String) {
         val existingUser = collection.find(Filters.eq(MongoDBParse.USERNAME_FIELD, userName)).first()
-        if (existingUser != null) throw IllegalStateException("User with username '$userName' already exists")
+        if (existingUser != null) throw UserNameAlreadyExistException("User with username '$userName' already exists")
+        try{
         val doc = mongoParser.userDtoToDocument(
             UserDto(
                 UUID.randomUUID(),
@@ -47,7 +64,11 @@ class MongoDBUsersDataSource(
                 isDeleted = false
             )
         )
-        collection.insertOne(doc).let { }
+        collection.insertOne(doc)
+    }catch (e: MongoException) {
+            throw StoringDataFailureException("Failed to add mate: ${e.message}")
+        }
+
     }
 
     override suspend fun getLoggedInUser(): UserDto {
