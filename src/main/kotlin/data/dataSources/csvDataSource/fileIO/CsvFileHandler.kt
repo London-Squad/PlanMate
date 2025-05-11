@@ -1,34 +1,50 @@
 package data.dataSources.csvDataSource.fileIO
 
+import logic.exceptions.DataSourceAccessException
+import logic.exceptions.RetrievingDataFailureException
+import logic.exceptions.StoringDataFailureException
 import java.io.File
+import java.io.IOException
 
 class CsvFileHandler(
     private val file: File
 ) {
 
     init {
-        val directory = file.parentFile
-        if (!directory.exists()) {
-            directory.mkdir()
-        }
-        if (!file.exists()) {
-            file.createNewFile()
+        try {
+            val directory = file.parentFile
+            if (!directory.exists()) {
+                directory.mkdir()
+            }
+            if (!file.exists()) {
+                file.createNewFile()
+            }
+        }catch (e: IOException) {
+            throw DataSourceAccessException("Failed to initialize file: ${e.message}")
         }
     }
 
     fun readRecords(): List<List<String>> {
-        if (!file.exists()) return emptyList()
+        if (!file.exists()) throw RetrievingDataFailureException("File does not exist: ${file.path}")
         return file.readLines().map(::decodeRecord)
     }
 
     fun appendRecord(record: List<String>) {
-        file.appendText("${encodeRecord(record)}\n")
+        try {
+            file.appendText("${encodeRecord(record)}\n")
+        }catch (e: IOException) {
+            throw StoringDataFailureException("Failed to append record: ${e.message}")
+        }
     }
 
     fun rewriteRecords(records: List<List<String>>) {
-        file.writeText("")
-        if (records.isEmpty()) return
-        records.forEach(::appendRecord)
+        try {
+            file.writeText("")
+            if (records.isEmpty()) return
+            records.forEach(::appendRecord)
+        }catch (e: IOException) {
+            throw StoringDataFailureException("Failed to rewrite records: ${e.message}")
+        }
     }
 
     private fun encodeCell(cell: String): String {

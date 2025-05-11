@@ -4,7 +4,7 @@ import data.repositories.dataSourceInterfaces.UsersDataSource
 import data.repositories.dtoMappers.toUser
 import data.security.hashing.HashingAlgorithm
 import logic.entities.User
-import logic.exceptions.UserNameAlreadyTakenException
+import logic.exceptions.UserNameAlreadyExistException
 import logic.repositories.UserRepository
 import java.util.UUID
 
@@ -30,7 +30,7 @@ class UserRepositoryImpl(
         getMates().any { user ->
             user.userName == userName
         }.let {
-            if (it) throw UserNameAlreadyTakenException()
+            if (it) throw UserNameAlreadyExistException()
         }
 
         usersDataSource.addMate(
