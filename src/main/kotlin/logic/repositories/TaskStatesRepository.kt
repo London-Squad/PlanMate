@@ -11,7 +11,6 @@ interface TaskStatesRepository {
 
     suspend fun addNewTaskState(taskState: TaskState, projectId: UUID)
 
-    suspend fun getDefaultTaskStates(projectId: UUID): List<TaskState>
 
     suspend fun editTaskStateTitle(stateId: UUID, newTitle: String)
 

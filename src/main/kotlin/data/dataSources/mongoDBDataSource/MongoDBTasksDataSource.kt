@@ -1,7 +1,6 @@
 package data.dataSources.mongoDBDataSource
 
 import com.mongodb.MongoException
-import com.mongodb.client.MongoCollection
 import com.mongodb.client.model.Filters
 import com.mongodb.client.model.Updates
 import com.mongodb.kotlin.client.coroutine.MongoCollection
@@ -11,10 +10,8 @@ import data.repositories.dataSourceInterfaces.TasksDataSource
 import logic.exceptions.TaskNotFoundException
 import logic.exceptions.RetrievingDataFailureException
 import logic.exceptions.StoringDataFailureException
-import data.dto.TaskDto
 import kotlinx.coroutines.flow.map
 import org.bson.Document
-import java.util.*
 import java.util.UUID
 import kotlinx.coroutines.flow.toList
 

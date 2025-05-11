@@ -18,16 +18,6 @@ class CsvTaskStatesDataSource(
             .filter { if (includeDeleted) true else !it.isDeleted }
     }
 
-    override suspend fun createDefaultTaskStatesForProject(projectId: UUID): List<TaskStateDto> {
-        return defaultTaskStatesTitleAndDescription.map {
-            TaskStateDto(
-                id = UUID.randomUUID(), title = it[0], description = it[1],
-                projectId = projectId,
-                isDeleted = false
-            )
-        }
-    }
-
     override suspend fun addNewTaskState(taskStateDto: TaskStateDto) {
         tasksStatesCsvFileHandler.appendRecord(
             csvParser.taskStateDtoToRecord(taskStateDto)
