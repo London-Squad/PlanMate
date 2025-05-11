@@ -12,7 +12,7 @@ abstract class BaseView(
     private val cliPrinter: CLIPrinter
 ) {
     private var isLoading = false
-    private var exceptionToBeCaught: Exception? = null
+    private var caughtException: Exception? = null
 
     fun makeRequest(
         request: suspend CoroutineScope.() -> Unit,
@@ -26,33 +26,21 @@ abstract class BaseView(
 
     private fun startOperationInSeparateScope(operation: suspend CoroutineScope.() -> Unit) {
         isLoading = true
-        exceptionToBeCaught = null
+        caughtException = null
 
         CoroutineScope(Dispatchers.IO).launch {
             try {
                 operation()
             } catch (exception: Exception) {
-                exceptionToBeCaught = exception
+                caughtException = exception
             }
             stopLoading()
         }
     }
 
-    private fun processResult(
-        onSuccess: () -> Unit = {},
-        onError: (exception: Exception) -> Unit = (::handleDefaultExceptions)
-    ) {
-        if (exceptionToBeCaught == null) onSuccess()
-        else onError(exceptionToBeCaught!!)
-    }
-
-    fun handleDefaultExceptions(exception: Exception) {
-        when (exception) {
-            is AuthenticationException -> cliPrinter.cliPrintLn(exception.message ?: "something went wrong")
-            is RetrievingDataFailureException -> cliPrinter.cliPrintLn(exception.message ?: "something went wrong")
-            is StoringDataFailureException -> cliPrinter.cliPrintLn(exception.message ?: "something went wrong")
-            else -> cliPrinter.cliPrintLn("Unexpected error: ${exception.message}")
-        }
+    private fun stopLoading() {
+        isLoading = false
+        cliPrinter.cliPrintLn("")
     }
 
     private fun blockWithLoadingLoop() {
@@ -65,9 +53,21 @@ abstract class BaseView(
         }
     }
 
-    private fun stopLoading() {
-        isLoading = false
-        cliPrinter.cliPrintLn("")
+    private fun processResult(
+        onSuccess: () -> Unit = {},
+        onError: (exception: Exception) -> Unit = (::handleDefaultExceptions)
+    ) {
+        if (caughtException == null) onSuccess()
+        else onError(caughtException!!)
+    }
+
+    fun handleDefaultExceptions(exception: Exception) {
+        when (exception) {
+            is AuthenticationException -> cliPrinter.cliPrintLn(exception.message ?: "something went wrong")
+            is RetrievingDataFailureException -> cliPrinter.cliPrintLn(exception.message ?: "something went wrong")
+            is StoringDataFailureException -> cliPrinter.cliPrintLn(exception.message ?: "something went wrong")
+            else -> cliPrinter.cliPrintLn("Unexpected error: ${exception.message}")
+        }
     }
 
     private companion object {
