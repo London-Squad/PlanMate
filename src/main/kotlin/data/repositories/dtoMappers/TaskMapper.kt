@@ -2,24 +2,23 @@ package data.repositories.dtoMappers
 
 import data.dto.TaskDto
 import logic.entities.Task
-import logic.entities.TaskState
-import java.util.UUID
+import java.util.*
 
-fun TaskDto.toTask(taskState: TaskState): Task {
+fun TaskDto.toTask(): Task {
     return Task(
-        id = this.id,
-        title = this.title,
-        description = this.description,
-        taskState = taskState
+        id = id,
+        title = title,
+        description = description,
+        taskStateId = stateId
     )
 }
 
 fun Task.toTaskDto(projectId: UUID, isDeleted: Boolean = false): TaskDto {
     return TaskDto(
-        id = this.id,
-        title = this.title,
-        description = this.description,
-        stateId = this.taskState.id,
+        id = id,
+        title = title,
+        description = description,
+        stateId = taskStateId,
         projectId = projectId,
         isDeleted = isDeleted
     )

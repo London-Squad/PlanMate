@@ -2,6 +2,7 @@ package ui.logsView
 
 import logic.entities.*
 import logic.useCases.GetLogsByEntityIdUseCase
+import logic.useCases.GetUsersUseCase
 import ui.ViewExceptionHandler
 import ui.cliPrintersAndReaders.CLIReader
 import ui.cliPrintersAndReaders.cliTable.CLITablePrinter
@@ -13,7 +14,8 @@ class LogsView(
     private val cliReader: CLIReader,
     private val getLogsByEntityIdUseCase: GetLogsByEntityIdUseCase,
     private val cliTablePrinter: CLITablePrinter,
-    private val viewExceptionHandler: ViewExceptionHandler
+    private val viewExceptionHandler: ViewExceptionHandler,
+    private val getUsersUseCase: GetUsersUseCase,
 ) {
     fun printLogsByEntityId(entityId: UUID) {
         printLogs(entityId)
@@ -28,7 +30,7 @@ class LogsView(
             val data = logs.map { log ->
                 listOf(
                     log.id.toString(),
-                    "user (${log.user.userName}) ${actionToString(log.loggedAction)} at ${formatedTime(log.time)}"
+                    buildLogMessage(log)
                 )
             }
             val columnWidths = listOf(36, null)
@@ -36,21 +38,33 @@ class LogsView(
         }
     }
 
+    private fun buildLogMessage(log: Log): String {
+        return "user (${getUserNameByLog(log)}) ${actionToString(log.loggedAction)} at ${formatedTime(log.time)}"
+    }
+
+    private fun getUserNameByLog(log: Log): String {
+        return getUsersUseCase.getUsers()
+            .firstOrNull { it.id == log.userId }
+            ?.userName
+            ?: "Unknown user"
+    }
+
     private fun actionToString(action: LoggedAction): String {
         return when (action) {
-            is EntityCreationLog -> "created ${entityName(action.entity)} (${action.entity.title})"
-            is EntityDeletionLog -> "deleted ${entityName(action.entity)} (${action.entity.title})"
-            is EntityEditionLog -> "edited ${entityName(action.entity)} (${action.entity.title}) ${action.property} from (${action.oldValue}) to (${action.newValue}) "
+            is EntityCreationLog -> "created ${entityType(action.entityId)} (${entityTitle(action.entityId)})"
+            is EntityDeletionLog -> "deleted ${entityType(action.entityId)} (${entityTitle(action.entityId)})"
+            is EntityEditionLog -> "edited ${entityType(action.entityId)} (${entityTitle(action.entityId)}) ${action.property} from (${action.oldValue}) to (${action.newValue}) "
         }
     }
 
-    private fun entityName(entity: PlanEntity): String {
-        return when (entity) {
-            is Project -> "project"
-            is TaskState -> "state"
-            is Task -> "task"
-            else -> "unknown entity"
-        }
+    private fun entityType(entityId: UUID): String {
+        // todo: implement this function to return the type of the entity based on its ID
+        return "Entity Type"
+    }
+
+    private fun entityTitle(entityId: UUID): String {
+        // todo: implement this function to return the title of the entity based on its ID
+        return "Entity Title"
     }
 
     private fun formatedTime(time: LocalDateTime): String {
