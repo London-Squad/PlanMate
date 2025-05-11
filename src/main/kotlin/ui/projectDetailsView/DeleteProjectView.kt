@@ -10,19 +10,17 @@ class DeleteProjectView(
     private val cliPrinter: CLIPrinter,
     private val cliReader: CLIReader,
     private val manageProjectUseCase: ManageProjectUseCase,
-    private val baseView: BaseView
-
-) {
+) : BaseView(cliPrinter) {
     fun deleteProject(projectId: UUID) {
         if (isDeletionCanceled()) {
             cliPrinter.cliPrintLn("Project deletion canceled")
             return
         }
 
-        baseView.tryCall {
+        tryCall({
             manageProjectUseCase.deleteProject(projectId)
-            cliPrinter.cliPrintLn("Project $projectId was deleted successfully.")
-        }
+            cliPrinter.cliPrintLn("Project with id $projectId was deleted successfully.")
+        })
     }
 
     private fun isDeletionCanceled(): Boolean = !cliReader.getUserConfirmation()

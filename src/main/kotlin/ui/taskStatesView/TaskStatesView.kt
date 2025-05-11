@@ -67,7 +67,7 @@ class TaskStatesView(
 
     private fun addState() {
         val title = taskStateInputReader.getValidTaskStateTitle()
-        val desc = taskStateInputReader.getValidTaskStateTitle()
+        val desc = taskStateInputReader.getValidTaskStateDescription()
         useCase.addState(title, desc, projectId)
         cliPrinter.cliPrintLn("Task state added successfully.")
     }

@@ -1,7 +1,6 @@
 package di
 
 import org.koin.dsl.module
-import ui.BaseView
 import ui.cliPrintersAndReaders.*
 import ui.cliPrintersAndReaders.cliTable.CLITablePrinter
 import ui.projectDetailsView.ProjectDetailsView
@@ -24,27 +23,26 @@ val uiModule = module {
     single { TaskInputReader(get(), get()) }
     single { TaskStateInputReader(get(), get()) }
     single { CLITablePrinter(get()) }
-    single { BaseView(get()) }
 
-    single { WelcomeView(get(), get(), get(), get(), get(), get()) }
-    single { LoginView(get(), get(), get(), get(), get()) }
-    single { MainMenuView(get(), get(), get(), get(), get(), get()) }
+    single { WelcomeView(get(), get(), get(), get(), get()) }
+    single { LoginView(get(), get(), get(), get()) }
+    single { MainMenuView(get(), get(), get(), get(), get()) }
 
-    single { ProjectsDashboardView(get(), get(), get(), get(), get(), get(), get(), get()) }
-    single { ProjectDetailsView(get(), get(), get(), get(), get(), get(), get(), get(), get(), get(), get()) }
+    single { ProjectsDashboardView(get(), get(), get(), get(), get(), get(), get()) }
+    single { ProjectDetailsView(get(), get(), get(), get(), get(), get(), get(), get(), get(), get()) }
     single { SwimlanesView(get(), get(), get()) }
-    single { EditProjectView(get(), get(), get(), get(), get(), get()) }
-    single { DeleteProjectView(get(), get(), get(), get()) }
-    single { TaskStatesView(get(), get(), get(), get(), get(), get()) }
+    single { EditProjectView(get(), get(), get(), get(), get()) }
+    single { DeleteProjectView(get(), get(), get()) }
+    single { TaskStatesView(get(), get(), get(), get(), get()) }
 
     single { TaskTitleEditionView(get(), get(), get()) }
     single { TaskDescriptionEditionView(get(), get(), get()) }
-    single { TaskStateEditionView(get(), get(), get(), get(), get()) }
-    single { TaskDeletionView(get(), get(), get(), get()) }
-    single { TaskManagementView(get(), get(), get(), get(), get(), get(), get(), get(), get(), get()) }
+    single { TaskStateEditionView(get(), get(), get(), get()) }
+    single { TaskDeletionView(get(), get(), get()) }
+    single { TaskManagementView(get(), get(), get(), get(), get(), get(), get(), get(), get()) }
 
     single { LogsView(get(), get(), get(), get(), get()) }
 
-    single { MateCreationView(get(), get(), get(), get()) }
+    single { MateCreationView(get(), get(), get()) }
     single { MatesManagementView(get(), get(), get(), get(), get(), get()) }
 }

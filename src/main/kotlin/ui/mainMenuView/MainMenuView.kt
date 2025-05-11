@@ -14,8 +14,7 @@ class MainMenuView(
     private val projectsDashboardView: ProjectsDashboardView,
     private val matesManagementView: MatesManagementView,
     private val logoutUseCase: LogoutUseCase,
-    private val baseView: BaseView
-) {
+) : BaseView(cliPrinter) {
 
     private lateinit var loggedInUserType: User.Type
 
@@ -42,8 +41,7 @@ class MainMenuView(
             2 -> matesManagementView.start()
             0 -> {
                 printLn("\nLogging out ...")
-                baseView.tryCall { logoutUseCase() }
-                return
+                tryCall({ logoutUseCase() }).also { success -> if (!success) return }
             }
         }
         start(loggedInUserType)

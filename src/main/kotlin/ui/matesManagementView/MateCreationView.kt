@@ -9,25 +9,29 @@ class MateCreationView(
     private val createMateUseCase: CreateMateUseCase,
     private val cliPrinter: CLIPrinter,
     private val cliReader: CLIReader,
-    private val baseView: BaseView
-) {
+) : BaseView(cliPrinter) {
     fun createMate() {
         cliPrinter.printHeader("Create New Mate")
-        baseView.tryCall {
-            val username = cliReader.getValidUserInput(
-                { it.isNotBlank() },
-                "Enter username: ",
-                "username cant be empty"
-            )
-            val password = cliReader.getValidUserInput(
-                { it.isNotBlank() },
-                "Enter password: ",
-                "password cant be empty"
-            )
 
+        val (username, password) = getUserCredentials()
+
+        tryCall({
             createMateUseCase.createMate(username, password)
-            cliPrinter.cliPrintLn("Mate created successfully: $username")
-        }
+            cliPrinter.cliPrintLn("Mate ($username) have been created successfully")
+        })
     }
 
+    private fun getUserCredentials(): Pair<String, String> {
+        val username = cliReader.getValidUserInput(
+            { it.isNotBlank() },
+            "Enter username: ",
+            "username cant be empty"
+        )
+        val password = cliReader.getValidUserInput(
+            { it.isNotBlank() },
+            "Enter password: ",
+            "password cant be empty"
+        )
+        return Pair(username, password)
+    }
 }

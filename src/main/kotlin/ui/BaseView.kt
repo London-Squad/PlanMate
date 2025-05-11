@@ -3,7 +3,7 @@ package ui
 import logic.exceptions.*
 import ui.cliPrintersAndReaders.CLIPrinter
 
-abstract class BaseView(
+open class BaseView(
     private val cliPrinter: CLIPrinter
 ) {
     fun tryCall(

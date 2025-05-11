@@ -22,9 +22,8 @@ class ProjectDetailsView(
     private val taskInputReader: TaskInputReader,
     private val taskManagementView: TaskManagementView,
     private val logsView: LogsView,
-    private val baseView: BaseView,
     private val manageTaskUseCase: ManageTaskUseCase
-) {
+) : BaseView(cliPrinter) {
 
     private lateinit var loggedInUserType: User.Type
     private lateinit var project: Project
@@ -32,8 +31,8 @@ class ProjectDetailsView(
     fun start(projectId: UUID, loggedInUserType: User.Type) {
         this.loggedInUserType = loggedInUserType
 
-        baseView.tryCall { project = manageProjectUseCase.getProjectById(projectId) }
-            .also { if (!it) return }
+        tryCall({ project = manageProjectUseCase.getProjectById(projectId) })
+            .also { success -> if (!success) return }
 
         swimlanesView.displaySwimlanes(project)
 
