@@ -50,7 +50,6 @@ class MongoDBLogsDataSource(
             relatedEntityIds.addAll(tasks.map { it.id })
             relatedEntityIds.addAll(taskStates.map { it.id })
         }
-        ///-----------
         val filter = Document("\$or", relatedEntityIds.map { id ->
             Document("loggedAction.entityId", id.toString())
         })
