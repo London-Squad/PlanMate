@@ -3,7 +3,8 @@ package ui.projectDetailsView
 import logic.entities.User
 import logic.useCases.GetProjectDetailsUseCase
 import logic.useCases.ManageTaskUseCase
-import ui.ViewExceptionHandler
+import logic.useCases.ManageProjectUseCase
+import ui.BaseView
 import ui.cliPrintersAndReaders.CLIPrinter
 import ui.cliPrintersAndReaders.CLIReader
 import ui.cliPrintersAndReaders.TaskInputReader
@@ -21,9 +22,8 @@ class ProjectDetailsView(
     private val taskInputReader: TaskInputReader,
     private val taskManagementView: TaskManagementView,
     private val manageTaskUseCase: ManageTaskUseCase,
-    private val logsView: LogsView,
-    private val viewExceptionHandler: ViewExceptionHandler,
-) {
+    private val logsView: LogsView
+) : BaseView(cliPrinter) {
 
     private lateinit var loggedInUserType: User.Type
     private lateinit var projectDetails: GetProjectDetailsUseCase.ProjectDetails
@@ -32,10 +32,8 @@ class ProjectDetailsView(
     fun start(projectId: UUID, loggedInUserType: User.Type) {
         this.loggedInUserType = loggedInUserType
 
-        viewExceptionHandler.tryCall {
-            projectDetails = getProjectDetailsUseCase(projectId)
-        }
-            .also { if (!it) return }
+        tryCall({ projectDetails = getProjectDetailsUseCase(projectId) })
+            .also { success -> if (!success) return }
 
         printHeader(projectDetails.project.title)
         swimlanesView.displaySwimlanes(projectDetails.tasks, projectDetails.taskStates)
@@ -49,14 +47,14 @@ class ProjectDetailsView(
     }
 
     private fun printOptions() {
-        printLn("\n1. select a task")
-        printLn("2. create new tasks")
-        printLn("3. View project logs")
+        cliPrinter.cliPrintLn("\n1. select a task")
+        cliPrinter.cliPrintLn("2. create new tasks")
+        cliPrinter.cliPrintLn("3. View project logs")
         if (loggedInUserType == User.Type.ADMIN) {
-            printLn("4. Edit project")
-            printLn("5. Delete project")
+            cliPrinter.cliPrintLn("4. Edit project")
+            cliPrinter.cliPrintLn("5. Delete project")
         }
-        printLn("0. Back to projects")
+        cliPrinter.cliPrintLn("0. Back to projects")
     }
 
     private fun goToNextView() {
@@ -67,7 +65,7 @@ class ProjectDetailsView(
             4 -> editProjectView.editProject(projectDetails.project.id)
             5 -> deleteProjectView.deleteProject(projectDetails.project.id)
             0 -> {
-                printLn("\nExiting Project..."); return
+                cliPrinter.cliPrintLn("\nExiting Project..."); return
             }
         }
         start(projectDetails.project.id, loggedInUserType)
@@ -83,10 +81,10 @@ class ProjectDetailsView(
 
     private fun selectTask() {
         if (projectDetails.tasks.isEmpty()) {
-            printLn("No tasks available to select.")
+            cliPrinter.cliPrintLn("No tasks available to select.")
             return
         }
-        printLn("Select a task by number:")
+        cliPrinter.cliPrintLn("Select a task by number:")
         val input = cliReader.getValidInputNumberInRange(projectDetails.tasks.size)
         taskManagementView.start(projectDetails.tasks[input - 1].id, projectDetails.project.id)
     }
@@ -97,8 +95,6 @@ class ProjectDetailsView(
 
         manageTaskUseCase.addNewTask(title, description, projectDetails.project.id)
     }
-
-    private fun printLn(message: String) = cliPrinter.cliPrintLn(message)
 
     private companion object {
         const val MAX_OPTION_NUMBER_ADMIN = 5

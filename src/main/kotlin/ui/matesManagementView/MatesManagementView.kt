@@ -3,6 +3,7 @@ package ui.matesManagementView
 import logic.entities.User
 import logic.useCases.GetAllMatesUseCase
 import logic.useCases.GetLoggedInUserUseCase
+import ui.BaseView
 import ui.cliPrintersAndReaders.CLIPrinter
 import ui.cliPrintersAndReaders.CLIReader
 import ui.cliPrintersAndReaders.cliTable.CLITablePrinter
@@ -14,23 +15,30 @@ class MatesManagementView(
     private val getAllMatesUseCase: GetAllMatesUseCase,
     private val cliTablePrinter: CLITablePrinter,
     private val mateCreationView: MateCreationView
-) {
+) : BaseView(cliPrinter) {
 
     fun start() {
-        val currentUser = getLoggedInUserUseCase.getLoggedInUser()
-        if (currentUser.type != User.Type.ADMIN) {
-            printLn("Error: Only admins can manage mates.")
+        if (!isLoggedInUserAnAdmin()) {
+            cliPrinter.cliPrintLn("Only admins can manage mates.")
             return
         }
         printOptions()
         selectNextUI()
     }
 
+    private fun isLoggedInUserAnAdmin(): Boolean {
+        var currentUserType: User.Type = User.Type.MATE
+
+        tryCall({ currentUserType = getLoggedInUserUseCase.getLoggedInUser().type })
+
+        return currentUserType == User.Type.ADMIN
+    }
+
     private fun printOptions() {
-        printLn("Mates Management Menu")
-        listAllMates()
-        printLn("1. Create New Mate")
-        printLn("0. Back")
+        cliPrinter.cliPrintLn("Mates Management Menu")
+        printTableOfAllMates()
+        cliPrinter.cliPrintLn("1. Create New Mate")
+        cliPrinter.cliPrintLn("0. Back")
     }
 
     private fun selectNextUI() {
@@ -43,10 +51,13 @@ class MatesManagementView(
         start()
     }
 
-    private fun listAllMates() {
-        val mates = getAllMatesUseCase.getAllMates()
+    private fun printTableOfAllMates() {
+        var mates: List<User> = emptyList()
+
+        tryCall({ mates = getAllMatesUseCase.getAllMates() })
+
         if (mates.isEmpty()) {
-            printLn("No mates found.")
+            cliPrinter.cliPrintLn("No mates found.")
             return
         }
 
@@ -57,10 +68,6 @@ class MatesManagementView(
         val columnWidths = listOf(null, null, null)
 
         cliTablePrinter(headers, data, columnWidths)
-    }
-
-    private fun printLn(message: String) {
-        cliPrinter.cliPrintLn(message)
     }
 
     private companion object {

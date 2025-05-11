@@ -2,7 +2,7 @@ package ui.mainMenuView
 
 import logic.entities.User
 import logic.useCases.LogoutUseCase
-import ui.ViewExceptionHandler
+import ui.BaseView
 import ui.cliPrintersAndReaders.CLIPrinter
 import ui.cliPrintersAndReaders.CLIReader
 import ui.matesManagementView.MatesManagementView
@@ -14,8 +14,7 @@ class MainMenuView(
     private val projectsDashboardView: ProjectsDashboardView,
     private val matesManagementView: MatesManagementView,
     private val logoutUseCase: LogoutUseCase,
-    private val viewExceptionHandler: ViewExceptionHandler
-) {
+) : BaseView(cliPrinter) {
 
     private lateinit var loggedInUserType: User.Type
 
@@ -31,9 +30,9 @@ class MainMenuView(
     }
 
     private fun printOptions() {
-        printLn("1. View all project")
-        if (loggedInUserType == User.Type.ADMIN) printLn("2. Mates management")
-        printLn("0. Logout")
+        cliPrinter.cliPrintLn("1. View all project")
+        if (loggedInUserType == User.Type.ADMIN) cliPrinter.cliPrintLn("2. Mates management")
+        cliPrinter.cliPrintLn("0. Logout")
     }
 
     private fun goToNextView() {
@@ -41,9 +40,8 @@ class MainMenuView(
             1 -> projectsDashboardView.start(loggedInUserType)
             2 -> matesManagementView.start()
             0 -> {
-                printLn("\nLogging out ...")
-                viewExceptionHandler.tryCall { logoutUseCase() }
-                return
+                cliPrinter.cliPrintLn("\nLogging out ...")
+                tryCall({ logoutUseCase() }).also { success -> if (!success) return }
             }
         }
         start(loggedInUserType)
@@ -54,8 +52,6 @@ class MainMenuView(
             MAX_OPTION_NUMBER_ADMIN.takeIf { loggedInUserType == User.Type.ADMIN } ?: MAX_OPTION_NUMBER_MATE
         return cliReader.getValidInputNumberInRange(maxOptionNumberAllowed)
     }
-
-    private fun printLn(message: String) = cliPrinter.cliPrintLn(message)
 
     private companion object {
         const val MAX_OPTION_NUMBER_ADMIN = 2

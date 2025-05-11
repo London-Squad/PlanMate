@@ -2,7 +2,7 @@ package ui.projectDetailsView
 
 import logic.entities.Project
 import logic.useCases.ManageProjectUseCase
-import ui.ViewExceptionHandler
+import ui.BaseView
 import ui.cliPrintersAndReaders.CLIPrinter
 import ui.cliPrintersAndReaders.CLIReader
 import ui.cliPrintersAndReaders.ProjectInputReader
@@ -15,13 +15,13 @@ class EditProjectView(
     private val projectInputReader: ProjectInputReader,
     private val manageProjectUseCase: ManageProjectUseCase,
     private val taskStatesView: TaskStatesView,
-    private val viewExceptionHandler: ViewExceptionHandler
-) {
+) : BaseView(cliPrinter) {
 
     private lateinit var currentProject: Project
 
     fun editProject(projectId: UUID) {
-        currentProject = manageProjectUseCase.getProjectById(projectId)
+        tryCall({ fetchProject(projectId) }).also { success -> if (!success) return }
+
         cliPrinter.printHeader("Edit Project: ${currentProject.title}")
         cliPrinter.cliPrintLn("1. Edit title")
         cliPrinter.cliPrintLn("2. Edit description")
@@ -36,23 +36,24 @@ class EditProjectView(
         }
     }
 
+    private fun fetchProject(projectId: UUID) {
+        currentProject = manageProjectUseCase.getProjectById(projectId)
+    }
+
     private fun editProjectTitle() {
         val newTitle = projectInputReader.getValidProjectTitle()
-        viewExceptionHandler.tryCall {
+        tryCall({
             manageProjectUseCase.editProjectTitle(currentProject.id, newTitle)
-        }
-        currentProject = currentProject.copy(title = newTitle)
-        cliPrinter.cliPrintLn("Project title updated.")
-        cliPrinter.printHeader("Edit Project: ${currentProject.title}") // Show updated header
+            cliPrinter.cliPrintLn("Project title updated successfully.")
+        })
     }
 
     private fun editProjectDescription() {
         val newDescription = projectInputReader.getValidProjectDescription()
-        viewExceptionHandler.tryCall {
+        tryCall({
             manageProjectUseCase.editProjectDescription(currentProject.id, newDescription)
-        }
-        currentProject = currentProject.copy(description = newDescription)
-        cliPrinter.cliPrintLn("Project description updated.")
+            cliPrinter.cliPrintLn("Project description updated successfully.")
+        })
     }
 
     private fun statesManagement() {

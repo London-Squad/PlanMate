@@ -3,7 +3,8 @@ package ui.logsView
 import logic.entities.*
 import logic.useCases.GetLogsByEntityIdUseCase
 import logic.useCases.GetUsersUseCase
-import ui.ViewExceptionHandler
+import ui.BaseView
+import ui.cliPrintersAndReaders.CLIPrinter
 import ui.cliPrintersAndReaders.CLIReader
 import ui.cliPrintersAndReaders.cliTable.CLITablePrinter
 import java.time.LocalDateTime
@@ -12,30 +13,37 @@ import java.util.*
 
 class LogsView(
     private val cliReader: CLIReader,
+    private val cliPrinter: CLIPrinter,
     private val getLogsByEntityIdUseCase: GetLogsByEntityIdUseCase,
     private val cliTablePrinter: CLITablePrinter,
-    private val viewExceptionHandler: ViewExceptionHandler,
     private val getUsersUseCase: GetUsersUseCase,
-) {
+) : BaseView(cliPrinter) {
     fun printLogsByEntityId(entityId: UUID) {
         printLogs(entityId)
         cliReader.getUserInput("\npress enter to go back")
-
     }
 
     private fun printLogs(entityId: UUID) {
-        viewExceptionHandler.tryCall {
-            val logs = getLogsByEntityIdUseCase.getLogsByEntityId(entityId)
-            val headers = listOf("Log ID", "Action Message")
-            val data = logs.map { log ->
-                listOf(
-                    log.id.toString(),
-                    buildLogMessage(log)
-                )
-            }
-            val columnWidths = listOf(36, null)
-            cliTablePrinter(headers, data, columnWidths)
+        var logs: List<Log> = emptyList()
+
+        tryCall({
+            logs = getLogsByEntityIdUseCase.getLogsByEntityId(entityId)
+        }).also { success -> if (!success) return }
+
+        if (logs.isEmpty()) {
+            cliPrinter.cliPrintLn("No logs found for this entity.")
+            return
         }
+
+        val headers = listOf("Log ID", "Action Message")
+        val data = logs.map { log ->
+            listOf(
+                log.id.toString(),
+                buildLogMessage(log)
+            )
+        }
+        val columnWidths = listOf(36, null)
+        cliTablePrinter(headers, data, columnWidths)
     }
 
     private fun buildLogMessage(log: Log): String {
@@ -43,10 +51,16 @@ class LogsView(
     }
 
     private fun getUserNameByLog(log: Log): String {
-        return getUsersUseCase.getUsers()
-            .firstOrNull { it.id == log.userId }
-            ?.userName
-            ?: "Unknown user"
+        var userName = "Unknown user"
+
+        tryCall({
+            userName = getUsersUseCase.getUsers()
+                .firstOrNull { it.id == log.userId }
+                ?.userName
+                ?: userName
+        })
+
+        return userName
     }
 
     private fun actionToString(action: LoggedAction): String {

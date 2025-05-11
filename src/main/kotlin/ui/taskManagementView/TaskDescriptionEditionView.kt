@@ -1,20 +1,21 @@
 package ui.taskManagementView
 
 import logic.useCases.ManageTaskUseCase
-import ui.ViewExceptionHandler
+import ui.BaseView
+import ui.cliPrintersAndReaders.CLIPrinter
 import ui.cliPrintersAndReaders.TaskInputReader
 import java.util.UUID
 
 class TaskDescriptionEditionView(
     private val taskInputReader: TaskInputReader,
     private val manageTaskUseCase: ManageTaskUseCase,
-    private val viewExceptionHandler: ViewExceptionHandler
-) {
+    cliPrinter: CLIPrinter,
+) : BaseView(cliPrinter) {
 
     fun editDescription(taskId: UUID) {
         val newDescription = taskInputReader.getValidTaskDescription()
-        viewExceptionHandler.tryCall {
+        tryCall({
             manageTaskUseCase.editTaskDescription(taskId, newDescription)
-        }
+        })
     }
 }
