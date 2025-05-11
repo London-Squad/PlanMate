@@ -33,8 +33,10 @@ class MongoDBUsersDataSource(
     override fun deleteUser(userId: UUID) {
         try {
             val result = collection.updateOne(
-                Filters.eq(MongoDBParse.ID_FIELD, userId.toString()),
-                Updates.set(MongoDBParse.IS_DELETED_FIELD, true)
+                Filters.and(
+                    Filters.eq(MongoDBParse.ID_FIELD, userId.toString()),
+                    Filters.eq(MongoDBParse.IS_DELETED_FIELD, false)
+                ), Updates.set(MongoDBParse.IS_DELETED_FIELD, true)
             )
             if (result.matchedCount.toInt() == 0) {
                 throw UserNotFoundException("User with ID $userId not found")

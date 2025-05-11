@@ -39,8 +39,10 @@ class MongoDBProjectsDataSource(
     override fun editProjectTitle(projectId: UUID, newTitle: String) {
         try {
             val result = projectsCollection.updateOne(
-                Filters.eq(MongoDBParse.ID_FIELD, projectId.toString()),
-                Updates.set(MongoDBParse.TITLE_FIELD, newTitle)
+                Filters.and(
+                    Filters.eq(MongoDBParse.ID_FIELD, projectId.toString()),
+                    Filters.eq(MongoDBParse.IS_DELETED_FIELD, false)
+                ), Updates.set(MongoDBParse.TITLE_FIELD, newTitle)
             )
             if (result.matchedCount.toInt() == 0) {
                 throw ProjectNotFoundException("Project with ID $projectId not found")
@@ -53,8 +55,10 @@ class MongoDBProjectsDataSource(
     override fun editProjectDescription(projectId: UUID, newDescription: String) {
         try {
             val result = projectsCollection.updateOne(
-                Filters.eq(MongoDBParse.ID_FIELD, projectId.toString()),
-                Updates.set(MongoDBParse.DESCRIPTION_FIELD, newDescription)
+                Filters.and(
+                    Filters.eq(MongoDBParse.ID_FIELD, projectId.toString()),
+                    Filters.eq(MongoDBParse.IS_DELETED_FIELD, false)
+                ), Updates.set(MongoDBParse.DESCRIPTION_FIELD, newDescription)
             )
             if (result.matchedCount.toInt() == 0) {
                 throw ProjectNotFoundException("Project with ID $projectId not found")
@@ -67,8 +71,10 @@ class MongoDBProjectsDataSource(
     override fun deleteProject(projectId: UUID) {
         try {
             val result = projectsCollection.updateOne(
-                Filters.eq(MongoDBParse.ID_FIELD, projectId.toString()),
-                Updates.set(MongoDBParse.IS_DELETED_FIELD, true)
+                Filters.and(
+                    Filters.eq(MongoDBParse.ID_FIELD, projectId.toString()),
+                    Filters.eq(MongoDBParse.IS_DELETED_FIELD, false)
+                ), Updates.set(MongoDBParse.IS_DELETED_FIELD, true)
             )
             if (result.matchedCount.toInt() == 0) {
                 throw ProjectNotFoundException("Project with ID $projectId not found")

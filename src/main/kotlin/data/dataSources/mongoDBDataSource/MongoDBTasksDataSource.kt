@@ -39,7 +39,10 @@ class MongoDBTasksDataSource(
     override fun editTaskTitle(taskId: UUID, newTitle: String) {
         try {
             val result = collection.updateOne(
-                Filters.eq(MongoDBParse.ID_FIELD, taskId.toString()), Updates.set(MongoDBParse.TITLE_FIELD, newTitle)
+                Filters.and(
+                    Filters.eq(MongoDBParse.ID_FIELD, taskId.toString()),
+                    Filters.eq(MongoDBParse.IS_DELETED_FIELD, false)
+                ), Updates.set(MongoDBParse.TITLE_FIELD, newTitle)
             )
             if (result.matchedCount.toInt() == 0) {
                 throw TaskNotFoundException("Task with ID $taskId not found")
@@ -51,9 +54,11 @@ class MongoDBTasksDataSource(
 
     override fun editTaskDescription(taskId: UUID, newDescription: String) {
         try {
-            val result =   collection.updateOne(
-                Filters.eq(MongoDBParse.ID_FIELD, taskId.toString()),
-                Updates.set(MongoDBParse.DESCRIPTION_FIELD, newDescription)
+            val result = collection.updateOne(
+                Filters.and(
+                    Filters.eq(MongoDBParse.ID_FIELD, taskId.toString()),
+                    Filters.eq(MongoDBParse.IS_DELETED_FIELD, false)
+                ), Updates.set(MongoDBParse.DESCRIPTION_FIELD, newDescription)
             )
             if (result.matchedCount.toInt() == 0) {
                 throw TaskNotFoundException("Task with ID $taskId not found")
@@ -65,9 +70,11 @@ class MongoDBTasksDataSource(
 
     override fun editTaskState(taskId: UUID, newStateId: UUID) {
         try {
-            val result =   collection.updateOne(
-                Filters.eq(MongoDBParse.ID_FIELD, taskId.toString()),
-                Updates.set(MongoDBParse.STATE_ID_FIELD, newStateId.toString())
+            val result = collection.updateOne(
+                Filters.and(
+                    Filters.eq(MongoDBParse.ID_FIELD, taskId.toString()),
+                    Filters.eq(MongoDBParse.IS_DELETED_FIELD, false)
+                ), Updates.set(MongoDBParse.STATE_ID_FIELD, newStateId.toString())
             )
             if (result.matchedCount.toInt() == 0) {
                 throw TaskNotFoundException("Task with ID $taskId not found")
@@ -80,8 +87,10 @@ class MongoDBTasksDataSource(
     override fun deleteTask(taskId: UUID) {
         try {
             val result = collection.updateOne(
-                Filters.eq(MongoDBParse.ID_FIELD, taskId.toString()),
-                Updates.set(MongoDBParse.IS_DELETED_FIELD, true)
+                Filters.and(
+                    Filters.eq(MongoDBParse.ID_FIELD, taskId.toString()),
+                    Filters.eq(MongoDBParse.IS_DELETED_FIELD, false)
+                ), Updates.set(MongoDBParse.IS_DELETED_FIELD, true)
             )
             if (result.matchedCount.toInt() == 0) {
                 throw TaskNotFoundException("Task with ID $taskId not found")
