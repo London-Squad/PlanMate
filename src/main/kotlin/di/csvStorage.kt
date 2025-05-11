@@ -2,7 +2,6 @@ package di
 
 import data.dataSources.csvDataSource.*
 import data.dataSources.csvDataSource.fileIO.CsvFileHandler
-import data.dataSources.csvDataSource.fileIO.CsvParser
 import data.repositories.dataSourceInterfaces.*
 import logic.repositories.TaskRepository
 import org.koin.core.qualifier.named
@@ -36,13 +35,6 @@ val csvStorageModule = module {
         CsvFileHandler(File(directory, "users.csv"))
     }
 
-    single(named("activeUserFileHandler")) {
-        val directory = File("csvFiles")
-        CsvFileHandler(File(directory, "activeUser.csv"))
-    }
-
-    single { CsvParser() }
-
     single<TaskRepository> { CsvTasksDataSource(get(named("tasksFileHandler")), get()) }
 
     single<TaskStatesDataSource> { CsvTaskStatesDataSource(get(named("taskStatesFileHandler")), get()) }
@@ -51,7 +43,6 @@ val csvStorageModule = module {
     single<UsersDataSource> {
         CsvUsersDataSource(
             get(named("usersFileHandler")),
-            get(named("activeUserFileHandler")),
             get()
         )
     }

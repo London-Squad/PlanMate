@@ -4,7 +4,6 @@ import data.repositories.dataSourceInterfaces.UsersDataSource
 import data.repositories.dtoMappers.toUser
 import data.security.hashing.HashingAlgorithm
 import logic.entities.User
-import logic.exceptions.UserNameAlreadyTakenException
 import logic.repositories.UserRepository
 import java.util.UUID
 
@@ -14,8 +13,7 @@ class UserRepositoryImpl(
 ) : UserRepository {
 
     override fun getMates(includeDeleted: Boolean): List<User> {
-        return usersDataSource.getMates()
-            .filter { if (includeDeleted) true else !it.isDeleted }
+        return usersDataSource.getMates(includeDeleted)
             .map { it.toUser() }
     }
 
@@ -27,12 +25,6 @@ class UserRepositoryImpl(
     }
 
     override fun addMate(userName: String, password: String) {
-        getMates().any { user ->
-            user.userName == userName
-        }.let {
-            if (it) throw UserNameAlreadyTakenException()
-        }
-
         usersDataSource.addMate(
             userName,
             hashingAlgorithm.hashData(password)

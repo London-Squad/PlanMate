@@ -6,7 +6,7 @@ import com.mongodb.client.model.Updates
 import data.dataSources.mongoDBDataSource.mongoDBParse.MongoDBParse
 import data.repositories.dataSourceInterfaces.UsersDataSource
 import data.dto.UserDto
-import logic.exceptions.NoLoggedInUserFoundException
+import logic.exceptions.UserNameAlreadyTakenException
 import org.bson.Document
 import java.util.UUID
 
@@ -15,12 +15,18 @@ class MongoDBUsersDataSource(
     private val mongoParser: MongoDBParse
 ) : UsersDataSource {
 
-    private var loggedInUser: UserDto? = null
+    override fun getMates(includeDeleted: Boolean): List<UserDto> {
+        if (includeDeleted) {
+            return collection.find()
+                .map(mongoParser::documentToUserDto)
+                .toList()
+        }
 
-    override fun getMates(): List<UserDto> {
-        return collection.find(Filters.eq(MongoDBParse.IS_DELETED_FIELD, false)).map { doc ->
-            mongoParser.documentToUserDto(doc)
-        }.toList()
+        return collection.find(
+            Filters.eq(MongoDBParse.IS_DELETED_FIELD, false)
+        )
+            .map(mongoParser::documentToUserDto)
+            .toList()
     }
 
     override fun getAdmin(): UserDto = ADMIN
@@ -30,12 +36,11 @@ class MongoDBUsersDataSource(
             Filters.eq(MongoDBParse.ID_FIELD, userId.toString()),
             Updates.set(MongoDBParse.IS_DELETED_FIELD, true)
         )
-
     }
 
     override fun addMate(userName: String, hashedPassword: String) {
         val existingUser = collection.find(Filters.eq(MongoDBParse.USERNAME_FIELD, userName)).first()
-        if (existingUser != null) throw IllegalStateException("User with username '$userName' already exists")
+        if (existingUser != null) throw UserNameAlreadyTakenException("User with username '$userName' already exists")
         val doc = mongoParser.userDtoToDocument(
             UserDto(
                 UUID.randomUUID(),
@@ -46,18 +51,6 @@ class MongoDBUsersDataSource(
             )
         )
         collection.insertOne(doc)
-    }
-
-    override fun getLoggedInUser(): UserDto {
-        return loggedInUser ?: throw NoLoggedInUserFoundException()
-    }
-
-    override fun setLoggedInUser(user: UserDto) {
-        loggedInUser = user
-    }
-
-    override fun clearLoggedInUser() {
-        loggedInUser = null
     }
 
     companion object {
