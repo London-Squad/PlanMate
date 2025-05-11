@@ -4,7 +4,7 @@ import logic.useCases.ManageTaskUseCase
 import ui.BaseView
 import ui.cliPrintersAndReaders.CLIPrinter
 import ui.cliPrintersAndReaders.CLIReader
-import java.util.UUID
+import java.util.*
 
 class TaskDeletionView(
     private val cliReader: CLIReader,
@@ -17,7 +17,7 @@ class TaskDeletionView(
             return
         }
 
-        tryCall({
+        makeRequest({
             manageTaskUseCase.deleteTask(taskId)
             cliPrinter.cliPrintLn("task $taskId was deleted")
         })

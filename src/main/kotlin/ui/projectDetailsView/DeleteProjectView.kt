@@ -4,7 +4,7 @@ import logic.useCases.ManageProjectUseCase
 import ui.BaseView
 import ui.cliPrintersAndReaders.CLIPrinter
 import ui.cliPrintersAndReaders.CLIReader
-import java.util.UUID
+import java.util.*
 
 class DeleteProjectView(
     private val cliPrinter: CLIPrinter,
@@ -17,7 +17,7 @@ class DeleteProjectView(
             return
         }
 
-        tryCall({
+        makeRequest({
             manageProjectUseCase.deleteProject(projectId)
             cliPrinter.cliPrintLn("Project with id $projectId was deleted successfully.")
         })

@@ -11,29 +11,39 @@ import ui.cliPrintersAndReaders.CLIPrinter
 abstract class BaseView(
     private val cliPrinter: CLIPrinter
 ) {
-    private var loading = false
+    private var isLoading = false
+    private var exceptionToBeCaught: Exception? = null
 
-    fun tryCall(
-        functionToTry: suspend CoroutineScope.() -> Unit,
-        onFailureFunction: (exception: Exception) -> Unit = { handleDefaultExceptions(it) }
-    ): Boolean {
+    fun makeRequest(
+        request: suspend CoroutineScope.() -> Unit,
+        onSuccess: () -> Unit = {},
+        onError: (exception: Exception) -> Unit = (::handleDefaultExceptions)
+    ) {
+        startOperationInSeparateScope(request)
+        blockWithLoadingLoop()
+        processResult(onSuccess, onError)
+    }
 
-        var success = false
+    private fun startOperationInSeparateScope(operation: suspend CoroutineScope.() -> Unit) {
+        isLoading = true
+        exceptionToBeCaught = null
 
-        CoroutineScope(Dispatchers.Default).launch {
+        CoroutineScope(Dispatchers.IO).launch {
             try {
-                functionToTry()
-                success = true
-                stopLoading()
+                operation()
             } catch (exception: Exception) {
-                stopLoading()
-                onFailureFunction(exception)
+                exceptionToBeCaught = exception
             }
+            stopLoading()
         }
+    }
 
-        startLoading()
-
-        return success
+    private fun processResult(
+        onSuccess: () -> Unit = {},
+        onError: (exception: Exception) -> Unit = (::handleDefaultExceptions)
+    ) {
+        if (exceptionToBeCaught == null) onSuccess()
+        else onError(exceptionToBeCaught!!)
     }
 
     fun handleDefaultExceptions(exception: Exception) {
@@ -45,22 +55,22 @@ abstract class BaseView(
         }
     }
 
-    private fun startLoading() {
-        loading = true
+    private fun blockWithLoadingLoop() {
         Thread.sleep(LOADING_MESSAGE_PRINT_INTERVAL)
-        if (loading) cliPrinter.cliPrint("Loading To Perform Your Request...")
-        while (loading) {
+        if (isLoading) cliPrinter.cliPrint("Loading To Perform Your Request..")
+
+        while (isLoading) {
             cliPrinter.cliPrint(".")
             Thread.sleep(LOADING_MESSAGE_PRINT_INTERVAL)
         }
     }
 
     private fun stopLoading() {
-        loading = false
+        isLoading = false
         cliPrinter.cliPrintLn("")
     }
 
     private companion object {
-        const val LOADING_MESSAGE_PRINT_INTERVAL = 50L
+        const val LOADING_MESSAGE_PRINT_INTERVAL = 500L
     }
 }

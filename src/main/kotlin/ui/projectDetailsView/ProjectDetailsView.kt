@@ -27,22 +27,22 @@ class ProjectDetailsView(
     private lateinit var loggedInUserType: User.Type
     private lateinit var projectDetails: GetProjectDetailsUseCase.ProjectDetails
 
-
     fun start(projectId: UUID, loggedInUserType: User.Type) {
         this.loggedInUserType = loggedInUserType
 
-        tryCall({ projectDetails = getProjectDetailsUseCase(projectId) })
-            .also { success -> if (!success) return }
-
-        printHeader(projectDetails.project.title)
-        swimlanesView.displaySwimlanes(projectDetails.tasks, projectDetails.taskStates)
-
-        printOptions()
-        goToNextView()
+        makeRequest(
+            request = { projectDetails = getProjectDetailsUseCase(projectId) },
+            onSuccess = {
+                printProject()
+                printOptions()
+                goToNextView()
+            }
+        )
     }
 
-    private fun printHeader(title: String) {
-        cliPrinter.printHeader("Project: $title")
+    private fun printProject() {
+        cliPrinter.printHeader("Project: ${projectDetails.project.title}")
+        swimlanesView.displaySwimlanes(projectDetails.tasks, projectDetails.taskStates)
     }
 
     private fun printOptions() {
@@ -92,7 +92,7 @@ class ProjectDetailsView(
         val title = taskInputReader.getValidTaskTitle()
         val description = taskInputReader.getValidTaskDescription()
 
-        tryCall({
+        makeRequest({
             manageTaskUseCase.addNewTask(title, description, projectDetails.project.id)
         })
     }

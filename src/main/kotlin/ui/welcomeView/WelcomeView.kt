@@ -17,9 +17,9 @@ class WelcomeView(
 ) : BaseView(cliPrinter) {
 
     fun start() {
-        tryCall(
-            functionToTry = { goDirectlyToMainMenu() },
-            onFailureFunction = { exception: Exception ->
+        makeRequest(
+            request = { goDirectlyToMainMenu() },
+            onError = { exception: Exception ->
                 if (exception is NoLoggedInUserFoundException) startNormalWelcomeView()
                 else handleDefaultExceptions(exception)
             }

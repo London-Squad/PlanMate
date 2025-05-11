@@ -37,13 +37,22 @@ class MainMenuView(
 
     private fun goToNextView() {
         when (getValidUserInput()) {
-            1 -> projectsDashboardView.start(loggedInUserType)
-            2 -> matesManagementView.start()
-            0 -> {
-                cliPrinter.cliPrintLn("\nLogging out ...")
-                tryCall({ logoutUseCase() }).also { success -> if (success) return }
-            }
+            1 -> goToProjectsDashboard()
+            2 -> goToMatesManagement()
+            0 -> makeRequest(
+                request = { cliPrinter.cliPrintLn("\nLogging out ..."); logoutUseCase() },
+                onSuccess = { cliPrinter.cliPrintLn("Logout successful") },
+            )
         }
+    }
+
+    private fun goToProjectsDashboard() {
+        projectsDashboardView.start(loggedInUserType)
+        start(loggedInUserType)
+    }
+
+    private fun goToMatesManagement() {
+        matesManagementView.start()
         start(loggedInUserType)
     }
 

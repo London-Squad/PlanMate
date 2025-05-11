@@ -20,20 +20,29 @@ class EditProjectView(
     private lateinit var currentProject: Project
 
     fun editProject(projectId: UUID) {
-        tryCall({ fetchProject(projectId) }).also { success -> if (!success) return }
+        makeRequest(
+            request = { fetchProject(projectId) },
+            onSuccess = {
+                printOptions()
+                selectOption()
+            }
+        )
+    }
 
+    private fun selectOption() {
+        when (cliReader.getValidInputNumberInRange(MAX_OPTION_NUMBER)) {
+            1 -> editProjectTitle()
+            2 -> editProjectDescription()
+            3 -> statesManagement()
+        }
+    }
+
+    private fun printOptions() {
         cliPrinter.printHeader("Edit Project: ${currentProject.title}")
         cliPrinter.cliPrintLn("1. Edit title")
         cliPrinter.cliPrintLn("2. Edit description")
         cliPrinter.cliPrintLn("3. States management")
         cliPrinter.cliPrintLn("0. Back to project")
-
-        when (cliReader.getValidInputNumberInRange(MAX_OPTION_NUMBER)) {
-            1 -> editProjectTitle()
-            2 -> editProjectDescription()
-            3 -> statesManagement()
-            0 -> return
-        }
     }
 
     private suspend fun fetchProject(projectId: UUID) {
@@ -42,7 +51,7 @@ class EditProjectView(
 
     private fun editProjectTitle() {
         val newTitle = projectInputReader.getValidProjectTitle()
-        tryCall({
+        makeRequest({
             manageProjectUseCase.editProjectTitle(currentProject.id, newTitle)
             cliPrinter.cliPrintLn("Project title updated successfully.")
         })
@@ -50,7 +59,7 @@ class EditProjectView(
 
     private fun editProjectDescription() {
         val newDescription = projectInputReader.getValidProjectDescription()
-        tryCall({
+        makeRequest({
             manageProjectUseCase.editProjectDescription(currentProject.id, newDescription)
             cliPrinter.cliPrintLn("Project description updated successfully.")
         })

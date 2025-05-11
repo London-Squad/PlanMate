@@ -28,11 +28,16 @@ class TaskManagementView(
     fun start(taskId: UUID, projectId: UUID) {
 
         this.projectId = projectId
-        tryCall({ fetchTaskInfo(taskId) }).also { success -> if (!success) return }
+        makeRequest(
+            request = { fetchTaskInfo(taskId) },
+            onSuccess = {
+                printTask()
+                printOptions()
+                selectNextUI()
+            }
+        )
 
-        printTask()
-        printOptions()
-        selectNextUI()
+
     }
 
     private suspend fun fetchTaskInfo(taskId: UUID) {

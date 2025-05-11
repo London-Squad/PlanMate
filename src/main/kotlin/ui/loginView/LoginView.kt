@@ -40,11 +40,12 @@ class LoginView(
     private fun processLogin(username: String, password: String) {
         var loggedInUserType = User.Type.MATE
 
-        tryCall({
-            loggedInUserType = loginUseCase(username, password).type
-        }).also { success -> if (!success) return }
-
-        cliPrinter.cliPrintLn("Login successful")
-        mainMenuView.start(loggedInUserType)
+        makeRequest(
+            request = { loggedInUserType = loginUseCase(username, password).type },
+            onSuccess = {
+                cliPrinter.cliPrintLn("Login successful")
+                mainMenuView.start(loggedInUserType)
+            }
+        )
     }
 }

@@ -4,7 +4,7 @@ import logic.useCases.ManageTaskUseCase
 import ui.BaseView
 import ui.cliPrintersAndReaders.CLIPrinter
 import ui.cliPrintersAndReaders.TaskInputReader
-import java.util.UUID
+import java.util.*
 
 class TaskDescriptionEditionView(
     private val taskInputReader: TaskInputReader,
@@ -14,7 +14,7 @@ class TaskDescriptionEditionView(
 
     fun editDescription(taskId: UUID) {
         val newDescription = taskInputReader.getValidTaskDescription()
-        tryCall({
+        makeRequest({
             manageTaskUseCase.editTaskDescription(taskId, newDescription)
         })
     }

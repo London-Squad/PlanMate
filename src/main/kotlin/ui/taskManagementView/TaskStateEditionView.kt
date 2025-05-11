@@ -19,20 +19,19 @@ class TaskStateEditionView(
 
     fun editState(taskId: UUID, projectId: UUID) {
 
-        tryCall({ fetchTaskStates(projectId) }).also { success -> if (!success) return }
+        makeRequest(
+            request = { fetchTaskStates(projectId) },
+            onSuccess = {
+                printProjectState()
+                selectTaskState(taskId)
+            }
+        )
+    }
 
-        if (taskStatesOfProject.isEmpty()) {
-            cliPrinter.cliPrintLn("no states available")
-            return
-        }
-
-        printProjectState(taskStatesOfProject)
-
+    private fun selectTaskState(taskId: UUID) {
         val newStateIndex = getUserChoice() - 1
 
-        tryCall({
-            manageTaskUseCase.editTaskState(taskId, taskStatesOfProject[newStateIndex].id)
-        })
+        makeRequest({ manageTaskUseCase.editTaskState(taskId, taskStatesOfProject[newStateIndex].id) })
     }
 
     private suspend fun fetchTaskStates(projectId: UUID) {
@@ -43,8 +42,13 @@ class TaskStateEditionView(
         return cliReader.getValidInputNumberInRange(min = 1, max = taskStatesOfProject.size)
     }
 
-    private fun printProjectState(tasksStates: List<TaskState>) {
-        tasksStates.forEachIndexed { index, state ->
+    private fun printProjectState() {
+        if (taskStatesOfProject.isEmpty()) {
+            cliPrinter.cliPrintLn("no states available")
+            return
+        }
+
+        taskStatesOfProject.forEachIndexed { index, state ->
             cliPrinter.cliPrintLn("${index + 1}. ${state.title}")
         }
     }

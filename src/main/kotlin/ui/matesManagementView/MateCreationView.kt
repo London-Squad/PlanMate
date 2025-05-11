@@ -15,7 +15,7 @@ class MateCreationView(
 
         val (username, password) = getUserCredentials()
 
-        tryCall({
+        makeRequest({
             createMateUseCase.createMate(username, password)
             cliPrinter.cliPrintLn("Mate ($username) have been created successfully")
         })

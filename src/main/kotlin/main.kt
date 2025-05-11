@@ -1,3 +1,4 @@
+import data.dataSources.mongoDBDataSource.DatabaseConnection
 import di.dataModule
 import di.logicModule
 import di.mongoStorageModule
@@ -21,5 +22,8 @@ fun main() {
     val ui: WelcomeView = getKoin().get()
 
     ui.start()
+
+    // todo: make the app shutdown in a better way
+    DatabaseConnection.close()
 
 }

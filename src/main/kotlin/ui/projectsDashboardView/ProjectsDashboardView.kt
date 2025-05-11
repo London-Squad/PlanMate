@@ -26,11 +26,16 @@ class ProjectsDashboardView(
 
     fun start(loggedInUserType: User.Type) {
         this.loggedInUserType = loggedInUserType
-        tryCall({ fetchProjects() }).also { success -> if (!success) return }
-        printHeader()
-        printProjects()
-        printOptions()
-        goToNextView()
+        makeRequest(
+            request = { fetchProjects() },
+            onSuccess = {
+                printHeader()
+                printProjects()
+                printOptions()
+                goToNextView()
+            }
+        )
+
     }
 
     private fun printHeader() {
@@ -100,7 +105,7 @@ class ProjectsDashboardView(
         cliPrinter.printHeader("Create Project")
         val title = projectInputReader.getValidProjectTitle()
         val description = projectInputReader.getValidProjectDescription()
-        tryCall({
+        makeRequest({
             createProjectUseCase.createProject(title, description)
             cliPrinter.cliPrintLn("Project (${title}) have been created successfully.")
         })

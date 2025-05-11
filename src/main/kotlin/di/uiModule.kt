@@ -3,16 +3,18 @@ package di
 import org.koin.dsl.module
 import ui.cliPrintersAndReaders.*
 import ui.cliPrintersAndReaders.cliTable.CLITablePrinter
-import ui.projectDetailsView.ProjectDetailsView
 import ui.loginView.LoginView
 import ui.logsView.LogsView
 import ui.mainMenuView.MainMenuView
 import ui.matesManagementView.MateCreationView
 import ui.matesManagementView.MatesManagementView
-import ui.projectDetailsView.*
+import ui.projectDetailsView.DeleteProjectView
+import ui.projectDetailsView.EditProjectView
+import ui.projectDetailsView.ProjectDetailsView
+import ui.projectDetailsView.SwimlanesView
 import ui.projectsDashboardView.ProjectsDashboardView
-import ui.taskStatesView.TaskStatesView
 import ui.taskManagementView.*
+import ui.taskStatesView.TaskStatesView
 import ui.welcomeView.WelcomeView
 
 val uiModule = module {
@@ -30,7 +32,7 @@ val uiModule = module {
 
     single { ProjectsDashboardView(get(), get(), get(), get(), get(), get(), get()) }
     single { ProjectDetailsView(get(), get(), get(), get(), get(), get(), get(), get(), get(), get()) }
-    single { SwimlanesView(get(), get()) }
+    single { SwimlanesView(get()) }
     single { EditProjectView(get(), get(), get(), get(), get()) }
     single { DeleteProjectView(get(), get(), get()) }
     single { TaskStatesView(get(), get(), get(), get(), get()) }

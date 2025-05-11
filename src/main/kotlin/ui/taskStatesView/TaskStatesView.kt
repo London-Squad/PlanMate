@@ -25,11 +25,14 @@ class TaskStatesView(
 
         cliPrinter.printHeader("Task States Management")
 
-        tryCall({ fetchTaskStates() }).also { success -> if (!success) return }
-
-        printTaskStates()
-        printOptions()
-        goToNextView()
+        makeRequest(
+            request = { fetchTaskStates() },
+            onSuccess = {
+                printTaskStates()
+                printOptions()
+                goToNextView()
+            }
+        )
     }
 
     private fun printOptions() {
@@ -69,7 +72,7 @@ class TaskStatesView(
     private fun addState() {
         val title = taskStateInputReader.getValidTaskStateTitle()
         val desc = taskStateInputReader.getValidTaskStateDescription()
-        tryCall({ useCase.addState(title, desc, projectId) })
+        makeRequest({ useCase.addState(title, desc, projectId) })
         cliPrinter.cliPrintLn("Task state added successfully.")
     }
 
@@ -94,13 +97,13 @@ class TaskStatesView(
 
     private fun editTaskStateTitle(state: TaskState) {
         val newTitle = taskStateInputReader.getValidTaskStateTitle()
-        tryCall({ useCase.editStateTitle(state.id, newTitle) })
+        makeRequest({ useCase.editStateTitle(state.id, newTitle) })
         cliPrinter.cliPrintLn("Title updated.")
     }
 
     private fun editTaskStateDescription(state: TaskState) {
         val newDescription = taskStateInputReader.getValidTaskStateDescription()
-        tryCall({ useCase.editStateDescription(state.id, newDescription) })
+        makeRequest({ useCase.editStateDescription(state.id, newDescription) })
         cliPrinter.cliPrintLn("Description updated.")
     }
 
@@ -115,7 +118,7 @@ class TaskStatesView(
 
         val confirm = cliReader.getUserConfirmation()
         if (confirm) {
-            tryCall({ useCase.deleteState(selectedState.id) })
+            makeRequest({ useCase.deleteState(selectedState.id) })
             cliPrinter.cliPrintLn("Task state deleted.")
         } else {
             cliPrinter.cliPrintLn("Deletion canceled.")

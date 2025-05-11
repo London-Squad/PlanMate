@@ -4,7 +4,7 @@ import logic.useCases.ManageTaskUseCase
 import ui.BaseView
 import ui.cliPrintersAndReaders.CLIPrinter
 import ui.cliPrintersAndReaders.TaskInputReader
-import java.util.UUID
+import java.util.*
 
 class TaskTitleEditionView(
     private val taskInputReader: TaskInputReader,
@@ -15,7 +15,7 @@ class TaskTitleEditionView(
 
         val newTitle = taskInputReader.getValidTaskTitle()
 
-        tryCall({
+        makeRequest({
             manageTaskUseCase.editTaskTitle(taskId, newTitle)
         })
     }
