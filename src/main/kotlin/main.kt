@@ -1,8 +1,5 @@
 import data.dataSources.mongoDBDataSource.DatabaseConnection
-import di.dataModule
-import di.logicModule
-import di.mongoStorageModule
-import di.uiModule
+import di.*
 import org.koin.core.context.startKoin
 import org.koin.java.KoinJavaComponent.getKoin
 import ui.welcomeView.WelcomeView
