@@ -1,5 +1,6 @@
 package ui.welcomeView
 
+import logic.entities.User
 import logic.exceptions.NoLoggedInUserFoundException
 import logic.useCases.GetLoggedInUserUseCase
 import ui.BaseView
@@ -17,20 +18,25 @@ class WelcomeView(
 ) : BaseView(cliPrinter) {
 
     fun start() {
+        var loggedInUserType = User.Type.MATE
+
         makeRequest(
-            request = { goDirectlyToMainMenu() },
-            onError = { exception: Exception ->
-                if (exception is NoLoggedInUserFoundException) startNormalWelcomeView()
-                else handleDefaultExceptions(exception)
-            },
+            request = { loggedInUserType = getLoggedInUserUseCase.getLoggedInUser().type },
+            onSuccess = { goDirectlyToMainMenu(loggedInUserType) },
+            onError = (::onCheckingLoggedInUserFailure),
             onLoadingMessage = "Checking for logged in user..."
         )
     }
 
-    private suspend fun goDirectlyToMainMenu() {
-        val loggedInUserType = getLoggedInUserUseCase.getLoggedInUser().type
+    private fun goDirectlyToMainMenu(loggedInUserType: User.Type) {
+        cliPrinter.cliPrintLn("Logged in user found, redirecting to main menu...")
         mainMenuView.start(loggedInUserType)
         start()
+    }
+
+    private fun onCheckingLoggedInUserFailure(exception: Exception) {
+        if (exception is NoLoggedInUserFoundException) startNormalWelcomeView()
+        else handleDefaultExceptions(exception)
     }
 
     private fun startNormalWelcomeView() {

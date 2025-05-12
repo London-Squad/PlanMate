@@ -13,6 +13,7 @@ abstract class BaseView(
 ) {
     private var isLoading = false
     private var caughtException: Exception? = null
+    private val requestScope: CoroutineScope = CoroutineScope(Dispatchers.IO)
 
     fun makeRequest(
         request: suspend CoroutineScope.() -> Unit,
@@ -30,7 +31,7 @@ abstract class BaseView(
         isLoading = true
         caughtException = null
 
-        CoroutineScope(Dispatchers.IO).launch {
+        requestScope.launch {
             try {
                 operation()
             } catch (exception: Exception) {
