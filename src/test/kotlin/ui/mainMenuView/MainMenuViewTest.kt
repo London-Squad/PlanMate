@@ -1,5 +1,7 @@
 package ui.mainMenuView
 
+import fakeData
+import io.mockk.coVerify
 import io.mockk.every
 import io.mockk.mockk
 import io.mockk.verify
@@ -9,7 +11,6 @@ import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Test
 import org.junit.jupiter.params.ParameterizedTest
 import org.junit.jupiter.params.provider.MethodSource
-import ui.ViewExceptionHandler
 import ui.cliPrintersAndReaders.CLIPrinter
 import ui.cliPrintersAndReaders.CLIReader
 import ui.matesManagementView.MatesManagementView
@@ -23,7 +24,6 @@ class MainMenuViewTest {
     private lateinit var projectsDashboardView: ProjectsDashboardView
     private lateinit var matesManagementView: MatesManagementView
     private lateinit var logoutUseCase: LogoutUseCase
-    private lateinit var viewExceptionHandler: ViewExceptionHandler
 
     @BeforeEach
     fun setup() {
@@ -32,7 +32,6 @@ class MainMenuViewTest {
         projectsDashboardView = mockk(relaxed = true)
         matesManagementView = mockk(relaxed = true)
         logoutUseCase = mockk(relaxed = true)
-        viewExceptionHandler = mockk(relaxed = true)
 
         mainMenuView = MainMenuView(
             cliPrinter,
@@ -40,7 +39,6 @@ class MainMenuViewTest {
             projectsDashboardView,
             matesManagementView,
             logoutUseCase,
-            viewExceptionHandler
         )
     }
 
@@ -62,14 +60,10 @@ class MainMenuViewTest {
     @MethodSource("getFakeUsers")
     fun `should logout when user input is 0`(user: User) {
         every { cliReader.getValidInputNumberInRange(any()) } returns 0
-        every { viewExceptionHandler.tryCall(any()) } answers {
-            firstArg<() -> Unit>().invoke()
-            false
-        }
 
         mainMenuView.start(user.type)
 
-        verify(exactly = 1) { logoutUseCase() }
+        coVerify(exactly = 1) { logoutUseCase() }
     }
 
     @Test

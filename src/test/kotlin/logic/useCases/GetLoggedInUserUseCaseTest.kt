@@ -1,8 +1,10 @@
 package logic.useCases
 
 import com.google.common.truth.Truth.assertThat
-import io.mockk.every
+import fakeData
+import io.mockk.coEvery
 import io.mockk.mockk
+import kotlinx.coroutines.test.runTest
 import logic.entities.User
 import logic.repositories.AuthenticationRepository
 import org.junit.jupiter.api.BeforeEach
@@ -24,11 +26,13 @@ class GetLoggedInUserUseCaseTest {
     @ParameterizedTest
     @MethodSource("getFakeUsers")
     fun `getLoggedInUser should return logged in user when user is logged in`(user: User) {
-        every { authenticationRepository.getLoggedInUser() } returns user
+        runTest {
+            coEvery { authenticationRepository.getLoggedInUser() } returns user
 
-        val result = getLoggedInUserUseCase.getLoggedInUser()
+            val result = getLoggedInUserUseCase.getLoggedInUser()
 
-        assertThat(result).isEqualTo(user)
+            assertThat(result).isEqualTo(user)
+        }
     }
 
     companion object {

@@ -1,7 +1,8 @@
 package logic.useCases
 
+import io.mockk.coVerify
 import io.mockk.mockk
-import io.mockk.verify
+import kotlinx.coroutines.test.runTest
 import logic.repositories.AuthenticationRepository
 import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.params.ParameterizedTest
@@ -28,8 +29,10 @@ class LoginUseCaseTest {
         "guest, guest123"
     )
     fun `logoutUseCase should call logout on authenticationRepository`(userName: String, password: String) {
-        loginUseCase(userName, password)
+        runTest {
+            loginUseCase(userName, password)
 
-        verify { authenticationRepository.login(userName, password) }
+            coVerify { authenticationRepository.login(userName, password) }
+        }
     }
 }

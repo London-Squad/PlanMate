@@ -1,6 +1,7 @@
 package ui.welcomeView
 
 import fakeData
+import io.mockk.coEvery
 import io.mockk.every
 import io.mockk.mockk
 import io.mockk.verify
@@ -11,7 +12,6 @@ import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Test
 import org.junit.jupiter.params.ParameterizedTest
 import org.junit.jupiter.params.provider.MethodSource
-import ui.ViewExceptionHandler
 import ui.cliPrintersAndReaders.CLIPrinter
 import ui.cliPrintersAndReaders.CLIReader
 import ui.loginView.LoginView
@@ -25,7 +25,6 @@ class WelcomeViewTest {
     private lateinit var loginView: LoginView
     private lateinit var mainMenuView: MainMenuView
     private lateinit var getLoggedInUserUseCase: GetLoggedInUserUseCase
-    private lateinit var viewExceptionHandler: ViewExceptionHandler
 
     @BeforeEach
     fun setup() {
@@ -34,7 +33,6 @@ class WelcomeViewTest {
         loginView = mockk(relaxed = true)
         mainMenuView = mockk(relaxed = true)
         getLoggedInUserUseCase = mockk(relaxed = true)
-        viewExceptionHandler = mockk(relaxed = true)
 
         welcomeView = WelcomeView(
             cliPrinter,
@@ -42,18 +40,13 @@ class WelcomeViewTest {
             loginView,
             mainMenuView,
             getLoggedInUserUseCase,
-            viewExceptionHandler
         )
     }
 
     @Test
     fun `should exit the app when user input is 0`() {
         every { cliReader.getValidInputNumberInRange(any()) } returns 0
-        every { getLoggedInUserUseCase.getLoggedInUser() } throws NoLoggedInUserFoundException()
-        every { viewExceptionHandler.tryCall(any()) } answers {
-            firstArg<() -> Unit>().invoke()
-            true
-        }
+        coEvery { getLoggedInUserUseCase.getLoggedInUser() } throws NoLoggedInUserFoundException()
 
         welcomeView.start()
 
@@ -63,11 +56,7 @@ class WelcomeViewTest {
     @Test
     fun `should go to login view when user input is 1`() {
         every { cliReader.getValidInputNumberInRange(any()) } answers { 1 } andThenAnswer { 0 }
-        every { getLoggedInUserUseCase.getLoggedInUser() } throws NoLoggedInUserFoundException()
-        every { viewExceptionHandler.tryCall(any()) } answers {
-            firstArg<() -> Unit>().invoke()
-            true
-        }
+        coEvery { getLoggedInUserUseCase.getLoggedInUser() } throws NoLoggedInUserFoundException()
 
         welcomeView.start()
 
@@ -77,11 +66,7 @@ class WelcomeViewTest {
     @Test
     fun `should reject user input when user input is not 0 or 1`() {
         every { cliReader.getValidInputNumberInRange(any()) } answers { -1 } andThenAnswer { 0 }
-        every { getLoggedInUserUseCase.getLoggedInUser() } throws NoLoggedInUserFoundException()
-        every { viewExceptionHandler.tryCall(any()) } answers {
-            firstArg<() -> Unit>().invoke()
-            true
-        }
+        coEvery { getLoggedInUserUseCase.getLoggedInUser() } throws NoLoggedInUserFoundException()
 
         welcomeView.start()
 
@@ -93,16 +78,24 @@ class WelcomeViewTest {
         "getFakeUsers"
     )
     fun `should go to main menu directly when there is a logged in user`(user: User) {
-        every { getLoggedInUserUseCase.getLoggedInUser() } answers { user } andThenThrows NoLoggedInUserFoundException()
         every { cliReader.getValidInputNumberInRange(any()) } returns 0
-        every { viewExceptionHandler.tryCall(any()) } answers {
-            firstArg<() -> Unit>().invoke()
-            true
-        }
+        coEvery { getLoggedInUserUseCase.getLoggedInUser() } answers { user } andThenThrows NoLoggedInUserFoundException()
 
         welcomeView.start()
 
         verify(exactly = 1) { mainMenuView.start(user.type) }
+    }
+
+    @ParameterizedTest
+    @MethodSource(
+        "getFakeUsers"
+    )
+    fun `should exit if unexpected exception is thrown`(user: User) {
+        coEvery { getLoggedInUserUseCase.getLoggedInUser() } throws Exception()
+
+        welcomeView.start()
+
+        verify(exactly = 0) { loginView.start() }
     }
 
     companion object {
