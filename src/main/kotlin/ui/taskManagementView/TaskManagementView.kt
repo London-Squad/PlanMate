@@ -34,7 +34,8 @@ class TaskManagementView(
                 printTask()
                 printOptions()
                 selectNextUI()
-            }
+            },
+            onLoadingMessage = "Fetching task info..."
         )
 
 

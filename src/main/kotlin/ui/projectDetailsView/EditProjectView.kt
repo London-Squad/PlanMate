@@ -26,7 +26,8 @@ class EditProjectView(
                 printHeader()
                 printOptions()
                 selectOption()
-            }
+            },
+            onLoadingMessage = "Fetching project..."
         )
     }
 
@@ -57,7 +58,8 @@ class EditProjectView(
         val newTitle = projectInputReader.getValidProjectTitle()
         makeRequest(
             request = { manageProjectUseCase.editProjectTitle(currentProject.id, newTitle) },
-            onSuccess = { cliPrinter.cliPrintLn("Project title updated successfully.") }
+            onSuccess = { cliPrinter.cliPrintLn("Project title updated successfully.") },
+            onLoadingMessage = "Updating project title..."
         )
     }
 
@@ -65,7 +67,8 @@ class EditProjectView(
         val newDescription = projectInputReader.getValidProjectDescription()
         makeRequest(
             request = { manageProjectUseCase.editProjectDescription(currentProject.id, newDescription) },
-            onSuccess = { cliPrinter.cliPrintLn("Project description updated successfully.") }
+            onSuccess = { cliPrinter.cliPrintLn("Project description updated successfully.") },
+            onLoadingMessage = "Updating project description..."
         )
     }
 

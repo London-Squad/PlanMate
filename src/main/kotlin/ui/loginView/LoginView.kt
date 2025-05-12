@@ -45,7 +45,8 @@ class LoginView(
             onSuccess = {
                 cliPrinter.cliPrintLn("Login successful")
                 mainMenuView.start(loggedInUserType)
-            }
+            },
+            onLoadingMessage = "Logging in..."
         )
     }
 }

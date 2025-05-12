@@ -23,15 +23,20 @@ class TaskStateEditionView(
             request = { fetchTaskStates(projectId) },
             onSuccess = {
                 printProjectState()
-                selectTaskState(taskId)
-            }
+                changeTaskState(taskId)
+            },
+            onLoadingMessage = "Fetching task states..."
         )
     }
 
-    private fun selectTaskState(taskId: UUID) {
+    private fun changeTaskState(taskId: UUID) {
         val newStateIndex = getUserChoice() - 1
 
-        makeRequest({ manageTaskUseCase.editTaskState(taskId, taskStatesOfProject[newStateIndex].id) })
+        makeRequest(
+            request = { manageTaskUseCase.editTaskState(taskId, taskStatesOfProject[newStateIndex].id) },
+            onSuccess = { cliPrinter.cliPrintLn("Task state updated successfully") },
+            onLoadingMessage = "Updating task state..."
+        )
     }
 
     private suspend fun fetchTaskStates(projectId: UUID) {

@@ -36,7 +36,8 @@ class ProjectDetailsView(
                 printProject()
                 printOptions()
                 goToNextView()
-            }
+            },
+            onLoadingMessage = "Fetching project details..."
         )
     }
 
@@ -92,9 +93,11 @@ class ProjectDetailsView(
         val title = taskInputReader.getValidTaskTitle()
         val description = taskInputReader.getValidTaskDescription()
 
-        makeRequest({
-            manageTaskUseCase.addNewTask(title, description, projectDetails.project.id)
-        })
+        makeRequest(
+            request = { manageTaskUseCase.addNewTask(title, description, projectDetails.project.id) },
+            onSuccess = { cliPrinter.cliPrintLn("Task (${title}) has been created successfully.") },
+            onLoadingMessage = "Creating task..."
+        )
     }
 
     private companion object {

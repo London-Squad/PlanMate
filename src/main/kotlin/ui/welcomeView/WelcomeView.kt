@@ -22,7 +22,8 @@ class WelcomeView(
             onError = { exception: Exception ->
                 if (exception is NoLoggedInUserFoundException) startNormalWelcomeView()
                 else handleDefaultExceptions(exception)
-            }
+            },
+            onLoadingMessage = "Checking for logged in user..."
         )
     }
 

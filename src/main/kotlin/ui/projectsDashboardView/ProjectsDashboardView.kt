@@ -33,7 +33,8 @@ class ProjectsDashboardView(
                 printProjects()
                 printOptions()
                 goToNextView()
-            }
+            },
+            onLoadingMessage = "Fetching projects..."
         )
 
     }
@@ -105,10 +106,11 @@ class ProjectsDashboardView(
         cliPrinter.printHeader("Create Project")
         val title = projectInputReader.getValidProjectTitle()
         val description = projectInputReader.getValidProjectDescription()
-        makeRequest({
-            createProjectUseCase.createProject(title, description)
-            cliPrinter.cliPrintLn("Project (${title}) have been created successfully.")
-        })
+        makeRequest(
+            request = { createProjectUseCase.createProject(title, description) },
+            onSuccess = { cliPrinter.cliPrintLn("Project (${title}) have been created successfully.") },
+            onLoadingMessage = "Creating project..."
+        )
     }
 
     private companion object {

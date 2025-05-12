@@ -31,7 +31,8 @@ class TaskStatesView(
                 printTaskStates()
                 printOptions()
                 goToNextView()
-            }
+            },
+            onLoadingMessage = "Fetching task states..."
         )
     }
 
@@ -72,8 +73,12 @@ class TaskStatesView(
     private fun addState() {
         val title = taskStateInputReader.getValidTaskStateTitle()
         val desc = taskStateInputReader.getValidTaskStateDescription()
-        makeRequest({ useCase.addState(title, desc, projectId) })
-        cliPrinter.cliPrintLn("Task state added successfully.")
+        makeRequest(
+            request = { useCase.addState(title, desc, projectId) },
+            onSuccess = { cliPrinter.cliPrintLn("Task state added successfully.") },
+            onLoadingMessage = "Adding task state..."
+        )
+
     }
 
     private fun editState() {
@@ -97,14 +102,20 @@ class TaskStatesView(
 
     private fun editTaskStateTitle(state: TaskState) {
         val newTitle = taskStateInputReader.getValidTaskStateTitle()
-        makeRequest({ useCase.editStateTitle(state.id, newTitle) })
-        cliPrinter.cliPrintLn("Title updated.")
+        makeRequest(
+            request = { useCase.editStateTitle(state.id, newTitle) },
+            onSuccess = { cliPrinter.cliPrintLn("Title updated successfully.") },
+            onLoadingMessage = "Updating task state title..."
+        )
     }
 
     private fun editTaskStateDescription(state: TaskState) {
         val newDescription = taskStateInputReader.getValidTaskStateDescription()
-        makeRequest({ useCase.editStateDescription(state.id, newDescription) })
-        cliPrinter.cliPrintLn("Description updated.")
+        makeRequest(
+            request = { useCase.editStateDescription(state.id, newDescription) },
+            onSuccess = { cliPrinter.cliPrintLn("Description updated successfully.") },
+            onLoadingMessage = "Updating task state description..."
+        )
     }
 
     private fun deleteState() {
@@ -116,13 +127,16 @@ class TaskStatesView(
         val index = cliReader.getValidInputNumberInRange(taskStates.size, min = 1) - 1
         val selectedState = taskStates[index]
 
-        val confirm = cliReader.getUserConfirmation()
-        if (confirm) {
-            makeRequest({ useCase.deleteState(selectedState.id) })
-            cliPrinter.cliPrintLn("Task state deleted.")
-        } else {
+        if (!cliReader.getUserConfirmation()) {
             cliPrinter.cliPrintLn("Deletion canceled.")
+            return
         }
+
+        makeRequest(
+            request = { useCase.deleteState(selectedState.id) },
+            onSuccess = { cliPrinter.cliPrintLn("Task state deleted successfully.") },
+            onLoadingMessage = "Deleting task state..."
+        )
     }
 
     private companion object {

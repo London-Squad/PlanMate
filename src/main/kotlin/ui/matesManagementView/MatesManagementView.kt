@@ -29,7 +29,10 @@ class MatesManagementView(
     private fun isLoggedInUserAnAdmin(): Boolean {
         var currentUserType: User.Type = User.Type.MATE
 
-        makeRequest({ currentUserType = getLoggedInUserUseCase.getLoggedInUser().type })
+        makeRequest(
+            request = { currentUserType = getLoggedInUserUseCase.getLoggedInUser().type },
+            onLoadingMessage = "Making sure you are an admin..."
+        )
 
         return currentUserType == User.Type.ADMIN
     }
@@ -54,7 +57,10 @@ class MatesManagementView(
     private fun printTableOfAllMates() {
         var mates: List<User> = emptyList()
 
-        makeRequest({ mates = getAllMatesUseCase.getAllMates() })
+        makeRequest(
+            request = { mates = getAllMatesUseCase.getAllMates() },
+            onLoadingMessage = "Fetching all mates..."
+        )
 
         if (mates.isEmpty()) {
             cliPrinter.cliPrintLn("No mates found.")

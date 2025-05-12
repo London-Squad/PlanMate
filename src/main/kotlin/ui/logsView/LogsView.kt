@@ -18,18 +18,27 @@ class LogsView(
     private val cliTablePrinter: CLITablePrinter,
     private val getUsersUseCase: GetUsersUseCase,
 ) : BaseView(cliPrinter) {
+
+    private lateinit var users: List<User>
+
     fun printLogsByEntityId(entityId: UUID) {
         var logs: List<Log> = emptyList()
 
         makeRequest(
             request = { logs = getLogsByEntityIdUseCase.getLogsByEntityId(entityId) },
-            onSuccess = { printLogs(logs) }
+            onSuccess = { printLogs(logs) },
+            onLoadingMessage = "Fetching logs..."
         )
 
         cliReader.getUserInput("\npress enter to go back")
     }
 
     private fun printLogs(logs: List<Log>) {
+        users = emptyList()
+        makeRequest(
+            request = { users = getUsersUseCase.getUsers() },
+            onLoadingMessage = "Fetching users for the logs..."
+        )
 
         if (logs.isEmpty()) {
             cliPrinter.cliPrintLn("No logs found for this entity.")
@@ -52,16 +61,10 @@ class LogsView(
     }
 
     private fun getUserNameByLog(log: Log): String {
-        var userName = "Unknown user"
-
-        makeRequest({
-            userName = getUsersUseCase.getUsers()
-                .firstOrNull { it.id == log.userId }
-                ?.userName
-                ?: userName
-        })
-
-        return userName
+        return users
+            .firstOrNull { it.id == log.userId }
+            ?.userName
+            ?: "Unknown user"
     }
 
     private fun actionToString(action: LoggedAction): String {

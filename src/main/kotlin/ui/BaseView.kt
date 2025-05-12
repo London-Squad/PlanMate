@@ -17,10 +17,12 @@ abstract class BaseView(
     fun makeRequest(
         request: suspend CoroutineScope.() -> Unit,
         onSuccess: () -> Unit = {},
-        onError: (exception: Exception) -> Unit = (::handleDefaultExceptions)
+        onError: (exception: Exception) -> Unit = (::handleDefaultExceptions),
+        // todo (extra): make onLoading,
+        onLoadingMessage: String = DEFAULT_ON_LOADING_MESSAGE
     ) {
         sendRequestInSeparateScope(request)
-        blockWithLoadingLoop()
+        blockWithLoadingLoop(onLoadingMessage)
         processResult(onSuccess, onError)
     }
 
@@ -42,15 +44,21 @@ abstract class BaseView(
         isLoading = false
     }
 
-    private fun blockWithLoadingLoop() {
+    private fun blockWithLoadingLoop(onLoadingMessage: String) {
+        var isLoadingMessagePrinted = false
+
         Thread.sleep(TIME_TO_SHOW_LOADING_MESSAGE_IN_MILLI_SECOND)
-        if (isLoading) cliPrinter.cliPrint("Loading To Perform Your Request..")
+        if (isLoading) {
+            cliPrinter.cliPrint(onLoadingMessage)
+            isLoadingMessagePrinted = true
+        }
 
         while (isLoading) {
             cliPrinter.cliPrint(".")
             Thread.sleep(TIME_INTERVAL_FOR_THE_LOADING_DOT_ANIMATION_IN_MILLI_SECONDS)
         }
-        cliPrinter.cliPrintLn("")
+        if (isLoadingMessagePrinted) cliPrinter.cliPrintLn("Done!")
+
     }
 
     private fun processResult(
@@ -73,5 +81,6 @@ abstract class BaseView(
     private companion object {
         const val TIME_TO_SHOW_LOADING_MESSAGE_IN_MILLI_SECOND = 100L
         const val TIME_INTERVAL_FOR_THE_LOADING_DOT_ANIMATION_IN_MILLI_SECONDS = 500L
+        const val DEFAULT_ON_LOADING_MESSAGE = "Loading To Perform Your Request.."
     }
 }

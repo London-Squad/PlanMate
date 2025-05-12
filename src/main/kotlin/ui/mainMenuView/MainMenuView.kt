@@ -40,8 +40,9 @@ class MainMenuView(
             1 -> goToProjectsDashboard()
             2 -> goToMatesManagement()
             0 -> makeRequest(
-                request = { cliPrinter.cliPrintLn("\nLogging out ..."); logoutUseCase() },
+                request = { logoutUseCase() },
                 onSuccess = { cliPrinter.cliPrintLn("Logout successful") },
+                onLoadingMessage = "Logging out..."
             )
         }
     }

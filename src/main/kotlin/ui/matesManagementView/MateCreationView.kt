@@ -15,10 +15,11 @@ class MateCreationView(
 
         val (username, password) = getUserCredentials()
 
-        makeRequest({
-            createMateUseCase.createMate(username, password)
-            cliPrinter.cliPrintLn("Mate ($username) have been created successfully")
-        })
+        makeRequest(
+            request = { createMateUseCase.createMate(username, password) },
+            onSuccess = { cliPrinter.cliPrintLn("Mate ($username) have been created successfully") },
+            onLoadingMessage = "Creating mate..."
+        )
     }
 
     private fun getUserCredentials(): Pair<String, String> {

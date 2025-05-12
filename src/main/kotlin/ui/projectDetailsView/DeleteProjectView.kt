@@ -17,10 +17,11 @@ class DeleteProjectView(
             return
         }
 
-        makeRequest({
-            manageProjectUseCase.deleteProject(projectId)
-            cliPrinter.cliPrintLn("Project with id $projectId was deleted successfully.")
-        })
+        makeRequest(
+            request = { manageProjectUseCase.deleteProject(projectId) },
+            onSuccess = { cliPrinter.cliPrintLn("Project with id $projectId was deleted successfully.") },
+            onLoadingMessage = "Deleting project..."
+        )
     }
 
     private fun isDeletionCanceled(): Boolean = !cliReader.getUserConfirmation()
