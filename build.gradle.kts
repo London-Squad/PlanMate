@@ -21,6 +21,7 @@ dependencies {
     implementation("org.jetbrains.kotlinx:kotlinx-coroutines-core:1.10.2")
     implementation("org.mongodb:mongodb-driver-kotlin-coroutine:5.2.0")
     implementation("org.slf4j:slf4j-nop:1.7.36")
+    testImplementation("org.jetbrains.kotlinx:kotlinx-coroutines-test:1.10.2")
 
 }
 
