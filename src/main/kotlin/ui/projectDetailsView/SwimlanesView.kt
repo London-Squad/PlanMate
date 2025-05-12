@@ -1,14 +1,11 @@
 package ui.projectDetailsView
 
 import logic.entities.Task
-import ui.cliPrintersAndReaders.CLIPrinter
-import ui.cliPrintersAndReaders.cliTable.CLITablePrinter
-import ui.cliPrintersAndReaders.cliTable.InvalidTableInput
 import logic.entities.TaskState
-import java.util.UUID
+import ui.cliPrintersAndReaders.CLITablePrinter
+import java.util.*
 
 class SwimlanesView(
-    private val cliPrinter: CLIPrinter,
     private val cliTablePrinter: CLITablePrinter,
 ) {
 
@@ -44,11 +41,7 @@ class SwimlanesView(
     }
 
     private fun displayTable(headers: List<String>, data: List<List<String>>, columnWidths: List<Int>) {
-        try {
-            cliTablePrinter(headers, data, columnWidths)
-        } catch (e: InvalidTableInput) {
-            cliPrinter.cliPrintLn("Error displaying swimlanes: ${e.message}")
-        }
+        cliTablePrinter(headers, data, columnWidths)
     }
 
     private companion object {

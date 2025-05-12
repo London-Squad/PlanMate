@@ -1,16 +1,19 @@
 package logic.useCases
 
-import logic.entities.*
+import logic.entities.EntityCreationLog
+import logic.entities.EntityDeletionLog
+import logic.entities.EntityEditionLog
+import logic.entities.Log
 import logic.repositories.AuthenticationRepository
 import logic.repositories.LogsRepository
-import java.util.UUID
+import java.util.*
 
 class CreateLogUseCase(
     private val logsRepository: LogsRepository,
     private val authenticationRepository: AuthenticationRepository,
 ) {
 
-    fun logEntityCreation(entityId: UUID) {
+    suspend fun logEntityCreation(entityId: UUID) {
         logsRepository.addLog(
             Log(
                 userId = authenticationRepository.getLoggedInUser().id,
@@ -19,7 +22,7 @@ class CreateLogUseCase(
         )
     }
 
-    fun logEntityTitleEdition(entityId: UUID, oldValue: String, newValue: String) {
+    suspend fun logEntityTitleEdition(entityId: UUID, oldValue: String, newValue: String) {
         logsRepository.addLog(
             Log(
                 userId = authenticationRepository.getLoggedInUser().id,
@@ -33,7 +36,7 @@ class CreateLogUseCase(
         )
     }
 
-    fun logEntityDescriptionEdition(entityId: UUID, oldValue: String, newValue: String) {
+    suspend fun logEntityDescriptionEdition(entityId: UUID, oldValue: String, newValue: String) {
         logsRepository.addLog(
             Log(
                 userId = authenticationRepository.getLoggedInUser().id,
@@ -47,7 +50,7 @@ class CreateLogUseCase(
         )
     }
 
-    fun logTaskStateEdition(taskId: UUID, oldState: String, newState: String) {
+    suspend fun logTaskStateEdition(taskId: UUID, oldState: String, newState: String) {
         logsRepository.addLog(
             Log(
                 userId = authenticationRepository.getLoggedInUser().id,
@@ -61,7 +64,7 @@ class CreateLogUseCase(
         )
     }
 
-    fun logEntityDeletion(entityId: UUID) {
+    suspend fun logEntityDeletion(entityId: UUID) {
         logsRepository.addLog(
             Log(
                 userId = authenticationRepository.getLoggedInUser().id,

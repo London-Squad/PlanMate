@@ -1,6 +1,6 @@
 package logic.useCases
 
-import logic.entities.*
+import logic.entities.TaskState
 import logic.repositories.TaskStatesRepository
 import java.util.*
 
@@ -9,7 +9,7 @@ class ManageStateUseCase(
     private val createLogUseCase: CreateLogUseCase,
 ) {
 
-    fun addState(title: String, description: String, projectId: UUID) {
+    suspend fun addState(title: String, description: String, projectId: UUID) {
         val taskState = buildNewTaskState(UUID.randomUUID(), title, description, projectId)
 
         taskStatesRepository.addNewTaskState(taskState, projectId)
@@ -30,30 +30,30 @@ class ManageStateUseCase(
         )
     }
 
-    fun editStateTitle(stateId: UUID, newTitle: String) {
+    suspend fun editStateTitle(stateId: UUID, newTitle: String) {
         val oldState = taskStatesRepository.getTaskStateById(stateId)
 
         taskStatesRepository.editTaskStateTitle(stateId, newTitle)
         createLogUseCase.logEntityTitleEdition(oldState.id, oldState.title, newTitle)
     }
 
-    fun editStateDescription(stateId: UUID, newDescription: String) {
+    suspend fun editStateDescription(stateId: UUID, newDescription: String) {
         val oldState = taskStatesRepository.getTaskStateById(stateId)
 
         taskStatesRepository.editTaskStateDescription(stateId, newDescription)
         createLogUseCase.logEntityDescriptionEdition(oldState.id, oldState.description, newDescription)
     }
 
-    fun deleteState(stateId: UUID) {
+    suspend fun deleteState(stateId: UUID) {
         taskStatesRepository.deleteTaskState(stateId)
         createLogUseCase.logEntityDeletion(stateId)
     }
 
-    fun getTaskStatesByProjectId(projectId: UUID): List<TaskState> {
+    suspend fun getTaskStatesByProjectId(projectId: UUID): List<TaskState> {
         return taskStatesRepository.getTaskStatesByProjectId(projectId)
     }
 
-    fun getTaskStatesById(stateId: UUID): TaskState {
+    suspend fun getTaskStatesById(stateId: UUID): TaskState {
         return taskStatesRepository.getTaskStateById(stateId)
     }
 }

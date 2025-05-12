@@ -2,35 +2,29 @@ package ui.matesManagementView
 
 import logic.entities.User
 import logic.useCases.GetAllMatesUseCase
-import logic.useCases.GetLoggedInUserUseCase
+import ui.RequestHandler
 import ui.cliPrintersAndReaders.CLIPrinter
 import ui.cliPrintersAndReaders.CLIReader
-import ui.cliPrintersAndReaders.cliTable.CLITablePrinter
+import ui.cliPrintersAndReaders.CLITablePrinter
 
 class MatesManagementView(
     private val cliPrinter: CLIPrinter,
     private val cliReader: CLIReader,
-    private val getLoggedInUserUseCase: GetLoggedInUserUseCase,
     private val getAllMatesUseCase: GetAllMatesUseCase,
     private val cliTablePrinter: CLITablePrinter,
     private val mateCreationView: MateCreationView
-) {
+) : RequestHandler(cliPrinter) {
 
     fun start() {
-        val currentUser = getLoggedInUserUseCase.getLoggedInUser()
-        if (currentUser.type != User.Type.ADMIN) {
-            printLn("Error: Only admins can manage mates.")
-            return
-        }
         printOptions()
         selectNextUI()
     }
 
     private fun printOptions() {
-        printLn("Mates Management Menu")
-        listAllMates()
-        printLn("1. Create New Mate")
-        printLn("0. Back")
+        cliPrinter.cliPrintLn("Mates Management Menu")
+        printTableOfAllMates()
+        cliPrinter.cliPrintLn("1. Create New Mate")
+        cliPrinter.cliPrintLn("0. Back")
     }
 
     private fun selectNextUI() {
@@ -43,10 +37,16 @@ class MatesManagementView(
         start()
     }
 
-    private fun listAllMates() {
-        val mates = getAllMatesUseCase.getAllMates()
+    private fun printTableOfAllMates() {
+        var mates: List<User> = emptyList()
+
+        makeRequest(
+            request = { mates = getAllMatesUseCase.getAllMates() },
+            onLoadingMessage = "Fetching all mates..."
+        )
+
         if (mates.isEmpty()) {
-            printLn("No mates found.")
+            cliPrinter.cliPrintLn("No mates found.")
             return
         }
 
@@ -57,10 +57,6 @@ class MatesManagementView(
         val columnWidths = listOf(null, null, null)
 
         cliTablePrinter(headers, data, columnWidths)
-    }
-
-    private fun printLn(message: String) {
-        cliPrinter.cliPrintLn(message)
     }
 
     private companion object {

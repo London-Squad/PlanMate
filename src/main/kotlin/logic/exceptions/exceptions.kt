@@ -13,7 +13,9 @@ class ProjectNotFoundException(message: String = "Project could not be found") :
 
 
 open class AuthenticationException(message: String) : Exception(message)
-class InvalidPasswordException(message: String= "Invalid password") : AuthenticationException(message)
 class InvalidUserNameException(message: String = "Invalid username") : AuthenticationException(message)
-class UserNameAlreadyExistsException(message: String = "User with this username already exists") :
+class InvalidPasswordException(message: String= "Invalid password") : AuthenticationException(message)
+class UserNameAlreadyExistsException(message: String = "This username already exists") :
+    AuthenticationException(message)
+class UnauthorizedOperationException(message: String = "This operation is not authorized") :
     AuthenticationException(message)

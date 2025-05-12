@@ -1,10 +1,14 @@
 package data.dataSources.mongoDBDataSource
 
 import com.mongodb.MongoException
-import com.mongodb.client.MongoCollection
 import com.mongodb.client.model.Filters
 import com.mongodb.client.model.Updates
+import com.mongodb.kotlin.client.coroutine.MongoCollection
 import data.dataSources.mongoDBDataSource.mongoDBParse.MongoDBParse
+import data.dto.ProjectDto
+import data.repositories.dataSourceInterfaces.ProjectsDataSource
+import kotlinx.coroutines.flow.map
+import kotlinx.coroutines.flow.toList
 import data.repositories.dtoMappers.toProject
 import data.repositories.dtoMappers.toProjectDto
 import logic.entities.Project
@@ -19,7 +23,7 @@ class MongoDBProjectsDataSource(
     private val projectsCollection: MongoCollection<Document>, private val mongoParse: MongoDBParse
 ) : ProjectsRepository {
 
-    override fun getAllProjects(includeDeleted: Boolean): List<Project> {
+    override suspend fun getAllProjects(includeDeleted: Boolean): List<Project> {
         return try {
             val filter = if (!includeDeleted) Filters.eq(MongoDBParse.IS_DELETED_FIELD, false)
             else Filters.empty()
@@ -32,7 +36,7 @@ class MongoDBProjectsDataSource(
 
     }
 
-    override fun getProjectById(projectId: UUID, includeDeleted: Boolean): Project {
+    override suspend fun getProjectById(projectId: UUID, includeDeleted: Boolean): Project {
         return try {
             val filter = Filters.and(
                 Filters.eq(MongoDBParse.ID_FIELD, projectId.toString()),
@@ -49,7 +53,7 @@ class MongoDBProjectsDataSource(
         }
     }
 
-    override fun addNewProject(project: Project) {
+    override suspend fun addNewProject(project: Project) {
         try {
             val projectDto = project.toProjectDto()
             val document = mongoParse.projectDtoToDocument(projectDto)
@@ -59,7 +63,7 @@ class MongoDBProjectsDataSource(
         }
     }
 
-    override fun editProjectTitle(projectId: UUID, newTitle: String) {
+    override suspend fun editProjectTitle(projectId: UUID, newTitle: String) {
         try {
             val filter = Filters.and(
                 Filters.eq(MongoDBParse.ID_FIELD, projectId.toString()),
@@ -79,7 +83,7 @@ class MongoDBProjectsDataSource(
         }
     }
 
-    override fun editProjectDescription(projectId: UUID, newDescription: String) {
+    override suspend fun editProjectDescription(projectId: UUID, newDescription: String) {
         try {
             val filter = Filters.and(
                 Filters.eq(MongoDBParse.ID_FIELD, projectId.toString()),
@@ -98,7 +102,7 @@ class MongoDBProjectsDataSource(
         }
     }
 
-    override fun deleteProject(projectId: UUID) {
+    override suspend fun deleteProject(projectId: UUID) {
         try {
             val filter = Filters.and(
                 Filters.eq(MongoDBParse.ID_FIELD, projectId.toString()),

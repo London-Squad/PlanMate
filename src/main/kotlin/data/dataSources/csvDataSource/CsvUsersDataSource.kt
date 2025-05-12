@@ -14,15 +14,19 @@ class CsvUsersDataSource(
     private val csvParser: CsvParser
 ) : UsersDataSource {
 
-    override fun getMates(includeDeleted: Boolean): List<UserDto> {
+    init {
+        loggedInUser = loadUserFromLocalFile()
+    }
+
+    override suspend fun getMates(): List<UserDto> {
         return usersCsvFileHandler.readRecords()
             .map(csvParser::recordToUserDto)
             .filter { if (includeDeleted) true else !it.isDeleted }
     }
 
-    override fun getAdmin(): UserDto = ADMIN
+    override suspend fun getAdmin(): UserDto = ADMIN
 
-    override fun deleteUser(userId: UUID) {
+    override suspend fun deleteUser(userId: UUID) {
         var userFound = false
         usersCsvFileHandler.readRecords()
             .map {
@@ -37,7 +41,7 @@ class CsvUsersDataSource(
             }
     }
 
-    override fun addMate(userName: String, hashedPassword: String) {
+    override suspend fun addMate(userName: String, hashedPassword: String) {
         usersCsvFileHandler.readRecords().forEach {
             val userDto = csvParser.recordToUserDto(it)
             if (userDto.userName == userName)

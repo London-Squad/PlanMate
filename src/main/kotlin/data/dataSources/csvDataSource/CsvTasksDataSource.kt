@@ -18,7 +18,7 @@ class CsvTasksDataSource(
 ) : TaskRepository {
 
 
-    override fun getTasksByProjectID(projectId: UUID, includeDeleted: Boolean): List<Task> {
+    override suspend fun getTasksByProjectID(projectId: UUID, includeDeleted: Boolean): List<Task> {
         return getAllTasks(includeDeleted)
             .filter { it.projectId == projectId }
             .map(TaskDto::toTask)
@@ -30,7 +30,7 @@ class CsvTasksDataSource(
             .filter { if (includeDeleted) true else !it.isDeleted }
     }
 
-    override fun getTaskByID(taskId: UUID, includeDeleted: Boolean): Task {
+    override suspend fun getTaskByID(taskId: UUID, includeDeleted: Boolean): Task {
         return tasksCsvFileHandler.readRecords()
             .map(csvParser::recordToTaskDto)
             .filter { if (includeDeleted) true else !it.isDeleted }
@@ -45,7 +45,7 @@ class CsvTasksDataSource(
         )
     }
 
-    override fun editTaskTitle(taskId: UUID, newTitle: String) {
+    override suspend fun editTaskTitle(taskId: UUID, newTitle: String) {
         var taskFound = false
         tasksCsvFileHandler.readRecords()
             .map {
@@ -60,7 +60,7 @@ class CsvTasksDataSource(
             }
     }
 
-    override fun editTaskDescription(taskId: UUID, newDescription: String) {
+    override suspend fun editTaskDescription(taskId: UUID, newDescription: String) {
         var taskFound = false
         tasksCsvFileHandler.readRecords()
             .map {
@@ -75,7 +75,7 @@ class CsvTasksDataSource(
             }
     }
 
-    override fun editTaskState(taskId: UUID, newTaskState: TaskState) {
+    override suspend fun editTaskState(taskId: UUID, newTaskState: TaskState) {
         var taskFound = false
         tasksCsvFileHandler.readRecords()
             .map {
@@ -90,7 +90,7 @@ class CsvTasksDataSource(
             }
     }
 
-    override fun deleteTask(taskId: UUID) {
+    override suspend fun deleteTask(taskId: UUID) {
         var taskFound = false
         tasksCsvFileHandler.readRecords()
             .map {

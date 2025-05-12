@@ -20,14 +20,13 @@ class CsvLogsDataSource(
     private val csvParser: CsvParser
 ) : LogsRepository {
 
-    override fun getAllLogs(): List<Log> {
+    override suspend fun getAllLogs(): List<Log> {
         return logsCsvFileHandler.readRecords().map {
                 csvParser.recordToLogDto(it).toLog()
             }
     }
 
-
-    override fun addLog(log: Log) {
+    override suspend fun addLog(log: Log) {
         logsCsvFileHandler.appendRecord(
             csvParser.logDtoToRecord(log.toLogDto())
         )

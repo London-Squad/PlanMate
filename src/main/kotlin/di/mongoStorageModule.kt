@@ -1,6 +1,6 @@
 package di
 
-import com.mongodb.client.MongoDatabase
+import com.mongodb.kotlin.client.coroutine.MongoDatabase
 import data.dataSources.mongoDBDataSource.*
 import data.dataSources.mongoDBDataSource.mongoDBParse.MongoDBParse
 import data.repositories.dataSources.*

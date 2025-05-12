@@ -14,14 +14,14 @@ class CsvProjectsDataSource(
     private val csvParser: CsvParser,
 ) : ProjectsRepository {
 
-    override fun getAllProjects(includeDeleted: Boolean): List<Project> {
+    override suspend fun getAllProjects(includeDeleted: Boolean): List<Project> {
         return projectsCsvFileHandler.readRecords()
-            .map { csvParser.recordToProjectDto(it) }
+            .map(csvParser::recordToProjectDto)
             .filter { if (includeDeleted) true else !it.isDeleted }
             .map { it.toProject() }
     }
 
-    override fun getProjectById(projectId: UUID, includeDeleted: Boolean): Project {
+    override suspend fun getProjectById(projectId: UUID, includeDeleted: Boolean): Project {
         val projectDto = projectsCsvFileHandler.readRecords()
             .map { csvParser.recordToProjectDto(it) }
             .find { it.id == projectId }
@@ -34,14 +34,14 @@ class CsvProjectsDataSource(
         return projectDto.toProject()
     }
 
-    override fun addNewProject(project: Project) {
+    override suspend fun addNewProject(project: Project) {
         val projectDto = project.toProjectDto(isDeleted = false)
         projectsCsvFileHandler.appendRecord(
             csvParser.projectDtoToRecord(projectDto)
         )
     }
 
-    override fun editProjectTitle(projectId: UUID, newTitle: String) {
+    override suspend fun editProjectTitle(projectId: UUID, newTitle: String) {
         var projectFound = false
 
         projectsCsvFileHandler.readRecords().map {
@@ -58,7 +58,7 @@ class CsvProjectsDataSource(
         }
     }
 
-    override fun editProjectDescription(projectId: UUID, newDescription: String) {
+    override suspend fun editProjectDescription(projectId: UUID, newDescription: String) {
         var projectFound = false
 
         projectsCsvFileHandler.readRecords().map {
@@ -75,7 +75,7 @@ class CsvProjectsDataSource(
         }
     }
 
-    override fun deleteProject(projectId: UUID) {
+    override suspend fun deleteProject(projectId: UUID) {
         var projectFound = false
 
         projectsCsvFileHandler.readRecords().map {

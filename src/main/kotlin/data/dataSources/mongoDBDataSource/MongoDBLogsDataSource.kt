@@ -1,8 +1,13 @@
 package data.dataSources.mongoDBDataSource
 
 import com.mongodb.MongoException
-import com.mongodb.client.MongoCollection
+import com.mongodb.kotlin.client.coroutine.MongoCollection
 import data.dataSources.mongoDBDataSource.mongoDBParse.MongoDBParse
+import data.dto.LogDto
+import data.repositories.dataSourceInterfaces.LogsDataSource
+import kotlinx.coroutines.flow.map
+import kotlinx.coroutines.flow.toList
+import logic.exceptions.RetrievingDataFailureException
 import data.repositories.dtoMappers.toLog
 import data.repositories.dtoMappers.toLogDto
 import logic.entities.Log
@@ -24,13 +29,17 @@ class MongoDBLogsDataSource(
     private val mongoParser: MongoDBParse
 ) : LogsRepository {
 
-    override fun getAllLogs(): List<Log> {
-        return logsCollection.find().map { doc ->
-            mongoParser.documentToLogDto(doc).toLog()
-        }.toList()
+    override suspend fun getAllLogs(): List<Log> {
+        return try{
+            logsCollection.find().map { doc ->
+                mongoParser.documentToLogDto(doc).toLog()
+            }.toList()
+    } catch (e: MongoException) {
+        throw RetrievingDataFailureException("Failed to retrieve logs: ${e.message}")
+    }
     }
 
-    override fun addLog(log: Log) {
+    override suspend fun addLog(log: Log) {
         try {
             val logDto = log.toLogDto()
             val doc = mongoParser.logDtoToDocument(logDto)

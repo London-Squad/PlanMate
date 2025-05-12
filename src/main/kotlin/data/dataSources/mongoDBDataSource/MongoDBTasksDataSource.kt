@@ -1,16 +1,21 @@
 package data.dataSources.mongoDBDataSource
 
 import com.mongodb.MongoException
-import com.mongodb.client.MongoCollection
 import com.mongodb.client.model.Filters
 import com.mongodb.client.model.Updates
+import com.mongodb.kotlin.client.coroutine.MongoCollection
 import data.dataSources.mongoDBDataSource.mongoDBParse.MongoDBParse
 import data.repositories.dtoMappers.toTask
 import data.repositories.dtoMappers.toTaskDto
 import logic.entities.Task
 import logic.entities.TaskState
+import data.dto.TaskDto
+import data.repositories.dataSourceInterfaces.TasksDataSource
+import kotlinx.coroutines.flow.map
+import kotlinx.coroutines.flow.toList
 import logic.exceptions.RetrievingDataFailureException
 import logic.exceptions.StoringDataFailureException
+import logic.exceptions.TaskNotFoundException
 import logic.exceptions.TaskNotFoundException
 import logic.repositories.TaskRepository
 import org.bson.Document
@@ -20,7 +25,7 @@ class MongoDBTasksDataSource(
     private val tasksCollection: MongoCollection<Document>, private val mongoParser: MongoDBParse
 ) : TaskRepository {
 
-    override fun getTasksByProjectID(projectId: UUID, includeDeleted: Boolean): List<Task> {
+    override suspend fun getTasksByProjectID(projectId: UUID, includeDeleted: Boolean): List<Task> {
         return try {
             val filter = Filters.and(
                 Filters.eq(MongoDBParse.PROJECT_ID_FIELD, projectId.toString()),
@@ -36,7 +41,7 @@ class MongoDBTasksDataSource(
         }
     }
 
-    override fun getTaskByID(taskId: UUID, includeDeleted: Boolean): Task {
+    override suspend fun getTaskByID(taskId: UUID, includeDeleted: Boolean): Task {
         return try {
             val filter = Filters.and(
                 Filters.eq(MongoDBParse.ID_FIELD, taskId.toString()),
@@ -51,7 +56,7 @@ class MongoDBTasksDataSource(
         }
     }
 
-    override fun addNewTask(task: Task, projectId: UUID) {
+    override suspend fun addNewTask(task: Task, projectId: UUID) {
         try {
             val doc = mongoParser.taskDtoToDocument(task.toTaskDto(projectId))
             tasksCollection.insertOne(doc)
@@ -60,7 +65,7 @@ class MongoDBTasksDataSource(
         }
     }
 
-    override fun editTaskTitle(taskId: UUID, newTitle: String) {
+    override suspend fun editTaskTitle(taskId: UUID, newTitle: String) {
         try {
             val filter = Filters.and(
                 Filters.eq(MongoDBParse.ID_FIELD, taskId.toString()),
@@ -83,7 +88,7 @@ class MongoDBTasksDataSource(
         }
     }
 
-    override fun editTaskDescription(taskId: UUID, newDescription: String) {
+    override suspend fun editTaskDescription(taskId: UUID, newDescription: String) {
         try {
             val filters = Filters.and(
                 Filters.eq(MongoDBParse.ID_FIELD, taskId.toString()),
@@ -102,7 +107,7 @@ class MongoDBTasksDataSource(
         }
     }
 
-    override fun editTaskState(taskId: UUID, newTaskState: TaskState) {
+    override suspend fun editTaskState(taskId: UUID, newStateId: UUID) {
         try {
             val filters = Filters.and(
                 Filters.eq(MongoDBParse.ID_FIELD, taskId.toString()),
@@ -110,7 +115,7 @@ class MongoDBTasksDataSource(
             )
 
             tasksCollection.updateOne(
-                filters, Updates.set(MongoDBParse.STATE_ID_FIELD, newTaskState.id.toString())
+                filters, Updates.set(MongoDBParse.STATE_ID_FIELD, newStateId.toString())
             ).apply {
                 if (matchedCount.toInt() == 0) {
                     throw TaskNotFoundException("Task with ID $taskId not found")
@@ -121,7 +126,7 @@ class MongoDBTasksDataSource(
         }
     }
 
-    override fun deleteTask(taskId: UUID) {
+    override suspend fun deleteTask(taskId: UUID) {
         try {
             val filters = Filters.and(
                 Filters.eq(MongoDBParse.ID_FIELD, taskId.toString()),

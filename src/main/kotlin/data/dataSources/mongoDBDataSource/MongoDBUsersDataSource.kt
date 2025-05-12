@@ -1,11 +1,15 @@
 package data.dataSources.mongoDBDataSource
 
 import com.mongodb.MongoException
-import com.mongodb.client.MongoCollection
 import com.mongodb.client.model.Filters
 import com.mongodb.client.model.Updates
+import com.mongodb.kotlin.client.coroutine.MongoCollection
 import data.dataSources.mongoDBDataSource.mongoDBParse.MongoDBParse
 import data.dto.UserDto
+import data.repositories.dataSourceInterfaces.UsersDataSource
+import kotlinx.coroutines.flow.map
+import kotlinx.coroutines.flow.toList
+import logic.exceptions.*
 import data.repositories.dataSources.UsersDataSource
 import logic.exceptions.RetrievingDataFailureException
 import logic.exceptions.StoringDataFailureException
@@ -18,7 +22,7 @@ class MongoDBUsersDataSource(
     private val collection: MongoCollection<Document>, private val mongoParser: MongoDBParse
 ) : UsersDataSource {
 
-    override fun getMates(includeDeleted: Boolean): List<UserDto> {
+    override suspend fun getMates(includeDeleted: Boolean): List<UserDto> {
         return try {
             val filter = if (!includeDeleted) Filters.eq(MongoDBParse.IS_DELETED_FIELD, false)
             else Filters.empty()
@@ -30,9 +34,9 @@ class MongoDBUsersDataSource(
         }
     }
 
-    override fun getAdmin(): UserDto = ADMIN
+    override suspend fun getAdmin(): UserDto = ADMIN
 
-    override fun deleteUser(userId: UUID) {
+    override suspend fun deleteUser(userId: UUID) {
         val filters = Filters.and(
             Filters.eq(MongoDBParse.ID_FIELD, userId.toString()),
             Filters.eq(MongoDBParse.IS_DELETED_FIELD, false)
@@ -46,7 +50,7 @@ class MongoDBUsersDataSource(
         }
     }
 
-    override fun addMate(userName: String, hashedPassword: String) {
+    override suspend fun addMate(userName: String, hashedPassword: String) {
         try {
             val existingUser = collection.find(Filters.eq(MongoDBParse.USERNAME_FIELD, userName)).firstOrNull()
             if (existingUser != null) throw UserNameAlreadyExistsException("User with username '$userName' already exists")
