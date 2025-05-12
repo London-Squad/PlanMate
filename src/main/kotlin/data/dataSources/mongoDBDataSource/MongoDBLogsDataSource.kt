@@ -3,8 +3,6 @@ package data.dataSources.mongoDBDataSource
 import com.mongodb.MongoException
 import com.mongodb.kotlin.client.coroutine.MongoCollection
 import data.dataSources.mongoDBDataSource.mongoDBParse.MongoDBParse
-import data.dto.LogDto
-import data.repositories.dataSourceInterfaces.LogsDataSource
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.toList
 import logic.exceptions.RetrievingDataFailureException
@@ -49,7 +47,7 @@ class MongoDBLogsDataSource(
         }
     }
 
-    override fun getLogsByEntityId(entityId: UUID): List<Log> {
+    override suspend fun getLogsByEntityId(entityId: UUID): List<Log> {
         val relatedEntityIds = mutableSetOf<UUID>()
         relatedEntityIds.add(entityId)
 
@@ -71,8 +69,8 @@ class MongoDBLogsDataSource(
 
         return logsCollection.find(filter)
             .map { mongoParser.documentToLogDto(it).toLog() }
-            .sortedBy { it.time }
             .toList()
+            .sortedBy { it.time }
     }
 
 }

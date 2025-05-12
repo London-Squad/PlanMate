@@ -16,7 +16,7 @@ class CsvTaskStatesDataSource(
     private val csvParser: CsvParser,
 ) : TaskStatesRepository {
 
-    override fun getTaskStatesByProjectId(projectId: UUID, includeDeleted: Boolean): List<TaskState> {
+    override suspend fun getTaskStatesByProjectId(projectId: UUID, includeDeleted: Boolean): List<TaskState> {
         return tasksStatesCsvFileHandler.readRecords().map(csvParser::recordToTaskStateDto)
             .filter { it.projectId == projectId }.filter { if (includeDeleted) true else !it.isDeleted }
             .map(TaskStateDto::toTaskState)

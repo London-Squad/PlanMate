@@ -44,6 +44,6 @@ val csvStorageModule = module {
     single<TaskStatesRepository> { CsvTaskStatesDataSource(get(named("taskStatesFileHandler")), get()) }
     single<ProjectsRepository> { CsvProjectsDataSource(get(named("projectsFileHandler")), get()) }
     single<UsersDataSource> { CsvUsersDataSource(get(named("usersFileHandler")), get()) }
-    single<LogsRepository> { CsvLogsDataSource(get(named("LogsFileHandler")), get(), get()) }
+    single<LogsRepository> { CsvLogsDataSource(get(named("LogsFileHandler")), get(), get(), get(), get()) }
 
 }

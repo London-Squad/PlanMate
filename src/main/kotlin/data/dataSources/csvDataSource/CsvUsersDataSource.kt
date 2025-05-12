@@ -14,11 +14,7 @@ class CsvUsersDataSource(
     private val csvParser: CsvParser
 ) : UsersDataSource {
 
-    init {
-        loggedInUser = loadUserFromLocalFile()
-    }
-
-    override suspend fun getMates(): List<UserDto> {
+    override suspend fun getMates(includeDeleted: Boolean): List<UserDto> {
         return usersCsvFileHandler.readRecords()
             .map(csvParser::recordToUserDto)
             .filter { if (includeDeleted) true else !it.isDeleted }

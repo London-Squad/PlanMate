@@ -49,10 +49,13 @@ class ManageTaskUseCase(
     }
 
     suspend fun editTaskState(taskId: UUID, newTaskStateId: UUID) {
+        val oldTask = taskRepository.getTaskByID(taskId)
+
+        val oldTaskState = taskStatesRepository.getTaskStateById(oldTask.taskStateId)
         val newTaskState = taskStatesRepository.getTaskStateById(newTaskStateId)
 
-        taskRepository.editTaskState(taskId, newTaskState)
-        createLogUseCase.logTaskStateEdition(taskId, newTaskState.title, newTaskState.title)
+        taskRepository.editTaskState(taskId, newTaskStateId)
+        createLogUseCase.logTaskStateEdition(taskId, oldTaskState.title, newTaskState.title)
     }
 
     suspend fun deleteTask(taskId: UUID) {

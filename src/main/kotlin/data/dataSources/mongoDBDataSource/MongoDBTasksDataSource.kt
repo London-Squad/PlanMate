@@ -8,14 +8,11 @@ import data.dataSources.mongoDBDataSource.mongoDBParse.MongoDBParse
 import data.repositories.dtoMappers.toTask
 import data.repositories.dtoMappers.toTaskDto
 import logic.entities.Task
-import logic.entities.TaskState
-import data.dto.TaskDto
-import data.repositories.dataSourceInterfaces.TasksDataSource
+import kotlinx.coroutines.flow.firstOrNull
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.toList
 import logic.exceptions.RetrievingDataFailureException
 import logic.exceptions.StoringDataFailureException
-import logic.exceptions.TaskNotFoundException
 import logic.exceptions.TaskNotFoundException
 import logic.repositories.TaskRepository
 import org.bson.Document
@@ -48,7 +45,7 @@ class MongoDBTasksDataSource(
                 if (includeDeleted) Filters.exists(MongoDBParse.IS_DELETED_FIELD)
                 else Filters.eq(MongoDBParse.IS_DELETED_FIELD, false)
             )
-            tasksCollection.find(filter).first()?.let { mongoParser.documentToTaskDto(it).toTask() }
+            tasksCollection.find(filter).firstOrNull()?.let { mongoParser.documentToTaskDto(it).toTask() }
                 ?: throw TaskNotFoundException()
 
         } catch (e: MongoException) {

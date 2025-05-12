@@ -6,7 +6,6 @@ import data.dto.TaskDto
 import data.repositories.dtoMappers.toTask
 import data.repositories.dtoMappers.toTaskDto
 import logic.entities.Task
-import logic.entities.TaskState
 import logic.exceptions.ProjectNotFoundException
 import logic.exceptions.TaskNotFoundException
 import logic.repositories.TaskRepository
@@ -39,7 +38,7 @@ class CsvTasksDataSource(
             ?: throw TaskNotFoundException()
     }
 
-    override fun addNewTask(task: Task, projectId: UUID) {
+    override suspend fun addNewTask(task: Task, projectId: UUID) {
         tasksCsvFileHandler.appendRecord(
             csvParser.taskDtoToRecord(task.toTaskDto(projectId))
         )
@@ -75,13 +74,13 @@ class CsvTasksDataSource(
             }
     }
 
-    override suspend fun editTaskState(taskId: UUID, newTaskState: TaskState) {
+    override suspend fun editTaskState(taskId: UUID, newStateId: UUID) {
         var taskFound = false
         tasksCsvFileHandler.readRecords()
             .map {
                 val taskData = csvParser.recordToTaskDto(it)
                 if (taskData.id == taskId) {
-                    csvParser.taskDtoToRecord(taskData.copy(stateId = newTaskState.id))
+                    csvParser.taskDtoToRecord(taskData.copy(stateId = newStateId))
                     taskFound = true
                 } else it
             }.also {

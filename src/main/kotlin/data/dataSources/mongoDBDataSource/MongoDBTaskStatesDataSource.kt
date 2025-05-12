@@ -7,9 +7,8 @@ import com.mongodb.kotlin.client.coroutine.MongoCollection
 import data.dataSources.mongoDBDataSource.mongoDBParse.MongoDBParse
 import data.repositories.dtoMappers.toTaskState
 import data.repositories.dtoMappers.toTaskStateDto
+import kotlinx.coroutines.flow.firstOrNull
 import logic.entities.TaskState
-import data.dto.TaskStateDto
-import data.repositories.dataSourceInterfaces.TaskStatesDataSource
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.toList
 import logic.exceptions.RetrievingDataFailureException
@@ -17,7 +16,6 @@ import logic.exceptions.StoringDataFailureException
 import logic.exceptions.TaskNotFoundException
 import logic.exceptions.TaskStateNotFoundException
 import logic.repositories.TaskStatesRepository
-import logic.exceptions.TaskStateNotFoundException
 import org.bson.Document
 import java.util.UUID
 
@@ -49,7 +47,7 @@ class MongoDBTaskStatesDataSource(
                 if (includeDeleted) Filters.exists(MongoDBParse.IS_DELETED_FIELD)
                 else Filters.eq(MongoDBParse.IS_DELETED_FIELD, false)
             )
-            taskStatesCollection.find(filter).first()
+            taskStatesCollection.find(filter).firstOrNull()
                 ?.let { mongoParser.documentToTaskStateDto(it).toTaskState() }
                 ?: throw TaskStateNotFoundException()
         } catch (e: MongoException) {

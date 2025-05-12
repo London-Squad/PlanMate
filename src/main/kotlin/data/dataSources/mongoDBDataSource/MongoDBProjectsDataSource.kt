@@ -5,12 +5,11 @@ import com.mongodb.client.model.Filters
 import com.mongodb.client.model.Updates
 import com.mongodb.kotlin.client.coroutine.MongoCollection
 import data.dataSources.mongoDBDataSource.mongoDBParse.MongoDBParse
-import data.dto.ProjectDto
-import data.repositories.dataSourceInterfaces.ProjectsDataSource
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.toList
 import data.repositories.dtoMappers.toProject
 import data.repositories.dtoMappers.toProjectDto
+import kotlinx.coroutines.flow.firstOrNull
 import logic.entities.Project
 import logic.exceptions.ProjectNotFoundException
 import logic.exceptions.RetrievingDataFailureException

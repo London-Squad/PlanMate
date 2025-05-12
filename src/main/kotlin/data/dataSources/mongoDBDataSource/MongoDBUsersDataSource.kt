@@ -6,11 +6,10 @@ import com.mongodb.client.model.Updates
 import com.mongodb.kotlin.client.coroutine.MongoCollection
 import data.dataSources.mongoDBDataSource.mongoDBParse.MongoDBParse
 import data.dto.UserDto
-import data.repositories.dataSourceInterfaces.UsersDataSource
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.toList
-import logic.exceptions.*
 import data.repositories.dataSources.UsersDataSource
+import kotlinx.coroutines.flow.firstOrNull
 import logic.exceptions.RetrievingDataFailureException
 import logic.exceptions.StoringDataFailureException
 import logic.exceptions.UserNameAlreadyExistsException
