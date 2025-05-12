@@ -28,13 +28,13 @@ class MongoDBLogsDataSource(
 ) : LogsRepository {
 
     override suspend fun getAllLogs(): List<Log> {
-        return try{
+        return try {
             logsCollection.find().map { doc ->
                 mongoParser.documentToLogDto(doc).toLog()
             }.toList()
-    } catch (e: MongoException) {
-        throw RetrievingDataFailureException("Failed to retrieve logs: ${e.message}")
-    }
+        } catch (e: MongoException) {
+            throw RetrievingDataFailureException("Failed to retrieve logs: ${e.message}")
+        }
     }
 
     override suspend fun addLog(log: Log) {
@@ -54,8 +54,9 @@ class MongoDBLogsDataSource(
         val project: Project? = try {
             projectsRepository.getProjectById(entityId)
         } catch (e: ProjectNotFoundException) {
-            throw ProjectNotFoundException()
+            null
         }
+
         if (project != null) {
             val tasks = taskRepository.getTasksByProjectID(project.id, includeDeleted = true)
             val taskStates = taskStatesRepository.getTaskStatesByProjectId(project.id, includeDeleted = true)
@@ -64,7 +65,7 @@ class MongoDBLogsDataSource(
             relatedEntityIds.addAll(taskStates.map { it.id })
         }
         val filter = Document("\$or", relatedEntityIds.map { id ->
-            Document("loggedAction.entityId", id.toString())
+            Document(MongoDBParse.PLAN_ENTITY_ID_FIELD, id.toString())
         })
 
         return logsCollection.find(filter)
@@ -72,5 +73,4 @@ class MongoDBLogsDataSource(
             .toList()
             .sortedBy { it.time }
     }
-
 }
