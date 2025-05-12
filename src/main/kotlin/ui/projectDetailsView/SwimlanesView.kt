@@ -2,7 +2,7 @@ package ui.projectDetailsView
 
 import logic.entities.Task
 import logic.entities.TaskState
-import ui.cliPrintersAndReaders.cliTable.CLITablePrinter
+import ui.cliPrintersAndReaders.CLITablePrinter
 import java.util.*
 
 class SwimlanesView(

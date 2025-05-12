@@ -2,7 +2,6 @@ package di
 
 import org.koin.dsl.module
 import ui.cliPrintersAndReaders.*
-import ui.cliPrintersAndReaders.cliTable.CLITablePrinter
 import ui.loginView.LoginView
 import ui.logsView.LogsView
 import ui.mainMenuView.MainMenuView
@@ -46,5 +45,5 @@ val uiModule = module {
     single { LogsView(get(), get(), get(), get(), get()) }
 
     single { MateCreationView(get(), get(), get()) }
-    single { MatesManagementView(get(), get(), get(), get(), get(), get()) }
+    single { MatesManagementView(get(), get(), get(), get(), get()) }
 }

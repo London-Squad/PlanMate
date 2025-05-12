@@ -1,6 +1,4 @@
-package ui.cliPrintersAndReaders.cliTable
-
-import ui.cliPrintersAndReaders.CLIPrinter
+package ui.cliPrintersAndReaders
 
 class CLITablePrinter(private val cliPrinter: CLIPrinter) {
 
@@ -21,8 +19,7 @@ class CLITablePrinter(private val cliPrinter: CLIPrinter) {
     }
 
     private fun isInputsShapeValid(headers: List<String>, data: List<List<String>>, columnsWidth: List<Int?>): Boolean {
-        return data.isNotEmpty()
-                && columnsWidth.size == headers.size
+        return columnsWidth.size == headers.size
                 && data.all { it.size == headers.size }
     }
 
@@ -81,6 +78,7 @@ class CLITablePrinter(private val cliPrinter: CLIPrinter) {
     }
 
     private fun printData(data: List<List<String>>, columnWidths: List<Int>) {
+
         data.forEach { row ->
             cliPrinter.cliPrint("║")
             row.forEachIndexed { colIndex, cell ->

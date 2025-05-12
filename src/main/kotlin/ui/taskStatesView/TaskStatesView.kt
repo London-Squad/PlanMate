@@ -5,8 +5,8 @@ import logic.useCases.ManageStateUseCase
 import ui.BaseView
 import ui.cliPrintersAndReaders.CLIPrinter
 import ui.cliPrintersAndReaders.CLIReader
+import ui.cliPrintersAndReaders.CLITablePrinter
 import ui.cliPrintersAndReaders.TaskStateInputReader
-import ui.cliPrintersAndReaders.cliTable.CLITablePrinter
 import java.util.*
 
 class TaskStatesView(

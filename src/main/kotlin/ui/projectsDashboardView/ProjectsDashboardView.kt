@@ -7,8 +7,8 @@ import logic.useCases.ManageProjectUseCase
 import ui.BaseView
 import ui.cliPrintersAndReaders.CLIPrinter
 import ui.cliPrintersAndReaders.CLIReader
+import ui.cliPrintersAndReaders.CLITablePrinter
 import ui.cliPrintersAndReaders.ProjectInputReader
-import ui.cliPrintersAndReaders.cliTable.CLITablePrinter
 import ui.projectDetailsView.ProjectDetailsView
 
 class ProjectsDashboardView(

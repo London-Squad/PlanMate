@@ -1,6 +1,6 @@
 package ui.matesManagementView
 
-import logic.useCases.mateUseCase.CreateMateUseCase
+import logic.useCases.CreateMateUseCase
 import ui.BaseView
 import ui.cliPrintersAndReaders.CLIPrinter
 import ui.cliPrintersAndReaders.CLIReader

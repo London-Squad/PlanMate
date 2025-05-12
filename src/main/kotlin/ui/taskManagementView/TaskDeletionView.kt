@@ -13,14 +13,14 @@ class TaskDeletionView(
 ) : BaseView(cliPrinter) {
     fun deleteTask(taskId: UUID) {
         if (isDeletionCanceled()) {
-            cliPrinter.cliPrintLn("deletion canceled")
+            cliPrinter.cliPrintLn("Deletion canceled")
             return
         }
 
         makeRequest(
             request = { manageTaskUseCase.deleteTask(taskId) },
             onSuccess = { cliPrinter.cliPrintLn("task $taskId was deleted") },
-            onLoadingMessage = "deleting task..."
+            onLoadingMessage = "Deleting task..."
         )
     }
 
