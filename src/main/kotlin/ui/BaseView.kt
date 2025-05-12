@@ -23,7 +23,7 @@ abstract class BaseView(
         onLoadingMessage: String = DEFAULT_ON_LOADING_MESSAGE
     ) {
         sendRequestInSeparateScope(request)
-        blockWithLoadingLoop(onLoadingMessage)
+        startLoadingAnimation(onLoadingMessage)
         processResult(onSuccess, onError)
     }
 
@@ -45,7 +45,7 @@ abstract class BaseView(
         isLoading = false
     }
 
-    private fun blockWithLoadingLoop(onLoadingMessage: String) {
+    private fun startLoadingAnimation(onLoadingMessage: String) {
         var isLoadingMessagePrinted = false
 
         Thread.sleep(TIME_TO_SHOW_LOADING_MESSAGE_IN_MILLI_SECOND)
