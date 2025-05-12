@@ -1,7 +1,6 @@
 package di
 
 import logic.useCases.*
-import logic.useCases.mateUseCase.CreateMateUseCase
 import logic.validation.CredentialValidator
 import logic.validation.ProjectInputValidator
 import logic.validation.TaskInputValidator
@@ -17,11 +16,13 @@ val logicModule = module {
     single { LoginUseCase(get()) }
     single { ManageTaskUseCase(get(), get(), get()) }
     single { ManageStateUseCase(get(), get()) }
-    single { CreateMateUseCase(get(), get()) }
+    single { CreateMateUseCase(get(), get(), get()) }
     single { CredentialValidator() }
     single { ProjectInputValidator() }
     single { TaskInputValidator() }
     single { TaskStateInputValidator() }
     single { LogoutUseCase(get()) }
     single { GetAllMatesUseCase(get()) }
+    single { GetProjectDetailsUseCase(get(), get(), get()) }
+    single { GetUsersUseCase(get()) }
 }

@@ -2,39 +2,28 @@ package data.dataSources.csvDataSource
 
 import data.dataSources.csvDataSource.fileIO.CsvFileHandler
 import data.dataSources.csvDataSource.fileIO.CsvParser
-import data.repositories.dataSourceInterfaces.TaskStatesDataSource
-import data.dataSources.defaultTaskStatesTitleAndDescription
 import data.dto.TaskStateDto
-import java.util.UUID
+import data.repositories.dataSourceInterfaces.TaskStatesDataSource
+import java.util.*
 
 class CsvTaskStatesDataSource(
     private val tasksStatesCsvFileHandler: CsvFileHandler,
     private val csvParser: CsvParser
 ) : TaskStatesDataSource {
 
-    override fun getAllTasksStates(includeDeleted: Boolean): List<TaskStateDto> {
+    override suspend fun getAllTasksStates(includeDeleted: Boolean): List<TaskStateDto> {
         return tasksStatesCsvFileHandler.readRecords()
             .map(csvParser::recordToTaskStateDto)
             .filter { if (includeDeleted) true else !it.isDeleted }
     }
 
-    override fun createDefaultTaskStatesForProject(projectId: UUID): List<TaskStateDto> {
-        return defaultTaskStatesTitleAndDescription.map {
-            TaskStateDto(
-                id = UUID.randomUUID(), title = it[0], description = it[1],
-                projectId = projectId,
-                isDeleted = false
-            )
-        }
-    }
-
-    override fun addNewTaskState(taskStateDto: TaskStateDto) {
+    override suspend fun addNewTaskState(taskStateDto: TaskStateDto) {
         tasksStatesCsvFileHandler.appendRecord(
             csvParser.taskStateDtoToRecord(taskStateDto)
         )
     }
 
-    override fun editTaskStateTitle(stateId: UUID, newTitle: String) {
+    override suspend fun editTaskStateTitle(stateId: UUID, newTitle: String) {
         tasksStatesCsvFileHandler.readRecords()
             .map {
                 val newTaskData = csvParser.recordToTaskStateDto(it)
@@ -45,7 +34,7 @@ class CsvTaskStatesDataSource(
             .also(tasksStatesCsvFileHandler::rewriteRecords)
     }
 
-    override fun editTaskStateDescription(stateId: UUID, newDescription: String) {
+    override suspend fun editTaskStateDescription(stateId: UUID, newDescription: String) {
         tasksStatesCsvFileHandler.readRecords()
             .map {
                 val newTaskData = csvParser.recordToTaskStateDto(it)
@@ -56,7 +45,7 @@ class CsvTaskStatesDataSource(
             .also(tasksStatesCsvFileHandler::rewriteRecords)
     }
 
-    override fun deleteTaskState(stateId: UUID) {
+    override suspend fun deleteTaskState(stateId: UUID) {
         tasksStatesCsvFileHandler.readRecords()
             .map {
                 val newTaskData = csvParser.recordToTaskStateDto(it)

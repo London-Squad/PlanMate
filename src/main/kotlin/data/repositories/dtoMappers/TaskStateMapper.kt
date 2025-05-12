@@ -7,17 +7,18 @@ import java.util.UUID
 
 fun TaskStateDto.toTaskState(): TaskState {
     return TaskState(
-        id = this.id,
-        title = this.title,
-        description = this.description
+        id = id,
+        title = title,
+        description = description,
+        projectId = projectId
     )
 }
 
 fun TaskState.toTaskStateDto(projectId: UUID, isDeleted: Boolean = false): TaskStateDto {
     return TaskStateDto(
-        id = this.id,
-        title = this.title,
-        description = this.description,
+        id = id,
+        title = title,
+        description = description,
         projectId = projectId,
         isDeleted = isDeleted
     )

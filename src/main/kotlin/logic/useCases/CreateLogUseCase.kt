@@ -1,29 +1,33 @@
 package logic.useCases
 
-import logic.entities.*
+import logic.entities.EntityCreationLog
+import logic.entities.EntityDeletionLog
+import logic.entities.EntityEditionLog
+import logic.entities.Log
 import logic.repositories.AuthenticationRepository
 import logic.repositories.LogsRepository
+import java.util.*
 
 class CreateLogUseCase(
     private val logsRepository: LogsRepository,
     private val authenticationRepository: AuthenticationRepository,
 ) {
 
-    fun logEntityCreation(entity: PlanEntity) {
+    suspend fun logEntityCreation(entityId: UUID) {
         logsRepository.addLog(
             Log(
-                user = authenticationRepository.getLoggedInUser(),
-                loggedAction = EntityCreationLog(entity)
+                userId = authenticationRepository.getLoggedInUser().id,
+                loggedAction = EntityCreationLog(entityId)
             )
         )
     }
 
-    fun logEntityTitleEdition(entity: PlanEntity, oldValue: String, newValue: String) {
+    suspend fun logEntityTitleEdition(entityId: UUID, oldValue: String, newValue: String) {
         logsRepository.addLog(
             Log(
-                user = authenticationRepository.getLoggedInUser(),
+                userId = authenticationRepository.getLoggedInUser().id,
                 loggedAction = EntityEditionLog(
-                    entity = entity,
+                    entityId = entityId,
                     property = "title",
                     oldValue = oldValue,
                     newValue = newValue
@@ -32,12 +36,12 @@ class CreateLogUseCase(
         )
     }
 
-    fun logEntityDescriptionEdition(entity: PlanEntity, oldValue: String, newValue: String) {
+    suspend fun logEntityDescriptionEdition(entityId: UUID, oldValue: String, newValue: String) {
         logsRepository.addLog(
             Log(
-                user = authenticationRepository.getLoggedInUser(),
+                userId = authenticationRepository.getLoggedInUser().id,
                 loggedAction = EntityEditionLog(
-                    entity = entity,
+                    entityId = entityId,
                     property = "description",
                     oldValue = oldValue,
                     newValue = newValue
@@ -46,12 +50,12 @@ class CreateLogUseCase(
         )
     }
 
-    fun logTaskStateEdition(task: Task, oldState: String, newState: String) {
+    suspend fun logTaskStateEdition(taskId: UUID, oldState: String, newState: String) {
         logsRepository.addLog(
             Log(
-                user = authenticationRepository.getLoggedInUser(),
+                userId = authenticationRepository.getLoggedInUser().id,
                 loggedAction = EntityEditionLog(
-                    entity = task,
+                    entityId = taskId,
                     property = "state",
                     oldValue = oldState,
                     newValue = newState
@@ -60,11 +64,11 @@ class CreateLogUseCase(
         )
     }
 
-    fun logEntityDeletion(entity: PlanEntity) {
+    suspend fun logEntityDeletion(entityId: UUID) {
         logsRepository.addLog(
             Log(
-                user = authenticationRepository.getLoggedInUser(),
-                loggedAction = EntityDeletionLog(entity)
+                userId = authenticationRepository.getLoggedInUser().id,
+                loggedAction = EntityDeletionLog(entityId)
             )
         )
     }

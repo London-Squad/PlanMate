@@ -2,7 +2,7 @@ package ui.loginView
 
 import logic.entities.User
 import logic.useCases.LoginUseCase
-import ui.ViewExceptionHandler
+import ui.RequestHandler
 import ui.cliPrintersAndReaders.CLIPrinter
 import ui.cliPrintersAndReaders.CLIReader
 import ui.mainMenuView.MainMenuView
@@ -12,34 +12,41 @@ class LoginView(
     private val cliReader: CLIReader,
     private val loginUseCase: LoginUseCase,
     private val mainMenuView: MainMenuView,
-    private val viewExceptionHandler: ViewExceptionHandler
-) {
+) : RequestHandler(cliPrinter) {
 
     fun start() {
         cliPrinter.printHeader("Login")
-        println("Please enter your username and password\n")
+        cliPrinter.cliPrintLn("Please enter your username and password\n")
 
-        val username = cliReader.getUserInput("username: ")
-        val password = cliReader.getUserInput("password: ")
+        val (username, password) = getUserCredentials()
 
         processLogin(username, password)
+    }
+
+    private fun getUserCredentials(): Pair<String, String> {
+        val username = cliReader.getValidUserInput(
+            { it.isNotBlank() },
+            "Enter username: ",
+            "username can not be empty"
+        )
+        val password = cliReader.getValidUserInput(
+            { it.isNotBlank() },
+            "Enter password: ",
+            "password can not be empty"
+        )
+        return Pair(username, password)
     }
 
     private fun processLogin(username: String, password: String) {
         var loggedInUserType = User.Type.MATE
 
-        viewExceptionHandler.tryCall {
-            loggedInUserType = loginUseCase(username, password).type
-        }.also {
-            if (!it) {
-                println("Login failed, going back to the welcome screen")
-                return
-            }
-        }
-
-        println("Login successful")
-        mainMenuView.start(loggedInUserType)
+        makeRequest(
+            request = { loggedInUserType = loginUseCase(username, password).type },
+            onSuccess = {
+                cliPrinter.cliPrintLn("Login successful")
+                mainMenuView.start(loggedInUserType)
+            },
+            onLoadingMessage = "Logging in..."
+        )
     }
-
-    private fun println(message: String) = cliPrinter.cliPrintLn(message)
 }

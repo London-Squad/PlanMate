@@ -2,8 +2,8 @@ package data.dataSources.csvDataSource
 
 import data.dataSources.csvDataSource.fileIO.CsvFileHandler
 import data.dataSources.csvDataSource.fileIO.CsvParser
-import data.repositories.dataSourceInterfaces.UsersDataSource
 import data.dto.UserDto
+import data.repositories.dataSourceInterfaces.UsersDataSource
 import logic.entities.User
 import logic.exceptions.NoLoggedInUserFoundException
 import java.util.*
@@ -19,14 +19,14 @@ class CsvUsersDataSource(
         loggedInUser = loadUserFromLocalFile()
     }
 
-    override fun getMates(): List<UserDto> {
+    override suspend fun getMates(): List<UserDto> {
         return usersCsvFileHandler.readRecords()
             .map(csvParser::recordToUserDto)
     }
 
-    override fun getAdmin(): UserDto = ADMIN
+    override suspend fun getAdmin(): UserDto = ADMIN
 
-    override fun deleteUser(userId: UUID) {
+    override suspend fun deleteUser(userId: UUID) {
         usersCsvFileHandler.readRecords()
             .map {
                 val userDto = csvParser.recordToUserDto(it)
@@ -37,7 +37,7 @@ class CsvUsersDataSource(
             .also(usersCsvFileHandler::rewriteRecords)
     }
 
-    override fun addMate(userName: String, hashedPassword: String) {
+    override suspend fun addMate(userName: String, hashedPassword: String) {
         usersCsvFileHandler.appendRecord(
             UserDto(
                 id = UUID.randomUUID(),
@@ -49,18 +49,18 @@ class CsvUsersDataSource(
         )
     }
 
-    override fun getLoggedInUser(): UserDto {
+    override suspend fun getLoggedInUser(): UserDto {
         return loggedInUser ?: throw NoLoggedInUserFoundException()
     }
 
-    override fun setLoggedInUser(user: UserDto) {
+    override suspend fun setLoggedInUser(user: UserDto) {
         loggedInUserCsvFileHandler.rewriteRecords(
             listOf(csvParser.userDtoToRecord(user))
         )
         loggedInUser = user
     }
 
-    override fun clearLoggedInUser() {
+    override suspend fun clearLoggedInUser() {
         loggedInUserCsvFileHandler.rewriteRecords(
             listOf()
         )

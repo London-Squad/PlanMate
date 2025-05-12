@@ -2,24 +2,20 @@ package data.repositories.dtoMappers
 
 import data.dto.ProjectDto
 import logic.entities.Project
-import logic.entities.Task
-import logic.entities.TaskState
 
-fun ProjectDto.toProject(tasks: List<Task>, tasksStates: List<TaskState>): Project {
+fun ProjectDto.toProject(): Project {
     return Project(
-        id = this.id,
-        title = this.title,
-        description = this.description,
-        tasks = tasks,
-        tasksStates = tasksStates
+        id = id,
+        title = title,
+        description = description
     )
 }
 
 fun Project.toProjectDto(isDeleted: Boolean = false): ProjectDto {
     return ProjectDto(
-        id = this.id,
-        title = this.title,
-        description = this.description,
+        id = id,
+        title = title,
+        description = description,
         isDeleted = isDeleted
     )
 }

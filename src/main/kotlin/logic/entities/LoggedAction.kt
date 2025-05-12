@@ -1,14 +1,16 @@
 package logic.entities
 
-sealed class LoggedAction(open val entity: PlanEntity)
+import java.util.UUID
 
-data class EntityCreationLog(override val entity: PlanEntity) : LoggedAction(entity)
+sealed class LoggedAction
 
-data class EntityDeletionLog(override val entity: PlanEntity) : LoggedAction(entity)
+data class EntityCreationLog(val entityId: UUID) : LoggedAction()
+
+data class EntityDeletionLog(val entityId: UUID) : LoggedAction()
 
 data class EntityEditionLog(
-    override val entity: PlanEntity,
+    val entityId: UUID,
     val property: String,
     val oldValue: String,
     val newValue: String
-) : LoggedAction(entity)
+) : LoggedAction()
