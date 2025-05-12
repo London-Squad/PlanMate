@@ -8,7 +8,7 @@ import logic.exceptions.RetrievingDataFailureException
 import logic.exceptions.StoringDataFailureException
 import ui.cliPrintersAndReaders.CLIPrinter
 
-abstract class BaseView(
+abstract class RequestHandler(
     private val cliPrinter: CLIPrinter
 ) {
     private var isLoading = false

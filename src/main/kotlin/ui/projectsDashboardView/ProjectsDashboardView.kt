@@ -4,7 +4,7 @@ import logic.entities.Project
 import logic.entities.User
 import logic.useCases.CreateProjectUseCase
 import logic.useCases.ManageProjectUseCase
-import ui.BaseView
+import ui.RequestHandler
 import ui.cliPrintersAndReaders.CLIPrinter
 import ui.cliPrintersAndReaders.CLIReader
 import ui.cliPrintersAndReaders.CLITablePrinter
@@ -19,7 +19,7 @@ class ProjectsDashboardView(
     private val createProjectUseCase: CreateProjectUseCase,
     private val projectView: ProjectDetailsView,
     private val cliTablePrinter: CLITablePrinter
-) : BaseView(cliPrinter) {
+) : RequestHandler(cliPrinter) {
 
     private lateinit var loggedInUserType: User.Type
     private var projects: List<Project> = emptyList()

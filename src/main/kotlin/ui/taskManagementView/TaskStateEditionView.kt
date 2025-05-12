@@ -3,7 +3,7 @@ package ui.taskManagementView
 import logic.entities.TaskState
 import logic.useCases.ManageStateUseCase
 import logic.useCases.ManageTaskUseCase
-import ui.BaseView
+import ui.RequestHandler
 import ui.cliPrintersAndReaders.CLIPrinter
 import ui.cliPrintersAndReaders.CLIReader
 import java.util.*
@@ -13,7 +13,7 @@ class TaskStateEditionView(
     private val cliPrinter: CLIPrinter,
     private val manageTaskUseCase: ManageTaskUseCase,
     private val manageStateUseCase: ManageStateUseCase,
-) : BaseView(cliPrinter) {
+) : RequestHandler(cliPrinter) {
 
     private lateinit var taskStatesOfProject: List<TaskState>
 

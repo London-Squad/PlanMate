@@ -2,7 +2,7 @@ package ui.projectDetailsView
 
 import logic.entities.Project
 import logic.useCases.ManageProjectUseCase
-import ui.BaseView
+import ui.RequestHandler
 import ui.cliPrintersAndReaders.CLIPrinter
 import ui.cliPrintersAndReaders.CLIReader
 import ui.cliPrintersAndReaders.ProjectInputReader
@@ -15,7 +15,7 @@ class EditProjectView(
     private val projectInputReader: ProjectInputReader,
     private val manageProjectUseCase: ManageProjectUseCase,
     private val taskStatesView: TaskStatesView,
-) : BaseView(cliPrinter) {
+) : RequestHandler(cliPrinter) {
 
     private lateinit var currentProject: Project
 

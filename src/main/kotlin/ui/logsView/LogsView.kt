@@ -3,7 +3,7 @@ package ui.logsView
 import logic.entities.*
 import logic.useCases.GetLogsByEntityIdUseCase
 import logic.useCases.GetUsersUseCase
-import ui.BaseView
+import ui.RequestHandler
 import ui.cliPrintersAndReaders.CLIPrinter
 import ui.cliPrintersAndReaders.CLIReader
 import ui.cliPrintersAndReaders.CLITablePrinter
@@ -17,7 +17,7 @@ class LogsView(
     private val getLogsByEntityIdUseCase: GetLogsByEntityIdUseCase,
     private val cliTablePrinter: CLITablePrinter,
     private val getUsersUseCase: GetUsersUseCase,
-) : BaseView(cliPrinter) {
+) : RequestHandler(cliPrinter) {
 
     private lateinit var users: List<User>
 

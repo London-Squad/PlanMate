@@ -2,7 +2,7 @@ package ui.taskStatesView
 
 import logic.entities.TaskState
 import logic.useCases.ManageStateUseCase
-import ui.BaseView
+import ui.RequestHandler
 import ui.cliPrintersAndReaders.CLIPrinter
 import ui.cliPrintersAndReaders.CLIReader
 import ui.cliPrintersAndReaders.CLITablePrinter
@@ -15,7 +15,7 @@ class TaskStatesView(
     private val taskStateInputReader: TaskStateInputReader,
     private val useCase: ManageStateUseCase,
     private val cliTablePrinter: CLITablePrinter
-) : BaseView(cliPrinter) {
+) : RequestHandler(cliPrinter) {
 
     private lateinit var projectId: UUID
     private var taskStates: List<TaskState> = emptyList()

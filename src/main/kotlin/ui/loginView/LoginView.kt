@@ -2,7 +2,7 @@ package ui.loginView
 
 import logic.entities.User
 import logic.useCases.LoginUseCase
-import ui.BaseView
+import ui.RequestHandler
 import ui.cliPrintersAndReaders.CLIPrinter
 import ui.cliPrintersAndReaders.CLIReader
 import ui.mainMenuView.MainMenuView
@@ -12,7 +12,7 @@ class LoginView(
     private val cliReader: CLIReader,
     private val loginUseCase: LoginUseCase,
     private val mainMenuView: MainMenuView,
-) : BaseView(cliPrinter) {
+) : RequestHandler(cliPrinter) {
 
     fun start() {
         cliPrinter.printHeader("Login")

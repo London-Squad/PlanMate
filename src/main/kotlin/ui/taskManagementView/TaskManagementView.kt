@@ -3,7 +3,7 @@ package ui.taskManagementView
 import logic.entities.Task
 import logic.useCases.ManageStateUseCase
 import logic.useCases.ManageTaskUseCase
-import ui.BaseView
+import ui.RequestHandler
 import ui.cliPrintersAndReaders.CLIPrinter
 import ui.cliPrintersAndReaders.CLIReader
 import ui.logsView.LogsView
@@ -19,7 +19,7 @@ class TaskManagementView(
     private val manageTaskUseCase: ManageTaskUseCase,
     private val manageStateUseCase: ManageStateUseCase,
     private val logsView: LogsView,
-) : BaseView(cliPrinter) {
+) : RequestHandler(cliPrinter) {
 
     private lateinit var task: Task
     private lateinit var taskStateTitle: String

@@ -3,7 +3,7 @@ package ui.welcomeView
 import logic.entities.User
 import logic.exceptions.NoLoggedInUserFoundException
 import logic.useCases.GetLoggedInUserUseCase
-import ui.BaseView
+import ui.RequestHandler
 import ui.cliPrintersAndReaders.CLIPrinter
 import ui.cliPrintersAndReaders.CLIReader
 import ui.loginView.LoginView
@@ -15,7 +15,7 @@ class WelcomeView(
     private val loginView: LoginView,
     private val mainMenuView: MainMenuView,
     private val getLoggedInUserUseCase: GetLoggedInUserUseCase,
-) : BaseView(cliPrinter) {
+) : RequestHandler(cliPrinter) {
 
     fun start() {
         var loggedInUserType = User.Type.MATE

@@ -3,7 +3,7 @@ package ui.projectDetailsView
 import logic.entities.User
 import logic.useCases.GetProjectDetailsUseCase
 import logic.useCases.ManageTaskUseCase
-import ui.BaseView
+import ui.RequestHandler
 import ui.cliPrintersAndReaders.CLIPrinter
 import ui.cliPrintersAndReaders.CLIReader
 import ui.cliPrintersAndReaders.TaskInputReader
@@ -22,7 +22,7 @@ class ProjectDetailsView(
     private val taskManagementView: TaskManagementView,
     private val manageTaskUseCase: ManageTaskUseCase,
     private val logsView: LogsView
-) : BaseView(cliPrinter) {
+) : RequestHandler(cliPrinter) {
 
     private lateinit var loggedInUserType: User.Type
     private lateinit var projectDetails: GetProjectDetailsUseCase.ProjectDetails

@@ -2,7 +2,7 @@ package ui.mainMenuView
 
 import logic.entities.User
 import logic.useCases.LogoutUseCase
-import ui.BaseView
+import ui.RequestHandler
 import ui.cliPrintersAndReaders.CLIPrinter
 import ui.cliPrintersAndReaders.CLIReader
 import ui.matesManagementView.MatesManagementView
@@ -14,7 +14,7 @@ class MainMenuView(
     private val projectsDashboardView: ProjectsDashboardView,
     private val matesManagementView: MatesManagementView,
     private val logoutUseCase: LogoutUseCase,
-) : BaseView(cliPrinter) {
+) : RequestHandler(cliPrinter) {
 
     private lateinit var loggedInUserType: User.Type
 

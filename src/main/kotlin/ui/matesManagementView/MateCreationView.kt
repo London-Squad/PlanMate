@@ -1,7 +1,7 @@
 package ui.matesManagementView
 
 import logic.useCases.CreateMateUseCase
-import ui.BaseView
+import ui.RequestHandler
 import ui.cliPrintersAndReaders.CLIPrinter
 import ui.cliPrintersAndReaders.CLIReader
 
@@ -9,7 +9,7 @@ class MateCreationView(
     private val createMateUseCase: CreateMateUseCase,
     private val cliPrinter: CLIPrinter,
     private val cliReader: CLIReader,
-) : BaseView(cliPrinter) {
+) : RequestHandler(cliPrinter) {
     fun createMate() {
         cliPrinter.printHeader("Create New Mate")
 

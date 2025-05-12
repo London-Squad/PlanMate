@@ -2,7 +2,7 @@ package ui.matesManagementView
 
 import logic.entities.User
 import logic.useCases.GetAllMatesUseCase
-import ui.BaseView
+import ui.RequestHandler
 import ui.cliPrintersAndReaders.CLIPrinter
 import ui.cliPrintersAndReaders.CLIReader
 import ui.cliPrintersAndReaders.CLITablePrinter
@@ -13,7 +13,7 @@ class MatesManagementView(
     private val getAllMatesUseCase: GetAllMatesUseCase,
     private val cliTablePrinter: CLITablePrinter,
     private val mateCreationView: MateCreationView
-) : BaseView(cliPrinter) {
+) : RequestHandler(cliPrinter) {
 
     fun start() {
         printOptions()
