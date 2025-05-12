@@ -3,7 +3,7 @@ package data.dataSources.csvDataSource
 import data.dataSources.csvDataSource.fileIO.CsvFileHandler
 import data.dataSources.csvDataSource.fileIO.CsvParser
 import data.dto.UserDto
-import data.repositories.dataSourceInterfaces.LoggedInUserCacheDataSource
+import data.repositories.dataSources.LoggedInUserCacheDataSource
 import logic.exceptions.NoLoggedInUserFoundException
 
 class CsvLoggedInUserCacheDataSource(

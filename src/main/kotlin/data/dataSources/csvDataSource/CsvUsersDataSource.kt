@@ -2,10 +2,11 @@ package data.dataSources.csvDataSource
 
 import data.dataSources.csvDataSource.fileIO.CsvFileHandler
 import data.dataSources.csvDataSource.fileIO.CsvParser
-import data.repositories.dataSourceInterfaces.UsersDataSource
+import data.repositories.dataSources.UsersDataSource
 import data.dto.UserDto
 import logic.entities.User
-import logic.exceptions.UserNameAlreadyTakenException
+import logic.exceptions.ProjectNotFoundException
+import logic.exceptions.UserNameAlreadyExistsException
 import java.util.*
 
 class CsvUsersDataSource(
@@ -22,21 +23,25 @@ class CsvUsersDataSource(
     override fun getAdmin(): UserDto = ADMIN
 
     override fun deleteUser(userId: UUID) {
+        var userFound = false
         usersCsvFileHandler.readRecords()
             .map {
                 val userDto = csvParser.recordToUserDto(it)
-                if (userDto.id == userId)
+                if (userDto.id == userId) {
                     csvParser.userDtoToRecord(userDto.copy(isDeleted = true))
-                else it
+                    userFound = true
+                } else it
+            }.also {
+                if (!userFound) throw ProjectNotFoundException("User with ID $userId not found")
+                usersCsvFileHandler::rewriteRecords
             }
-            .also(usersCsvFileHandler::rewriteRecords)
     }
 
     override fun addMate(userName: String, hashedPassword: String) {
         usersCsvFileHandler.readRecords().forEach {
             val userDto = csvParser.recordToUserDto(it)
             if (userDto.userName == userName)
-                throw UserNameAlreadyTakenException("User with username '$userName' already exists")
+                throw UserNameAlreadyExistsException("User with username '$userName' already exists")
         }
 
         usersCsvFileHandler.appendRecord(

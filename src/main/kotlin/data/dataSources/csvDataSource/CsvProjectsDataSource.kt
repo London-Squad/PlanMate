@@ -5,7 +5,7 @@ import data.dataSources.csvDataSource.fileIO.CsvParser
 import data.repositories.dtoMappers.toProject
 import data.repositories.dtoMappers.toProjectDto
 import logic.entities.Project
-import logic.exceptions.RetrievingDataFailureException
+import logic.exceptions.ProjectNotFoundException
 import logic.repositories.ProjectsRepository
 import java.util.UUID
 
@@ -25,10 +25,10 @@ class CsvProjectsDataSource(
         val projectDto = projectsCsvFileHandler.readRecords()
             .map { csvParser.recordToProjectDto(it) }
             .find { it.id == projectId }
-            ?: throw RetrievingDataFailureException("Project with ID $projectId not found")
+            ?: throw ProjectNotFoundException("Project with ID $projectId not found")
 
         if (!includeDeleted && projectDto.isDeleted) {
-            throw RetrievingDataFailureException("Project with ID $projectId is deleted")
+            throw ProjectNotFoundException("Project with ID $projectId is deleted")
         }
 
         return projectDto.toProject()
@@ -42,66 +42,53 @@ class CsvProjectsDataSource(
     }
 
     override fun editProjectTitle(projectId: UUID, newTitle: String) {
-        val records = projectsCsvFileHandler.readRecords()
         var projectFound = false
 
-        val updatedRecords = records.map {
+        projectsCsvFileHandler.readRecords().map {
             val projectDto = csvParser.recordToProjectDto(it)
             if (projectDto.id == projectId && !projectDto.isDeleted) {
-                projectFound = true
                 csvParser.projectDtoToRecord(projectDto.copy(title = newTitle))
+                projectFound = true
             } else {
                 it
             }
+        }.also {
+            if (!projectFound) throw ProjectNotFoundException("Project with ID $projectId not found")
+            projectsCsvFileHandler::rewriteRecords
         }
-
-        if (!projectFound) {
-            throw RetrievingDataFailureException("Project with ID $projectId not found")
-        }
-
-        projectsCsvFileHandler.rewriteRecords(updatedRecords)
     }
 
     override fun editProjectDescription(projectId: UUID, newDescription: String) {
-        val records = projectsCsvFileHandler.readRecords()
         var projectFound = false
 
-        val updatedRecords = records.map {
+        projectsCsvFileHandler.readRecords().map {
             val projectDto = csvParser.recordToProjectDto(it)
             if (projectDto.id == projectId && !projectDto.isDeleted) {
-                projectFound = true
                 csvParser.projectDtoToRecord(projectDto.copy(description = newDescription))
+                projectFound = true
             } else {
                 it
             }
+        }.also {
+            if (!projectFound) throw ProjectNotFoundException("Project with ID $projectId not found")
+            projectsCsvFileHandler::rewriteRecords
         }
-
-        if (!projectFound) {
-            throw RetrievingDataFailureException("Project with ID $projectId not found")
-        }
-
-        projectsCsvFileHandler.rewriteRecords(updatedRecords)
     }
 
     override fun deleteProject(projectId: UUID) {
-        val records = projectsCsvFileHandler.readRecords()
         var projectFound = false
 
-        val updatedRecords = records.map {
+        projectsCsvFileHandler.readRecords().map {
             val projectDto = csvParser.recordToProjectDto(it)
             if (projectDto.id == projectId && !projectDto.isDeleted) {
-                projectFound = true
                 csvParser.projectDtoToRecord(projectDto.copy(isDeleted = true))
+                projectFound = true
             } else {
                 it
             }
+        }.also {
+            if (!projectFound) throw ProjectNotFoundException("Project with ID $projectId not found")
+            projectsCsvFileHandler::rewriteRecords
         }
-
-        if (!projectFound) {
-            throw RetrievingDataFailureException("Project with ID $projectId not found")
-        }
-
-        projectsCsvFileHandler.rewriteRecords(updatedRecords)
     }
-
 }

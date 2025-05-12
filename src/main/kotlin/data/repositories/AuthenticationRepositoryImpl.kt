@@ -1,7 +1,7 @@
 package data.repositories
 
-import data.repositories.dataSourceInterfaces.LoggedInUserCacheDataSource
-import data.repositories.dataSourceInterfaces.UsersDataSource
+import data.repositories.dataSources.LoggedInUserCacheDataSource
+import data.repositories.dataSources.UsersDataSource
 import data.repositories.dtoMappers.toUser
 import data.security.hashing.HashingAlgorithm
 import logic.entities.User

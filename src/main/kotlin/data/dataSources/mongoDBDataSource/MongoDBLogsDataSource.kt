@@ -17,7 +17,7 @@ import org.bson.Document
 import java.util.UUID
 
 class MongoDBLogsDataSource(
-    private val collection: MongoCollection<Document>,
+    private val logsCollection: MongoCollection<Document>,
     private val projectsRepository: ProjectsRepository,
     private val taskRepository: TaskRepository,
     private val taskStatesRepository: TaskStatesRepository,
@@ -25,7 +25,7 @@ class MongoDBLogsDataSource(
 ) : LogsRepository {
 
     override fun getAllLogs(): List<Log> {
-        return collection.find().map { doc ->
+        return logsCollection.find().map { doc ->
             mongoParser.documentToLogDto(doc).toLog()
         }.toList()
     }
@@ -34,7 +34,7 @@ class MongoDBLogsDataSource(
         try {
             val logDto = log.toLogDto()
             val doc = mongoParser.logDtoToDocument(logDto)
-            collection.insertOne(doc)
+            logsCollection.insertOne(doc)
         } catch (e: MongoException) {
             throw StoringDataFailureException("Failed to add log: ${e.message}")
         }
@@ -60,7 +60,7 @@ class MongoDBLogsDataSource(
             Document("loggedAction.entityId", id.toString())
         })
 
-        return collection.find(filter)
+        return logsCollection.find(filter)
             .map { mongoParser.documentToLogDto(it).toLog() }
             .sortedBy { it.time }
             .toList()

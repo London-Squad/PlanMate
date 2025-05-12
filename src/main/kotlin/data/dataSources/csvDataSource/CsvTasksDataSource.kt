@@ -7,6 +7,7 @@ import data.repositories.dtoMappers.toTask
 import data.repositories.dtoMappers.toTaskDto
 import logic.entities.Task
 import logic.entities.TaskState
+import logic.exceptions.ProjectNotFoundException
 import logic.exceptions.TaskNotFoundException
 import logic.repositories.TaskRepository
 import java.util.*
@@ -36,7 +37,6 @@ class CsvTasksDataSource(
             .firstOrNull { it.id == taskId }
             ?.toTask()
             ?: throw TaskNotFoundException()
-
     }
 
     override fun addNewTask(task: Task, projectId: UUID) {
@@ -46,47 +46,62 @@ class CsvTasksDataSource(
     }
 
     override fun editTaskTitle(taskId: UUID, newTitle: String) {
+        var taskFound = false
         tasksCsvFileHandler.readRecords()
             .map {
                 val taskData = csvParser.recordToTaskDto(it)
                 if (taskData.id == taskId) {
                     csvParser.taskDtoToRecord(taskData.copy(title = newTitle))
+                    taskFound = true
                 } else it
+            }.also {
+                if (!taskFound) throw ProjectNotFoundException("Task with ID $taskId not found")
+                tasksCsvFileHandler::rewriteRecords
             }
-            .also(tasksCsvFileHandler::rewriteRecords)
     }
 
     override fun editTaskDescription(taskId: UUID, newDescription: String) {
+        var taskFound = false
         tasksCsvFileHandler.readRecords()
             .map {
                 val taskData = csvParser.recordToTaskDto(it)
                 if (taskData.id == taskId) {
                     csvParser.taskDtoToRecord(taskData.copy(description = newDescription))
+                    taskFound = true
                 } else it
+            }.also {
+                if (!taskFound) throw ProjectNotFoundException("Task with ID $taskId not found")
+                tasksCsvFileHandler::rewriteRecords
             }
-            .also(tasksCsvFileHandler::rewriteRecords)
     }
 
     override fun editTaskState(taskId: UUID, newTaskState: TaskState) {
+        var taskFound = false
         tasksCsvFileHandler.readRecords()
             .map {
                 val taskData = csvParser.recordToTaskDto(it)
                 if (taskData.id == taskId) {
                     csvParser.taskDtoToRecord(taskData.copy(stateId = newTaskState.id))
+                    taskFound = true
                 } else it
+            }.also {
+                if (!taskFound) throw ProjectNotFoundException("Task with ID $taskId not found")
+                tasksCsvFileHandler::rewriteRecords
             }
-            .also(tasksCsvFileHandler::rewriteRecords)
     }
 
-
     override fun deleteTask(taskId: UUID) {
+        var taskFound = false
         tasksCsvFileHandler.readRecords()
             .map {
                 val taskData = csvParser.recordToTaskDto(it)
                 if (taskData.id == taskId) {
                     csvParser.taskDtoToRecord(taskData.copy(isDeleted = true))
+                    taskFound = true
                 } else it
+            }.also {
+                if (!taskFound) throw ProjectNotFoundException("Task with ID $taskId not found")
+                tasksCsvFileHandler::rewriteRecords
             }
-            .also(tasksCsvFileHandler::rewriteRecords)
     }
 }

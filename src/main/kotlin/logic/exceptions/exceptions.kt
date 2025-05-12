@@ -1,11 +1,5 @@
 package logic.exceptions
 
-class InvalidUserNameLengthException :
-    AuthenticationException("Username should have more than 3 characters and less than 12")
-class UserNameAlreadyTakenException(message: String = "User with this username already exists") :
-    AuthenticationException(message)
-
-
 open class DataSourceAccessException(message: String) : Exception(message)
 class StoringDataFailureException(message: String) : DataSourceAccessException(message)
 open class RetrievingDataFailureException(message: String) : DataSourceAccessException(message)
@@ -19,4 +13,7 @@ class ProjectNotFoundException(message: String = "Project could not be found") :
 
 
 open class AuthenticationException(message: String) : Exception(message)
-class InvalidPasswordException(message: String) : AuthenticationException(message)
+class InvalidPasswordException(message: String= "Invalid password") : AuthenticationException(message)
+class InvalidUserNameException(message: String = "Invalid username") : AuthenticationException(message)
+class UserNameAlreadyExistsException(message: String = "User with this username already exists") :
+    AuthenticationException(message)

@@ -3,7 +3,7 @@ package di
 import com.mongodb.client.MongoDatabase
 import data.dataSources.mongoDBDataSource.*
 import data.dataSources.mongoDBDataSource.mongoDBParse.MongoDBParse
-import data.repositories.dataSourceInterfaces.*
+import data.repositories.dataSources.*
 import logic.repositories.LogsRepository
 import logic.repositories.ProjectsRepository
 import logic.repositories.TaskRepository
@@ -37,6 +37,6 @@ val mongoStorageModule = module {
 
     single<TaskStatesRepository> { MongoDBTaskStatesDataSource(get(named("taskStatesCollection")), get()) }
     single<ProjectsRepository> { MongoDBProjectsDataSource(get(named("projectsCollection")), get()) }
-    single<LogsRepository> { MongoDBLogsDataSource(get(named("logsCollection")), get(),get(),get(),get()) }
+    single<LogsRepository> { MongoDBLogsDataSource(get(named("logsCollection")), get(), get(), get(), get()) }
     single<UsersDataSource> { MongoDBUsersDataSource(get(named("usersCollection")), get()) }
 }

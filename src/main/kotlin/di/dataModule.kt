@@ -4,7 +4,7 @@ import data.dataSources.csvDataSource.CsvLoggedInUserCacheDataSource
 import data.dataSources.csvDataSource.fileIO.CsvFileHandler
 import data.dataSources.csvDataSource.fileIO.CsvParser
 import data.repositories.*
-import data.repositories.dataSourceInterfaces.LoggedInUserCacheDataSource
+import data.repositories.dataSources.LoggedInUserCacheDataSource
 import data.security.hashing.HashingAlgorithm
 import data.security.hashing.MD5HashingAlgorithm
 import logic.repositories.*
@@ -24,6 +24,5 @@ val dataModule = module {
 
     single<HashingAlgorithm> { MD5HashingAlgorithm() }
     single<AuthenticationRepository> { AuthenticationRepositoryImpl(get(), get(), get()) }
-    single<UserRepository>{ UserRepositoryImpl(get(),get())}
-
+    single<UserRepository> { UserRepositoryImpl(get(), get()) }
 }

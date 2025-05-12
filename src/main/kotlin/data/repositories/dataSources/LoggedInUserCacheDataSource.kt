@@ -1,4 +1,4 @@
-package data.repositories.dataSourceInterfaces
+package data.repositories.dataSources
 
 import data.dto.UserDto
 
