@@ -19,12 +19,12 @@ abstract class BaseView(
         onSuccess: () -> Unit = {},
         onError: (exception: Exception) -> Unit = (::handleDefaultExceptions)
     ) {
-        startOperationInSeparateScope(request)
+        sendRequestInSeparateScope(request)
         blockWithLoadingLoop()
         processResult(onSuccess, onError)
     }
 
-    private fun startOperationInSeparateScope(operation: suspend CoroutineScope.() -> Unit) {
+    private fun sendRequestInSeparateScope(operation: suspend CoroutineScope.() -> Unit) {
         isLoading = true
         caughtException = null
 
@@ -49,7 +49,7 @@ abstract class BaseView(
 
         while (isLoading) {
             cliPrinter.cliPrint(".")
-            Thread.sleep(TIME_INTERVAL_FOR_THE_LOADING_DOT_PRINTING)
+            Thread.sleep(TIME_INTERVAL_FOR_THE_LOADING_DOT_ANIMATION_IN_MILLI_SECONDS)
         }
     }
 
@@ -71,7 +71,7 @@ abstract class BaseView(
     }
 
     private companion object {
-        const val TIME_INTERVAL_FOR_THE_LOADING_DOT_PRINTING = 500L
         const val TIME_TO_SHOW_LOADING_MESSAGE_IN_MILLI_SECOND = 100L
+        const val TIME_INTERVAL_FOR_THE_LOADING_DOT_ANIMATION_IN_MILLI_SECONDS = 500L
     }
 }

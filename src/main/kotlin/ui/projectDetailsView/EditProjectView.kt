@@ -23,10 +23,26 @@ class EditProjectView(
         makeRequest(
             request = { fetchProject(projectId) },
             onSuccess = {
+                printHeader()
                 printOptions()
                 selectOption()
             }
         )
+    }
+
+    private suspend fun fetchProject(projectId: UUID) {
+        currentProject = manageProjectUseCase.getProjectById(projectId)
+    }
+
+    private fun printHeader() {
+        cliPrinter.printHeader("Edit Project: ${currentProject.title}")
+    }
+
+    private fun printOptions() {
+        cliPrinter.cliPrintLn("1. Edit title")
+        cliPrinter.cliPrintLn("2. Edit description")
+        cliPrinter.cliPrintLn("3. States management")
+        cliPrinter.cliPrintLn("0. Back to project")
     }
 
     private fun selectOption() {
@@ -37,32 +53,20 @@ class EditProjectView(
         }
     }
 
-    private fun printOptions() {
-        cliPrinter.printHeader("Edit Project: ${currentProject.title}")
-        cliPrinter.cliPrintLn("1. Edit title")
-        cliPrinter.cliPrintLn("2. Edit description")
-        cliPrinter.cliPrintLn("3. States management")
-        cliPrinter.cliPrintLn("0. Back to project")
-    }
-
-    private suspend fun fetchProject(projectId: UUID) {
-        currentProject = manageProjectUseCase.getProjectById(projectId)
-    }
-
     private fun editProjectTitle() {
         val newTitle = projectInputReader.getValidProjectTitle()
-        makeRequest({
-            manageProjectUseCase.editProjectTitle(currentProject.id, newTitle)
-            cliPrinter.cliPrintLn("Project title updated successfully.")
-        })
+        makeRequest(
+            request = { manageProjectUseCase.editProjectTitle(currentProject.id, newTitle) },
+            onSuccess = { cliPrinter.cliPrintLn("Project title updated successfully.") }
+        )
     }
 
     private fun editProjectDescription() {
         val newDescription = projectInputReader.getValidProjectDescription()
-        makeRequest({
-            manageProjectUseCase.editProjectDescription(currentProject.id, newDescription)
-            cliPrinter.cliPrintLn("Project description updated successfully.")
-        })
+        makeRequest(
+            request = { manageProjectUseCase.editProjectDescription(currentProject.id, newDescription) },
+            onSuccess = { cliPrinter.cliPrintLn("Project description updated successfully.") }
+        )
     }
 
     private fun statesManagement() {
