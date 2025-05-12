@@ -44,12 +44,12 @@ abstract class BaseView(
     }
 
     private fun blockWithLoadingLoop() {
-        Thread.sleep(LOADING_MESSAGE_PRINT_INTERVAL)
+        Thread.sleep(TIME_TO_SHOW_LOADING_MESSAGE_IN_MILLI_SECOND)
         if (isLoading) cliPrinter.cliPrint("Loading To Perform Your Request..")
 
         while (isLoading) {
             cliPrinter.cliPrint(".")
-            Thread.sleep(LOADING_MESSAGE_PRINT_INTERVAL)
+            Thread.sleep(TIME_INTERVAL_FOR_THE_LOADING_DOT_PRINTING)
         }
     }
 
@@ -71,6 +71,7 @@ abstract class BaseView(
     }
 
     private companion object {
-        const val LOADING_MESSAGE_PRINT_INTERVAL = 500L
+        const val TIME_INTERVAL_FOR_THE_LOADING_DOT_PRINTING = 500L
+        const val TIME_TO_SHOW_LOADING_MESSAGE_IN_MILLI_SECOND = 100L
     }
 }
