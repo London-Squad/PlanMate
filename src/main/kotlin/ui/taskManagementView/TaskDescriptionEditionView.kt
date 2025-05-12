@@ -1,21 +1,23 @@
 package ui.taskManagementView
 
 import logic.useCases.ManageTaskUseCase
-import ui.BaseView
+import ui.RequestHandler
 import ui.cliPrintersAndReaders.CLIPrinter
 import ui.cliPrintersAndReaders.TaskInputReader
-import java.util.UUID
+import java.util.*
 
 class TaskDescriptionEditionView(
     private val taskInputReader: TaskInputReader,
     private val manageTaskUseCase: ManageTaskUseCase,
-    cliPrinter: CLIPrinter,
-) : BaseView(cliPrinter) {
+    private val cliPrinter: CLIPrinter,
+) : RequestHandler(cliPrinter) {
 
     fun editDescription(taskId: UUID) {
         val newDescription = taskInputReader.getValidTaskDescription()
-        tryCall({
-            manageTaskUseCase.editTaskDescription(taskId, newDescription)
-        })
+        makeRequest(
+            request = { manageTaskUseCase.editTaskDescription(taskId, newDescription) },
+            onSuccess = { cliPrinter.cliPrintLn("Task description updated successfully") },
+            onLoadingMessage = "Updating task description..."
+        )
     }
 }

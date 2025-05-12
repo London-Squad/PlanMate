@@ -1,23 +1,26 @@
 package data.dataSources.mongoDBDataSource
 
 import com.mongodb.MongoException
-import com.mongodb.client.MongoCollection
 import com.mongodb.client.model.Filters
 import com.mongodb.client.model.Updates
+import com.mongodb.kotlin.client.coroutine.MongoCollection
 import data.dataSources.mongoDBDataSource.mongoDBParse.MongoDBParse
 import data.dto.TaskStateDto
 import data.repositories.dataSourceInterfaces.TaskStatesDataSource
-import logic.exceptions.TaskStateNotFoundException
+import kotlinx.coroutines.flow.map
+import kotlinx.coroutines.flow.toList
 import logic.exceptions.RetrievingDataFailureException
 import logic.exceptions.StoringDataFailureException
+import logic.exceptions.TaskStateNotFoundException
 import org.bson.Document
 import java.util.*
+
 
 class MongoDBTaskStatesDataSource(
     private val collection: MongoCollection<Document>, private val mongoParser: MongoDBParse
 ) : TaskStatesDataSource {
 
-    override fun getAllTasksStates(includeDeleted: Boolean): List<TaskStateDto> {
+    override suspend fun getAllTasksStates(includeDeleted: Boolean): List<TaskStateDto> {
         return try {
             collection.find().map { doc -> mongoParser.documentToTaskStateDto(doc) }.toList()
                 .filter { if (includeDeleted) true else !it.isDeleted }
@@ -26,7 +29,7 @@ class MongoDBTaskStatesDataSource(
         }
     }
 
-    override fun addNewTaskState(taskStateDto: TaskStateDto) {
+    override suspend fun addNewTaskState(taskStateDto: TaskStateDto) {
         try {
             val doc = mongoParser.taskStateDtoToDocument(taskStateDto)
             collection.insertOne(doc)
@@ -35,7 +38,7 @@ class MongoDBTaskStatesDataSource(
         }
     }
 
-    override fun editTaskStateTitle(stateId: UUID, newTitle: String) {
+    override suspend fun editTaskStateTitle(stateId: UUID, newTitle: String) {
         try {
             val result = collection.updateOne(
                 Filters.and(
@@ -51,7 +54,7 @@ class MongoDBTaskStatesDataSource(
         }
     }
 
-    override fun editTaskStateDescription(stateId: UUID, newDescription: String) {
+    override suspend fun editTaskStateDescription(stateId: UUID, newDescription: String) {
         try {
             val result = collection.updateOne(
                 Filters.and(
@@ -67,7 +70,7 @@ class MongoDBTaskStatesDataSource(
         }
     }
 
-    override fun deleteTaskState(stateId: UUID) {
+    override suspend fun deleteTaskState(stateId: UUID) {
         try {
             val result = collection.updateOne(
                 Filters.and(

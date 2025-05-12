@@ -3,10 +3,7 @@ package logic.repositories
 import logic.entities.User
 
 interface AuthenticationRepository {
-
-    fun login(userName: String, password: String): User
-
-    fun logout()
-
-    fun getLoggedInUser(): User
+    suspend fun login(userName: String, password: String): User
+    suspend fun logout()
+    suspend fun getLoggedInUser(): User
 }

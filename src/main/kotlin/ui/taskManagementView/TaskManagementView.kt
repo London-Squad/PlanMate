@@ -3,11 +3,11 @@ package ui.taskManagementView
 import logic.entities.Task
 import logic.useCases.ManageStateUseCase
 import logic.useCases.ManageTaskUseCase
-import ui.BaseView
+import ui.RequestHandler
 import ui.cliPrintersAndReaders.CLIPrinter
 import ui.cliPrintersAndReaders.CLIReader
 import ui.logsView.LogsView
-import java.util.UUID
+import java.util.*
 
 class TaskManagementView(
     private val cliReader: CLIReader,
@@ -19,7 +19,7 @@ class TaskManagementView(
     private val manageTaskUseCase: ManageTaskUseCase,
     private val manageStateUseCase: ManageStateUseCase,
     private val logsView: LogsView,
-) : BaseView(cliPrinter) {
+) : RequestHandler(cliPrinter) {
 
     private lateinit var task: Task
     private lateinit var taskStateTitle: String
@@ -28,14 +28,20 @@ class TaskManagementView(
     fun start(taskId: UUID, projectId: UUID) {
 
         this.projectId = projectId
-        tryCall({ fetchTaskInfo(taskId) }).also { success -> if (!success) return }
+        makeRequest(
+            request = { fetchTaskInfo(taskId) },
+            onSuccess = {
+                printTask()
+                printOptions()
+                selectNextUI()
+            },
+            onLoadingMessage = "Fetching task info..."
+        )
 
-        printTask()
-        printOptions()
-        selectNextUI()
+
     }
 
-    private fun fetchTaskInfo(taskId: UUID) {
+    private suspend fun fetchTaskInfo(taskId: UUID) {
         task = manageTaskUseCase.getTaskByID(taskId)
         taskStateTitle = manageStateUseCase.getTaskStatesById(task.taskStateId).title
     }

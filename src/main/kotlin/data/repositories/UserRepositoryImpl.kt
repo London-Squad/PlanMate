@@ -6,27 +6,27 @@ import data.security.hashing.HashingAlgorithm
 import logic.entities.User
 import logic.exceptions.UserNameAlreadyExistException
 import logic.repositories.UserRepository
-import java.util.UUID
+import java.util.*
 
 class UserRepositoryImpl(
     private val usersDataSource: UsersDataSource,
     private val hashingAlgorithm: HashingAlgorithm
 ) : UserRepository {
 
-    override fun getMates(includeDeleted: Boolean): List<User> {
+    override suspend fun getMates(includeDeleted: Boolean): List<User> {
         return usersDataSource.getMates()
             .filter { if (includeDeleted) true else !it.isDeleted }
             .map { it.toUser() }
     }
 
-    override fun getAdmin(): User =
+    override suspend fun getAdmin(): User =
         usersDataSource.getAdmin().toUser()
 
-    override fun deleteMate(userId: UUID) {
+    override suspend fun deleteMate(userId: UUID) {
         usersDataSource.deleteUser(userId)
     }
 
-    override fun addMate(userName: String, password: String) {
+    override suspend fun addMate(userName: String, password: String) {
         getMates().any { user ->
             user.userName == userName
         }.let {

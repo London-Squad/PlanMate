@@ -1,8 +1,8 @@
 package data.dataSources.mongoDBDataSource
 
-import com.mongodb.client.MongoClients
-import com.mongodb.client.MongoCollection
-import com.mongodb.client.MongoDatabase
+import com.mongodb.kotlin.client.coroutine.MongoClient
+import com.mongodb.kotlin.client.coroutine.MongoCollection
+import com.mongodb.kotlin.client.coroutine.MongoDatabase
 import org.bson.Document
 
 object DatabaseConnection {
@@ -15,7 +15,7 @@ object DatabaseConnection {
 
     private val mongoUri: String = System.getenv("MONGO_URI")?: throw IllegalStateException("MONGO_URI environment variable is missing")
 
-    private val client = MongoClients.create(mongoUri)
+    private val client = MongoClient.create(mongoUri)
 
     val database: MongoDatabase = client.getDatabase(DB_NAME)
 

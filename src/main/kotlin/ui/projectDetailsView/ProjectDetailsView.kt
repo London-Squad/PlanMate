@@ -3,14 +3,13 @@ package ui.projectDetailsView
 import logic.entities.User
 import logic.useCases.GetProjectDetailsUseCase
 import logic.useCases.ManageTaskUseCase
-import logic.useCases.ManageProjectUseCase
-import ui.BaseView
+import ui.RequestHandler
 import ui.cliPrintersAndReaders.CLIPrinter
 import ui.cliPrintersAndReaders.CLIReader
 import ui.cliPrintersAndReaders.TaskInputReader
 import ui.logsView.LogsView
 import ui.taskManagementView.TaskManagementView
-import java.util.UUID
+import java.util.*
 
 class ProjectDetailsView(
     private val cliPrinter: CLIPrinter,
@@ -23,27 +22,28 @@ class ProjectDetailsView(
     private val taskManagementView: TaskManagementView,
     private val manageTaskUseCase: ManageTaskUseCase,
     private val logsView: LogsView
-) : BaseView(cliPrinter) {
+) : RequestHandler(cliPrinter) {
 
     private lateinit var loggedInUserType: User.Type
     private lateinit var projectDetails: GetProjectDetailsUseCase.ProjectDetails
 
-
     fun start(projectId: UUID, loggedInUserType: User.Type) {
         this.loggedInUserType = loggedInUserType
 
-        tryCall({ projectDetails = getProjectDetailsUseCase(projectId) })
-            .also { success -> if (!success) return }
-
-        printHeader(projectDetails.project.title)
-        swimlanesView.displaySwimlanes(projectDetails.tasks, projectDetails.taskStates)
-
-        printOptions()
-        goToNextView()
+        makeRequest(
+            request = { projectDetails = getProjectDetailsUseCase(projectId) },
+            onSuccess = {
+                printProject()
+                printOptions()
+                goToNextView()
+            },
+            onLoadingMessage = "Fetching project details..."
+        )
     }
 
-    private fun printHeader(title: String) {
-        cliPrinter.printHeader("Project: $title")
+    private fun printProject() {
+        cliPrinter.printHeader("Project: ${projectDetails.project.title}")
+        swimlanesView.displaySwimlanes(projectDetails.tasks, projectDetails.taskStates)
     }
 
     private fun printOptions() {
@@ -93,7 +93,11 @@ class ProjectDetailsView(
         val title = taskInputReader.getValidTaskTitle()
         val description = taskInputReader.getValidTaskDescription()
 
-        manageTaskUseCase.addNewTask(title, description, projectDetails.project.id)
+        makeRequest(
+            request = { manageTaskUseCase.addNewTask(title, description, projectDetails.project.id) },
+            onSuccess = { cliPrinter.cliPrintLn("Task (${title}) has been created successfully.") },
+            onLoadingMessage = "Creating task..."
+        )
     }
 
     private companion object {

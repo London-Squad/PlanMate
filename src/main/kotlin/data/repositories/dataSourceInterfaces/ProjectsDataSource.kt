@@ -4,9 +4,9 @@ import data.dto.ProjectDto
 import java.util.*
 
 interface ProjectsDataSource {
-    fun getAllProjects(includeDeleted: Boolean): List<ProjectDto>
-    fun addNewProject(project: ProjectDto)
-    fun editProjectTitle(projectId: UUID, newTitle: String)
-    fun editProjectDescription(projectId: UUID, newDescription: String)
-    fun deleteProject(projectId: UUID)
+    suspend fun getAllProjects(includeDeleted: Boolean): List<ProjectDto>
+    suspend fun addNewProject(project: ProjectDto)
+    suspend fun editProjectTitle(projectId: UUID, newTitle: String)
+    suspend fun editProjectDescription(projectId: UUID, newDescription: String)
+    suspend fun deleteProject(projectId: UUID)
 }

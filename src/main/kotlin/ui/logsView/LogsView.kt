@@ -3,10 +3,10 @@ package ui.logsView
 import logic.entities.*
 import logic.useCases.GetLogsByEntityIdUseCase
 import logic.useCases.GetUsersUseCase
-import ui.BaseView
+import ui.RequestHandler
 import ui.cliPrintersAndReaders.CLIPrinter
 import ui.cliPrintersAndReaders.CLIReader
-import ui.cliPrintersAndReaders.cliTable.CLITablePrinter
+import ui.cliPrintersAndReaders.CLITablePrinter
 import java.time.LocalDateTime
 import java.time.format.DateTimeFormatter
 import java.util.*
@@ -17,18 +17,28 @@ class LogsView(
     private val getLogsByEntityIdUseCase: GetLogsByEntityIdUseCase,
     private val cliTablePrinter: CLITablePrinter,
     private val getUsersUseCase: GetUsersUseCase,
-) : BaseView(cliPrinter) {
+) : RequestHandler(cliPrinter) {
+
+    private lateinit var users: List<User>
+
     fun printLogsByEntityId(entityId: UUID) {
-        printLogs(entityId)
+        var logs: List<Log> = emptyList()
+
+        makeRequest(
+            request = { logs = getLogsByEntityIdUseCase.getLogsByEntityId(entityId) },
+            onSuccess = { printLogs(logs) },
+            onLoadingMessage = "Fetching logs..."
+        )
+
         cliReader.getUserInput("\npress enter to go back")
     }
 
-    private fun printLogs(entityId: UUID) {
-        var logs: List<Log> = emptyList()
-
-        tryCall({
-            logs = getLogsByEntityIdUseCase.getLogsByEntityId(entityId)
-        }).also { success -> if (!success) return }
+    private fun printLogs(logs: List<Log>) {
+        users = emptyList()
+        makeRequest(
+            request = { users = getUsersUseCase.getUsers() },
+            onLoadingMessage = "Fetching users for the logs..."
+        )
 
         if (logs.isEmpty()) {
             cliPrinter.cliPrintLn("No logs found for this entity.")
@@ -51,16 +61,10 @@ class LogsView(
     }
 
     private fun getUserNameByLog(log: Log): String {
-        var userName = "Unknown user"
-
-        tryCall({
-            userName = getUsersUseCase.getUsers()
-                .firstOrNull { it.id == log.userId }
-                ?.userName
-                ?: userName
-        })
-
-        return userName
+        return users
+            .firstOrNull { it.id == log.userId }
+            ?.userName
+            ?: "Unknown user"
     }
 
     private fun actionToString(action: LoggedAction): String {

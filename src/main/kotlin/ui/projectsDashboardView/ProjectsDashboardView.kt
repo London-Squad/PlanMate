@@ -4,12 +4,12 @@ import logic.entities.Project
 import logic.entities.User
 import logic.useCases.CreateProjectUseCase
 import logic.useCases.ManageProjectUseCase
+import ui.RequestHandler
 import ui.cliPrintersAndReaders.CLIPrinter
 import ui.cliPrintersAndReaders.CLIReader
-import ui.cliPrintersAndReaders.cliTable.CLITablePrinter
-import ui.projectDetailsView.ProjectDetailsView
-import ui.BaseView
+import ui.cliPrintersAndReaders.CLITablePrinter
 import ui.cliPrintersAndReaders.ProjectInputReader
+import ui.projectDetailsView.ProjectDetailsView
 
 class ProjectsDashboardView(
     private val cliPrinter: CLIPrinter,
@@ -19,25 +19,31 @@ class ProjectsDashboardView(
     private val createProjectUseCase: CreateProjectUseCase,
     private val projectView: ProjectDetailsView,
     private val cliTablePrinter: CLITablePrinter
-) : BaseView(cliPrinter) {
+) : RequestHandler(cliPrinter) {
 
     private lateinit var loggedInUserType: User.Type
     private var projects: List<Project> = emptyList()
 
     fun start(loggedInUserType: User.Type) {
         this.loggedInUserType = loggedInUserType
-        printHeader()
-        tryCall({ fetchProjects() }).also { success -> if (!success) return }
-        printProjects()
-        printOptions()
-        goToNextView()
+        makeRequest(
+            request = { fetchProjects() },
+            onSuccess = {
+                printHeader()
+                printProjects()
+                printOptions()
+                goToNextView()
+            },
+            onLoadingMessage = "Fetching projects..."
+        )
+
     }
 
     private fun printHeader() {
         cliPrinter.printHeader("Projects Dashboard Menu")
     }
 
-    private fun fetchProjects() {
+    private suspend fun fetchProjects() {
         projects = manageProjectUseCase.getAllProjects()
     }
 
@@ -100,10 +106,11 @@ class ProjectsDashboardView(
         cliPrinter.printHeader("Create Project")
         val title = projectInputReader.getValidProjectTitle()
         val description = projectInputReader.getValidProjectDescription()
-        tryCall({
-            createProjectUseCase.createProject(title, description)
-            cliPrinter.cliPrintLn("Project (${title}) have been created successfully.")
-        })
+        makeRequest(
+            request = { createProjectUseCase.createProject(title, description) },
+            onSuccess = { cliPrinter.cliPrintLn("Project (${title}) have been created successfully.") },
+            onLoadingMessage = "Creating project..."
+        )
     }
 
     private companion object {

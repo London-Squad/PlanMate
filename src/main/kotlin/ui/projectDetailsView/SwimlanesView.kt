@@ -1,13 +1,11 @@
 package ui.projectDetailsView
 
 import logic.entities.Task
-import ui.cliPrintersAndReaders.CLIPrinter
-import ui.cliPrintersAndReaders.cliTable.CLITablePrinter
 import logic.entities.TaskState
-import java.util.UUID
+import ui.cliPrintersAndReaders.CLITablePrinter
+import java.util.*
 
 class SwimlanesView(
-    private val cliPrinter: CLIPrinter,
     private val cliTablePrinter: CLITablePrinter,
 ) {
 

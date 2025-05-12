@@ -1,7 +1,7 @@
 package ui.matesManagementView
 
-import logic.useCases.mateUseCase.CreateMateUseCase
-import ui.BaseView
+import logic.useCases.CreateMateUseCase
+import ui.RequestHandler
 import ui.cliPrintersAndReaders.CLIPrinter
 import ui.cliPrintersAndReaders.CLIReader
 
@@ -9,16 +9,17 @@ class MateCreationView(
     private val createMateUseCase: CreateMateUseCase,
     private val cliPrinter: CLIPrinter,
     private val cliReader: CLIReader,
-) : BaseView(cliPrinter) {
+) : RequestHandler(cliPrinter) {
     fun createMate() {
         cliPrinter.printHeader("Create New Mate")
 
         val (username, password) = getUserCredentials()
 
-        tryCall({
-            createMateUseCase.createMate(username, password)
-            cliPrinter.cliPrintLn("Mate ($username) have been created successfully")
-        })
+        makeRequest(
+            request = { createMateUseCase.createMate(username, password) },
+            onSuccess = { cliPrinter.cliPrintLn("Mate ($username) have been created successfully") },
+            onLoadingMessage = "Creating mate..."
+        )
     }
 
     private fun getUserCredentials(): Pair<String, String> {

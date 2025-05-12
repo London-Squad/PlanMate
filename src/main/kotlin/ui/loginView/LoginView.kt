@@ -2,7 +2,7 @@ package ui.loginView
 
 import logic.entities.User
 import logic.useCases.LoginUseCase
-import ui.BaseView
+import ui.RequestHandler
 import ui.cliPrintersAndReaders.CLIPrinter
 import ui.cliPrintersAndReaders.CLIReader
 import ui.mainMenuView.MainMenuView
@@ -12,7 +12,7 @@ class LoginView(
     private val cliReader: CLIReader,
     private val loginUseCase: LoginUseCase,
     private val mainMenuView: MainMenuView,
-) : BaseView(cliPrinter) {
+) : RequestHandler(cliPrinter) {
 
     fun start() {
         cliPrinter.printHeader("Login")
@@ -40,11 +40,13 @@ class LoginView(
     private fun processLogin(username: String, password: String) {
         var loggedInUserType = User.Type.MATE
 
-        tryCall({
-            loggedInUserType = loginUseCase(username, password).type
-        }).also { success -> if (!success) return }
-
-        cliPrinter.cliPrintLn("Login successful")
-        mainMenuView.start(loggedInUserType)
+        makeRequest(
+            request = { loggedInUserType = loginUseCase(username, password).type },
+            onSuccess = {
+                cliPrinter.cliPrintLn("Login successful")
+                mainMenuView.start(loggedInUserType)
+            },
+            onLoadingMessage = "Logging in..."
+        )
     }
 }

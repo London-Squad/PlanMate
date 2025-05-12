@@ -2,36 +2,22 @@ package ui.matesManagementView
 
 import logic.entities.User
 import logic.useCases.GetAllMatesUseCase
-import logic.useCases.GetLoggedInUserUseCase
-import ui.BaseView
+import ui.RequestHandler
 import ui.cliPrintersAndReaders.CLIPrinter
 import ui.cliPrintersAndReaders.CLIReader
-import ui.cliPrintersAndReaders.cliTable.CLITablePrinter
+import ui.cliPrintersAndReaders.CLITablePrinter
 
 class MatesManagementView(
     private val cliPrinter: CLIPrinter,
     private val cliReader: CLIReader,
-    private val getLoggedInUserUseCase: GetLoggedInUserUseCase,
     private val getAllMatesUseCase: GetAllMatesUseCase,
     private val cliTablePrinter: CLITablePrinter,
     private val mateCreationView: MateCreationView
-) : BaseView(cliPrinter) {
+) : RequestHandler(cliPrinter) {
 
     fun start() {
-        if (!isLoggedInUserAnAdmin()) {
-            cliPrinter.cliPrintLn("Only admins can manage mates.")
-            return
-        }
         printOptions()
         selectNextUI()
-    }
-
-    private fun isLoggedInUserAnAdmin(): Boolean {
-        var currentUserType: User.Type = User.Type.MATE
-
-        tryCall({ currentUserType = getLoggedInUserUseCase.getLoggedInUser().type })
-
-        return currentUserType == User.Type.ADMIN
     }
 
     private fun printOptions() {
@@ -54,7 +40,10 @@ class MatesManagementView(
     private fun printTableOfAllMates() {
         var mates: List<User> = emptyList()
 
-        tryCall({ mates = getAllMatesUseCase.getAllMates() })
+        makeRequest(
+            request = { mates = getAllMatesUseCase.getAllMates() },
+            onLoadingMessage = "Fetching all mates..."
+        )
 
         if (mates.isEmpty()) {
             cliPrinter.cliPrintLn("No mates found.")

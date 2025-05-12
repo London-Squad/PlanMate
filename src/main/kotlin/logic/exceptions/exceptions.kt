@@ -17,3 +17,5 @@ class InvalidUserNameException(message: String) : AuthenticationException(messag
 class InvalidPasswordException(message: String) : AuthenticationException(message)
 class UserNameAlreadyExistException(message: String = "This username already exists") :
     AuthenticationException(message)
+class UnauthorizedOperationException(message: String = "This operation is not authorized") :
+    AuthenticationException(message)

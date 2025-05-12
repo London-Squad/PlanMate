@@ -2,7 +2,7 @@ package ui.mainMenuView
 
 import logic.entities.User
 import logic.useCases.LogoutUseCase
-import ui.BaseView
+import ui.RequestHandler
 import ui.cliPrintersAndReaders.CLIPrinter
 import ui.cliPrintersAndReaders.CLIReader
 import ui.matesManagementView.MatesManagementView
@@ -14,7 +14,7 @@ class MainMenuView(
     private val projectsDashboardView: ProjectsDashboardView,
     private val matesManagementView: MatesManagementView,
     private val logoutUseCase: LogoutUseCase,
-) : BaseView(cliPrinter) {
+) : RequestHandler(cliPrinter) {
 
     private lateinit var loggedInUserType: User.Type
 
@@ -37,13 +37,23 @@ class MainMenuView(
 
     private fun goToNextView() {
         when (getValidUserInput()) {
-            1 -> projectsDashboardView.start(loggedInUserType)
-            2 -> matesManagementView.start()
-            0 -> {
-                cliPrinter.cliPrintLn("\nLogging out ...")
-                tryCall({ logoutUseCase() }).also { success -> if (!success) return }
-            }
+            1 -> goToProjectsDashboard()
+            2 -> goToMatesManagement()
+            0 -> makeRequest(
+                request = { logoutUseCase() },
+                onSuccess = { cliPrinter.cliPrintLn("Logout successful") },
+                onLoadingMessage = "Logging out..."
+            )
         }
+    }
+
+    private fun goToProjectsDashboard() {
+        projectsDashboardView.start(loggedInUserType)
+        start(loggedInUserType)
+    }
+
+    private fun goToMatesManagement() {
+        matesManagementView.start()
         start(loggedInUserType)
     }
 

@@ -2,11 +2,11 @@ package ui.taskStatesView
 
 import logic.entities.TaskState
 import logic.useCases.ManageStateUseCase
-import ui.BaseView
+import ui.RequestHandler
 import ui.cliPrintersAndReaders.CLIPrinter
 import ui.cliPrintersAndReaders.CLIReader
+import ui.cliPrintersAndReaders.CLITablePrinter
 import ui.cliPrintersAndReaders.TaskStateInputReader
-import ui.cliPrintersAndReaders.cliTable.CLITablePrinter
 import java.util.*
 
 class TaskStatesView(
@@ -15,7 +15,7 @@ class TaskStatesView(
     private val taskStateInputReader: TaskStateInputReader,
     private val useCase: ManageStateUseCase,
     private val cliTablePrinter: CLITablePrinter
-) : BaseView(cliPrinter) {
+) : RequestHandler(cliPrinter) {
 
     private lateinit var projectId: UUID
     private var taskStates: List<TaskState> = emptyList()
@@ -25,11 +25,15 @@ class TaskStatesView(
 
         cliPrinter.printHeader("Task States Management")
 
-        tryCall({ fetchTaskStates() }).also { success -> if (!success) return }
-
-        printTaskStates()
-        printOptions()
-        goToNextView()
+        makeRequest(
+            request = { fetchTaskStates() },
+            onSuccess = {
+                printTaskStates()
+                printOptions()
+                goToNextView()
+            },
+            onLoadingMessage = "Fetching task states..."
+        )
     }
 
     private fun printOptions() {
@@ -50,7 +54,7 @@ class TaskStatesView(
         start(projectId)
     }
 
-    private fun fetchTaskStates() {
+    private suspend fun fetchTaskStates() {
         taskStates = useCase.getTaskStatesByProjectId(projectId)
     }
 
@@ -69,8 +73,12 @@ class TaskStatesView(
     private fun addState() {
         val title = taskStateInputReader.getValidTaskStateTitle()
         val desc = taskStateInputReader.getValidTaskStateDescription()
-        useCase.addState(title, desc, projectId)
-        cliPrinter.cliPrintLn("Task state added successfully.")
+        makeRequest(
+            request = { useCase.addState(title, desc, projectId) },
+            onSuccess = { cliPrinter.cliPrintLn("Task state added successfully.") },
+            onLoadingMessage = "Adding task state..."
+        )
+
     }
 
     private fun editState() {
@@ -94,14 +102,20 @@ class TaskStatesView(
 
     private fun editTaskStateTitle(state: TaskState) {
         val newTitle = taskStateInputReader.getValidTaskStateTitle()
-        useCase.editStateTitle(state.id, newTitle)
-        cliPrinter.cliPrintLn("Title updated.")
+        makeRequest(
+            request = { useCase.editStateTitle(state.id, newTitle) },
+            onSuccess = { cliPrinter.cliPrintLn("Title updated successfully.") },
+            onLoadingMessage = "Updating task state title..."
+        )
     }
 
     private fun editTaskStateDescription(state: TaskState) {
         val newDescription = taskStateInputReader.getValidTaskStateDescription()
-        useCase.editStateDescription(state.id, newDescription)
-        cliPrinter.cliPrintLn("Description updated.")
+        makeRequest(
+            request = { useCase.editStateDescription(state.id, newDescription) },
+            onSuccess = { cliPrinter.cliPrintLn("Description updated successfully.") },
+            onLoadingMessage = "Updating task state description..."
+        )
     }
 
     private fun deleteState() {
@@ -113,13 +127,16 @@ class TaskStatesView(
         val index = cliReader.getValidInputNumberInRange(taskStates.size, min = 1) - 1
         val selectedState = taskStates[index]
 
-        val confirm = cliReader.getUserConfirmation()
-        if (confirm) {
-            useCase.deleteState(selectedState.id)
-            cliPrinter.cliPrintLn("Task state deleted.")
-        } else {
+        if (!cliReader.getUserConfirmation()) {
             cliPrinter.cliPrintLn("Deletion canceled.")
+            return
         }
+
+        makeRequest(
+            request = { useCase.deleteState(selectedState.id) },
+            onSuccess = { cliPrinter.cliPrintLn("Task state deleted successfully.") },
+            onLoadingMessage = "Deleting task state..."
+        )
     }
 
     private companion object {

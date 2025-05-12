@@ -6,7 +6,7 @@
 //import logic.useCases.ManageProjectUseCase
 //import ui.BaseView
 //import ui.cliPrintersAndReaders.*
-//import ui.cliPrintersAndReaders.cliTable.CLITablePrinter
+//import ui.cliPrintersAndReaders.CLITablePrinter
 //import ui.projectDetailsView.ProjectDetailsView
 //import ui.taskManagementView.FakeProjectData
 //import kotlin.test.BeforeTest
