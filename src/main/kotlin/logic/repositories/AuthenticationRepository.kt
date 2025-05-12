@@ -5,5 +5,5 @@ import logic.entities.User
 interface AuthenticationRepository {
     suspend fun login(userName: String, password: String): User
     suspend fun logout()
-    suspend fun getLoggedInUser(): User
+    fun getLoggedInUser(): User
 }

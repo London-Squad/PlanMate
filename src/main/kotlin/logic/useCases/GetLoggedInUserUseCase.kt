@@ -6,7 +6,7 @@ import logic.repositories.AuthenticationRepository
 class GetLoggedInUserUseCase(
     private val authenticationRepository: AuthenticationRepository
 ) {
-    suspend fun getLoggedInUser(): User {
+    fun getLoggedInUser(): User {
         return authenticationRepository.getLoggedInUser()
     }
 }

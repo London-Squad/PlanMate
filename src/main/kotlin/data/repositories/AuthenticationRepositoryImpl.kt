@@ -34,7 +34,7 @@ class AuthenticationRepositoryImpl(
         loggedInUserCacheDataSource.clearLoggedInUser()
     }
 
-    override suspend fun getLoggedInUser(): User {
+    override fun getLoggedInUser(): User {
         return loggedInUserCacheDataSource.getLoggedInUser().toUser()
     }
 }
