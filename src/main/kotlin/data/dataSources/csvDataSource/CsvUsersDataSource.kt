@@ -28,12 +28,12 @@ class CsvUsersDataSource(
             .map {
                 val userDto = csvParser.recordToUserDto(it)
                 if (userDto.id == userId) {
-                    csvParser.userDtoToRecord(userDto.copy(isDeleted = true))
                     userFound = true
+                    csvParser.userDtoToRecord(userDto.copy(isDeleted = true))
                 } else it
             }.also {
                 if (!userFound) throw ProjectNotFoundException("User with ID $userId not found")
-                usersCsvFileHandler::rewriteRecords
+                usersCsvFileHandler.rewriteRecords(it)
             }
     }
 

@@ -39,12 +39,12 @@ class CsvTaskStatesDataSource(
         tasksStatesCsvFileHandler.readRecords().map {
             val taskStateData = csvParser.recordToTaskStateDto(it)
             if (taskStateData.id == stateId) {
-                csvParser.taskStateDtoToRecord(taskStateData.copy(title = newTitle))
                 taskStateFound = true
+                csvParser.taskStateDtoToRecord(taskStateData.copy(title = newTitle))
             } else it
         }.also {
             if (!taskStateFound) throw ProjectNotFoundException("Task state with ID $stateId not found")
-            tasksStatesCsvFileHandler::rewriteRecords
+            tasksStatesCsvFileHandler.rewriteRecords(it)
         }
     }
 
@@ -53,12 +53,12 @@ class CsvTaskStatesDataSource(
         tasksStatesCsvFileHandler.readRecords().map {
             val taskStateData = csvParser.recordToTaskStateDto(it)
             if (taskStateData.id == stateId) {
-                csvParser.taskStateDtoToRecord(taskStateData.copy(description = newDescription))
                 taskStateFound = true
+                csvParser.taskStateDtoToRecord(taskStateData.copy(description = newDescription))
             } else it
         }.also {
             if (!taskStateFound) throw ProjectNotFoundException("Task state with ID $stateId not found")
-            tasksStatesCsvFileHandler::rewriteRecords
+            tasksStatesCsvFileHandler.rewriteRecords(it)
         }
     }
 
@@ -67,12 +67,12 @@ class CsvTaskStatesDataSource(
         tasksStatesCsvFileHandler.readRecords().map {
             val taskStateData = csvParser.recordToTaskStateDto(it)
             if (taskStateData.id == stateId) {
-                csvParser.taskStateDtoToRecord(taskStateData.copy(isDeleted = true))
                 taskStateFound = true
+                csvParser.taskStateDtoToRecord(taskStateData.copy(isDeleted = true))
             } else it
         }.also {
             if (!taskStateFound) throw ProjectNotFoundException("Task state with ID $stateId not found")
-            tasksStatesCsvFileHandler::rewriteRecords
+            tasksStatesCsvFileHandler.rewriteRecords(it)
         }
     }
 }

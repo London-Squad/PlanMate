@@ -47,14 +47,14 @@ class CsvProjectsDataSource(
         projectsCsvFileHandler.readRecords().map {
             val projectDto = csvParser.recordToProjectDto(it)
             if (projectDto.id == projectId && !projectDto.isDeleted) {
-                csvParser.projectDtoToRecord(projectDto.copy(title = newTitle))
                 projectFound = true
+                csvParser.projectDtoToRecord(projectDto.copy(title = newTitle))
             } else {
                 it
             }
         }.also {
             if (!projectFound) throw ProjectNotFoundException("Project with ID $projectId not found")
-            projectsCsvFileHandler::rewriteRecords
+            projectsCsvFileHandler.rewriteRecords(it)
         }
     }
 
@@ -64,14 +64,14 @@ class CsvProjectsDataSource(
         projectsCsvFileHandler.readRecords().map {
             val projectDto = csvParser.recordToProjectDto(it)
             if (projectDto.id == projectId && !projectDto.isDeleted) {
-                csvParser.projectDtoToRecord(projectDto.copy(description = newDescription))
                 projectFound = true
+                csvParser.projectDtoToRecord(projectDto.copy(description = newDescription))
             } else {
                 it
             }
         }.also {
             if (!projectFound) throw ProjectNotFoundException("Project with ID $projectId not found")
-            projectsCsvFileHandler::rewriteRecords
+            projectsCsvFileHandler.rewriteRecords(it)
         }
     }
 
@@ -81,14 +81,14 @@ class CsvProjectsDataSource(
         projectsCsvFileHandler.readRecords().map {
             val projectDto = csvParser.recordToProjectDto(it)
             if (projectDto.id == projectId && !projectDto.isDeleted) {
-                csvParser.projectDtoToRecord(projectDto.copy(isDeleted = true))
                 projectFound = true
+                csvParser.projectDtoToRecord(projectDto.copy(isDeleted = true))
             } else {
                 it
             }
         }.also {
             if (!projectFound) throw ProjectNotFoundException("Project with ID $projectId not found")
-            projectsCsvFileHandler::rewriteRecords
+            projectsCsvFileHandler.rewriteRecords(it)
         }
     }
 }

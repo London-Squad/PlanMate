@@ -8,8 +8,8 @@ fun main() {
 
     startKoin {
         modules(
-//            csvStorageModule,
-            mongoStorageModule,
+            csvStorageModule,
+//            mongoStorageModule,
             uiModule,
             dataModule,
             logicModule
