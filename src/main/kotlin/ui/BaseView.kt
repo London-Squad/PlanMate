@@ -40,7 +40,6 @@ abstract class BaseView(
 
     private fun stopLoading() {
         isLoading = false
-        cliPrinter.cliPrintLn("")
     }
 
     private fun blockWithLoadingLoop() {
@@ -51,6 +50,7 @@ abstract class BaseView(
             cliPrinter.cliPrint(".")
             Thread.sleep(TIME_INTERVAL_FOR_THE_LOADING_DOT_ANIMATION_IN_MILLI_SECONDS)
         }
+        cliPrinter.cliPrintLn("")
     }
 
     private fun processResult(
