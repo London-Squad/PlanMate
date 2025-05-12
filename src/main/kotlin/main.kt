@@ -1,5 +1,8 @@
 import data.dataSources.mongoDBDataSource.DatabaseConnection
-import di.*
+import di.dataModule
+import di.logicModule
+import di.mongoStorageModule
+import di.uiModule
 import org.koin.core.context.startKoin
 import org.koin.java.KoinJavaComponent.getKoin
 import ui.welcomeView.WelcomeView
@@ -8,8 +11,8 @@ fun main() {
 
     startKoin {
         modules(
-            csvStorageModule,
-//            mongoStorageModule,
+//            csvStorageModule,
+            mongoStorageModule,
             uiModule,
             dataModule,
             logicModule
