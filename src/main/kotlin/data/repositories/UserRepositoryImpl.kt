@@ -1,10 +1,10 @@
 package data.repositories
 
-import data.repositories.dataSourceInterfaces.UsersDataSource
+import data.repositories.dataSources.UsersDataSource
 import data.repositories.dtoMappers.toUser
 import data.security.hashing.HashingAlgorithm
 import logic.entities.User
-import logic.exceptions.UserNameAlreadyExistException
+import logic.exceptions.UserNameAlreadyExistsException
 import logic.repositories.UserRepository
 import java.util.*
 
@@ -14,8 +14,7 @@ class UserRepositoryImpl(
 ) : UserRepository {
 
     override suspend fun getMates(includeDeleted: Boolean): List<User> {
-        return usersDataSource.getMates()
-            .filter { if (includeDeleted) true else !it.isDeleted }
+        return usersDataSource.getMates(includeDeleted)
             .map { it.toUser() }
     }
 
@@ -30,7 +29,7 @@ class UserRepositoryImpl(
         getMates().any { user ->
             user.userName == userName
         }.let {
-            if (it) throw UserNameAlreadyExistException()
+            if (it) throw UserNameAlreadyExistsException()
         }
 
         usersDataSource.addMate(

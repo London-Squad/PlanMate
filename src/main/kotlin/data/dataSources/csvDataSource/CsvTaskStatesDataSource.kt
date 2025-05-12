@@ -3,56 +3,76 @@ package data.dataSources.csvDataSource
 import data.dataSources.csvDataSource.fileIO.CsvFileHandler
 import data.dataSources.csvDataSource.fileIO.CsvParser
 import data.dto.TaskStateDto
-import data.repositories.dataSourceInterfaces.TaskStatesDataSource
+import data.repositories.dtoMappers.toTaskState
+import data.repositories.dtoMappers.toTaskStateDto
+import logic.entities.TaskState
+import logic.exceptions.ProjectNotFoundException
+import logic.exceptions.TaskStateNotFoundException
+import logic.repositories.TaskStatesRepository
 import java.util.*
 
 class CsvTaskStatesDataSource(
     private val tasksStatesCsvFileHandler: CsvFileHandler,
-    private val csvParser: CsvParser
-) : TaskStatesDataSource {
+    private val csvParser: CsvParser,
+) : TaskStatesRepository {
 
-    override suspend fun getAllTasksStates(includeDeleted: Boolean): List<TaskStateDto> {
-        return tasksStatesCsvFileHandler.readRecords()
-            .map(csvParser::recordToTaskStateDto)
-            .filter { if (includeDeleted) true else !it.isDeleted }
+    override suspend fun getTaskStatesByProjectId(projectId: UUID, includeDeleted: Boolean): List<TaskState> {
+        return tasksStatesCsvFileHandler.readRecords().map(csvParser::recordToTaskStateDto)
+            .filter { it.projectId == projectId }.filter { if (includeDeleted) true else !it.isDeleted }
+            .map(TaskStateDto::toTaskState)
     }
 
-    override suspend fun addNewTaskState(taskStateDto: TaskStateDto) {
+    override suspend fun getTaskStateById(stateId: UUID, includeDeleted: Boolean): TaskState {
+        return tasksStatesCsvFileHandler.readRecords().map(csvParser::recordToTaskStateDto)
+            .filter { if (includeDeleted) true else !it.isDeleted }.firstOrNull { it.id == stateId }?.toTaskState()
+            ?: throw TaskStateNotFoundException()
+    }
+
+    override suspend fun addNewTaskState(taskState: TaskState, projectId: UUID) {
         tasksStatesCsvFileHandler.appendRecord(
-            csvParser.taskStateDtoToRecord(taskStateDto)
+            csvParser.taskStateDtoToRecord(taskState.toTaskStateDto(projectId))
         )
     }
 
     override suspend fun editTaskStateTitle(stateId: UUID, newTitle: String) {
-        tasksStatesCsvFileHandler.readRecords()
-            .map {
-                val newTaskData = csvParser.recordToTaskStateDto(it)
-                if (newTaskData.id == stateId) {
-                    csvParser.taskStateDtoToRecord(newTaskData.copy(title = newTitle))
-                } else it
-            }
-            .also(tasksStatesCsvFileHandler::rewriteRecords)
+        var taskStateFound = false
+        tasksStatesCsvFileHandler.readRecords().map {
+            val taskStateData = csvParser.recordToTaskStateDto(it)
+            if (taskStateData.id == stateId) {
+                taskStateFound = true
+                csvParser.taskStateDtoToRecord(taskStateData.copy(title = newTitle))
+            } else it
+        }.also {
+            if (!taskStateFound) throw ProjectNotFoundException("Task state with ID $stateId not found")
+            tasksStatesCsvFileHandler.rewriteRecords(it)
+        }
     }
 
     override suspend fun editTaskStateDescription(stateId: UUID, newDescription: String) {
-        tasksStatesCsvFileHandler.readRecords()
-            .map {
-                val newTaskData = csvParser.recordToTaskStateDto(it)
-                if (newTaskData.id == stateId) {
-                    csvParser.taskStateDtoToRecord(newTaskData.copy(description = newDescription))
-                } else it
-            }
-            .also(tasksStatesCsvFileHandler::rewriteRecords)
+        var taskStateFound = false
+        tasksStatesCsvFileHandler.readRecords().map {
+            val taskStateData = csvParser.recordToTaskStateDto(it)
+            if (taskStateData.id == stateId) {
+                taskStateFound = true
+                csvParser.taskStateDtoToRecord(taskStateData.copy(description = newDescription))
+            } else it
+        }.also {
+            if (!taskStateFound) throw ProjectNotFoundException("Task state with ID $stateId not found")
+            tasksStatesCsvFileHandler.rewriteRecords(it)
+        }
     }
 
     override suspend fun deleteTaskState(stateId: UUID) {
-        tasksStatesCsvFileHandler.readRecords()
-            .map {
-                val newTaskData = csvParser.recordToTaskStateDto(it)
-                if (newTaskData.id == stateId) {
-                    csvParser.taskStateDtoToRecord(newTaskData.copy(isDeleted = true))
-                } else it
-            }
-            .also(tasksStatesCsvFileHandler::rewriteRecords)
+        var taskStateFound = false
+        tasksStatesCsvFileHandler.readRecords().map {
+            val taskStateData = csvParser.recordToTaskStateDto(it)
+            if (taskStateData.id == stateId) {
+                taskStateFound = true
+                csvParser.taskStateDtoToRecord(taskStateData.copy(isDeleted = true))
+            } else it
+        }.also {
+            if (!taskStateFound) throw ProjectNotFoundException("Task state with ID $stateId not found")
+            tasksStatesCsvFileHandler.rewriteRecords(it)
+        }
     }
 }
