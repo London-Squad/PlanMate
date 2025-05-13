@@ -1,17 +1,13 @@
 package data.dataSources.mongoDBDataSource
 
-import com.mongodb.MongoException
-import com.mongodb.kotlin.client.coroutine.MongoCollection
+import com.mongodb.client.model.Filters
 import data.dataSources.mongoDBDataSource.mongoDBParser.MongoDBParser
-import kotlinx.coroutines.flow.map
-import kotlinx.coroutines.flow.toList
-import logic.exceptions.RetrievingDataFailureException
+import data.dataSources.mongoDBDataSource.mongoDBParser.MongoDBQueryHandler
 import data.repositories.dtoMappers.toLog
 import data.repositories.dtoMappers.toLogDto
 import logic.entities.Log
 import logic.entities.Project
-import logic.exceptions.ProjectNotFoundException
-import logic.exceptions.StoringDataFailureException
+import logic.exceptions.NotFoundException
 import logic.repositories.LogsRepository
 import logic.repositories.ProjectsRepository
 import logic.repositories.TaskRepository
@@ -20,7 +16,7 @@ import org.bson.Document
 import java.util.UUID
 
 class MongoDBLogsDataSource(
-    private val logsCollection: MongoCollection<Document>,
+    private val logQueryHandler: MongoDBQueryHandler,
     private val projectsRepository: ProjectsRepository,
     private val taskRepository: TaskRepository,
     private val taskStatesRepository: TaskStatesRepository,
@@ -28,23 +24,15 @@ class MongoDBLogsDataSource(
 ) : LogsRepository {
 
     override suspend fun getAllLogs(): List<Log> {
-        return try {
-            logsCollection.find().map { doc ->
-                mongoParser.documentToLogDto(doc).toLog()
-            }.toList()
-        } catch (e: MongoException) {
-            throw RetrievingDataFailureException("Failed to retrieve logs: ${e.message}")
+        val filters = Filters.empty()
+        return logQueryHandler.fetchManyFromCollection(filters).map { doc ->
+            mongoParser.documentToLogDto(doc).toLog()
         }
     }
 
     override suspend fun addLog(log: Log) {
-        try {
-            val logDto = log.toLogDto()
-            val doc = mongoParser.logDtoToDocument(logDto)
-            logsCollection.insertOne(doc)
-        } catch (e: MongoException) {
-            throw StoringDataFailureException("Failed to add log: ${e.message}")
-        }
+        val doc = mongoParser.logDtoToDocument(log.toLogDto())
+        logQueryHandler.insertToCollection(doc)
     }
 
     override suspend fun getLogsByEntityId(entityId: UUID): List<Log> {
@@ -53,7 +41,7 @@ class MongoDBLogsDataSource(
 
         val project: Project? = try {
             projectsRepository.getProjectById(entityId)
-        } catch (e: ProjectNotFoundException) {
+        } catch (e: NotFoundException) {
             null
         }
 
@@ -68,9 +56,8 @@ class MongoDBLogsDataSource(
             Document(MongoDBParser.PLAN_ENTITY_ID_FIELD, id.toString())
         })
 
-        return logsCollection.find(filter)
+        return logQueryHandler.fetchManyFromCollection(filter)
             .map { mongoParser.documentToLogDto(it).toLog() }
-            .toList()
             .sortedBy { it.time }
     }
 }
