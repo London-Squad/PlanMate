@@ -2,6 +2,7 @@ package data.dataSources.mongoDBDataSource.mongoDBParser
 
 import com.mongodb.MongoException
 import com.mongodb.client.model.Updates
+import com.mongodb.client.result.UpdateResult
 import com.mongodb.kotlin.client.coroutine.MongoCollection
 import kotlinx.coroutines.flow.firstOrNull
 import kotlinx.coroutines.flow.toList
@@ -41,10 +42,12 @@ class MongoDBQueryHandler(
 
     suspend fun updateCollection(field: String, newValue: String, filters: Bson) {
         try {
-            val result = collection.updateOne(filters, Updates.set(field, newValue))
-            if (result.matchedCount.toInt() == 0) {
-                throw NotFoundException("Entity was not found")
-            }
+            collection.updateOne(filters, Updates.set(field, newValue))
+                .also { updateResult: UpdateResult ->
+                    if (updateResult.matchedCount == 0L) {
+                        throw NotFoundException("Entity was not found")
+                    }
+                }
         } catch (e: MongoException) {
             throw StoringDataFailureException("Failed to update entity: ${e.message}")
         }
@@ -52,12 +55,12 @@ class MongoDBQueryHandler(
 
     suspend fun softDeleteFromCollection(filters: Bson) {
         try {
-            val result = collection.updateOne(
-                filters, Updates.set(MongoDBParser.IS_DELETED_FIELD, true)
-            )
-            if (result.matchedCount.toInt() == 0) {
-                throw NotFoundException("Entity was not found")
-            }
+            collection.updateOne(filters, Updates.set(MongoDBParser.IS_DELETED_FIELD, true))
+                .also { updateResult: UpdateResult ->
+                    if (updateResult.matchedCount == 0L) {
+                        throw NotFoundException("Entity was not found")
+                    }
+                }
         } catch (e: MongoException) {
             throw StoringDataFailureException("Failed to delete entity: ${e.message}")
         }
