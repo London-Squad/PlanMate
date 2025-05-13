@@ -78,7 +78,8 @@ class ProjectsDashboardView(
             1 -> selectProject()
             2 -> createProject()
             0 -> {
-                cliPrinter.cliPrintLn("\nExiting Projects Dashboard ..."); return
+                cliPrinter.cliPrintLn("\nExiting Projects Dashboard ...")
+                return
             }
         }
         start(loggedInUserType)

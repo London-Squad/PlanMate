@@ -65,7 +65,8 @@ class ProjectDetailsView(
             4 -> editProjectView.editProject(projectDetails.project.id)
             5 -> deleteProjectView.deleteProject(projectDetails.project.id)
             0 -> {
-                cliPrinter.cliPrintLn("\nExiting Project..."); return
+                cliPrinter.cliPrintLn("\nExiting Project...")
+                return
             }
         }
         start(projectDetails.project.id, loggedInUserType)
