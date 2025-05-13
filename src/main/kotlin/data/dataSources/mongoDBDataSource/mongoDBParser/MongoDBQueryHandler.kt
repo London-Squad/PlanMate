@@ -17,7 +17,7 @@ class MongoDBQueryHandler(
 
     suspend fun fetchManyFromCollection(filters: Bson): List<Document> {
         return try {
-             collection.find(filters).toList()
+            collection.find(filters).toList()
         } catch (e: MongoException) {
             throw RetrievingDataFailureException("Failed to retrieve data: ${e.message}")
         }
@@ -25,13 +25,13 @@ class MongoDBQueryHandler(
 
     suspend fun fetchOneFromCollection(filters: Bson): Document {
         return try {
-             collection.find(filters).firstOrNull() ?: throw NotFoundException("Entity was not found")
+            collection.find(filters).firstOrNull() ?: throw NotFoundException("Entity was not found")
         } catch (e: MongoException) {
             throw RetrievingDataFailureException("Failed to retrieve data: ${e.message}")
         }
     }
 
-    suspend fun insertToCollection(document: Document){
+    suspend fun insertToCollection(document: Document) {
         try {
             collection.insertOne(document)
         } catch (e: MongoException) {
@@ -39,7 +39,7 @@ class MongoDBQueryHandler(
         }
     }
 
-    suspend fun updateCollection(field: String, newValue: String, filters: Bson){
+    suspend fun updateCollection(field: String, newValue: String, filters: Bson) {
         try {
             val result = collection.updateOne(filters, Updates.set(field, newValue))
             if (result.matchedCount.toInt() == 0) {
@@ -50,9 +50,10 @@ class MongoDBQueryHandler(
         }
     }
 
-    suspend fun softDeleteFromCollection(filters: Bson){
+    suspend fun softDeleteFromCollection(filters: Bson) {
         try {
-            val result = collection.updateOne(filters, Updates.set(MongoDBParser.IS_DELETED_FIELD, true)
+            val result = collection.updateOne(
+                filters, Updates.set(MongoDBParser.IS_DELETED_FIELD, true)
             )
             if (result.matchedCount.toInt() == 0) {
                 throw NotFoundException("Entity was not found")

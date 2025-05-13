@@ -23,40 +23,40 @@ class MongoDBProjectsDataSource(
     }
 
     override suspend fun getProjectById(projectId: UUID, includeDeleted: Boolean): Project {
-            val filters = Filters.and(
-                Filters.eq(MongoDBParser.ID_FIELD, projectId.toString()),
-                if (!includeDeleted) Filters.eq(MongoDBParser.IS_DELETED_FIELD, false)
-                else Filters.empty()
-            )
+        val filters = Filters.and(
+            Filters.eq(MongoDBParser.ID_FIELD, projectId.toString()),
+            if (!includeDeleted) Filters.eq(MongoDBParser.IS_DELETED_FIELD, false)
+            else Filters.empty()
+        )
         return projectQueryHandler.fetchOneFromCollection(filters).let(mongoParser::documentToProjectDto).toProject()
     }
 
     override suspend fun addNewProject(project: Project) {
-            val doc = mongoParser.projectDtoToDocument(project.toProjectDto())
-            projectQueryHandler.insertToCollection(doc)
-        }
+        val doc = mongoParser.projectDtoToDocument(project.toProjectDto())
+        projectQueryHandler.insertToCollection(doc)
+    }
 
     override suspend fun editProjectTitle(projectId: UUID, newTitle: String) {
-            val filters = Filters.and(
-                Filters.eq(MongoDBParser.ID_FIELD, projectId.toString()),
-                Filters.eq(MongoDBParser.IS_DELETED_FIELD, false)
-            )
+        val filters = Filters.and(
+            Filters.eq(MongoDBParser.ID_FIELD, projectId.toString()),
+            Filters.eq(MongoDBParser.IS_DELETED_FIELD, false)
+        )
         projectQueryHandler.updateCollection(MongoDBParser.TITLE_FIELD, newTitle, filters)
     }
 
     override suspend fun editProjectDescription(projectId: UUID, newDescription: String) {
-            val filters = Filters.and(
-                Filters.eq(MongoDBParser.ID_FIELD, projectId.toString()),
-                Filters.eq(MongoDBParser.IS_DELETED_FIELD, false)
-            )
+        val filters = Filters.and(
+            Filters.eq(MongoDBParser.ID_FIELD, projectId.toString()),
+            Filters.eq(MongoDBParser.IS_DELETED_FIELD, false)
+        )
         projectQueryHandler.updateCollection(MongoDBParser.TITLE_FIELD, newDescription, filters)
     }
 
     override suspend fun deleteProject(projectId: UUID) {
-            val filters = Filters.and(
-                Filters.eq(MongoDBParser.ID_FIELD, projectId.toString()),
-                Filters.eq(MongoDBParser.IS_DELETED_FIELD, false)
-            )
+        val filters = Filters.and(
+            Filters.eq(MongoDBParser.ID_FIELD, projectId.toString()),
+            Filters.eq(MongoDBParser.IS_DELETED_FIELD, false)
+        )
         projectQueryHandler.softDeleteFromCollection(filters)
     }
 }
