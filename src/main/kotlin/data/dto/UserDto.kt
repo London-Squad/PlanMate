@@ -1,9 +1,7 @@
 package data.dto
 
-import java.util.UUID
-
 data class UserDto(
-    val id: UUID,
+    val id: String,
     val userName: String,
     val hashedPassword: String,
     val type: String,

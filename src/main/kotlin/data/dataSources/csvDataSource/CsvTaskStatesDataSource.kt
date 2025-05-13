@@ -18,13 +18,13 @@ class CsvTaskStatesDataSource(
 
     override suspend fun getTaskStatesByProjectId(projectId: UUID, includeDeleted: Boolean): List<TaskState> {
         return tasksStatesCsvFileHandler.readRecords().map(csvParser::recordToTaskStateDto)
-            .filter { it.projectId == projectId }.filter { if (includeDeleted) true else !it.isDeleted }
+            .filter { it.projectId == projectId.toString() }.filter { if (includeDeleted) true else !it.isDeleted }
             .map(TaskStateDto::toTaskState)
     }
 
     override suspend fun getTaskStateById(stateId: UUID, includeDeleted: Boolean): TaskState {
         return tasksStatesCsvFileHandler.readRecords().map(csvParser::recordToTaskStateDto)
-            .filter { if (includeDeleted) true else !it.isDeleted }.firstOrNull { it.id == stateId }?.toTaskState()
+            .filter { if (includeDeleted) true else !it.isDeleted }.firstOrNull { it.id == stateId.toString() }?.toTaskState()
             ?: throw TaskStateNotFoundException()
     }
 
@@ -38,7 +38,7 @@ class CsvTaskStatesDataSource(
         var taskStateFound = false
         tasksStatesCsvFileHandler.readRecords().map {
             val taskStateData = csvParser.recordToTaskStateDto(it)
-            if (taskStateData.id == stateId) {
+            if (taskStateData.id == stateId.toString()) {
                 taskStateFound = true
                 csvParser.taskStateDtoToRecord(taskStateData.copy(title = newTitle))
             } else it
@@ -52,7 +52,7 @@ class CsvTaskStatesDataSource(
         var taskStateFound = false
         tasksStatesCsvFileHandler.readRecords().map {
             val taskStateData = csvParser.recordToTaskStateDto(it)
-            if (taskStateData.id == stateId) {
+            if (taskStateData.id == stateId.toString()) {
                 taskStateFound = true
                 csvParser.taskStateDtoToRecord(taskStateData.copy(description = newDescription))
             } else it
@@ -66,7 +66,7 @@ class CsvTaskStatesDataSource(
         var taskStateFound = false
         tasksStatesCsvFileHandler.readRecords().map {
             val taskStateData = csvParser.recordToTaskStateDto(it)
-            if (taskStateData.id == stateId) {
+            if (taskStateData.id == stateId.toString()) {
                 taskStateFound = true
                 csvParser.taskStateDtoToRecord(taskStateData.copy(isDeleted = true))
             } else it

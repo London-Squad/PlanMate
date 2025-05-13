@@ -6,20 +6,20 @@ import java.util.*
 
 fun TaskDto.toTask(): Task {
     return Task(
-        id = id,
+        id = UUID.fromString(id),
         title = title,
         description = description,
-        taskStateId = stateId
+        taskStateId = UUID.fromString(stateId)
     )
 }
 
 fun Task.toTaskDto(projectId: UUID, isDeleted: Boolean = false): TaskDto {
     return TaskDto(
-        id = id,
+        id = id.toString(),
         title = title,
         description = description,
-        stateId = taskStateId,
-        projectId = projectId,
+        stateId = taskStateId.toString(),
+        projectId = projectId.toString(),
         isDeleted = isDeleted
     )
 }

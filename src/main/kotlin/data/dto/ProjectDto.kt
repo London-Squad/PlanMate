@@ -1,9 +1,7 @@
 package data.dto
 
-import java.util.UUID
-
 data class ProjectDto(
-    val id: UUID,
+    val id: String,
     val title: String,
     val description: String,
     val isDeleted: Boolean
