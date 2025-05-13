@@ -1,8 +1,8 @@
 package data.dataSources.mongoDBDataSource
 
 import com.mongodb.client.model.Filters
-import data.dataSources.mongoDBDataSource.mongoDBParser.MongoDBParser
-import data.dataSources.mongoDBDataSource.mongoDBParser.MongoDBQueryHandler
+import data.dataSources.mongoDBDataSource.mongoDBHandler.MongoDBParser
+import data.dataSources.mongoDBDataSource.mongoDBHandler.MongoDBQueryHandler
 import data.repositories.dtoMappers.toLog
 import data.repositories.dtoMappers.toLogDto
 import logic.entities.Log

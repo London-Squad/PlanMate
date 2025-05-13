@@ -1,4 +1,4 @@
-package data.dataSources.mongoDBDataSource.mongoDBParser
+package data.dataSources.mongoDBDataSource.mongoDBHandler
 
 import com.mongodb.MongoException
 import com.mongodb.client.model.Updates
@@ -44,9 +44,7 @@ class MongoDBQueryHandler(
         try {
             collection.updateOne(filters, Updates.set(field, newValue))
                 .also { updateResult: UpdateResult ->
-                    if (updateResult.matchedCount == 0L) {
-                        throw NotFoundException("Entity was not found")
-                    }
+                    if (updateResult.matchedCount == 0L) throw NotFoundException("Entity was not found")
                 }
         } catch (e: MongoException) {
             throw StoringDataFailureException("Failed to update entity: ${e.message}")
@@ -57,9 +55,7 @@ class MongoDBQueryHandler(
         try {
             collection.updateOne(filters, Updates.set(MongoDBParser.IS_DELETED_FIELD, true))
                 .also { updateResult: UpdateResult ->
-                    if (updateResult.matchedCount == 0L) {
-                        throw NotFoundException("Entity was not found")
-                    }
+                    if (updateResult.matchedCount == 0L) throw NotFoundException("Entity was not found")
                 }
         } catch (e: MongoException) {
             throw StoringDataFailureException("Failed to delete entity: ${e.message}")

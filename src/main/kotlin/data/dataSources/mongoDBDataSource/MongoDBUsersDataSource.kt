@@ -1,11 +1,12 @@
 package data.dataSources.mongoDBDataSource
 
 import com.mongodb.client.model.Filters
-import data.dataSources.mongoDBDataSource.mongoDBParser.MongoDBParser
-import data.dataSources.mongoDBDataSource.mongoDBParser.MongoDBQueryHandler
+import data.dataSources.mongoDBDataSource.mongoDBHandler.MongoDBParser
+import data.dataSources.mongoDBDataSource.mongoDBHandler.MongoDBQueryHandler
 import data.dto.UserDto
 import data.repositories.dataSources.UsersDataSource
-import logic.exceptions.*
+import logic.exceptions.NotFoundException
+import logic.exceptions.UserNameAlreadyExistsException
 import java.util.*
 
 class MongoDBUsersDataSource(

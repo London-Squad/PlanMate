@@ -1,4 +1,4 @@
-package data.dataSources.mongoDBDataSource.mongoDBParser
+package data.dataSources.mongoDBDataSource.mongoDBHandler
 
 import data.dto.*
 import logic.exceptions.RetrievingDataFailureException

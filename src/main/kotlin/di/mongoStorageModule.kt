@@ -2,13 +2,13 @@ package di
 
 import com.mongodb.kotlin.client.coroutine.MongoDatabase
 import data.dataSources.mongoDBDataSource.*
-import data.dataSources.mongoDBDataSource.mongoDBParser.MongoDBParser
-import data.repositories.dataSources.*
+import data.dataSources.mongoDBDataSource.mongoDBHandler.MongoDBParser
+import data.dataSources.mongoDBDataSource.mongoDBHandler.MongoDBQueryHandler
+import data.repositories.dataSources.UsersDataSource
 import logic.repositories.LogsRepository
 import logic.repositories.ProjectsRepository
 import logic.repositories.TaskRepository
 import logic.repositories.TaskStatesRepository
-import data.dataSources.mongoDBDataSource.mongoDBParser.MongoDBQueryHandler
 import org.koin.core.qualifier.named
 import org.koin.dsl.module
 
