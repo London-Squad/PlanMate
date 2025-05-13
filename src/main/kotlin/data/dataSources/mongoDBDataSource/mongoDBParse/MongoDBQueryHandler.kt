@@ -1,8 +1,10 @@
 package data.dataSources.mongoDBDataSource.mongoDBParse
 
 import com.mongodb.MongoException
-import com.mongodb.client.MongoCollection
 import com.mongodb.client.model.Updates
+import com.mongodb.kotlin.client.coroutine.MongoCollection
+import kotlinx.coroutines.flow.firstOrNull
+import kotlinx.coroutines.flow.toList
 import logic.exceptions.NotFoundException
 import logic.exceptions.RetrievingDataFailureException
 import logic.exceptions.StoringDataFailureException
@@ -13,7 +15,7 @@ class MongoDBQueryHandler(
     private val collection: MongoCollection<Document>
 ) {
 
-    fun fetchFromCollection(filters: Bson): List<Document> {
+    suspend fun fetchManyFromCollection(filters: Bson): List<Document> {
         return try {
              collection.find(filters).toList()
         } catch (e: MongoException) {
@@ -21,7 +23,15 @@ class MongoDBQueryHandler(
         }
     }
 
-    fun insertToCollection(document: Document){
+    suspend fun fetchOneFromCollection(filters: Bson): Document {
+        return try {
+             collection.find(filters).firstOrNull() ?: throw NotFoundException("Entity was not found")
+        } catch (e: MongoException) {
+            throw RetrievingDataFailureException("Failed to retrieve data: ${e.message}")
+        }
+    }
+
+    suspend fun insertToCollection(document: Document){
         try {
             collection.insertOne(document)
         } catch (e: MongoException) {
@@ -29,7 +39,7 @@ class MongoDBQueryHandler(
         }
     }
 
-    fun updateCollection(field: String, newValue: String, filters: Bson){
+    suspend fun updateCollection(field: String, newValue: String, filters: Bson){
         try {
             val result = collection.updateOne(filters, Updates.set(field, newValue))
             if (result.matchedCount.toInt() == 0) {
@@ -40,7 +50,7 @@ class MongoDBQueryHandler(
         }
     }
 
-    fun softDeleteFromCollection(filters: Bson){
+    suspend fun softDeleteFromCollection(filters: Bson){
         try {
             val result = collection.updateOne(filters, Updates.set(MongoDBParse.IS_DELETED_FIELD, true)
             )

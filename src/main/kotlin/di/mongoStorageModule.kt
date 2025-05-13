@@ -8,6 +8,7 @@ import logic.repositories.LogsRepository
 import logic.repositories.ProjectsRepository
 import logic.repositories.TaskRepository
 import logic.repositories.TaskStatesRepository
+import data.dataSources.mongoDBDataSource.mongoDBParse.MongoDBQueryHandler
 import org.koin.core.qualifier.named
 import org.koin.dsl.module
 
@@ -32,9 +33,10 @@ val mongoStorageModule = module {
     }
 
     single { MongoDBParse() }
-
-    single<TaskRepository> { MongoDBTasksDataSource(get(named("tasksCollection")), get()) }
-
+    single(named("tasksQueryHandler")) {
+        MongoDBQueryHandler(get(named("tasksCollection")))
+    }
+    single<TaskRepository> { MongoDBTasksDataSource(get(named("tasksQueryHandler")), get()) }
     single<TaskStatesRepository> { MongoDBTaskStatesDataSource(get(named("taskStatesCollection")), get()) }
     single<ProjectsRepository> { MongoDBProjectsDataSource(get(named("projectsCollection")), get()) }
     single<LogsRepository> { MongoDBLogsDataSource(get(named("logsCollection")), get(), get(), get(), get()) }
