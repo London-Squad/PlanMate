@@ -1,34 +1,22 @@
 package ui.projectDetailsView
 
-import logic.entities.Project
 import logic.entities.Task
-import ui.cliPrintersAndReaders.CLIPrinter
-import ui.cliPrintersAndReaders.cliTable.CLITablePrinter
-import ui.cliPrintersAndReaders.cliTable.InvalidTableInput
 import logic.entities.TaskState
-import logic.useCases.GetProjectDetailsUseCase
-import java.util.UUID
+import ui.cliPrintersAndReaders.CLITablePrinter
+import java.util.*
 
 class SwimlanesView(
-    private val cliPrinter: CLIPrinter,
     private val cliTablePrinter: CLITablePrinter,
-    private val getProjectDetailsUseCase: GetProjectDetailsUseCase
 ) {
 
-    fun displaySwimlanes(project: Project) {
-        printHeader(project)
-        val projectDetails = getProjectDetailsUseCase(project.id)
-        val taskStates = projectDetails.taskStates
-        val tasksByState = groupTasksByState(projectDetails.tasks, taskStates)
+    fun displaySwimlanes(tasks: List<Task>, taskStates: List<TaskState>) {
+
+        val tasksByState = groupTasksByState(tasks, taskStates)
         val maxTasks = tasksByState.values.maxOfOrNull { it.size } ?: 0
         val headers = taskStates.map { it.title }
         val data = buildData(tasksByState, maxTasks, taskStates)
         val columnWidths = List(taskStates.size) { COLUMN_WIDTH }
         displayTable(headers, data, columnWidths)
-    }
-
-    private fun printHeader(project: Project) {
-        cliPrinter.printHeader("Project: ${project.title}")
     }
 
     private fun groupTasksByState(tasks: List<Task>, taskStates: List<TaskState>): Map<UUID, List<String>> {
@@ -52,13 +40,8 @@ class SwimlanesView(
         }
     }
 
-
     private fun displayTable(headers: List<String>, data: List<List<String>>, columnWidths: List<Int>) {
-        try {
-            cliTablePrinter(headers, data, columnWidths)
-        } catch (e: InvalidTableInput) {
-            cliPrinter.cliPrintLn("Error displaying swimlanes: ${e.message}")
-        }
+        cliTablePrinter(headers, data, columnWidths)
     }
 
     private companion object {

@@ -118,7 +118,7 @@
 //        every { cliReader.getUserInput("Enter password: ") } returns "Password123"
 //        every {
 //            createMateUseCase.createMate("testuser", "Password123")
-//        } throws UserNameAlreadyTakenException()
+//        } throws UserNameAlreadyExistsException()
 //
 //        view.createMate()
 //

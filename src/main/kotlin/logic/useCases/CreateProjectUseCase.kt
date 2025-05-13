@@ -13,7 +13,7 @@ class CreateProjectUseCase(
     private val createLogUseCase: CreateLogUseCase
 ) {
 
-    fun createProject(title: String, description: String) {
+    suspend fun createProject(title: String, description: String) {
         val projectId = UUID.randomUUID()
 
         val project = buildNewProject(projectId, title, description)

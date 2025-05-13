@@ -1,13 +1,15 @@
-package ui.cliPrintersAndReaders.cliTable
-
-import ui.cliPrintersAndReaders.CLIPrinter
+package ui.cliPrintersAndReaders
 
 class CLITablePrinter(private val cliPrinter: CLIPrinter) {
 
     operator fun invoke(
         headers: List<String>, data: List<List<String>>, columnsWidth: List<Int?>
     ) {
-        validateInput(headers, data, columnsWidth)
+        if (!isInputsShapeValid(headers, data, columnsWidth)) {
+            cliPrinter.cliPrintLn("invalid table inputs")
+            return
+        }
+
         val finalColumnWidths = calculateColumnWidths(headers, data, columnsWidth)
         printSeparator(finalColumnWidths)
         printHeader(headers, finalColumnWidths)
@@ -16,12 +18,9 @@ class CLITablePrinter(private val cliPrinter: CLIPrinter) {
         printBottomBorder(finalColumnWidths)
     }
 
-    private fun validateInput(headers: List<String>, data: List<List<String>>, columnsWidth: List<Int?>) {
-        data.takeIf { it.isNotEmpty() }?.let { nonEmptyData ->
-            check(headers.size == nonEmptyData[0].size) { throw InvalidHeaderLengthException() }
-            check(nonEmptyData.all { it.size == nonEmptyData[0].size }) { throw InvalidDataShapeException() }
-            check(columnsWidth.size == nonEmptyData[0].size) { throw InvalidColumnWidthLengthException() }
-        }
+    private fun isInputsShapeValid(headers: List<String>, data: List<List<String>>, columnsWidth: List<Int?>): Boolean {
+        return columnsWidth.size == headers.size
+                && data.all { it.size == headers.size }
     }
 
     private fun calculateColumnWidths(
@@ -79,6 +78,7 @@ class CLITablePrinter(private val cliPrinter: CLIPrinter) {
     }
 
     private fun printData(data: List<List<String>>, columnWidths: List<Int>) {
+
         data.forEach { row ->
             cliPrinter.cliPrint("║")
             row.forEachIndexed { colIndex, cell ->
