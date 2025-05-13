@@ -12,7 +12,6 @@ import logic.repositories.LogsRepository
 import logic.repositories.ProjectsRepository
 import logic.repositories.TaskRepository
 import logic.repositories.TaskStatesRepository
-import org.bson.Document
 import java.util.UUID
 
 class MongoDBLogsDataSource(
@@ -36,8 +35,8 @@ class MongoDBLogsDataSource(
     }
 
     override suspend fun getLogsByEntityId(entityId: UUID): List<Log> {
-        val relatedEntityIds = mutableSetOf<UUID>()
-        relatedEntityIds.add(entityId)
+        val relatedEntityIds = mutableSetOf<String>()
+        relatedEntityIds.add(entityId.toString())
 
         val project: Project? = try {
             projectsRepository.getProjectById(entityId)
@@ -49,12 +48,11 @@ class MongoDBLogsDataSource(
             val tasks = taskRepository.getTasksByProjectID(project.id, includeDeleted = true)
             val taskStates = taskStatesRepository.getTaskStatesByProjectId(project.id, includeDeleted = true)
 
-            relatedEntityIds.addAll(tasks.map { it.id })
-            relatedEntityIds.addAll(taskStates.map { it.id })
+            relatedEntityIds.addAll(tasks.map { it.id.toString() })
+            relatedEntityIds.addAll(taskStates.map { it.id.toString() })
         }
-        val filter = Document("\$or", relatedEntityIds.map { id ->
-            Document(MongoDBParser.PLAN_ENTITY_ID_FIELD, id.toString())
-        })
+
+        val filter = Filters.`in`(MongoDBParser.PLAN_ENTITY_ID_FIELD, relatedEntityIds)
 
         return logQueryHandler.fetchManyFromCollection(filter)
             .map { mongoParser.documentToLogDto(it).toLog() }
