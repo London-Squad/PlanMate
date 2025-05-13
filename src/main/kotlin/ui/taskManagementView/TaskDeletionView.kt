@@ -11,7 +11,7 @@ class TaskDeletionView(
     private val cliPrinter: CLIPrinter,
     private val manageTaskUseCase: ManageTaskUseCase,
 ) : RequestHandler(cliPrinter) {
-    fun deleteTask(taskId: UUID) {
+    suspend fun deleteTask(taskId: UUID) {
         if (isDeletionCanceled()) {
             cliPrinter.cliPrintLn("Deletion canceled")
             return

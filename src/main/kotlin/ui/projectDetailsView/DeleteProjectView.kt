@@ -11,7 +11,7 @@ class DeleteProjectView(
     private val cliReader: CLIReader,
     private val manageProjectUseCase: ManageProjectUseCase,
 ) : RequestHandler(cliPrinter) {
-    fun deleteProject(projectId: UUID) {
+    suspend fun deleteProject(projectId: UUID) {
         if (isDeletionCanceled()) {
             cliPrinter.cliPrintLn("Project deletion canceled")
             return

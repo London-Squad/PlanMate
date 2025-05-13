@@ -25,7 +25,7 @@ class TaskManagementView(
     private lateinit var taskStateTitle: String
     private lateinit var projectId: UUID
 
-    fun start(taskId: UUID, projectId: UUID) {
+    suspend fun start(taskId: UUID, projectId: UUID) {
 
         this.projectId = projectId
         makeRequest(
@@ -64,7 +64,7 @@ class TaskManagementView(
         cliPrinter.cliPrintLn("0. Back")
     }
 
-    private fun selectNextUI() {
+    private suspend fun selectNextUI() {
         when (cliReader.getValidInputNumberInRange(MAX_OPTION_NUMBER)) {
             1 -> taskTitleEditionView.editTitle(task.id)
             2 -> taskDescriptionEditionView.editDescription(task.id)

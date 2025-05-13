@@ -15,19 +15,19 @@ class MatesManagementView(
     private val mateCreationView: MateCreationView
 ) : RequestHandler(cliPrinter) {
 
-    fun start() {
+    suspend fun start() {
         printOptions()
         selectNextUI()
     }
 
-    private fun printOptions() {
+    private suspend fun printOptions() {
         cliPrinter.cliPrintLn("Mates Management Menu")
         printTableOfAllMates()
         cliPrinter.cliPrintLn("1. Create New Mate")
         cliPrinter.cliPrintLn("0. Back")
     }
 
-    private fun selectNextUI() {
+    private suspend fun selectNextUI() {
         val userInput = cliReader.getValidInputNumberInRange(MAX_OPTION_NUMBER)
 
         when (userInput) {
@@ -37,7 +37,7 @@ class MatesManagementView(
         start()
     }
 
-    private fun printTableOfAllMates() {
+    private suspend fun printTableOfAllMates() {
         var mates: List<User> = emptyList()
 
         makeRequest(

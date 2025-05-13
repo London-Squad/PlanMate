@@ -4,24 +4,19 @@ import data.repositories.dataSources.UsersDataSource
 import data.repositories.dtoMappers.toUser
 import data.security.hashing.HashingAlgorithm
 import logic.entities.User
-import logic.exceptions.UserNameAlreadyExistException
-import logic.exceptions.UserNotFoundException
 import logic.exceptions.UserNameAlreadyExistsException
 import logic.repositories.UserRepository
-import java.util.UUID
+import java.util.*
 
 class UserRepositoryImpl(
-    private val usersDataSource: UsersDataSource,
-    private val hashingAlgorithm: HashingAlgorithm
+    private val usersDataSource: UsersDataSource, private val hashingAlgorithm: HashingAlgorithm
 ) : UserRepository {
 
     override suspend fun getMates(includeDeleted: Boolean): List<User> {
-        return usersDataSource.getMates(includeDeleted)
-            .map { it.toUser() }
+        return usersDataSource.getMates(includeDeleted).map { it.toUser() }
     }
 
-    override suspend fun getAdmin(): User =
-        usersDataSource.getAdmin().toUser()
+    override suspend fun getAdmin(): User = usersDataSource.getAdmin().toUser()
 
     override suspend fun deleteMate(userId: UUID) {
         usersDataSource.deleteUser(userId)
@@ -35,13 +30,16 @@ class UserRepositoryImpl(
         }
 
         usersDataSource.addMate(
-            userName,
-            hashingAlgorithm.hashData(password)
+            userName, hashingAlgorithm.hashData(password)
         )
     }
 
+    override suspend fun getUsers(): List<User> {
+        return usersDataSource.getAllUsers().map { it.toUser() }
+    }
+
     override suspend fun getUserById(userId: UUID): User {
-       return usersDataSource.getUserById(userId).toUser()
+        return usersDataSource.getUserById(userId).toUser()
     }
 
 }

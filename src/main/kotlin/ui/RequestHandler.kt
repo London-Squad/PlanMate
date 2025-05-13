@@ -15,9 +15,9 @@ abstract class RequestHandler(
     private var caughtException: Exception? = null
     private val requestScope: CoroutineScope = CoroutineScope(Dispatchers.IO)
 
-    fun makeRequest(
+    suspend fun makeRequest(
         request: suspend () -> Unit,
-        onSuccess: () -> Unit = {},
+        onSuccess: suspend() -> Unit = {},
         onError: (exception: Exception) -> Unit = (::handleDefaultExceptions),
         // todo (extra): make onLoading,
         onLoadingMessage: String = DEFAULT_ON_LOADING_MESSAGE
@@ -62,8 +62,8 @@ abstract class RequestHandler(
 
     }
 
-    private fun processResult(
-        onSuccess: () -> Unit = {},
+    private suspend fun processResult(
+        onSuccess:suspend () -> Unit = {},
         onError: (exception: Exception) -> Unit = (::handleDefaultExceptions)
     ) {
         if (caughtException == null) onSuccess()

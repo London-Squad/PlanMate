@@ -7,7 +7,7 @@ import org.koin.core.context.startKoin
 import org.koin.java.KoinJavaComponent.getKoin
 import ui.welcomeView.WelcomeView
 
-fun main() {
+suspend fun main() {
 
     startKoin {
         modules(

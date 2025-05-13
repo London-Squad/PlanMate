@@ -11,7 +11,7 @@ class TaskTitleEditionView(
     private val manageTaskUseCase: ManageTaskUseCase,
     cliPrinter: CLIPrinter,
 ) : RequestHandler(cliPrinter) {
-    fun editTitle(taskId: UUID) {
+    suspend fun editTitle(taskId: UUID) {
 
         val newTitle = taskInputReader.getValidTaskTitle()
 

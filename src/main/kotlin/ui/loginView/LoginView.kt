@@ -14,7 +14,7 @@ class LoginView(
     private val mainMenuView: MainMenuView,
 ) : RequestHandler(cliPrinter) {
 
-    fun start() {
+    suspend fun start() {
         cliPrinter.printHeader("Login")
         cliPrinter.cliPrintLn("Please enter your username and password\n")
 
@@ -37,7 +37,7 @@ class LoginView(
         return Pair(username, password)
     }
 
-    private fun processLogin(username: String, password: String) {
+    private suspend fun processLogin(username: String, password: String) {
         var loggedInUserType = User.Type.MATE
 
         makeRequest(

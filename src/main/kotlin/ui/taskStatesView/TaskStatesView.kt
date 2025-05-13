@@ -20,7 +20,7 @@ class TaskStatesView(
     private lateinit var projectId: UUID
     private var taskStates: List<TaskState> = emptyList()
 
-    fun start(projectId: UUID) {
+    suspend fun start(projectId: UUID) {
         this.projectId = projectId
 
         cliPrinter.printHeader("Task States Management")
@@ -43,7 +43,7 @@ class TaskStatesView(
         cliPrinter.cliPrintLn("0. Back to Edit Project")
     }
 
-    private fun goToNextView() {
+    private suspend fun goToNextView() {
         cliPrinter.cliPrintLn("Select an option:")
         when (cliReader.getValidInputNumberInRange(3)) {
             1 -> addState()
@@ -70,7 +70,7 @@ class TaskStatesView(
         }
     }
 
-    private fun addState() {
+    private suspend fun addState() {
         val title = taskStateInputReader.getValidTaskStateTitle()
         val desc = taskStateInputReader.getValidTaskStateDescription()
         makeRequest(
@@ -81,7 +81,7 @@ class TaskStatesView(
 
     }
 
-    private fun editState() {
+    private suspend fun editState() {
         if (taskStates.isEmpty()) {
             cliPrinter.cliPrintLn("No task states available to edit.")
             return
@@ -100,7 +100,7 @@ class TaskStatesView(
         }
     }
 
-    private fun editTaskStateTitle(state: TaskState) {
+    private suspend fun editTaskStateTitle(state: TaskState) {
         val newTitle = taskStateInputReader.getValidTaskStateTitle()
         makeRequest(
             request = { useCase.editStateTitle(state.id, newTitle) },
@@ -109,7 +109,7 @@ class TaskStatesView(
         )
     }
 
-    private fun editTaskStateDescription(state: TaskState) {
+    private suspend fun editTaskStateDescription(state: TaskState) {
         val newDescription = taskStateInputReader.getValidTaskStateDescription()
         makeRequest(
             request = { useCase.editStateDescription(state.id, newDescription) },
@@ -118,7 +118,7 @@ class TaskStatesView(
         )
     }
 
-    private fun deleteState() {
+    private suspend fun deleteState() {
         if (taskStates.isEmpty()) {
             cliPrinter.cliPrintLn("No task states available to edit.")
             return

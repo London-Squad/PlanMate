@@ -27,7 +27,7 @@ class ProjectDetailsView(
     private lateinit var loggedInUserType: User.Type
     private lateinit var projectDetails: GetProjectDetailsUseCase.ProjectDetails
 
-    fun start(projectId: UUID, loggedInUserType: User.Type) {
+    suspend fun start(projectId: UUID, loggedInUserType: User.Type) {
         this.loggedInUserType = loggedInUserType
 
         makeRequest(
@@ -57,7 +57,7 @@ class ProjectDetailsView(
         cliPrinter.cliPrintLn("0. Back to projects")
     }
 
-    private fun goToNextView() {
+    private suspend fun goToNextView() {
         when (getValidUserInput()) {
             1 -> selectTask()
             2 -> createNewTask()
@@ -79,7 +79,7 @@ class ProjectDetailsView(
         return cliReader.getValidInputNumberInRange(maxOptionNumberAllowed)
     }
 
-    private fun selectTask() {
+    private suspend fun selectTask() {
         if (projectDetails.tasks.isEmpty()) {
             cliPrinter.cliPrintLn("No tasks available to select.")
             return
@@ -89,7 +89,7 @@ class ProjectDetailsView(
         taskManagementView.start(projectDetails.tasks[input - 1].id, projectDetails.project.id)
     }
 
-    private fun createNewTask() {
+    private suspend fun createNewTask() {
         val title = taskInputReader.getValidTaskTitle()
         val description = taskInputReader.getValidTaskDescription()
 

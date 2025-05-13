@@ -24,7 +24,7 @@ class ProjectsDashboardView(
     private lateinit var loggedInUserType: User.Type
     private var projects: List<Project> = emptyList()
 
-    fun start(loggedInUserType: User.Type) {
+    suspend fun start(loggedInUserType: User.Type) {
         this.loggedInUserType = loggedInUserType
         makeRequest(
             request = { fetchProjects() },
@@ -72,7 +72,7 @@ class ProjectsDashboardView(
         cliPrinter.cliPrintLn("0. Exit Projects Dashboard")
     }
 
-    private fun goToNextView() {
+    private suspend fun goToNextView() {
 
         when (getValidUserInput()) {
             1 -> selectProject()
@@ -92,7 +92,7 @@ class ProjectsDashboardView(
         return cliReader.getValidInputNumberInRange(maxOptionNumberAllowed)
     }
 
-    private fun selectProject() {
+    private suspend fun selectProject() {
         if (projects.isEmpty()) {
             cliPrinter.cliPrintLn("No projects available to select.")
             return
@@ -102,7 +102,7 @@ class ProjectsDashboardView(
         projectView.start(projects[input - 1].id, loggedInUserType)
     }
 
-    private fun createProject() {
+    private suspend fun createProject() {
         cliPrinter.printHeader("Create Project")
         val title = projectInputReader.getValidProjectTitle()
         val description = projectInputReader.getValidProjectDescription()

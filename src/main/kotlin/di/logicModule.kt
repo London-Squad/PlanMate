@@ -1,5 +1,6 @@
 package di
 
+import GetUserDataUseCase
 import logic.useCases.*
 import logic.validation.CredentialValidator
 import logic.validation.ProjectInputValidator
@@ -24,5 +25,5 @@ val logicModule = module {
     single { LogoutUseCase(get()) }
     single { GetAllMatesUseCase(get()) }
     single { GetProjectDetailsUseCase(get(), get(), get()) }
-    single { GetUserByIdUseCase(get()) }
+    single { GetUserDataUseCase(get()) }
 }

@@ -2,21 +2,20 @@ package data.dataSources.csvDataSource
 
 import data.dataSources.csvDataSource.fileIO.CsvFileHandler
 import data.dataSources.csvDataSource.fileIO.CsvParser
-import data.repositories.dataSources.UsersDataSource
 import data.dto.UserDto
+import data.repositories.dataSources.UsersDataSource
 import logic.entities.User
 import logic.exceptions.ProjectNotFoundException
 import logic.exceptions.UserNameAlreadyExistsException
+import logic.exceptions.UserNotFoundException
 import java.util.*
 
 class CsvUsersDataSource(
-    private val usersCsvFileHandler: CsvFileHandler,
-    private val csvParser: CsvParser
+    private val usersCsvFileHandler: CsvFileHandler, private val csvParser: CsvParser
 ) : UsersDataSource {
 
     override suspend fun getMates(includeDeleted: Boolean): List<UserDto> {
-        return usersCsvFileHandler.readRecords()
-            .map(csvParser::recordToUserDto)
+        return usersCsvFileHandler.readRecords().map(csvParser::recordToUserDto)
             .filter { if (includeDeleted) true else !it.isDeleted }
     }
 
@@ -24,8 +23,7 @@ class CsvUsersDataSource(
 
     override suspend fun deleteUser(userId: UUID) {
         var userFound = false
-        usersCsvFileHandler.readRecords()
-            .map {
+        usersCsvFileHandler.readRecords().map {
                 val userDto = csvParser.recordToUserDto(it)
                 if (userDto.id == userId) {
                     userFound = true
@@ -40,8 +38,7 @@ class CsvUsersDataSource(
     override suspend fun addMate(userName: String, hashedPassword: String) {
         usersCsvFileHandler.readRecords().forEach {
             val userDto = csvParser.recordToUserDto(it)
-            if (userDto.userName == userName)
-                throw UserNameAlreadyExistsException("User with username '$userName' already exists")
+            if (userDto.userName == userName) throw UserNameAlreadyExistsException("User with username '$userName' already exists")
         }
 
         usersCsvFileHandler.appendRecord(
@@ -55,35 +52,16 @@ class CsvUsersDataSource(
         )
     }
 
-    override fun getLoggedInUser(): UserDto {
-        return loggedInUser ?: throw NoLoggedInUserFoundException()
-    }
-
-    override fun setLoggedInUser(user: UserDto) {
-        loggedInUserCsvFileHandler.rewriteRecords(
-            listOf(csvParser.userDtoToRecord(user))
-        )
-        loggedInUser = user
-    }
-
-    override fun clearLoggedInUser() {
-        loggedInUserCsvFileHandler.rewriteRecords(
-            listOf()
-        )
-        loggedInUser = null
-    }
-
-    override fun getUserById(userId: UUID): UserDto {
+    override suspend fun getUserById(userId: UUID): UserDto {
         return usersCsvFileHandler.readRecords()
             .map(csvParser::recordToUserDto)
-            .firstOrNull { it.id == userId && !it.isDeleted }
-            ?: throw logic.exceptions.UserNotFoundException("User with ID $userId not found.")
+            .firstOrNull { it.id == userId }
+            ?: throw UserNotFoundException("User with ID $userId not found")
     }
 
-    private fun loadUserFromLocalFile(): UserDto? {
-        return loggedInUserCsvFileHandler.readRecords()
-            .takeIf { it.isNotEmpty() }
-            ?.let { csvParser.recordToUserDto(it[0]) }
+    override suspend fun getAllUsers(): List<UserDto> {
+        return usersCsvFileHandler.readRecords()
+            .map(csvParser::recordToUserDto)
     }
 
     companion object {

@@ -17,29 +17,29 @@ class WelcomeView(
     private val getLoggedInUserUseCase: GetLoggedInUserUseCase,
 ) : RequestHandler(cliPrinter) {
 
-    fun start() {
+     suspend fun start() {
         var loggedInUserType = User.Type.MATE
 
         makeRequest(
             request = { loggedInUserType = getLoggedInUserUseCase.getLoggedInUser().type },
             onSuccess = { goDirectlyToMainMenu(loggedInUserType) },
-            onError = (::onCheckingLoggedInUserFailure),
+//            onError = (::onCheckingLoggedInUserFailure),
             onLoadingMessage = "Checking for logged in user..."
         )
     }
 
-    private fun goDirectlyToMainMenu(loggedInUserType: User.Type) {
+    private suspend fun goDirectlyToMainMenu(loggedInUserType: User.Type) {
         cliPrinter.cliPrintLn("Logged in user found, redirecting to main menu...")
         mainMenuView.start(loggedInUserType)
         start()
     }
 
-    private fun onCheckingLoggedInUserFailure(exception: Exception) {
+    private suspend fun onCheckingLoggedInUserFailure(exception: Exception) {
         if (exception is NoLoggedInUserFoundException) startNormalWelcomeView()
         else handleDefaultExceptions(exception)
     }
 
-    private fun startNormalWelcomeView() {
+    private suspend fun startNormalWelcomeView() {
         printWelcomeMessage()
         printOptions()
         goToNextView()
@@ -54,7 +54,7 @@ class WelcomeView(
         cliPrinter.cliPrintLn("0. Exit the app")
     }
 
-    private fun goToNextView() {
+    private suspend fun goToNextView() {
         when (cliReader.getValidInputNumberInRange(MAX_OPTION_NUMBER)) {
             1 -> loginView.start()
             0 -> {

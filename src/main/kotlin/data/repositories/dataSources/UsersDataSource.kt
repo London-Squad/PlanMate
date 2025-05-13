@@ -1,6 +1,7 @@
 package data.repositories.dataSources
 
 import data.dto.UserDto
+import logic.entities.User
 import java.util.*
 
 interface UsersDataSource {
@@ -8,4 +9,6 @@ interface UsersDataSource {
     suspend fun getAdmin(): UserDto
     suspend fun deleteUser(userId: UUID)
     suspend fun addMate(userName: String, hashedPassword: String)
+    suspend fun getUserById(userId: UUID): UserDto
+    suspend fun getAllUsers(): List<UserDto>
 }

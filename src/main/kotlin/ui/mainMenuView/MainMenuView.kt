@@ -18,7 +18,7 @@ class MainMenuView(
 
     private lateinit var loggedInUserType: User.Type
 
-    fun start(loggedInUserType: User.Type) {
+    suspend fun start(loggedInUserType: User.Type) {
         this.loggedInUserType = loggedInUserType
         printMainMenuTitle()
         printOptions()
@@ -35,7 +35,7 @@ class MainMenuView(
         cliPrinter.cliPrintLn("0. Logout")
     }
 
-    private fun goToNextView() {
+    private suspend fun goToNextView() {
         when (getValidUserInput()) {
             1 -> goToProjectsDashboard()
             2 -> goToMatesManagement()
@@ -47,12 +47,12 @@ class MainMenuView(
         }
     }
 
-    private fun goToProjectsDashboard() {
+    private suspend fun goToProjectsDashboard() {
         projectsDashboardView.start(loggedInUserType)
         start(loggedInUserType)
     }
 
-    private fun goToMatesManagement() {
+    private suspend fun goToMatesManagement() {
         matesManagementView.start()
         start(loggedInUserType)
     }

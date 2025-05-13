@@ -4,9 +4,10 @@ import logic.entities.User
 import java.util.UUID
 
 interface UserRepository {
-    fun getMates(includeDeleted: Boolean = false): List<User>
-    fun getAdmin(): User
-    fun deleteMate(userId: UUID)
-    fun addMate(userName: String, password: String)
-    fun getUserById(userId: UUID): User
+    suspend fun getMates(includeDeleted: Boolean = false): List<User>
+    suspend fun getAdmin(): User
+    suspend fun deleteMate(userId: UUID)
+    suspend fun addMate(userName: String, password: String)
+    suspend fun getUsers():List<User>
+    suspend fun getUserById(userId: UUID): User
 }

@@ -10,7 +10,7 @@ class MateCreationView(
     private val cliPrinter: CLIPrinter,
     private val cliReader: CLIReader,
 ) : RequestHandler(cliPrinter) {
-    fun createMate() {
+    suspend fun createMate() {
         cliPrinter.printHeader("Create New Mate")
 
         val (username, password) = getUserCredentials()

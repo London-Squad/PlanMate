@@ -12,7 +12,7 @@ class TaskDescriptionEditionView(
     private val cliPrinter: CLIPrinter,
 ) : RequestHandler(cliPrinter) {
 
-    fun editDescription(taskId: UUID) {
+    suspend fun editDescription(taskId: UUID) {
         val newDescription = taskInputReader.getValidTaskDescription()
         makeRequest(
             request = { manageTaskUseCase.editTaskDescription(taskId, newDescription) },

@@ -19,7 +19,7 @@ class EditProjectView(
 
     private lateinit var currentProject: Project
 
-    fun editProject(projectId: UUID) {
+    suspend fun editProject(projectId: UUID) {
         makeRequest(
             request = { fetchProject(projectId) },
             onSuccess = {
@@ -46,7 +46,7 @@ class EditProjectView(
         cliPrinter.cliPrintLn("0. Back to project")
     }
 
-    private fun selectOption() {
+    private suspend fun selectOption() {
         when (cliReader.getValidInputNumberInRange(MAX_OPTION_NUMBER)) {
             1 -> editProjectTitle()
             2 -> editProjectDescription()
@@ -54,7 +54,7 @@ class EditProjectView(
         }
     }
 
-    private fun editProjectTitle() {
+    private suspend fun editProjectTitle() {
         val newTitle = projectInputReader.getValidProjectTitle()
         makeRequest(
             request = { manageProjectUseCase.editProjectTitle(currentProject.id, newTitle) },
@@ -63,7 +63,7 @@ class EditProjectView(
         )
     }
 
-    private fun editProjectDescription() {
+    private suspend fun editProjectDescription() {
         val newDescription = projectInputReader.getValidProjectDescription()
         makeRequest(
             request = { manageProjectUseCase.editProjectDescription(currentProject.id, newDescription) },
@@ -72,7 +72,7 @@ class EditProjectView(
         )
     }
 
-    private fun statesManagement() {
+    private suspend fun statesManagement() {
         taskStatesView.start(currentProject.id)
     }
 

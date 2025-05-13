@@ -17,7 +17,7 @@ class TaskStateEditionView(
 
     private lateinit var taskStatesOfProject: List<TaskState>
 
-    fun editState(taskId: UUID, projectId: UUID) {
+    suspend fun editState(taskId: UUID, projectId: UUID) {
 
         makeRequest(
             request = { fetchTaskStates(projectId) },
@@ -29,7 +29,7 @@ class TaskStateEditionView(
         )
     }
 
-    private fun changeTaskState(taskId: UUID) {
+    private suspend fun changeTaskState(taskId: UUID) {
         val newStateIndex = getUserChoice() - 1
 
         makeRequest(
