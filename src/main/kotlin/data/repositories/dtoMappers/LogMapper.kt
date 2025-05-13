@@ -16,7 +16,7 @@ fun LogDto.toLog(): Log {
             newValue = newValue
         )
 
-        else -> throw RetrievingDataFailureException("Unknown action type: ${action}")
+        else -> throw RetrievingDataFailureException("Unknown action type: $action")
     }
 
     return Log(

@@ -2,40 +2,58 @@ package ui.logsView
 
 import logic.entities.*
 import logic.useCases.GetLogsByEntityIdUseCase
+import logic.useCases.GetUsersUseCase
+import ui.RequestHandler
+import ui.cliPrintersAndReaders.CLIPrinter
 import logic.useCases.GetUserByIdUseCase
 import ui.ViewExceptionHandler
 import ui.cliPrintersAndReaders.CLIReader
-import ui.cliPrintersAndReaders.cliTable.CLITablePrinter
+import ui.cliPrintersAndReaders.CLITablePrinter
 import java.time.LocalDateTime
 import java.time.format.DateTimeFormatter
 import java.util.*
 
 class LogsView(
     private val cliReader: CLIReader,
+    private val cliPrinter: CLIPrinter,
     private val getLogsByEntityIdUseCase: GetLogsByEntityIdUseCase,
     private val cliTablePrinter: CLITablePrinter,
     private val viewExceptionHandler: ViewExceptionHandler,
     private val getUserByIdUseCase: GetUserByIdUseCase,
 ) {
     fun printLogsByEntityId(entityId: UUID) {
-        printLogs(entityId)
-        cliReader.getUserInput("\npress enter to go back")
+        var logs: List<Log> = emptyList()
 
+        makeRequest(
+            request = { logs = getLogsByEntityIdUseCase.getLogsByEntityId(entityId) },
+            onSuccess = { printLogs(logs) },
+            onLoadingMessage = "Fetching logs..."
+        )
+
+        cliReader.getUserInput("\npress enter to go back")
     }
 
-    private fun printLogs(entityId: UUID) {
-        viewExceptionHandler.tryCall {
-            val logs = getLogsByEntityIdUseCase.getLogsByEntityId(entityId)
-            val headers = listOf("Log ID", "Action Message")
-            val data = logs.map { log ->
-                listOf(
-                    log.id.toString(),
-                    buildLogMessage(log)
-                )
-            }
-            val columnWidths = listOf(36, null)
-            cliTablePrinter(headers, data, columnWidths)
+    private fun printLogs(logs: List<Log>) {
+        users = emptyList()
+        makeRequest(
+            request = { users = getUsersUseCase.getUsers() },
+            onLoadingMessage = "Fetching users for the logs..."
+        )
+
+        if (logs.isEmpty()) {
+            cliPrinter.cliPrintLn("No logs found for this entity.")
+            return
         }
+
+        val headers = listOf("Log ID", "Action Message")
+        val data = logs.map { log ->
+            listOf(
+                log.id.toString(),
+                buildLogMessage(log)
+            )
+        }
+        val columnWidths = listOf(36, null)
+        cliTablePrinter(headers, data, columnWidths)
     }
 
     private fun buildLogMessage(log: Log): String {

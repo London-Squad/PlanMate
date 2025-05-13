@@ -6,7 +6,7 @@ import logic.exceptions.InvalidUserNameException
 class CredentialValidator {
     fun validateUserName(username: String) {
         if (!username.isValidUserName()) throw InvalidUserNameException(
-            "invalid username length, should be from 4 to 11"
+            "invalid username, length should be from 4 to 11"
         )
     }
 

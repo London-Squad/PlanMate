@@ -6,7 +6,7 @@ import logic.entities.TaskState
 import logic.repositories.ProjectsRepository
 import logic.repositories.TaskRepository
 import logic.repositories.TaskStatesRepository
-import java.util.UUID
+import java.util.*
 
 class GetProjectDetailsUseCase(
     private val projectsRepository: ProjectsRepository,
@@ -19,7 +19,7 @@ class GetProjectDetailsUseCase(
         val taskStates: List<TaskState>
     )
 
-    operator fun invoke(projectId: UUID, includeDeleted: Boolean = false): ProjectDetails {
+    suspend operator fun invoke(projectId: UUID, includeDeleted: Boolean = false): ProjectDetails {
         val project = projectsRepository.getProjectById(projectId, includeDeleted)
         val taskStates = taskStatesRepository.getTaskStatesByProjectId(projectId, includeDeleted)
         val tasks = taskRepository.getTasksByProjectID(projectId, includeDeleted)

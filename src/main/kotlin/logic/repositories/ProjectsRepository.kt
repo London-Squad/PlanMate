@@ -1,19 +1,13 @@
 package logic.repositories
 
 import logic.entities.Project
-import java.util.UUID
+import java.util.*
 
 interface ProjectsRepository {
-
-    fun getAllProjects(includeDeleted: Boolean = false): List<Project>
-
-    fun getProjectById(projectId: UUID, includeDeleted: Boolean = false): Project
-
-    fun addNewProject(project: Project)
-
-    fun editProjectTitle(projectId: UUID, newTitle: String)
-
-    fun editProjectDescription(projectId: UUID, newDescription: String)
-
-    fun deleteProject(projectId: UUID)
+    suspend fun getAllProjects(includeDeleted: Boolean = false): List<Project>
+    suspend fun getProjectById(projectId: UUID, includeDeleted: Boolean = false): Project
+    suspend fun addNewProject(project: Project)
+    suspend fun editProjectTitle(projectId: UUID, newTitle: String)
+    suspend fun editProjectDescription(projectId: UUID, newDescription: String)
+    suspend fun deleteProject(projectId: UUID)
 }
