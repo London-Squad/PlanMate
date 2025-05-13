@@ -49,7 +49,6 @@ class TaskStatesView(
             1 -> addState()
             2 -> editState()
             3 -> deleteState()
-            0 -> return
         }
         start(projectId)
     }

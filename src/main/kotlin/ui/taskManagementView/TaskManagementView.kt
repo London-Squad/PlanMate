@@ -75,7 +75,6 @@ class TaskManagementView(
             }
 
             5 -> logsView.printLogsByEntityId(task.id)
-            0 -> return
         }
         start(task.id, projectId)
     }

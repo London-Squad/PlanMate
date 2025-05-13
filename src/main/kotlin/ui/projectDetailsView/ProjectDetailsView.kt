@@ -85,7 +85,7 @@ class ProjectDetailsView(
             return
         }
         cliPrinter.cliPrintLn("Select a task by number:")
-        val input = cliReader.getValidInputNumberInRange(projectDetails.tasks.size)
+        val input = cliReader.getValidInputNumberInRange(min = 1, max = projectDetails.tasks.size)
         taskManagementView.start(projectDetails.tasks[input - 1].id, projectDetails.project.id)
     }
 

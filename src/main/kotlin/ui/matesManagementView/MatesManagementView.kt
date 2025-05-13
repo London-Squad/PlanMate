@@ -32,7 +32,6 @@ class MatesManagementView(
 
         when (userInput) {
             1 -> mateCreationView.createMate()
-            0 -> return
         }
         start()
     }
