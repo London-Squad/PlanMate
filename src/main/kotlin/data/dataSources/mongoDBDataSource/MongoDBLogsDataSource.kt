@@ -12,7 +12,7 @@ import logic.repositories.LogsRepository
 import logic.repositories.ProjectsRepository
 import logic.repositories.TaskRepository
 import logic.repositories.TaskStatesRepository
-import java.util.UUID
+import java.util.*
 
 class MongoDBLogsDataSource(
     private val logQueryHandler: MongoDBQueryHandler,
@@ -45,8 +45,10 @@ class MongoDBLogsDataSource(
         }
 
         if (project != null) {
-            val tasksIds = taskRepository.getTasksByProjectID(project.id, includeDeleted = true).map { it.id.toString() }
-            val taskStatesIds = taskStatesRepository.getTaskStatesByProjectId(project.id, includeDeleted = true).map { it.id.toString() }
+            val tasksIds =
+                taskRepository.getTasksByProjectID(project.id, includeDeleted = true).map { it.id.toString() }
+            val taskStatesIds = taskStatesRepository.getTaskStatesByProjectId(project.id, includeDeleted = true)
+                .map { it.id.toString() }
 
             relatedEntityIds.addAll(tasksIds)
             relatedEntityIds.addAll(taskStatesIds)
