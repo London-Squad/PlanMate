@@ -24,7 +24,7 @@ class CsvProjectsDataSource(
     override suspend fun getProjectById(projectId: UUID, includeDeleted: Boolean): Project {
         val projectDto = projectsCsvFileHandler.readRecords()
             .map { csvParser.recordToProjectDto(it) }
-            .find { it.id == projectId }
+            .find { it.id == projectId.toString() }
             ?: throw ProjectNotFoundException("Project with ID $projectId not found")
 
         if (!includeDeleted && projectDto.isDeleted) {
@@ -46,7 +46,7 @@ class CsvProjectsDataSource(
 
         projectsCsvFileHandler.readRecords().map {
             val projectDto = csvParser.recordToProjectDto(it)
-            if (projectDto.id == projectId && !projectDto.isDeleted) {
+            if (projectDto.id == projectId.toString() && !projectDto.isDeleted) {
                 projectFound = true
                 csvParser.projectDtoToRecord(projectDto.copy(title = newTitle))
             } else {
@@ -63,7 +63,7 @@ class CsvProjectsDataSource(
 
         projectsCsvFileHandler.readRecords().map {
             val projectDto = csvParser.recordToProjectDto(it)
-            if (projectDto.id == projectId && !projectDto.isDeleted) {
+            if (projectDto.id == projectId.toString() && !projectDto.isDeleted) {
                 projectFound = true
                 csvParser.projectDtoToRecord(projectDto.copy(description = newDescription))
             } else {
@@ -80,7 +80,7 @@ class CsvProjectsDataSource(
 
         projectsCsvFileHandler.readRecords().map {
             val projectDto = csvParser.recordToProjectDto(it)
-            if (projectDto.id == projectId && !projectDto.isDeleted) {
+            if (projectDto.id == projectId.toString() && !projectDto.isDeleted) {
                 projectFound = true
                 csvParser.projectDtoToRecord(projectDto.copy(isDeleted = true))
             } else {

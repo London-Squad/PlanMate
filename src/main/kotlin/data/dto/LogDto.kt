@@ -1,14 +1,11 @@
 package data.dto
 
-import java.time.LocalDateTime
-import java.util.UUID
-
 data class LogDto(
-    val id: UUID,
-    val userId: UUID,
-    val time: LocalDateTime,
+    val id: String,
+    val userId: String,
+    val time: String,
     val action: String,
-    val planEntityId: UUID,
+    val planEntityId: String,
     val planEntityProperty: String,
     val oldValue: String,
     val newValue: String

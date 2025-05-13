@@ -1,12 +1,10 @@
 package data.dto
 
-import java.util.UUID
-
 data class TaskDto(
-    val id: UUID,
+    val id: String,
     val title: String,
     val description: String,
-    val stateId: UUID,
-    val projectId: UUID,
+    val stateId: String,
+    val projectId: String,
     val isDeleted: Boolean
 )
