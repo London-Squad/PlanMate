@@ -30,8 +30,10 @@ class MongoDBLogsDataSource(
     }
 
     override suspend fun addLog(log: Log) {
-        val doc = mongoParser.logDtoToDocument(log.toLogDto())
-        logQueryHandler.insertToCollection(doc)
+        log
+            .toLogDto()
+            .let(mongoParser::logDtoToDocument)
+            .also { logQueryHandler.insertToCollection(it) }
     }
 
     override suspend fun getLogsByEntityId(entityId: UUID): List<Log> {

@@ -33,8 +33,10 @@ class MongoDBTasksDataSource(
     }
 
     override suspend fun addNewTask(task: Task, projectId: UUID) {
-        val doc = mongoParser.taskDtoToDocument(task.toTaskDto(projectId))
-        taskQueryHandler.insertToCollection(doc)
+        task
+            .toTaskDto(projectId)
+            .let(mongoParser::taskDtoToDocument)
+            .also { taskQueryHandler.insertToCollection(it) }
     }
 
     override suspend fun editTaskTitle(taskId: UUID, newTitle: String) {

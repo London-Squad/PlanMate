@@ -32,8 +32,10 @@ class MongoDBProjectsDataSource(
     }
 
     override suspend fun addNewProject(project: Project) {
-        val doc = mongoParser.projectDtoToDocument(project.toProjectDto())
-        projectQueryHandler.insertToCollection(doc)
+        project
+            .toProjectDto()
+            .let(mongoParser::projectDtoToDocument)
+            .also { projectQueryHandler.insertToCollection(it) }
     }
 
     override suspend fun editProjectTitle(projectId: UUID, newTitle: String) {

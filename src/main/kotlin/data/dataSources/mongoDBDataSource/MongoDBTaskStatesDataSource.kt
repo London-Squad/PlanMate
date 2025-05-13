@@ -7,7 +7,7 @@ import data.repositories.dtoMappers.toTaskState
 import data.repositories.dtoMappers.toTaskStateDto
 import logic.entities.TaskState
 import logic.repositories.TaskStatesRepository
-import java.util.UUID
+import java.util.*
 
 
 class MongoDBTaskStatesDataSource(
@@ -36,8 +36,10 @@ class MongoDBTaskStatesDataSource(
     }
 
     override suspend fun addNewTaskState(taskState: TaskState, projectId: UUID) {
-        val doc = mongoParser.taskStateDtoToDocument(taskState.toTaskStateDto(projectId))
-        taskStatesQueryHandler.insertToCollection(doc)
+        taskState
+            .toTaskStateDto(projectId)
+            .let(mongoParser::taskStateDtoToDocument)
+            .also { taskStatesQueryHandler.insertToCollection(it) }
     }
 
     override suspend fun editTaskStateTitle(stateId: UUID, newTitle: String) {
