@@ -16,39 +16,23 @@ val mongoStorageModule = module {
     single { DatabaseConnection }
     single<MongoDatabase> { DatabaseConnection.database }
 
-    single(named("projectsCollection")) {
-        DatabaseConnection.getProjectCollection()
-    }
-    single(named("logsCollection")) {
-        DatabaseConnection.getLogsCollection()
-    }
-    single(named("tasksCollection")) {
-        DatabaseConnection.getTasksCollection()
-    }
-    single(named("taskStatesCollection")) {
-        DatabaseConnection.getTaskStatesCollection()
-    }
-    single(named("usersCollection")) {
-        DatabaseConnection.getUsersCollection()
-    }
-
-    single { MongoDBParser() }
     single(named("tasksQueryHandler")) {
-        MongoDBQueryHandler(get(named("tasksCollection")))
+        MongoDBQueryHandler(DatabaseConnection.getTasksCollection())
     }
     single(named("projectsQueryHandler")) {
-        MongoDBQueryHandler(get(named("projectsCollection")))
+        MongoDBQueryHandler(DatabaseConnection.getProjectCollection())
     }
     single(named("taskStatesQueryHandler")) {
-        MongoDBQueryHandler(get(named("taskStatesCollection")))
+        MongoDBQueryHandler(DatabaseConnection.getTaskStatesCollection())
     }
     single(named("usersQueryHandler")) {
-        MongoDBQueryHandler(get(named("usersCollection")))
+        MongoDBQueryHandler(DatabaseConnection.getUsersCollection())
     }
-
     single(named("logsQueryHandler")) {
-        MongoDBQueryHandler(get(named("logsCollection")))
+        MongoDBQueryHandler(DatabaseConnection.getLogsCollection())
     }
+    single { MongoDBParser() }
+
     single<TaskRepository> { MongoDBTasksDataSource(get(named("tasksQueryHandler")), get()) }
     single<TaskStatesRepository> { MongoDBTaskStatesDataSource(get(named("taskStatesQueryHandler")), get()) }
     single<ProjectsRepository> { MongoDBProjectsDataSource(get(named("projectsQueryHandler")), get()) }
