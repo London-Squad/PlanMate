@@ -27,7 +27,7 @@ class CsvUsersDataSource(
         usersCsvFileHandler.readRecords()
             .map {
                 val userDto = csvParser.recordToUserDto(it)
-                if (userDto.id == userId) {
+                if (userDto.id == userId.toString()) {
                     userFound = true
                     csvParser.userDtoToRecord(userDto.copy(isDeleted = true))
                 } else it
@@ -46,7 +46,7 @@ class CsvUsersDataSource(
 
         usersCsvFileHandler.appendRecord(
             UserDto(
-                id = UUID.randomUUID(),
+                id = UUID.randomUUID().toString(),
                 userName = userName,
                 hashedPassword = hashedPassword,
                 type = User.Type.MATE.name,
@@ -57,7 +57,7 @@ class CsvUsersDataSource(
 
     companion object {
         private val ADMIN = UserDto(
-            id = UUID.fromString("5750f82c-c1b6-454d-b160-5b14857bc9dc"),
+            id = "5750f82c-c1b6-454d-b160-5b14857bc9dc",
             userName = "admin",
             hashedPassword = "2e6e5a2b38ba905790605c9b101497bc",
             type = "ADMIN",

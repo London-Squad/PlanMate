@@ -39,7 +39,7 @@ class MongoDBUsersDataSource(
 
         val doc = mongoParser.userDtoToDocument(
             UserDto(
-                UUID.randomUUID(), userName, hashedPassword, "MATE", isDeleted = false
+                UUID.randomUUID().toString(), userName, hashedPassword, "MATE", isDeleted = false
             )
         )
         usersQueryHandler.insertToCollection(doc)
@@ -47,7 +47,7 @@ class MongoDBUsersDataSource(
 
     companion object {
         private val ADMIN = UserDto(
-            id = UUID.fromString("5750f82c-c1b6-454d-b160-5b14857bc9dc"),
+            id = "5750f82c-c1b6-454d-b160-5b14857bc9dc",
             userName = "admin",
             hashedPassword = "2e6e5a2b38ba905790605c9b101497bc",
             type = "ADMIN",

@@ -19,7 +19,7 @@ class CsvTasksDataSource(
 
     override suspend fun getTasksByProjectID(projectId: UUID, includeDeleted: Boolean): List<Task> {
         return getAllTasks(includeDeleted)
-            .filter { it.projectId == projectId }
+            .filter { it.projectId == projectId.toString() }
             .map(TaskDto::toTask)
     }
 
@@ -33,7 +33,7 @@ class CsvTasksDataSource(
         return tasksCsvFileHandler.readRecords()
             .map(csvParser::recordToTaskDto)
             .filter { if (includeDeleted) true else !it.isDeleted }
-            .firstOrNull { it.id == taskId }
+            .firstOrNull { it.id == taskId.toString() }
             ?.toTask()
             ?: throw TaskNotFoundException()
     }
@@ -49,7 +49,7 @@ class CsvTasksDataSource(
         tasksCsvFileHandler.readRecords()
             .map {
                 val taskData = csvParser.recordToTaskDto(it)
-                if (taskData.id == taskId) {
+                if (taskData.id == taskId.toString()) {
                     taskFound = true
                     csvParser.taskDtoToRecord(taskData.copy(title = newTitle))
                 } else it
@@ -64,7 +64,7 @@ class CsvTasksDataSource(
         tasksCsvFileHandler.readRecords()
             .map {
                 val taskData = csvParser.recordToTaskDto(it)
-                if (taskData.id == taskId) {
+                if (taskData.id == taskId.toString()) {
                     taskFound = true
                     csvParser.taskDtoToRecord(taskData.copy(description = newDescription))
                 } else it
@@ -79,9 +79,9 @@ class CsvTasksDataSource(
         tasksCsvFileHandler.readRecords()
             .map {
                 val taskData = csvParser.recordToTaskDto(it)
-                if (taskData.id == taskId) {
+                if (taskData.id == taskId.toString()) {
                     taskFound = true
-                    csvParser.taskDtoToRecord(taskData.copy(stateId = newStateId))
+                    csvParser.taskDtoToRecord(taskData.copy(stateId = newStateId.toString()))
                 } else it
             }.also {
                 if (!taskFound) throw ProjectNotFoundException("Task with ID $taskId not found")
@@ -94,7 +94,7 @@ class CsvTasksDataSource(
         tasksCsvFileHandler.readRecords()
             .map {
                 val taskData = csvParser.recordToTaskDto(it)
-                if (taskData.id == taskId) {
+                if (taskData.id == taskId.toString()) {
                     taskFound = true
                     csvParser.taskDtoToRecord(taskData.copy(isDeleted = true))
                 } else it
