@@ -42,9 +42,12 @@ val mongoStorageModule = module {
     single(named("taskStatesQueryHandler")) {
         MongoDBQueryHandler(get(named("taskStatesCollection")))
     }
+    single(named("usersQueryHandler")) {
+        MongoDBQueryHandler(get(named("usersCollection")))
+    }
     single<TaskRepository> { MongoDBTasksDataSource(get(named("tasksQueryHandler")), get()) }
     single<TaskStatesRepository> { MongoDBTaskStatesDataSource(get(named("taskStatesQueryHandler")), get()) }
     single<ProjectsRepository> { MongoDBProjectsDataSource(get(named("projectsQueryHandler")), get()) }
     single<LogsRepository> { MongoDBLogsDataSource(get(named("logsCollection")), get(), get(), get(), get()) }
-    single<UsersDataSource> { MongoDBUsersDataSource(get(named("usersCollection")), get()) }
+    single<UsersDataSource> { MongoDBUsersDataSource(get(named("usersQueryHandler")), get()) }
 }
