@@ -4,7 +4,7 @@ import com.mongodb.MongoException
 import com.mongodb.client.model.Filters
 import com.mongodb.client.model.Updates
 import com.mongodb.kotlin.client.coroutine.MongoCollection
-import data.dataSources.mongoDBDataSource.mongoDBParse.MongoDBParse
+import data.dataSources.mongoDBDataSource.mongoDBParser.MongoDBParser
 import data.repositories.dtoMappers.toTaskState
 import data.repositories.dtoMappers.toTaskStateDto
 import kotlinx.coroutines.flow.firstOrNull
@@ -22,15 +22,15 @@ import java.util.UUID
 
 class MongoDBTaskStatesDataSource(
     private val taskStatesCollection: MongoCollection<Document>,
-    private val mongoParser: MongoDBParse,
+    private val mongoParser: MongoDBParser,
 ) : TaskStatesRepository {
 
     override suspend fun getTaskStatesByProjectId(projectId: UUID, includeDeleted: Boolean): List<TaskState> {
         return try {
             val filter = Filters.and(
-                Filters.eq(MongoDBParse.PROJECT_ID_FIELD, projectId.toString()),
-                if (includeDeleted) Filters.exists(MongoDBParse.IS_DELETED_FIELD)
-                else Filters.eq(MongoDBParse.IS_DELETED_FIELD, false)
+                Filters.eq(MongoDBParser.PROJECT_ID_FIELD, projectId.toString()),
+                if (includeDeleted) Filters.exists(MongoDBParser.IS_DELETED_FIELD)
+                else Filters.eq(MongoDBParser.IS_DELETED_FIELD, false)
             )
             taskStatesCollection.find(filter).map { doc ->
                 mongoParser.documentToTaskStateDto(doc).toTaskState()
@@ -43,9 +43,9 @@ class MongoDBTaskStatesDataSource(
     override suspend fun getTaskStateById(stateId: UUID, includeDeleted: Boolean): TaskState {
         return try {
             val filter = Filters.and(
-                Filters.eq(MongoDBParse.ID_FIELD, stateId.toString()),
-                if (includeDeleted) Filters.exists(MongoDBParse.IS_DELETED_FIELD)
-                else Filters.eq(MongoDBParse.IS_DELETED_FIELD, false)
+                Filters.eq(MongoDBParser.ID_FIELD, stateId.toString()),
+                if (includeDeleted) Filters.exists(MongoDBParser.IS_DELETED_FIELD)
+                else Filters.eq(MongoDBParser.IS_DELETED_FIELD, false)
             )
             taskStatesCollection.find(filter).firstOrNull()
                 ?.let { mongoParser.documentToTaskStateDto(it).toTaskState() }
@@ -67,12 +67,12 @@ class MongoDBTaskStatesDataSource(
     override suspend fun editTaskStateTitle(stateId: UUID, newTitle: String) {
         try {
             val filter = Filters.and(
-                Filters.eq(MongoDBParse.ID_FIELD, stateId.toString()),
-                Filters.eq(MongoDBParse.IS_DELETED_FIELD, false)
+                Filters.eq(MongoDBParser.ID_FIELD, stateId.toString()),
+                Filters.eq(MongoDBParser.IS_DELETED_FIELD, false)
             )
 
             taskStatesCollection.updateOne(
-                filter, Updates.set(MongoDBParse.TITLE_FIELD, newTitle)
+                filter, Updates.set(MongoDBParser.TITLE_FIELD, newTitle)
             ).apply {
                 if (matchedCount == 0L) {
                     throw TaskStateNotFoundException("Task state with ID $stateId not found")
@@ -80,7 +80,7 @@ class MongoDBTaskStatesDataSource(
             }
 
             taskStatesCollection.updateOne(
-                Filters.eq(MongoDBParse.ID_FIELD, stateId.toString()), Updates.set(MongoDBParse.TITLE_FIELD, newTitle)
+                Filters.eq(MongoDBParser.ID_FIELD, stateId.toString()), Updates.set(MongoDBParser.TITLE_FIELD, newTitle)
             )
         } catch (e: MongoException) {
             throw StoringDataFailureException("Failed to edit task state title: ${e.message}")
@@ -90,12 +90,12 @@ class MongoDBTaskStatesDataSource(
     override suspend fun editTaskStateDescription(stateId: UUID, newDescription: String) {
         try {
             val filter = Filters.and(
-                Filters.eq(MongoDBParse.ID_FIELD, stateId.toString()),
-                Filters.eq(MongoDBParse.IS_DELETED_FIELD, false)
+                Filters.eq(MongoDBParser.ID_FIELD, stateId.toString()),
+                Filters.eq(MongoDBParser.IS_DELETED_FIELD, false)
             )
 
             taskStatesCollection.updateOne(
-                filter, Updates.set(MongoDBParse.DESCRIPTION_FIELD, newDescription)
+                filter, Updates.set(MongoDBParser.DESCRIPTION_FIELD, newDescription)
             ).apply {
                 if (matchedCount == 0L) {
                     throw TaskStateNotFoundException("Task state with ID $stateId not found")
@@ -103,8 +103,8 @@ class MongoDBTaskStatesDataSource(
             }
 
             taskStatesCollection.updateOne(
-                Filters.eq(MongoDBParse.ID_FIELD, stateId.toString()),
-                Updates.set(MongoDBParse.TITLE_FIELD, newDescription)
+                Filters.eq(MongoDBParser.ID_FIELD, stateId.toString()),
+                Updates.set(MongoDBParser.TITLE_FIELD, newDescription)
             )
         } catch (e: MongoException) {
             throw StoringDataFailureException("Failed to edit task state description: ${e.message}")
@@ -114,12 +114,12 @@ class MongoDBTaskStatesDataSource(
     override suspend fun deleteTaskState(stateId: UUID) {
         try {
             val filters = Filters.and(
-                Filters.eq(MongoDBParse.ID_FIELD, stateId.toString()),
-                Filters.eq(MongoDBParse.IS_DELETED_FIELD, false)
+                Filters.eq(MongoDBParser.ID_FIELD, stateId.toString()),
+                Filters.eq(MongoDBParser.IS_DELETED_FIELD, false)
             )
 
             taskStatesCollection.updateOne(
-                filters, Updates.set(MongoDBParse.IS_DELETED_FIELD, true)
+                filters, Updates.set(MongoDBParser.IS_DELETED_FIELD, true)
             ).apply {
                 if (matchedCount.toInt() == 0) {
                     throw TaskNotFoundException("Task state with ID $stateId not found")

@@ -1,4 +1,4 @@
-package data.dataSources.mongoDBDataSource.mongoDBParse
+package data.dataSources.mongoDBDataSource.mongoDBParser
 
 import com.mongodb.MongoException
 import com.mongodb.client.model.Updates
@@ -52,7 +52,7 @@ class MongoDBQueryHandler(
 
     suspend fun softDeleteFromCollection(filters: Bson){
         try {
-            val result = collection.updateOne(filters, Updates.set(MongoDBParse.IS_DELETED_FIELD, true)
+            val result = collection.updateOne(filters, Updates.set(MongoDBParser.IS_DELETED_FIELD, true)
             )
             if (result.matchedCount.toInt() == 0) {
                 throw NotFoundException("Entity was not found")

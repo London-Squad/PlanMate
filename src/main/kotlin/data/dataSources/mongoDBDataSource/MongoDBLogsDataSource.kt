@@ -2,7 +2,7 @@ package data.dataSources.mongoDBDataSource
 
 import com.mongodb.MongoException
 import com.mongodb.kotlin.client.coroutine.MongoCollection
-import data.dataSources.mongoDBDataSource.mongoDBParse.MongoDBParse
+import data.dataSources.mongoDBDataSource.mongoDBParser.MongoDBParser
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.toList
 import logic.exceptions.RetrievingDataFailureException
@@ -24,7 +24,7 @@ class MongoDBLogsDataSource(
     private val projectsRepository: ProjectsRepository,
     private val taskRepository: TaskRepository,
     private val taskStatesRepository: TaskStatesRepository,
-    private val mongoParser: MongoDBParse
+    private val mongoParser: MongoDBParser
 ) : LogsRepository {
 
     override suspend fun getAllLogs(): List<Log> {
@@ -65,7 +65,7 @@ class MongoDBLogsDataSource(
             relatedEntityIds.addAll(taskStates.map { it.id })
         }
         val filter = Document("\$or", relatedEntityIds.map { id ->
-            Document(MongoDBParse.PLAN_ENTITY_ID_FIELD, id.toString())
+            Document(MongoDBParser.PLAN_ENTITY_ID_FIELD, id.toString())
         })
 
         return logsCollection.find(filter)

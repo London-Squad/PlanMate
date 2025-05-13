@@ -2,13 +2,13 @@ package di
 
 import com.mongodb.kotlin.client.coroutine.MongoDatabase
 import data.dataSources.mongoDBDataSource.*
-import data.dataSources.mongoDBDataSource.mongoDBParse.MongoDBParse
+import data.dataSources.mongoDBDataSource.mongoDBParser.MongoDBParser
 import data.repositories.dataSources.*
 import logic.repositories.LogsRepository
 import logic.repositories.ProjectsRepository
 import logic.repositories.TaskRepository
 import logic.repositories.TaskStatesRepository
-import data.dataSources.mongoDBDataSource.mongoDBParse.MongoDBQueryHandler
+import data.dataSources.mongoDBDataSource.mongoDBParser.MongoDBQueryHandler
 import org.koin.core.qualifier.named
 import org.koin.dsl.module
 
@@ -32,13 +32,17 @@ val mongoStorageModule = module {
         DatabaseConnection.getUsersCollection()
     }
 
-    single { MongoDBParse() }
+    single { MongoDBParser() }
     single(named("tasksQueryHandler")) {
         MongoDBQueryHandler(get(named("tasksCollection")))
     }
+
+    single(named("projectsQueryHandler")) {
+        MongoDBQueryHandler(get(named("projectsCollection")))
+    }
     single<TaskRepository> { MongoDBTasksDataSource(get(named("tasksQueryHandler")), get()) }
     single<TaskStatesRepository> { MongoDBTaskStatesDataSource(get(named("taskStatesCollection")), get()) }
-    single<ProjectsRepository> { MongoDBProjectsDataSource(get(named("projectsCollection")), get()) }
+    single<ProjectsRepository> { MongoDBProjectsDataSource(get(named("projectsQueryHandler")), get()) }
     single<LogsRepository> { MongoDBLogsDataSource(get(named("logsCollection")), get(), get(), get(), get()) }
     single<UsersDataSource> { MongoDBUsersDataSource(get(named("usersCollection")), get()) }
 }
