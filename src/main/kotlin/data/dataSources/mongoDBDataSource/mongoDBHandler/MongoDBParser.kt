@@ -1,11 +1,11 @@
-package data.dataSources.mongoDBDataSource.mongoDBParse
+package data.dataSources.mongoDBDataSource.mongoDBHandler
 
 import data.dto.*
 import logic.exceptions.RetrievingDataFailureException
 import org.bson.Document
 import java.util.*
 
-class MongoDBParse {
+class MongoDBParser {
 
     fun taskDtoToDocument(taskDto: TaskDto): Document {
         return Document(ID_FIELD, taskDto.id)

@@ -1,76 +1,65 @@
 package data.dataSources.mongoDBDataSource
 
-import com.mongodb.MongoException
-import com.mongodb.kotlin.client.coroutine.MongoCollection
-import data.dataSources.mongoDBDataSource.mongoDBParse.MongoDBParse
-import kotlinx.coroutines.flow.map
-import kotlinx.coroutines.flow.toList
-import logic.exceptions.RetrievingDataFailureException
+import com.mongodb.client.model.Filters
+import data.dataSources.mongoDBDataSource.mongoDBHandler.MongoDBParser
+import data.dataSources.mongoDBDataSource.mongoDBHandler.MongoDBQueryHandler
 import data.repositories.dtoMappers.toLog
 import data.repositories.dtoMappers.toLogDto
 import logic.entities.Log
 import logic.entities.Project
-import logic.exceptions.ProjectNotFoundException
-import logic.exceptions.StoringDataFailureException
+import logic.exceptions.NotFoundException
 import logic.repositories.LogsRepository
 import logic.repositories.ProjectsRepository
 import logic.repositories.TaskRepository
 import logic.repositories.TaskStatesRepository
-import org.bson.Document
-import java.util.UUID
+import java.util.*
 
 class MongoDBLogsDataSource(
-    private val logsCollection: MongoCollection<Document>,
+    private val logQueryHandler: MongoDBQueryHandler,
     private val projectsRepository: ProjectsRepository,
     private val taskRepository: TaskRepository,
     private val taskStatesRepository: TaskStatesRepository,
-    private val mongoParser: MongoDBParse
+    private val mongoParser: MongoDBParser
 ) : LogsRepository {
 
     override suspend fun getAllLogs(): List<Log> {
-        return try {
-            logsCollection.find().map { doc ->
-                mongoParser.documentToLogDto(doc).toLog()
-            }.toList()
-        } catch (e: MongoException) {
-            throw RetrievingDataFailureException("Failed to retrieve logs: ${e.message}")
+        val filters = Filters.empty()
+        return logQueryHandler.fetchManyFromCollection(filters).map { doc ->
+            mongoParser.documentToLogDto(doc).toLog()
         }
     }
 
     override suspend fun addLog(log: Log) {
-        try {
-            val logDto = log.toLogDto()
-            val doc = mongoParser.logDtoToDocument(logDto)
-            logsCollection.insertOne(doc)
-        } catch (e: MongoException) {
-            throw StoringDataFailureException("Failed to add log: ${e.message}")
-        }
+        log
+            .toLogDto()
+            .let(mongoParser::logDtoToDocument)
+            .also { logQueryHandler.insertToCollection(it) }
     }
 
     override suspend fun getLogsByEntityId(entityId: UUID): List<Log> {
-        val relatedEntityIds = mutableSetOf<UUID>()
-        relatedEntityIds.add(entityId)
+        val relatedEntityIds = mutableSetOf<String>()
+        relatedEntityIds.add(entityId.toString())
 
         val project: Project? = try {
             projectsRepository.getProjectById(entityId)
-        } catch (e: ProjectNotFoundException) {
+        } catch (e: NotFoundException) {
             null
         }
 
         if (project != null) {
-            val tasks = taskRepository.getTasksByProjectID(project.id, includeDeleted = true)
-            val taskStates = taskStatesRepository.getTaskStatesByProjectId(project.id, includeDeleted = true)
+            val tasksIds =
+                taskRepository.getTasksByProjectID(project.id, includeDeleted = true).map { it.id.toString() }
+            val taskStatesIds = taskStatesRepository.getTaskStatesByProjectId(project.id, includeDeleted = true)
+                .map { it.id.toString() }
 
-            relatedEntityIds.addAll(tasks.map { it.id })
-            relatedEntityIds.addAll(taskStates.map { it.id })
+            relatedEntityIds.addAll(tasksIds)
+            relatedEntityIds.addAll(taskStatesIds)
         }
-        val filter = Document("\$or", relatedEntityIds.map { id ->
-            Document(MongoDBParse.PLAN_ENTITY_ID_FIELD, id.toString())
-        })
 
-        return logsCollection.find(filter)
+        val filter = Filters.`in`(MongoDBParser.PLAN_ENTITY_ID_FIELD, relatedEntityIds)
+
+        return logQueryHandler.fetchManyFromCollection(filter)
             .map { mongoParser.documentToLogDto(it).toLog() }
-            .toList()
             .sortedBy { it.time }
     }
 }

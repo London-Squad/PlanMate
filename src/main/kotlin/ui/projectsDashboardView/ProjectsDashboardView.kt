@@ -78,7 +78,8 @@ class ProjectsDashboardView(
             1 -> selectProject()
             2 -> createProject()
             0 -> {
-                cliPrinter.cliPrintLn("\nExiting Projects Dashboard ..."); return
+                cliPrinter.cliPrintLn("\nExiting Projects Dashboard ...")
+                return
             }
         }
         start(loggedInUserType)
@@ -98,7 +99,7 @@ class ProjectsDashboardView(
             return
         }
         cliPrinter.cliPrintLn("Select a project by number:")
-        val input = cliReader.getValidInputNumberInRange(projects.size)
+        val input = cliReader.getValidInputNumberInRange(min = 1, max = projects.size)
         projectView.start(projects[input - 1].id, loggedInUserType)
     }
 

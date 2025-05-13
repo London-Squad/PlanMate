@@ -65,7 +65,8 @@ class ProjectDetailsView(
             4 -> editProjectView.editProject(projectDetails.project.id)
             5 -> deleteProjectView.deleteProject(projectDetails.project.id)
             0 -> {
-                cliPrinter.cliPrintLn("\nExiting Project..."); return
+                cliPrinter.cliPrintLn("\nExiting Project...")
+                return
             }
         }
         start(projectDetails.project.id, loggedInUserType)
@@ -85,7 +86,7 @@ class ProjectDetailsView(
             return
         }
         cliPrinter.cliPrintLn("Select a task by number:")
-        val input = cliReader.getValidInputNumberInRange(projectDetails.tasks.size)
+        val input = cliReader.getValidInputNumberInRange(min = 1, max = projectDetails.tasks.size)
         taskManagementView.start(projectDetails.tasks[input - 1].id, projectDetails.project.id)
     }
 
