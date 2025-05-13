@@ -45,11 +45,11 @@ class MongoDBLogsDataSource(
         }
 
         if (project != null) {
-            val tasks = taskRepository.getTasksByProjectID(project.id, includeDeleted = true)
-            val taskStates = taskStatesRepository.getTaskStatesByProjectId(project.id, includeDeleted = true)
+            val tasksIds = taskRepository.getTasksByProjectID(project.id, includeDeleted = true).map { it.id.toString() }
+            val taskStatesIds = taskStatesRepository.getTaskStatesByProjectId(project.id, includeDeleted = true).map { it.id.toString() }
 
-            relatedEntityIds.addAll(tasks.map { it.id.toString() })
-            relatedEntityIds.addAll(taskStates.map { it.id.toString() })
+            relatedEntityIds.addAll(tasksIds)
+            relatedEntityIds.addAll(taskStatesIds)
         }
 
         val filter = Filters.`in`(MongoDBParser.PLAN_ENTITY_ID_FIELD, relatedEntityIds)
