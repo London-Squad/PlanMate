@@ -72,14 +72,18 @@ class LogsView(
     private fun actionToString(log:Log): String {
         val entityType = log.entityType
         return when (val action = log.loggedAction) {
-            is EntityCreationLog -> "created $entityType (${entityTitle(action.entityId)})"
+            is EntityCreationLog -> "created $entityType (${entityTitle(action.entityId,"jhyg")})"
             is EntityDeletionLog -> "deleted $entityType (${entityTitle(action.entityId)})"
             is EntityEditionLog -> "edited $entityType (${entityTitle(action.entityId)}) ${action.property} from (${action.oldValue}) to (${action.newValue}) "
         }
     }
 
-    private fun entityTitle(entityId: UUID): String {
-        // todo: implement this function to return the title of the entity based on its ID
+    private fun entityTitle(entityId: UUID,entityType: String): String {
+        var title = null
+        makeRequest(
+            request = { title = getEntityTitleUseCase(entityId,"TASK") },
+            onSuccess = { },
+        )
         return "Entity Title"
     }
 

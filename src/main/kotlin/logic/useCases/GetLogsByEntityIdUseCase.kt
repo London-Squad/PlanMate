@@ -2,7 +2,7 @@ package logic.useCases
 
 import logic.entities.Log
 import logic.repositories.LogsRepository
-import java.util.*
+import java.util.UUID
 
 class GetLogsByEntityIdUseCase(
     private val logsRepository: LogsRepository

@@ -17,6 +17,7 @@ val logicModule = module {
     single { ManageTaskUseCase(get(), get(), get()) }
     single { ManageStateUseCase(get(), get()) }
     single { CreateMateUseCase(get(), get(), get()) }
+    single { GetEntityTitleUseCase(get(), get(), get(), get()) }
     single { CredentialValidator() }
     single { ProjectInputValidator() }
     single { TaskInputValidator() }
