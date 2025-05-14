@@ -1,6 +1,7 @@
 package ui.logsView
 
 import logic.entities.*
+import logic.useCases.GetEntityTitleUseCase
 import logic.useCases.GetLogsByEntityIdUseCase
 import logic.useCases.GetUsersUseCase
 import ui.RequestHandler
@@ -17,6 +18,7 @@ class LogsView(
     private val getLogsByEntityIdUseCase: GetLogsByEntityIdUseCase,
     private val cliTablePrinter: CLITablePrinter,
     private val getUsersUseCase: GetUsersUseCase,
+    private val getEntityTitleUseCase: GetEntityTitleUseCase
 ) : RequestHandler(cliPrinter) {
 
     private lateinit var users: List<User>

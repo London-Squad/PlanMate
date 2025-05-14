@@ -38,6 +38,10 @@ class CsvTasksDataSource(
             ?: throw TaskNotFoundException()
     }
 
+    override suspend fun getTaskTitleById(taskId: UUID): String {
+        return getTaskByID(taskId,true).title
+    }
+
     override suspend fun addNewTask(task: Task, projectId: UUID) {
         tasksCsvFileHandler.appendRecord(
             csvParser.taskDtoToRecord(task.toTaskDto(projectId))

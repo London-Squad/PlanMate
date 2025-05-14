@@ -46,6 +46,10 @@ class MongoDBProjectsDataSource(
         projectQueryHandler.updateCollection(MongoDBParser.TITLE_FIELD, newTitle, filters)
     }
 
+    override suspend fun getProjectTitleById(projectId: UUID): String {
+        return getProjectById(projectId,true).title
+    }
+
     override suspend fun editProjectDescription(projectId: UUID, newDescription: String) {
         val filters = Filters.and(
             Filters.eq(MongoDBParser.ID_FIELD, projectId.toString()),

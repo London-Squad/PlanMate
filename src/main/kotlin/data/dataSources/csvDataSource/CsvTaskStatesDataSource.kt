@@ -28,6 +28,10 @@ class CsvTaskStatesDataSource(
             ?: throw TaskStateNotFoundException()
     }
 
+    override suspend fun getTaskStateTitleById(stateId: UUID): String {
+        return getTaskStateById(stateId,true).title
+    }
+
     override suspend fun addNewTaskState(taskState: TaskState, projectId: UUID) {
         tasksStatesCsvFileHandler.appendRecord(
             csvParser.taskStateDtoToRecord(taskState.toTaskStateDto(projectId))

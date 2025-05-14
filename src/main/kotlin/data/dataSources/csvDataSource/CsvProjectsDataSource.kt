@@ -58,6 +58,10 @@ class CsvProjectsDataSource(
         }
     }
 
+    override suspend fun getProjectTitleById(projectId: UUID):String{
+        return getProjectById(projectId,true).title
+    }
+
     override suspend fun editProjectDescription(projectId: UUID, newDescription: String) {
         var projectFound = false
 

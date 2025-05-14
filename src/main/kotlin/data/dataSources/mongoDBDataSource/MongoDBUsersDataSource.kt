@@ -10,8 +10,7 @@ import logic.exceptions.UserNameAlreadyExistsException
 import java.util.*
 
 class MongoDBUsersDataSource(
-    private val usersQueryHandler: MongoDBQueryHandler,
-    private val mongoParser: MongoDBParser
+    private val usersQueryHandler: MongoDBQueryHandler, private val mongoParser: MongoDBParser
 ) : UsersDataSource {
 
     override suspend fun getMates(includeDeleted: Boolean): List<UserDto> {
@@ -25,8 +24,7 @@ class MongoDBUsersDataSource(
 
     override suspend fun deleteUser(userId: UUID) {
         val filters = Filters.and(
-            Filters.eq(MongoDBParser.ID_FIELD, userId.toString()),
-            Filters.eq(MongoDBParser.IS_DELETED_FIELD, false)
+            Filters.eq(MongoDBParser.ID_FIELD, userId.toString()), Filters.eq(MongoDBParser.IS_DELETED_FIELD, false)
         )
         usersQueryHandler.softDeleteFromCollection(filters)
     }
@@ -45,6 +43,19 @@ class MongoDBUsersDataSource(
         )
         usersQueryHandler.insertToCollection(doc)
     }
+
+    override suspend fun getUserById(userId: UUID): UserDto {
+        val filters = Filters.and(
+            Filters.eq(MongoDBParser.ID_FIELD, userId.toString()), Filters.eq(MongoDBParser.IS_DELETED_FIELD, false)
+        )
+        val document = usersQueryHandler.fetchOneFromCollection(filters)
+        return mongoParser.documentToUserDto(document)
+    }
+
+    override suspend fun getUserNameById(userId: UUID): String {
+        return getUserById(userId).userName
+    }
+
 
     companion object {
         private val ADMIN = UserDto(

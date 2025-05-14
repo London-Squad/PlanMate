@@ -8,6 +8,7 @@ interface ProjectsRepository {
     suspend fun getProjectById(projectId: UUID, includeDeleted: Boolean = false): Project
     suspend fun addNewProject(project: Project)
     suspend fun editProjectTitle(projectId: UUID, newTitle: String)
+    suspend fun getProjectTitleById(projectId: UUID):String
     suspend fun editProjectDescription(projectId: UUID, newDescription: String)
     suspend fun deleteProject(projectId: UUID)
 }

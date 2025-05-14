@@ -32,6 +32,10 @@ class MongoDBTasksDataSource(
         return taskQueryHandler.fetchOneFromCollection(filters).let(mongoParser::documentToTaskDto).toTask()
     }
 
+    override suspend fun getTaskTitleById(taskId: UUID): String {
+        return getTaskByID(taskId,true).title
+    }
+
     override suspend fun addNewTask(task: Task, projectId: UUID) {
         task
             .toTaskDto(projectId)
