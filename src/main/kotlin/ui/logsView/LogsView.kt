@@ -1,8 +1,7 @@
 package ui.logsView
 
 import logic.entities.*
-import logic.useCases.GetEntityTitleUseCase
-import logic.useCases.GetLogsByEntityIdUseCase
+import logic.useCases.GetEntityDetailsUseCase
 import logic.useCases.GetUsersUseCase
 import ui.RequestHandler
 import ui.cliPrintersAndReaders.CLIPrinter
@@ -10,15 +9,14 @@ import ui.cliPrintersAndReaders.CLIReader
 import ui.cliPrintersAndReaders.CLITablePrinter
 import java.time.LocalDateTime
 import java.time.format.DateTimeFormatter
-import java.util.UUID
+import java.util.*
 
 class LogsView(
     private val cliReader: CLIReader,
     private val cliPrinter: CLIPrinter,
-    private val getLogsByEntityIdUseCase: GetLogsByEntityIdUseCase,
+    private val getEntityDetailsUseCase: GetEntityDetailsUseCase,
     private val cliTablePrinter: CLITablePrinter,
     private val getUsersUseCase: GetUsersUseCase,
-    private val getEntityTitleUseCase: GetEntityTitleUseCase
 ) : RequestHandler(cliPrinter) {
 
     private lateinit var users: List<User>
@@ -27,7 +25,7 @@ class LogsView(
         var logs: List<Log> = emptyList()
 
         makeRequest(
-            request = { logs = getLogsByEntityIdUseCase.getLogsByEntityId(entityId) },
+            request = { logs = getEntityDetailsUseCase.getLogsByEntityId(entityId) },
             onSuccess = { printLogs(logs) },
             onLoadingMessage = "Fetching logs..."
         )
@@ -38,8 +36,7 @@ class LogsView(
     private fun printLogs(logs: List<Log>) {
         users = emptyList()
         makeRequest(
-            request = { users = getUsersUseCase.getUsers() },
-            onLoadingMessage = "Fetching users for the logs..."
+            request = { users = getUsersUseCase.getUsers() }, onLoadingMessage = "Fetching users for the logs..."
         )
 
         if (logs.isEmpty()) {
@@ -50,8 +47,7 @@ class LogsView(
         val headers = listOf("Log ID", "Action Message")
         val data = logs.map { log ->
             listOf(
-                log.id.toString(),
-                buildLogMessage(log)
+                log.id.toString(), buildLogMessage(log)
             )
         }
         val columnWidths = listOf(36, null)
@@ -63,28 +59,30 @@ class LogsView(
     }
 
     private fun getUserNameByLog(log: Log): String {
-        return users
-            .firstOrNull { it.id == log.userId }
-            ?.userName
-            ?: "Unknown user"
+        return users.firstOrNull { it.id == log.userId }?.userName ?: "Unknown user"
     }
 
-    private fun actionToString(log:Log): String {
+    private fun actionToString(log: Log): String {
         val entityType = log.entityType
         return when (val action = log.loggedAction) {
-            is EntityCreationLog -> "created $entityType (${entityTitle(action.entityId,"jhyg")})"
-            is EntityDeletionLog -> "deleted $entityType (${entityTitle(action.entityId)})"
-            is EntityEditionLog -> "edited $entityType (${entityTitle(action.entityId)}) ${action.property} from (${action.oldValue}) to (${action.newValue}) "
+            is EntityCreationLog -> "created $entityType (${entityTitle(action.entityId, entityType)})"
+            is EntityDeletionLog -> "deleted $entityType (${entityTitle(action.entityId, entityType)})"
+            is EntityEditionLog -> "edited $entityType (${
+                entityTitle(
+                    action.entityId,
+                    entityType
+                )
+            }) ${action.property} from (${action.oldValue}) to (${action.newValue}) "
         }
     }
 
-    private fun entityTitle(entityId: UUID,entityType: String): String {
-        var title = null
+    private fun entityTitle(entityId: UUID, entityType: Log.EntityType): String {
+        var title: String = "unknown"
         makeRequest(
-            request = { title = getEntityTitleUseCase(entityId,"TASK") },
-            onSuccess = { },
-        )
-        return "Entity Title"
+            request = { title = getEntityDetailsUseCase.getEntityTitleById(entityId, entityType) },
+
+            )
+        return title
     }
 
     private fun formatedTime(time: LocalDateTime): String {

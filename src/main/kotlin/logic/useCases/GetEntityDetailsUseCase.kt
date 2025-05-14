@@ -1,0 +1,26 @@
+package logic.useCases
+
+import logic.entities.Log
+import logic.entities.Log.EntityType
+import logic.repositories.*
+import java.util.*
+
+
+class GetEntityDetailsUseCase(
+    private val logsRepository: LogsRepository,
+    private val taskStateRepository: TaskStatesRepository,
+    private val taskRepository: TaskRepository,
+    private val projectRepository: ProjectsRepository,
+    private val userRepository: UserRepository
+) {
+    suspend fun getLogsByEntityId(entityId: UUID): List<Log> = logsRepository.getLogsByEntityId(entityId)
+
+    suspend fun getEntityTitleById(entityId: UUID, entityType: EntityType): String {
+        return when (entityType) {
+            EntityType.TASK_STATE -> taskStateRepository.getTaskStateTitleById(entityId)
+            EntityType.TASK -> taskRepository.getTaskTitleById(entityId)
+            EntityType.PROJECT -> projectRepository.getProjectTitleById(entityId)
+            EntityType.USER -> userRepository.getUserNameById(entityId)
+        } ?: "Unknown Entity Title"
+    }
+}
