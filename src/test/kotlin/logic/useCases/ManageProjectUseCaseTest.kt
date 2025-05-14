@@ -1,134 +1,101 @@
-//package logic.useCases
-//
-//import com.google.common.truth.Truth.assertThat
-//import io.mockk.*
-//import logic.repositories.ProjectsRepository
-//import ui.taskManagementView.FakeProjectData
-//import kotlin.test.BeforeTest
-//import kotlin.test.Test
-//
-//class ManageProjectUseCaseTest {
-//
-//    private lateinit var projectsRepository: ProjectsRepository
-//    private lateinit var createLogUseCase: CreateLogUseCase
-//    private lateinit var manageProjectUseCase: ManageProjectUseCase
-//
-//
-//    @BeforeTest
-//    fun setUp() {
-//        projectsRepository = mockk(relaxed = true)
-//        createLogUseCase = mockk(relaxed = true)
-//        manageProjectUseCase = ManageProjectUseCase(projectsRepository, createLogUseCase)
-//    }
-//
-//    @Test
-//    fun `getAllProjects should return all projects`() {
-//        // given
-//        val expectedProjects = listOf(FakeProjectData.project)
-//        every { projectsRepository.getAllProjects() } returns expectedProjects
-//
-//        // when
-//        val result = manageProjectUseCase.getAllProjects()
-//
-//        // then
-//        assertThat(result).isEqualTo(expectedProjects)
-//    }
-//
-//    @Test
-//    fun `getProjectById should return the correct project`() {
-//        // given
-//        every { projectsRepository.getProjectById(any()) } returns FakeProjectData.project
-//
-//        // when
-//        val result = manageProjectUseCase.getProjectById(FakeProjectData.project.id)
-//
-//        // then
-//        assertThat(result).isEqualTo(FakeProjectData.project)
-//    }
-//
-//    @Test
-//    fun `editProjectTitle should call projectsRepository editProjectTitle`() {
-//        // given
-//        val newTitle = "New Title"
-//
-//        // when
-//        manageProjectUseCase.editProjectTitle(FakeProjectData.project.id, newTitle)
-//
-//        // then
-//        verify { projectsRepository.editProjectTitle(FakeProjectData.project.id, newTitle) }
-//    }
-//
-//    @Test
-//    fun `editProjectTitle should update title and log the change`() {
-//        // given
-//        val newTitle = "New Title"
-//        every { projectsRepository.getProjectById(any()) } returns FakeProjectData.project
-//        every { projectsRepository.editProjectTitle(any(), any()) } just Runs
-//
-//        // when
-//        manageProjectUseCase.editProjectTitle(FakeProjectData.project.id, newTitle)
-//
-//        // then
-//        verify {
-//            createLogUseCase.logEntityTitleEdition(
-//                FakeProjectData.project,
-//                FakeProjectData.project.title,
-//                newTitle
-//            )
-//        }
-//    }
-//
-//    @Test
-//    fun `editProjectDescription should call projectsRepository editProjectDescription`() {
-//        // given
-//        val newDesc = "New Desc"
-//
-//        // when
-//        manageProjectUseCase.editProjectDescription(FakeProjectData.project.id, newDesc)
-//
-//        // then
-//        verify { projectsRepository.editProjectDescription(FakeProjectData.project.id, newDesc) }
-//    }
-//
-//    @Test
-//    fun `editProjectDescription should update description and log the change`() {
-//        // given
-//        val newDesc = "New Desc"
-//        every { projectsRepository.getProjectById(FakeProjectData.project.id) } returns FakeProjectData.project
-//        every { projectsRepository.editProjectDescription(FakeProjectData.project.id, newDesc) } just Runs
-//
-//        // when
-//        manageProjectUseCase.editProjectDescription(FakeProjectData.project.id, newDesc)
-//
-//        // then
-//        verify {
-//            createLogUseCase.logEntityDescriptionEdition(
-//                FakeProjectData.project,
-//                FakeProjectData.project.description,
-//                newDesc
-//            )
-//        }
-//    }
-//
-//    @Test
-//    fun `deleteProject should call projectsRepository deleteProject`() {
-//        // when
-//        manageProjectUseCase.deleteProject(FakeProjectData.project.id)
-//
-//        // then
-//        verify { projectsRepository.deleteProject(FakeProjectData.project.id) }
-//    }
-//
-//    @Test
-//    fun `deleteProject should delete the project and log the deletion`() {
-//        // given
-//        every { projectsRepository.getProjectById(FakeProjectData.project.id) } returns FakeProjectData.project
-//        every { projectsRepository.deleteProject(FakeProjectData.project.id) } just Runs
-//
-//        // when
-//        manageProjectUseCase.deleteProject(FakeProjectData.project.id)
-//
-//        // then
-//        verify { createLogUseCase.logEntityDeletion(FakeProjectData.project) }
-//    }
-//}
+package logic.useCases
+
+import io.mockk.coEvery
+import io.mockk.coVerify
+import io.mockk.mockk
+import kotlinx.coroutines.test.runTest
+import logic.entities.Project
+import logic.repositories.ProjectsRepository
+import org.junit.jupiter.api.BeforeEach
+import org.junit.jupiter.api.Test
+import java.util.*
+import kotlin.test.assertEquals
+
+class ManageProjectUseCaseTest {
+
+    private lateinit var projectsRepository: ProjectsRepository
+    private lateinit var createLogUseCase: CreateLogUseCase
+    private lateinit var manageProjectUseCase: ManageProjectUseCase
+
+    @BeforeEach
+    fun setUp() {
+        projectsRepository = mockk(relaxed = true)
+        createLogUseCase = mockk(relaxed = true)
+        manageProjectUseCase = ManageProjectUseCase(projectsRepository, createLogUseCase)
+    }
+
+    @Test
+    fun `getAllProjects should return all projects`() = runTest {
+        val projects = listOf(fakeProject)
+        coEvery { projectsRepository.getAllProjects() } returns projects
+
+        val result = manageProjectUseCase.getAllProjects()
+
+        assertEquals(projects, result)
+        coVerify { projectsRepository.getAllProjects() }
+    }
+
+    @Test
+    fun `getProjectById should return the correct project`() = runTest {
+        val projectId = UUID.randomUUID()
+        val project = fakeProject.copy(id = projectId)
+        coEvery { projectsRepository.getProjectById(projectId) } returns project
+
+        val result = manageProjectUseCase.getProjectById(projectId)
+
+        assertEquals(project, result)
+        coVerify { projectsRepository.getProjectById(projectId) }
+    }
+
+    @Test
+    fun `editProjectTitle should update the title and log the change`() = runTest {
+        val projectId = UUID.randomUUID()
+        val oldTitle = "Old Title"
+        val newTitle = "New Title"
+        val project = fakeProject.copy(id = projectId, title = oldTitle)
+        coEvery { projectsRepository.getProjectById(projectId) } returns project
+
+        manageProjectUseCase.editProjectTitle(projectId, newTitle)
+
+        coVerify {
+            projectsRepository.editProjectTitle(projectId, newTitle)
+            createLogUseCase.logEntityTitleEdition(projectId, oldTitle, newTitle)
+        }
+    }
+
+    @Test
+    fun `editProjectDescription should update the description and log the change`() = runTest {
+        val projectId = UUID.randomUUID()
+        val oldDescription = "Old Description"
+        val newDescription = "New Description"
+        val project = fakeProject.copy(id = projectId, description = oldDescription)
+        coEvery { projectsRepository.getProjectById(projectId) } returns project
+
+        manageProjectUseCase.editProjectDescription(projectId, newDescription)
+
+        coVerify {
+            projectsRepository.editProjectDescription(projectId, newDescription)
+            createLogUseCase.logEntityDescriptionEdition(projectId, oldDescription, newDescription)
+        }
+    }
+
+    @Test
+    fun `deleteProject should delete the project and log the deletion`() = runTest {
+        val projectId = UUID.randomUUID()
+
+        manageProjectUseCase.deleteProject(projectId)
+
+        coVerify {
+            projectsRepository.deleteProject(projectId)
+            createLogUseCase.logEntityDeletion(projectId)
+        }
+    }
+
+    private companion object {
+        val fakeProject = Project(
+            id = UUID.fromString("123e4567-e89b-12d3-a456-426614174000"),
+            title = "fake Project",
+            description = "This is a fake project for testing purposes",
+        )
+    }
+}
