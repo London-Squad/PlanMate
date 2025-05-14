@@ -9,7 +9,8 @@ import ui.cliPrintersAndReaders.CLIReader
 import ui.cliPrintersAndReaders.CLITablePrinter
 import java.time.LocalDateTime
 import java.time.format.DateTimeFormatter
-import java.util.*
+import java.util.UUID
+import logic.entities.Log.EntityType
 
 class LogsView(
     private val cliReader: CLIReader,
@@ -76,12 +77,15 @@ class LogsView(
         }
     }
 
-    private fun entityTitle(entityId: UUID, entityType: Log.EntityType): String {
+    private fun entityTitle(entityId: UUID, entityType: EntityType): String {
         var title: String = "unknown"
         makeRequest(
             request = { title = getEntityDetailsUseCase.getEntityTitleById(entityId, entityType) },
-
-            )
+            onError = { e ->
+                println("Error fetching entity title: $e")
+                title = "Unknown Entity Title"
+            }
+        )
         return title
     }
 

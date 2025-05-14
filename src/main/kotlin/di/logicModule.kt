@@ -8,7 +8,7 @@ import logic.validation.TaskStateInputValidator
 import org.koin.dsl.module
 
 val logicModule = module {
-    single { `GetُEntityDetailsUseCase`(get()) }
+    single { GetEntityDetailsUseCase(get(),get(),get(),get(),get())}
     single { CreateLogUseCase(get(), get()) }
     single { GetLoggedInUserUseCase(get()) }
     single { ManageProjectUseCase(get(), get()) }
@@ -17,7 +17,6 @@ val logicModule = module {
     single { ManageTaskUseCase(get(), get(), get()) }
     single { ManageStateUseCase(get(), get()) }
     single { CreateMateUseCase(get(), get(), get()) }
-    single { GetEntityTitleUseCase(get(), get(), get(), get()) }
     single { CredentialValidator() }
     single { ProjectInputValidator() }
     single { TaskInputValidator() }

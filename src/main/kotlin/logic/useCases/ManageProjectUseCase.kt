@@ -1,8 +1,9 @@
 package logic.useCases
 
+import logic.entities.Log.EntityType
 import logic.entities.Project
 import logic.repositories.ProjectsRepository
-import java.util.*
+import java.util.UUID
 
 class ManageProjectUseCase(
     private val projectsRepository: ProjectsRepository,
@@ -23,8 +24,9 @@ class ManageProjectUseCase(
         projectsRepository.editProjectTitle(projectId, newTitle)
         createLogUseCase.logEntityTitleEdition(
             projectId,
+            EntityType.PROJECT,
             projectBeforeEdition.title,
-            newTitle
+            newTitle,
         )
     }
 
@@ -34,6 +36,7 @@ class ManageProjectUseCase(
         projectsRepository.editProjectDescription(projectId, newDescription)
         createLogUseCase.logEntityDescriptionEdition(
             projectId,
+            EntityType.PROJECT,
             projectBeforeEdition.description,
             newDescription
         )
@@ -41,6 +44,9 @@ class ManageProjectUseCase(
 
     suspend fun deleteProject(projectId: UUID) {
         projectsRepository.deleteProject(projectId)
-        createLogUseCase.logEntityDeletion(projectId)
+        createLogUseCase.logEntityDeletion(
+            projectId,
+            EntityType.PROJECT
+        )
     }
 }

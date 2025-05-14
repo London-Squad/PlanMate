@@ -104,7 +104,8 @@ class MongoDBParser {
             planEntityId = document.getString(PLAN_ENTITY_ID_FIELD),
             planEntityProperty = document.getString(PLAN_ENTITY_PROPERTY_FIELD),
             oldValue = document.getString(PLAN_OLD_VALUE_FIELD),
-            newValue = document.getString(PLAN_NEW_VALUE_FIELD)
+            newValue = document.getString(PLAN_NEW_VALUE_FIELD),
+            entityType = document.getString(ENTITY_TYPE)
         )
     }
 
@@ -125,5 +126,6 @@ class MongoDBParser {
         const val PLAN_ENTITY_PROPERTY_FIELD = "planEntityProperty"
         const val PLAN_OLD_VALUE_FIELD = "oldValue"
         const val PLAN_NEW_VALUE_FIELD = "newValue"
+        const val ENTITY_TYPE = "entityType"
     }
 }

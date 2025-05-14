@@ -1,9 +1,10 @@
 package logic.useCases
 
+import logic.entities.Log.EntityType
 import logic.entities.Task
 import logic.repositories.TaskRepository
 import logic.repositories.TaskStatesRepository
-import java.util.*
+import java.util.UUID
 
 class ManageTaskUseCase(
     private val taskRepository: TaskRepository,
@@ -20,7 +21,7 @@ class ManageTaskUseCase(
         val newTask = buildNewTask(UUID.randomUUID(), title, description, projectId)
 
         taskRepository.addNewTask(newTask, projectId)
-        createLogUseCase.logEntityCreation(newTask.id)
+        createLogUseCase.logEntityCreation(newTask.id, EntityType.TASK)
     }
 
     private suspend fun buildNewTask(
@@ -38,14 +39,14 @@ class ManageTaskUseCase(
         val oldTask = taskRepository.getTaskByID(taskId)
 
         taskRepository.editTaskTitle(taskId, newTitle)
-        createLogUseCase.logEntityTitleEdition(oldTask.id, oldTask.title, newTitle)
+        createLogUseCase.logEntityTitleEdition(oldTask.id,  EntityType.TASK,oldTask.title, newTitle)
     }
 
     suspend fun editTaskDescription(taskId: UUID, newDescription: String) {
         val oldTask = taskRepository.getTaskByID(taskId)
 
         taskRepository.editTaskDescription(taskId, newDescription)
-        createLogUseCase.logEntityDescriptionEdition(oldTask.id, oldTask.description, newDescription)
+        createLogUseCase.logEntityDescriptionEdition(oldTask.id,  EntityType.TASK,oldTask.description, newDescription)
     }
 
     suspend fun editTaskState(taskId: UUID, newTaskStateId: UUID) {
@@ -60,6 +61,6 @@ class ManageTaskUseCase(
 
     suspend fun deleteTask(taskId: UUID) {
         taskRepository.deleteTask(taskId)
-        createLogUseCase.logEntityDeletion(taskId)
+        createLogUseCase.logEntityDeletion(taskId, EntityType.TASK)
     }
 }
