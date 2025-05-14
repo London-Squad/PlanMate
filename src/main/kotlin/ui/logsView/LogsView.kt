@@ -1,6 +1,7 @@
 package ui.logsView
 
 import logic.entities.*
+import logic.entities.Log.EntityType
 import logic.useCases.GetEntityDetailsUseCase
 import logic.useCases.GetUsersUseCase
 import ui.RequestHandler
@@ -9,8 +10,7 @@ import ui.cliPrintersAndReaders.CLIReader
 import ui.cliPrintersAndReaders.CLITablePrinter
 import java.time.LocalDateTime
 import java.time.format.DateTimeFormatter
-import java.util.UUID
-import logic.entities.Log.EntityType
+import java.util.*
 
 class LogsView(
     private val cliReader: CLIReader,
@@ -64,27 +64,30 @@ class LogsView(
     }
 
     private fun actionToString(log: Log): String {
-        val entityType = log.entityType
-        return when (val action = log.loggedAction) {
-            is EntityCreationLog -> "created $entityType (${entityTitle(action.entityId, entityType)})"
-            is EntityDeletionLog -> "deleted $entityType (${entityTitle(action.entityId, entityType)})"
-            is EntityEditionLog -> "edited $entityType (${
-                entityTitle(
-                    action.entityId,
-                    entityType
-                )
-            }) ${action.property} from (${action.oldValue}) to (${action.newValue}) "
+        log.apply {
+            val entityTypeName = when(entityType){
+                EntityType.TASK_STATE -> "task state"
+                EntityType.TASK -> "task"
+                EntityType.PROJECT -> "project"
+                EntityType.USER -> "user"
+            }
+            return when (val action = loggedAction) {
+                is EntityCreationLog -> "created $entityTypeName (${entityTitle(action.entityId, entityType)})"
+                is EntityDeletionLog -> "deleted $entityTypeName (${entityTitle(action.entityId, entityType)})"
+                is EntityEditionLog -> "edited $entityTypeName (${
+                    entityTitle(
+                        action.entityId,
+                        entityType
+                    )
+                }) ${action.property} from (${action.oldValue}) to (${action.newValue}) "
+            }
         }
     }
 
     private fun entityTitle(entityId: UUID, entityType: EntityType): String {
-        var title: String = "unknown"
+        var title = "unknown"
         makeRequest(
             request = { title = getEntityDetailsUseCase.getEntityTitleById(entityId, entityType) },
-            onError = { e ->
-                println("Error fetching entity title: $e")
-                title = "Unknown Entity Title"
-            }
         )
         return title
     }

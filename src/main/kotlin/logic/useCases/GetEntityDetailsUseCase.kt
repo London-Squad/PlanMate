@@ -21,6 +21,6 @@ class GetEntityDetailsUseCase(
             EntityType.TASK -> taskRepository.getTaskTitleById(entityId)
             EntityType.PROJECT -> projectRepository.getProjectTitleById(entityId)
             EntityType.USER -> userRepository.getUserNameById(entityId)
-        } ?: "Unknown Entity Title"
+        }
     }
 }

@@ -4,7 +4,7 @@ import data.dto.LogDto
 import logic.entities.*
 import logic.exceptions.RetrievingDataFailureException
 import java.time.LocalDateTime
-import java.util.UUID
+import java.util.*
 
 fun LogDto.toLog(): Log {
     val action = when (action.lowercase()) {
@@ -44,7 +44,7 @@ fun Log.toLogDto(): LogDto {
         planEntityProperty = if (loggedAction is EntityEditionLog) loggedAction.property else LogConstants.DEFAULT_VALUE,
         oldValue = if (loggedAction is EntityEditionLog) loggedAction.oldValue else LogConstants.DEFAULT_VALUE,
         newValue = if (loggedAction is EntityEditionLog) loggedAction.newValue else LogConstants.DEFAULT_VALUE,
-        entityType =entityType.name
+        entityType = entityType.name
     )
 }
 
