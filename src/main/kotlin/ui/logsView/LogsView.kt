@@ -9,7 +9,7 @@ import ui.cliPrintersAndReaders.CLIReader
 import ui.cliPrintersAndReaders.CLITablePrinter
 import java.time.LocalDateTime
 import java.time.format.DateTimeFormatter
-import java.util.*
+import java.util.UUID
 
 class LogsView(
     private val cliReader: CLIReader,
@@ -57,7 +57,7 @@ class LogsView(
     }
 
     private fun buildLogMessage(log: Log): String {
-        return "user (${getUserNameByLog(log)}) ${actionToString(log.loggedAction)} at ${formatedTime(log.time)}"
+        return "user (${getUserNameByLog(log)}) ${actionToString(log)} at ${formatedTime(log.time)}"
     }
 
     private fun getUserNameByLog(log: Log): String {
@@ -67,17 +67,13 @@ class LogsView(
             ?: "Unknown user"
     }
 
-    private fun actionToString(action: LoggedAction): String {
-        return when (action) {
-            is EntityCreationLog -> "created ${entityType(action.entityId)} (${entityTitle(action.entityId)})"
-            is EntityDeletionLog -> "deleted ${entityType(action.entityId)} (${entityTitle(action.entityId)})"
-            is EntityEditionLog -> "edited ${entityType(action.entityId)} (${entityTitle(action.entityId)}) ${action.property} from (${action.oldValue}) to (${action.newValue}) "
+    private fun actionToString(log:Log): String {
+        val entityType = log.entityType
+        return when (val action = log.loggedAction) {
+            is EntityCreationLog -> "created $entityType (${entityTitle(action.entityId)})"
+            is EntityDeletionLog -> "deleted $entityType (${entityTitle(action.entityId)})"
+            is EntityEditionLog -> "edited $entityType (${entityTitle(action.entityId)}) ${action.property} from (${action.oldValue}) to (${action.newValue}) "
         }
-    }
-
-    private fun entityType(entityId: UUID): String {
-        // todo: implement this function to return the type of the entity based on its ID
-        return "Entity Type"
     }
 
     private fun entityTitle(entityId: UUID): String {

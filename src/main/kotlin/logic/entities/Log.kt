@@ -7,4 +7,5 @@ data class Log(
     val userId: UUID,
     val time: LocalDateTime = LocalDateTime.now(),
     val loggedAction: LoggedAction,
+    val entityType: String
 )
