@@ -6,7 +6,7 @@ import data.security.hashing.HashingAlgorithm
 import logic.entities.User
 import logic.exceptions.UserNameAlreadyExistsException
 import logic.repositories.UserRepository
-import java.util.UUID
+import java.util.*
 
 class UserRepositoryImpl(
     private val usersDataSource: UsersDataSource,
@@ -20,7 +20,7 @@ class UserRepositoryImpl(
 
 
     override suspend fun getUserNameById(userId: UUID): String {
-        val userDto = usersDataSource.getUserById(userId)
+        val userDto = usersDataSource.getUserById(userId, true)
         return userDto.toUser().userName
     }
 

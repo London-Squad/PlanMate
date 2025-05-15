@@ -1,7 +1,7 @@
 import data.dataSources.mongoDBDataSource.DatabaseConnection
+import di.csvStorageModule
 import di.dataModule
 import di.logicModule
-import di.mongoStorageModule
 import di.uiModule
 import org.koin.core.context.startKoin
 import org.koin.java.KoinJavaComponent.getKoin
@@ -11,8 +11,8 @@ fun main() {
 
     startKoin {
         modules(
-//            csvStorageModule,
-            mongoStorageModule,
+            csvStorageModule,
+//            mongoStorageModule,
             uiModule,
             dataModule,
             logicModule

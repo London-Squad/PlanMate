@@ -14,15 +14,15 @@ class GetLogsDetailsUseCase(
     private val userRepository: UserRepository
 ) {
     suspend fun getLogsByEntityId(entityId: UUID): List<Log> {
-        val relatedEntityIds = mutableSetOf(entityId.toString()).apply {
+        val relatedEntityIds = mutableSetOf(entityId).apply {
             projectRepository.getProjectById(entityId).let { project ->
-                addAll(taskRepository.getTasksByProjectID(project.id, includeDeleted = true).map { it.id.toString() })
+                addAll(taskRepository.getTasksByProjectID(project.id, includeDeleted = true).map { it.id })
                 addAll(
                     taskStateRepository.getTaskStatesByProjectId(project.id, includeDeleted = true)
-                        .map { it.id.toString() })
+                        .map { it.id })
             }
         }
-        return logsRepository.getLogsByEntityId(relatedEntityIds)
+        return logsRepository.getLogsByEntitiesIds(relatedEntityIds)
     }
 
     suspend fun getEntityTitleById(entityId: UUID, entityType: EntityType): String {

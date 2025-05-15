@@ -24,24 +24,25 @@ class CsvUsersDataSource(
     override suspend fun deleteUser(userId: UUID) {
         var userFound = false
         usersCsvFileHandler.readRecords().map {
-                val userDto = csvParser.recordToUserDto(it)
-                if (userDto.id == userId.toString()) {
-                    userFound = true
-                    csvParser.userDtoToRecord(userDto.copy(isDeleted = true))
-                } else it
-            }.also {
-                if (!userFound) throw ProjectNotFoundException("User with ID $userId not found")
-                usersCsvFileHandler.rewriteRecords(it)
-            }
+            val userDto = csvParser.recordToUserDto(it)
+            if (userDto.id == userId.toString()) {
+                userFound = true
+                csvParser.userDtoToRecord(userDto.copy(isDeleted = true))
+            } else it
+        }.also {
+            if (!userFound) throw ProjectNotFoundException("User with ID $userId not found")
+            usersCsvFileHandler.rewriteRecords(it)
+        }
     }
 
-    override suspend fun getUserById(userId: UUID): UserDto {
+    override suspend fun getUserById(userId: UUID, includeDeleted: Boolean): UserDto {
         return usersCsvFileHandler.readRecords().map(csvParser::recordToUserDto)
-            .firstOrNull { it.id == userId.toString() } ?: throw UserNotFoundException("User with ID $userId not found")
+            .firstOrNull { it.id == userId.toString() && if (includeDeleted) true else !it.isDeleted }
+            ?: throw UserNotFoundException("User with ID $userId not found")
     }
 
     override suspend fun getUserNameById(userId: UUID): String {
-        return getUserById(userId).userName
+        return getUserById(userId, true).userName
     }
 
     override suspend fun addMate(userName: String, hashedPassword: String) {

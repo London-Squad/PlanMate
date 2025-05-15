@@ -7,6 +7,7 @@ import data.repositories.dtoMappers.toLog
 import data.repositories.dtoMappers.toLogDto
 import logic.entities.Log
 import logic.repositories.LogsRepository
+import java.util.*
 
 class MongoDBLogsDataSource(
     private val logQueryHandler: MongoDBQueryHandler,
@@ -24,8 +25,8 @@ class MongoDBLogsDataSource(
         log.toLogDto().let(mongoParser::logDtoToDocument).also { logQueryHandler.insertToCollection(it) }
     }
 
-    override suspend fun getLogsByEntityId(entityId: MutableSet<String>): List<Log> {
-        val filter = Filters.eq(MongoDBParser.PLAN_ENTITY_ID_FIELD, entityId.toString())
+    override suspend fun getLogsByEntitiesIds(entityIdsSet: MutableSet<UUID>): List<Log> {
+        val filter = Filters.`in`(MongoDBParser.PLAN_ENTITY_ID_FIELD, entityIdsSet.map{it.toString()} )
         return logQueryHandler.fetchManyFromCollection(filter).map { mongoParser.documentToLogDto(it).toLog() }
     }
 }

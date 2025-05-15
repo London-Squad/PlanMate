@@ -97,7 +97,8 @@ class CsvParser {
             logDto.planEntityId,
             logDto.planEntityProperty,
             logDto.oldValue,
-            logDto.newValue
+            logDto.newValue,
+            logDto.entityType,
         )
     }
 
