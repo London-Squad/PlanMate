@@ -6,14 +6,24 @@ import logic.repositories.*
 import java.util.*
 
 
-class GetEntityDetailsUseCase(
+class GetLogsDetailsUseCase(
     private val logsRepository: LogsRepository,
     private val taskStateRepository: TaskStatesRepository,
     private val taskRepository: TaskRepository,
     private val projectRepository: ProjectsRepository,
     private val userRepository: UserRepository
 ) {
-    suspend fun getLogsByEntityId(entityId: UUID): List<Log> = logsRepository.getLogsByEntityId(entityId)
+    suspend fun getLogsByEntityId(entityId: UUID): List<Log> {
+        val relatedEntityIds = mutableSetOf(entityId.toString()).apply {
+            projectRepository.getProjectById(entityId).let { project ->
+                addAll(taskRepository.getTasksByProjectID(project.id, includeDeleted = true).map { it.id.toString() })
+                addAll(
+                    taskStateRepository.getTaskStatesByProjectId(project.id, includeDeleted = true)
+                        .map { it.id.toString() })
+            }
+        }
+        return logsRepository.getLogsByEntityId(relatedEntityIds)
+    }
 
     suspend fun getEntityTitleById(entityId: UUID, entityType: EntityType): String {
         return when (entityType) {

@@ -6,19 +6,10 @@ import data.dataSources.mongoDBDataSource.mongoDBHandler.MongoDBQueryHandler
 import data.repositories.dtoMappers.toLog
 import data.repositories.dtoMappers.toLogDto
 import logic.entities.Log
-import logic.entities.Project
-import logic.exceptions.NotFoundException
 import logic.repositories.LogsRepository
-import logic.repositories.ProjectsRepository
-import logic.repositories.TaskRepository
-import logic.repositories.TaskStatesRepository
-import java.util.*
 
 class MongoDBLogsDataSource(
     private val logQueryHandler: MongoDBQueryHandler,
-    private val projectsRepository: ProjectsRepository,
-    private val taskRepository: TaskRepository,
-    private val taskStatesRepository: TaskStatesRepository,
     private val mongoParser: MongoDBParser
 ) : LogsRepository {
 
@@ -30,36 +21,11 @@ class MongoDBLogsDataSource(
     }
 
     override suspend fun addLog(log: Log) {
-        log
-            .toLogDto()
-            .let(mongoParser::logDtoToDocument)
-            .also { logQueryHandler.insertToCollection(it) }
+        log.toLogDto().let(mongoParser::logDtoToDocument).also { logQueryHandler.insertToCollection(it) }
     }
 
-    override suspend fun getLogsByEntityId(entityId: UUID): List<Log> {
-        val relatedEntityIds = mutableSetOf<String>()
-        relatedEntityIds.add(entityId.toString())
-
-        val project: Project? = try {
-            projectsRepository.getProjectById(entityId)
-        } catch (e: NotFoundException) {
-            null
-        }
-
-        if (project != null) {
-            val tasksIds =
-                taskRepository.getTasksByProjectID(project.id, includeDeleted = true).map { it.id.toString() }
-            val taskStatesIds = taskStatesRepository.getTaskStatesByProjectId(project.id, includeDeleted = true)
-                .map { it.id.toString() }
-
-            relatedEntityIds.addAll(tasksIds)
-            relatedEntityIds.addAll(taskStatesIds)
-        }
-
-        val filter = Filters.`in`(MongoDBParser.PLAN_ENTITY_ID_FIELD, relatedEntityIds)
-
-        return logQueryHandler.fetchManyFromCollection(filter)
-            .map { mongoParser.documentToLogDto(it).toLog() }
-            .sortedBy { it.time }
+    override suspend fun getLogsByEntityId(entityId: MutableSet<String>): List<Log> {
+        val filter = Filters.eq(MongoDBParser.PLAN_ENTITY_ID_FIELD, entityId.toString())
+        return logQueryHandler.fetchManyFromCollection(filter).map { mongoParser.documentToLogDto(it).toLog() }
     }
 }

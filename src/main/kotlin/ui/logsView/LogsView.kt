@@ -2,7 +2,7 @@ package ui.logsView
 
 import logic.entities.*
 import logic.entities.Log.EntityType
-import logic.useCases.GetEntityDetailsUseCase
+import logic.useCases.GetLogsDetailsUseCase
 import logic.useCases.GetUsersUseCase
 import ui.RequestHandler
 import ui.cliPrintersAndReaders.CLIPrinter
@@ -15,7 +15,7 @@ import java.util.*
 class LogsView(
     private val cliReader: CLIReader,
     private val cliPrinter: CLIPrinter,
-    private val getEntityDetailsUseCase: GetEntityDetailsUseCase,
+    private val getLogsDetailsUseCase: GetLogsDetailsUseCase,
     private val cliTablePrinter: CLITablePrinter,
     private val getUsersUseCase: GetUsersUseCase,
 ) : RequestHandler(cliPrinter) {
@@ -26,7 +26,7 @@ class LogsView(
         var logs: List<Log> = emptyList()
 
         makeRequest(
-            request = { logs = getEntityDetailsUseCase.getLogsByEntityId(entityId) },
+            request = { logs = getLogsDetailsUseCase.getLogsByEntityId(entityId) },
             onSuccess = { printLogs(logs) },
             onLoadingMessage = "Fetching logs..."
         )
@@ -87,7 +87,7 @@ class LogsView(
     private fun entityTitle(entityId: UUID, entityType: EntityType): String {
         var title = "unknown"
         makeRequest(
-            request = { title = getEntityDetailsUseCase.getEntityTitleById(entityId, entityType) },
+            request = { title = getLogsDetailsUseCase.getEntityTitleById(entityId, entityType) },
         )
         return title
     }

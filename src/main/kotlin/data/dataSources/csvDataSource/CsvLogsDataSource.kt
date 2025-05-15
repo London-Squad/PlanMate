@@ -32,7 +32,7 @@ class CsvLogsDataSource(
         )
     }
 
-    override suspend fun getLogsByEntityId(entityId: UUID): List<Log> {
+    override suspend fun getLogsByEntityId(entityId: MutableSet<String>): List<Log> {
         val allLogs = getAllLogs()
         var result = allLogs.filter { it.loggedAction.getEntityId() == entityId }
         val project: Project
