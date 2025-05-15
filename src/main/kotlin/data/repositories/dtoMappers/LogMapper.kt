@@ -6,11 +6,16 @@ import logic.exceptions.RetrievingDataFailureException
 import java.time.LocalDateTime
 import java.util.*
 
+private const val CREATION_ACTION_STRING = "create"
+private const val DELETION_ACTION_STRING = "delete"
+private const val EDITION_ACTION_STRING = "edit"
+private const val DEFAULT_VALUE_STRING = "Nan"
+
 fun LogDto.toLog(): Log {
     val action = when (action.lowercase()) {
-        LogConstants.ACTION_CREATE -> EntityCreationLog(entityId = UUID.fromString(planEntityId))
-        LogConstants.ACTION_DELETE -> EntityDeletionLog(entityId = UUID.fromString(planEntityId))
-        LogConstants.ACTION_EDIT -> EntityEditionLog(
+        CREATION_ACTION_STRING -> EntityCreationLog(entityId = UUID.fromString(planEntityId))
+        DELETION_ACTION_STRING -> EntityDeletionLog(entityId = UUID.fromString(planEntityId))
+        EDITION_ACTION_STRING -> EntityEditionLog(
             entityId = UUID.fromString(planEntityId),
             property = planEntityProperty,
             oldValue = oldValue,
@@ -30,9 +35,9 @@ fun LogDto.toLog(): Log {
 
 fun Log.toLogDto(): LogDto {
     val action = when (loggedAction) {
-        is EntityCreationLog -> LogConstants.ACTION_CREATE
-        is EntityDeletionLog -> LogConstants.ACTION_DELETE
-        is EntityEditionLog -> LogConstants.ACTION_EDIT
+        is EntityCreationLog -> CREATION_ACTION_STRING
+        is EntityDeletionLog -> DELETION_ACTION_STRING
+        is EntityEditionLog -> EDITION_ACTION_STRING
     }
 
     return LogDto(
@@ -41,9 +46,9 @@ fun Log.toLogDto(): LogDto {
         time = time.toString(),
         action = action,
         planEntityId = loggedAction.getEntityId().toString(),
-        planEntityProperty = if (loggedAction is EntityEditionLog) loggedAction.property else LogConstants.DEFAULT_VALUE,
-        oldValue = if (loggedAction is EntityEditionLog) loggedAction.oldValue else LogConstants.DEFAULT_VALUE,
-        newValue = if (loggedAction is EntityEditionLog) loggedAction.newValue else LogConstants.DEFAULT_VALUE,
+        planEntityProperty = if (loggedAction is EntityEditionLog) loggedAction.property else DEFAULT_VALUE_STRING,
+        oldValue = if (loggedAction is EntityEditionLog) loggedAction.oldValue else DEFAULT_VALUE_STRING,
+        newValue = if (loggedAction is EntityEditionLog) loggedAction.newValue else DEFAULT_VALUE_STRING,
         entityType = entityType.name
     )
 }
@@ -54,10 +59,4 @@ private fun LoggedAction.getEntityId(): UUID {
         is EntityDeletionLog -> entityId
         is EntityEditionLog -> entityId
     }
-}
-object LogConstants {
-    const val ACTION_CREATE = "create"
-    const val ACTION_DELETE = "delete"
-    const val ACTION_EDIT = "edit"
-    const val DEFAULT_VALUE = "Nan"
 }

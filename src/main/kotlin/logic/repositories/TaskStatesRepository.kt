@@ -1,7 +1,7 @@
 package logic.repositories
 
 import logic.entities.TaskState
-import java.util.*
+import java.util.UUID
 
 interface TaskStatesRepository {
     suspend fun getTaskStatesByProjectId(projectId: UUID, includeDeleted: Boolean = false): List<TaskState>
