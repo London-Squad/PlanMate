@@ -35,6 +35,10 @@ class MongoDBTaskStatesDataSource(
             .toTaskState()
     }
 
+    override suspend fun getTaskStateTitleById(stateId: UUID): String {
+        return getTaskStateById(stateId,true).title
+    }
+
     override suspend fun addNewTaskState(taskState: TaskState, projectId: UUID) {
         taskState
             .toTaskStateDto(projectId)

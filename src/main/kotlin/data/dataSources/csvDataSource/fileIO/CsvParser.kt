@@ -97,12 +97,13 @@ class CsvParser {
             logDto.planEntityId,
             logDto.planEntityProperty,
             logDto.oldValue,
-            logDto.newValue
+            logDto.newValue,
+            logDto.entityType,
         )
     }
 
     fun recordToLogDto(record: List<String>): LogDto {
-        if (record.size != 8) throw RetrievingDataFailureException("Invalid LogData record size")
+        if (record.size != 9) throw RetrievingDataFailureException("Invalid LogData record size")
         return LogDto(
             id = record[0],
             userId = record[1],
@@ -111,7 +112,8 @@ class CsvParser {
             planEntityId = record[4],
             planEntityProperty = record[5],
             oldValue = record[6],
-            newValue = record[7]
+            newValue = record[7],
+            entityType = record[8]
         )
     }
 }

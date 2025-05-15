@@ -8,5 +8,6 @@ data class LogDto(
     val planEntityId: String,
     val planEntityProperty: String,
     val oldValue: String,
-    val newValue: String
+    val newValue: String,
+    val entityType: String
 )

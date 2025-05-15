@@ -4,28 +4,31 @@ import logic.entities.EntityCreationLog
 import logic.entities.EntityDeletionLog
 import logic.entities.EntityEditionLog
 import logic.entities.Log
+import logic.entities.Log.EntityType
 import logic.repositories.AuthenticationRepository
 import logic.repositories.LogsRepository
-import java.util.*
+import java.util.UUID
 
 class CreateLogUseCase(
     private val logsRepository: LogsRepository,
     private val authenticationRepository: AuthenticationRepository,
 ) {
 
-    suspend fun logEntityCreation(entityId: UUID) {
+    suspend fun logEntityCreation(entityId: UUID, entityType: EntityType) {
         logsRepository.addLog(
             Log(
                 userId = authenticationRepository.getLoggedInUser().id,
+                entityType = entityType,
                 loggedAction = EntityCreationLog(entityId)
             )
         )
     }
 
-    suspend fun logEntityTitleEdition(entityId: UUID, oldValue: String, newValue: String) {
+    suspend fun logEntityTitleEdition(entityId: UUID, entityType: EntityType, oldValue: String, newValue: String) {
         logsRepository.addLog(
             Log(
                 userId = authenticationRepository.getLoggedInUser().id,
+                entityType = entityType,
                 loggedAction = EntityEditionLog(
                     entityId = entityId,
                     property = "title",
@@ -36,10 +39,11 @@ class CreateLogUseCase(
         )
     }
 
-    suspend fun logEntityDescriptionEdition(entityId: UUID, oldValue: String, newValue: String) {
+    suspend fun logEntityDescriptionEdition(entityId: UUID, entityType: EntityType, oldValue: String, newValue: String) {
         logsRepository.addLog(
             Log(
                 userId = authenticationRepository.getLoggedInUser().id,
+                entityType = entityType,
                 loggedAction = EntityEditionLog(
                     entityId = entityId,
                     property = "description",
@@ -54,6 +58,7 @@ class CreateLogUseCase(
         logsRepository.addLog(
             Log(
                 userId = authenticationRepository.getLoggedInUser().id,
+                entityType = EntityType.TASK,
                 loggedAction = EntityEditionLog(
                     entityId = taskId,
                     property = "state",
@@ -64,10 +69,11 @@ class CreateLogUseCase(
         )
     }
 
-    suspend fun logEntityDeletion(entityId: UUID) {
+    suspend fun logEntityDeletion(entityId: UUID, entityType: EntityType) {
         logsRepository.addLog(
             Log(
                 userId = authenticationRepository.getLoggedInUser().id,
+                entityType = entityType,
                 loggedAction = EntityDeletionLog(entityId)
             )
         )

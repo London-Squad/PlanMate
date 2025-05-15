@@ -8,4 +8,6 @@ interface UsersDataSource {
     suspend fun getAdmin(): UserDto
     suspend fun deleteUser(userId: UUID)
     suspend fun addMate(userName: String, hashedPassword: String)
+    suspend fun getUserById(userId: UUID, includeDeleted: Boolean): UserDto
+    suspend fun getUserNameById(userId: UUID): String
 }

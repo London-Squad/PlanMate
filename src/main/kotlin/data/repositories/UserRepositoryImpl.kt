@@ -18,6 +18,13 @@ class UserRepositoryImpl(
             .map { it.toUser() }
     }
 
+
+    override suspend fun getUserNameById(userId: UUID): String {
+        val userDto = usersDataSource.getUserById(userId, true)
+        return userDto.toUser().userName
+    }
+
+
     override suspend fun getAdmin(): User =
         usersDataSource.getAdmin().toUser()
 

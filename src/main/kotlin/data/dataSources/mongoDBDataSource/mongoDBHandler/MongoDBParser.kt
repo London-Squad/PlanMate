@@ -37,7 +37,7 @@ class MongoDBParser {
     }
 
     fun documentToTaskStateDto(document: Document): TaskStateDto {
-        if (document.size != 6) throw RetrievingDataFailureException("Invalid TaskData document size")
+        if (document.size != 6) throw RetrievingDataFailureException("Invalid TaskStateData document size")
         return TaskStateDto(
             id = document.getString(ID_FIELD),
             title = document.getString(TITLE_FIELD),
@@ -55,7 +55,7 @@ class MongoDBParser {
     }
 
     fun documentToProjectDto(document: Document): ProjectDto {
-        if (document.size != 5) throw RetrievingDataFailureException("Invalid TaskData document size")
+        if (document.size != 5) throw RetrievingDataFailureException("Invalid ProjectData document size")
         return ProjectDto(
             id = document.getString(ID_FIELD),
             title = document.getString(TITLE_FIELD),
@@ -73,7 +73,7 @@ class MongoDBParser {
     }
 
     fun documentToUserDto(document: Document): UserDto {
-        if (document.size != 6) throw RetrievingDataFailureException("Invalid TaskData document size")
+        if (document.size != 6) throw RetrievingDataFailureException("Invalid UserData document size")
         return UserDto(
             id = document.getString(ID_FIELD),
             userName = document.getString(USERNAME_FIELD),
@@ -92,10 +92,11 @@ class MongoDBParser {
             .append(PLAN_ENTITY_PROPERTY_FIELD, logDto.planEntityProperty)
             .append(PLAN_OLD_VALUE_FIELD, logDto.oldValue)
             .append(PLAN_NEW_VALUE_FIELD, logDto.newValue)
+            .append(ENTITY_TYPE_FIELD, logDto.entityType)
     }
 
     fun documentToLogDto(document: Document): LogDto {
-        if (document.size != 9) throw RetrievingDataFailureException("Invalid TaskData document size")
+        if (document.size != 10) throw RetrievingDataFailureException("Invalid LogData document size")
         return LogDto(
             id = document.getString(ID_FIELD),
             userId = document.getString(USER_ID_FIELD),
@@ -104,7 +105,8 @@ class MongoDBParser {
             planEntityId = document.getString(PLAN_ENTITY_ID_FIELD),
             planEntityProperty = document.getString(PLAN_ENTITY_PROPERTY_FIELD),
             oldValue = document.getString(PLAN_OLD_VALUE_FIELD),
-            newValue = document.getString(PLAN_NEW_VALUE_FIELD)
+            newValue = document.getString(PLAN_NEW_VALUE_FIELD),
+            entityType = document.getString(ENTITY_TYPE_FIELD)
         )
     }
 
@@ -125,5 +127,6 @@ class MongoDBParser {
         const val PLAN_ENTITY_PROPERTY_FIELD = "planEntityProperty"
         const val PLAN_OLD_VALUE_FIELD = "oldValue"
         const val PLAN_NEW_VALUE_FIELD = "newValue"
+        const val ENTITY_TYPE_FIELD = "entityType"
     }
 }
