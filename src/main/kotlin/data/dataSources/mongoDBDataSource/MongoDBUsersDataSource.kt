@@ -44,16 +44,25 @@ class MongoDBUsersDataSource(
         usersQueryHandler.insertToCollection(doc)
     }
 
-    override suspend fun getUserById(userId: UUID): UserDto {
-        val filters = Filters.and(
-            Filters.eq(MongoDBParser.ID_FIELD, userId.toString()), Filters.eq(MongoDBParser.IS_DELETED_FIELD, false)
-        )
+    override suspend fun getUserById(
+        userId: UUID,
+        includeDeleted: Boolean
+    ): UserDto {
+        val filters = if (includeDeleted) {
+            Filters.eq(MongoDBParser.ID_FIELD, userId.toString())
+        } else {
+            Filters.and(
+                Filters.eq(MongoDBParser.ID_FIELD, userId.toString()),
+                Filters.eq(MongoDBParser.IS_DELETED_FIELD, false)
+            )
+        }
+
         val document = usersQueryHandler.fetchOneFromCollection(filters)
         return mongoParser.documentToUserDto(document)
     }
 
     override suspend fun getUserNameById(userId: UUID): String {
-        return getUserById(userId).userName
+        return getUserById(userId,false).userName
     }
 
 
