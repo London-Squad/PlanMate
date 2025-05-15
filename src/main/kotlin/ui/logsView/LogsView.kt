@@ -2,55 +2,87 @@ package ui.logsView
 
 import logic.entities.*
 import logic.useCases.GetLogsByEntityIdUseCase
-import ui.ViewExceptionHandler
+import logic.useCases.GetUsersUseCase
+import ui.RequestHandler
+import ui.cliPrintersAndReaders.CLIPrinter
 import ui.cliPrintersAndReaders.CLIReader
-import ui.cliPrintersAndReaders.cliTable.CLITablePrinter
+import ui.cliPrintersAndReaders.CLITablePrinter
 import java.time.LocalDateTime
 import java.time.format.DateTimeFormatter
 import java.util.*
 
 class LogsView(
     private val cliReader: CLIReader,
+    private val cliPrinter: CLIPrinter,
     private val getLogsByEntityIdUseCase: GetLogsByEntityIdUseCase,
     private val cliTablePrinter: CLITablePrinter,
-    private val viewExceptionHandler: ViewExceptionHandler
-) {
-    fun printLogsByEntityId(entityId: UUID) {
-        printLogs(entityId)
-        cliReader.getUserInput("\npress enter to go back")
+    private val getUsersUseCase: GetUsersUseCase,
+) : RequestHandler(cliPrinter) {
 
+    private lateinit var users: List<User>
+
+    fun printLogsByEntityId(entityId: UUID) {
+        var logs: List<Log> = emptyList()
+
+        makeRequest(
+            request = { logs = getLogsByEntityIdUseCase.getLogsByEntityId(entityId) },
+            onSuccess = { printLogs(logs) },
+            onLoadingMessage = "Fetching logs..."
+        )
+
+        cliReader.getUserInput("\npress enter to go back")
     }
 
-    private fun printLogs(entityId: UUID) {
-        viewExceptionHandler.tryCall {
-            val logs = getLogsByEntityIdUseCase.getLogsByEntityId(entityId)
-            val headers = listOf("Log ID", "Action Message")
-            val data = logs.map { log ->
-                listOf(
-                    log.id.toString(),
-                    "user (${log.user.userName}) ${actionToString(log.loggedAction)} at ${formatedTime(log.time)}"
-                )
-            }
-            val columnWidths = listOf(36, null)
-            cliTablePrinter(headers, data, columnWidths)
+    private fun printLogs(logs: List<Log>) {
+        users = emptyList()
+        makeRequest(
+            request = { users = getUsersUseCase.getUsers() },
+            onLoadingMessage = "Fetching users for the logs..."
+        )
+
+        if (logs.isEmpty()) {
+            cliPrinter.cliPrintLn("No logs found for this entity.")
+            return
         }
+
+        val headers = listOf("Log ID", "Action Message")
+        val data = logs.map { log ->
+            listOf(
+                log.id.toString(),
+                buildLogMessage(log)
+            )
+        }
+        val columnWidths = listOf(36, null)
+        cliTablePrinter(headers, data, columnWidths)
+    }
+
+    private fun buildLogMessage(log: Log): String {
+        return "user (${getUserNameByLog(log)}) ${actionToString(log.loggedAction)} at ${formatedTime(log.time)}"
+    }
+
+    private fun getUserNameByLog(log: Log): String {
+        return users
+            .firstOrNull { it.id == log.userId }
+            ?.userName
+            ?: "Unknown user"
     }
 
     private fun actionToString(action: LoggedAction): String {
         return when (action) {
-            is EntityCreationLog -> "created ${entityName(action.entity)} (${action.entity.title})"
-            is EntityDeletionLog -> "deleted ${entityName(action.entity)} (${action.entity.title})"
-            is EntityEditionLog -> "edited ${entityName(action.entity)} (${action.entity.title}) ${action.property} from (${action.oldValue}) to (${action.newValue}) "
+            is EntityCreationLog -> "created ${entityType(action.entityId)} (${entityTitle(action.entityId)})"
+            is EntityDeletionLog -> "deleted ${entityType(action.entityId)} (${entityTitle(action.entityId)})"
+            is EntityEditionLog -> "edited ${entityType(action.entityId)} (${entityTitle(action.entityId)}) ${action.property} from (${action.oldValue}) to (${action.newValue}) "
         }
     }
 
-    private fun entityName(entity: PlanEntity): String {
-        return when (entity) {
-            is Project -> "project"
-            is TaskState -> "state"
-            is Task -> "task"
-            else -> "unknown entity"
-        }
+    private fun entityType(entityId: UUID): String {
+        // todo: implement this function to return the type of the entity based on its ID
+        return "Entity Type"
+    }
+
+    private fun entityTitle(entityId: UUID): String {
+        // todo: implement this function to return the title of the entity based on its ID
+        return "Entity Title"
     }
 
     private fun formatedTime(time: LocalDateTime): String {

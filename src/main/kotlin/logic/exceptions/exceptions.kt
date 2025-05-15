@@ -1,18 +1,21 @@
 package logic.exceptions
 
-open class AuthenticationException(message: String) : Exception(message)
-
-class InvalidUserNameLengthException :
-    AuthenticationException("Username should have more than 3 characters and less than 12")
-class InvalidPasswordException : AuthenticationException("Invalid password")
-class UserNameAlreadyTakenException : AuthenticationException("Username Taken Exception")
-
-open class RetrievingDataFailureException(message: String) : Exception(message)
-open class StoringDataFailureException(message: String) : Exception(message)
+open class DataSourceAccessException(message: String) : Exception(message)
+class StoringDataFailureException(message: String) : DataSourceAccessException(message)
+open class RetrievingDataFailureException(message: String) : DataSourceAccessException(message)
 
 open class NotFoundException(message: String) : RetrievingDataFailureException(message)
-class NoLoggedInUserFoundException() : NotFoundException("no logged in user found")
-class UserNotFoundException(message: String = "User Not found") : NotFoundException(message)
-class TaskNotFoundException(message: String = "Task Not found") : NotFoundException(message)
-class TaskStateNotFoundException(message: String = "TaskState Not found") : NotFoundException(message)
-class ProjectNotFoundException(message: String = "Project Not found") : NotFoundException(message)
+class NoLoggedInUserFoundException : NotFoundException("No logged-in user found")
+class UserNotFoundException(message: String = "User could not be found") : NotFoundException(message)
+class TaskNotFoundException(message: String = "Task could not be found") : NotFoundException(message)
+class TaskStateNotFoundException(message: String = "Task state could not be found") : NotFoundException(message)
+class ProjectNotFoundException(message: String = "Project could not be found") : NotFoundException(message)
+
+
+open class AuthenticationException(message: String) : Exception(message)
+class InvalidUserNameException(message: String = "Invalid username") : AuthenticationException(message)
+class InvalidPasswordException(message: String= "Invalid password") : AuthenticationException(message)
+class UserNameAlreadyExistsException(message: String = "This username already exists") :
+    AuthenticationException(message)
+class UnauthorizedOperationException(message: String = "This operation is not authorized") :
+    AuthenticationException(message)

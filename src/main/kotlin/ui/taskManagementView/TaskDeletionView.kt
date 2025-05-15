@@ -1,28 +1,27 @@
 package ui.taskManagementView
 
-import logic.entities.Task
 import logic.useCases.ManageTaskUseCase
-import ui.ViewExceptionHandler
+import ui.RequestHandler
 import ui.cliPrintersAndReaders.CLIPrinter
 import ui.cliPrintersAndReaders.CLIReader
+import java.util.*
 
 class TaskDeletionView(
     private val cliReader: CLIReader,
     private val cliPrinter: CLIPrinter,
     private val manageTaskUseCase: ManageTaskUseCase,
-    private val viewExceptionHandler: ViewExceptionHandler
-) {
-    fun deleteTask(task: Task) {
+) : RequestHandler(cliPrinter) {
+    fun deleteTask(taskId: UUID) {
         if (isDeletionCanceled()) {
-            cliPrinter.cliPrintLn("deletion canceled")
+            cliPrinter.cliPrintLn("Deletion canceled")
             return
         }
 
-        viewExceptionHandler.tryCall {
-            manageTaskUseCase.deleteTask(task.id).also {
-                cliPrinter.cliPrintLn("task ${task.title} was deleted")
-            }
-        }
+        makeRequest(
+            request = { manageTaskUseCase.deleteTask(taskId) },
+            onSuccess = { cliPrinter.cliPrintLn("task $taskId was deleted") },
+            onLoadingMessage = "Deleting task..."
+        )
     }
 
     private fun isDeletionCanceled(): Boolean = !cliReader.getUserConfirmation()

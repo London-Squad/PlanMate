@@ -4,12 +4,12 @@ import logic.entities.Project
 import logic.entities.User
 import logic.useCases.CreateProjectUseCase
 import logic.useCases.ManageProjectUseCase
+import ui.RequestHandler
 import ui.cliPrintersAndReaders.CLIPrinter
 import ui.cliPrintersAndReaders.CLIReader
-import ui.cliPrintersAndReaders.cliTable.CLITablePrinter
-import ui.projectDetailsView.ProjectDetailsView
-import ui.ViewExceptionHandler
+import ui.cliPrintersAndReaders.CLITablePrinter
 import ui.cliPrintersAndReaders.ProjectInputReader
+import ui.projectDetailsView.ProjectDetailsView
 
 class ProjectsDashboardView(
     private val cliPrinter: CLIPrinter,
@@ -18,30 +18,33 @@ class ProjectsDashboardView(
     private val manageProjectUseCase: ManageProjectUseCase,
     private val createProjectUseCase: CreateProjectUseCase,
     private val projectView: ProjectDetailsView,
-    private val exceptionHandler: ViewExceptionHandler,
     private val cliTablePrinter: CLITablePrinter
-) {
+) : RequestHandler(cliPrinter) {
 
     private lateinit var loggedInUserType: User.Type
     private var projects: List<Project> = emptyList()
 
     fun start(loggedInUserType: User.Type) {
         this.loggedInUserType = loggedInUserType
-        printHeader()
-        getProjects()
-        printProjects()
-        printOptions()
-        goToNextView()
+        makeRequest(
+            request = { fetchProjects() },
+            onSuccess = {
+                printHeader()
+                printProjects()
+                printOptions()
+                goToNextView()
+            },
+            onLoadingMessage = "Fetching projects..."
+        )
+
     }
 
     private fun printHeader() {
         cliPrinter.printHeader("Projects Dashboard Menu")
     }
 
-    private fun getProjects() {
-        exceptionHandler.tryCall {
-            projects = manageProjectUseCase.getAllProjects()
-        }.also { if (!it) return }
+    private suspend fun fetchProjects() {
+        projects = manageProjectUseCase.getAllProjects()
     }
 
     private fun printProjects() {
@@ -63,10 +66,10 @@ class ProjectsDashboardView(
     }
 
     private fun printOptions() {
-        printLn("1. select a project")
+        cliPrinter.cliPrintLn("1. select a project")
         // TODO : add option to view all logs for all projects at once
-        if (loggedInUserType == User.Type.ADMIN) printLn("2. create a new project")
-        printLn("0. Exit Projects Dashboard")
+        if (loggedInUserType == User.Type.ADMIN) cliPrinter.cliPrintLn("2. create a new project")
+        cliPrinter.cliPrintLn("0. Exit Projects Dashboard")
     }
 
     private fun goToNextView() {
@@ -75,7 +78,8 @@ class ProjectsDashboardView(
             1 -> selectProject()
             2 -> createProject()
             0 -> {
-                printLn("\nExiting Projects Dashboard ..."); return
+                cliPrinter.cliPrintLn("\nExiting Projects Dashboard ...")
+                return
             }
         }
         start(loggedInUserType)
@@ -91,11 +95,11 @@ class ProjectsDashboardView(
 
     private fun selectProject() {
         if (projects.isEmpty()) {
-            printLn("No projects available to select.")
+            cliPrinter.cliPrintLn("No projects available to select.")
             return
         }
-        printLn("Select a project by number:")
-        val input = cliReader.getValidInputNumberInRange(projects.size)
+        cliPrinter.cliPrintLn("Select a project by number:")
+        val input = cliReader.getValidInputNumberInRange(min = 1, max = projects.size)
         projectView.start(projects[input - 1].id, loggedInUserType)
     }
 
@@ -103,13 +107,12 @@ class ProjectsDashboardView(
         cliPrinter.printHeader("Create Project")
         val title = projectInputReader.getValidProjectTitle()
         val description = projectInputReader.getValidProjectDescription()
-        exceptionHandler.tryCall {
-            createProjectUseCase.createProject(title, description)
-            cliPrinter.cliPrintLn("Project created successfully.")
-        }
+        makeRequest(
+            request = { createProjectUseCase.createProject(title, description) },
+            onSuccess = { cliPrinter.cliPrintLn("Project (${title}) have been created successfully.") },
+            onLoadingMessage = "Creating project..."
+        )
     }
-
-    private fun printLn(message: String) = cliPrinter.cliPrintLn(message)
 
     private companion object {
         const val MAX_OPTION_NUMBER_ADMIN = 2

@@ -1,68 +1,54 @@
 package data.dataSources.mongoDBDataSource
 
-import com.mongodb.client.MongoCollection
 import com.mongodb.client.model.Filters
-import com.mongodb.client.model.Updates
-import data.dataSources.mongoDBDataSource.mongoDBParse.MongoDBParse
-import data.repositories.dataSourceInterfaces.UsersDataSource
+import data.dataSources.mongoDBDataSource.mongoDBHandler.MongoDBParser
+import data.dataSources.mongoDBDataSource.mongoDBHandler.MongoDBQueryHandler
 import data.dto.UserDto
-import logic.exceptions.NoLoggedInUserFoundException
-import org.bson.Document
-import java.util.UUID
+import data.repositories.dataSources.UsersDataSource
+import logic.exceptions.NotFoundException
+import logic.exceptions.UserNameAlreadyExistsException
+import java.util.*
 
 class MongoDBUsersDataSource(
-    private val collection: MongoCollection<Document>,
-    private val mongoParser: MongoDBParse
+    private val usersQueryHandler: MongoDBQueryHandler,
+    private val mongoParser: MongoDBParser
 ) : UsersDataSource {
 
-    private var loggedInUser: UserDto? = null
+    override suspend fun getMates(includeDeleted: Boolean): List<UserDto> {
+        val filters = if (!includeDeleted) Filters.eq(MongoDBParser.IS_DELETED_FIELD, false)
+        else Filters.empty()
 
-    override fun getMates(): List<UserDto> {
-        return collection.find(Filters.eq(MongoDBParse.IS_DELETED_FIELD, false)).map { doc ->
-            mongoParser.documentToUserDto(doc)
-        }.toList()
+        return usersQueryHandler.fetchManyFromCollection(filters).map(mongoParser::documentToUserDto)
     }
 
-    override fun getAdmin(): UserDto = ADMIN
+    override suspend fun getAdmin(): UserDto = ADMIN
 
-    override fun deleteUser(userId: UUID) {
-        collection.updateOne(
-            Filters.eq(MongoDBParse.ID_FIELD, userId.toString()),
-            Updates.set(MongoDBParse.IS_DELETED_FIELD, true)
+    override suspend fun deleteUser(userId: UUID) {
+        val filters = Filters.and(
+            Filters.eq(MongoDBParser.ID_FIELD, userId.toString()),
+            Filters.eq(MongoDBParser.IS_DELETED_FIELD, false)
         )
-
+        usersQueryHandler.softDeleteFromCollection(filters)
     }
 
-    override fun addMate(userName: String, hashedPassword: String) {
-        val existingUser = collection.find(Filters.eq(MongoDBParse.USERNAME_FIELD, userName)).first()
-        if (existingUser != null) throw IllegalStateException("User with username '$userName' already exists")
+    override suspend fun addMate(userName: String, hashedPassword: String) {
+        try {
+            usersQueryHandler.fetchOneFromCollection(Filters.eq(MongoDBParser.USERNAME_FIELD, userName))
+        } catch (e: NotFoundException) {
+            throw UserNameAlreadyExistsException("User with username '$userName' already exists")
+        }
+
         val doc = mongoParser.userDtoToDocument(
             UserDto(
-                UUID.randomUUID(),
-                userName,
-                hashedPassword,
-                "MATE",
-                isDeleted = false
+                UUID.randomUUID().toString(), userName, hashedPassword, "MATE", isDeleted = false
             )
         )
-        collection.insertOne(doc)
-    }
-
-    override fun getLoggedInUser(): UserDto {
-        return loggedInUser ?: throw NoLoggedInUserFoundException()
-    }
-
-    override fun setLoggedInUser(user: UserDto) {
-        loggedInUser = user
-    }
-
-    override fun clearLoggedInUser() {
-        loggedInUser = null
+        usersQueryHandler.insertToCollection(doc)
     }
 
     companion object {
         private val ADMIN = UserDto(
-            id = UUID.fromString("5750f82c-c1b6-454d-b160-5b14857bc9dc"),
+            id = "5750f82c-c1b6-454d-b160-5b14857bc9dc",
             userName = "admin",
             hashedPassword = "2e6e5a2b38ba905790605c9b101497bc",
             type = "ADMIN",

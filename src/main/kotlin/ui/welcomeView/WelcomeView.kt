@@ -1,8 +1,9 @@
 package ui.welcomeView
 
+import logic.entities.User
 import logic.exceptions.NoLoggedInUserFoundException
 import logic.useCases.GetLoggedInUserUseCase
-import ui.ViewExceptionHandler
+import ui.RequestHandler
 import ui.cliPrintersAndReaders.CLIPrinter
 import ui.cliPrintersAndReaders.CLIReader
 import ui.loginView.LoginView
@@ -14,19 +15,28 @@ class WelcomeView(
     private val loginView: LoginView,
     private val mainMenuView: MainMenuView,
     private val getLoggedInUserUseCase: GetLoggedInUserUseCase,
-    private val viewExceptionHandler: ViewExceptionHandler
-) {
+) : RequestHandler(cliPrinter) {
 
     fun start() {
-        viewExceptionHandler.tryCall {
-            try { // try to skip login if user is already logged in
-                val loggedInUserType = getLoggedInUserUseCase.getLoggedInUser().type
-                mainMenuView.start(loggedInUserType)
-                start()
-            } catch (_: NoLoggedInUserFoundException) {
-                startNormalWelcomeView()
-            }
-        }
+        var loggedInUserType = User.Type.MATE
+
+        makeRequest(
+            request = { loggedInUserType = getLoggedInUserUseCase.getLoggedInUser().type },
+            onSuccess = { goDirectlyToMainMenu(loggedInUserType) },
+            onError = (::onCheckingLoggedInUserFailure),
+            onLoadingMessage = "Checking for logged in user..."
+        )
+    }
+
+    private fun goDirectlyToMainMenu(loggedInUserType: User.Type) {
+        cliPrinter.cliPrintLn("Logged in user found, redirecting to main menu...")
+        mainMenuView.start(loggedInUserType)
+        start()
+    }
+
+    private fun onCheckingLoggedInUserFailure(exception: Exception) {
+        if (exception is NoLoggedInUserFoundException) startNormalWelcomeView()
+        else handleDefaultExceptions(exception)
     }
 
     private fun startNormalWelcomeView() {

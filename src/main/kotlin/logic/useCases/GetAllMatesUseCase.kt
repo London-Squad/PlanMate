@@ -6,7 +6,7 @@ import logic.repositories.UserRepository
 class GetAllMatesUseCase(
     private val userRepository: UserRepository
 ) {
-    fun getAllMates(): List<User> {
+    suspend fun getAllMates(): List<User> {
         return userRepository.getMates()
     }
 }

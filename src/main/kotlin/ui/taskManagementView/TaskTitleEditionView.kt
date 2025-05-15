@@ -1,20 +1,22 @@
 package ui.taskManagementView
 
-import logic.entities.Task
 import logic.useCases.ManageTaskUseCase
-import ui.ViewExceptionHandler
+import ui.RequestHandler
+import ui.cliPrintersAndReaders.CLIPrinter
 import ui.cliPrintersAndReaders.TaskInputReader
+import java.util.*
 
 class TaskTitleEditionView(
     private val taskInputReader: TaskInputReader,
     private val manageTaskUseCase: ManageTaskUseCase,
-    private val viewExceptionHandler: ViewExceptionHandler
+    cliPrinter: CLIPrinter,
+) : RequestHandler(cliPrinter) {
+    fun editTitle(taskId: UUID) {
 
-) {
-    fun editTitle(task: Task) {
         val newTitle = taskInputReader.getValidTaskTitle()
-        viewExceptionHandler.tryCall {
-            manageTaskUseCase.editTaskTitle(task.id, newTitle)
-        }
+
+        makeRequest({
+            manageTaskUseCase.editTaskTitle(taskId, newTitle)
+        })
     }
 }

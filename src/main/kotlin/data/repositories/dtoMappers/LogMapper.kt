@@ -3,44 +3,54 @@ package data.repositories.dtoMappers
 import data.dto.LogDto
 import logic.entities.*
 import logic.exceptions.RetrievingDataFailureException
+import java.time.LocalDateTime
+import java.util.*
 
-fun LogDto.toLog(user: User, planEntity: PlanEntity): Log {
-    val action = when (this.action.lowercase()) {
-        "create" -> EntityCreationLog(entity = planEntity)
-        "delete" -> EntityDeletionLog(entity = planEntity)
+fun LogDto.toLog(): Log {
+    val action = when (action.lowercase()) {
+        "create" -> EntityCreationLog(entityId = UUID.fromString(planEntityId))
+        "delete" -> EntityDeletionLog(entityId = UUID.fromString(planEntityId))
         "edit" -> EntityEditionLog(
-            entity = planEntity,
-            property = this.planEntityProperty,
-            oldValue = this.oldValue,
-            newValue = this.newValue
+            entityId = UUID.fromString(planEntityId),
+            property = planEntityProperty,
+            oldValue = oldValue,
+            newValue = newValue
         )
 
-        else -> throw RetrievingDataFailureException("Unknown action type: ${this.action}")
+        else -> throw RetrievingDataFailureException("Unknown action type: $action")
     }
 
     return Log(
-        id = this.id,
-        user = user,
-        time = this.time,
+        id = UUID.fromString(id),
+        userId = UUID.fromString(userId),
+        time = LocalDateTime.parse(time),
         loggedAction = action
     )
 }
 
 fun Log.toLogDto(): LogDto {
-    val action = when (this.loggedAction) {
+    val action = when (loggedAction) {
         is EntityCreationLog -> "create"
         is EntityDeletionLog -> "delete"
         is EntityEditionLog -> "edit"
     }
 
     return LogDto(
-        id = this.id,
-        userId = this.user.id,
-        time = this.time,
+        id = id.toString(),
+        userId = userId.toString(),
+        time = time.toString(),
         action = action,
-        planEntityId = this.loggedAction.entity.id,
-        planEntityProperty = if (this.loggedAction is EntityEditionLog) this.loggedAction.property else "Nan",
-        oldValue = if (this.loggedAction is EntityEditionLog) this.loggedAction.oldValue else "Nan",
-        newValue = if (this.loggedAction is EntityEditionLog) this.loggedAction.newValue else "Nan"
+        planEntityId = loggedAction.getEntityId().toString(),
+        planEntityProperty = if (loggedAction is EntityEditionLog) loggedAction.property else "Nan",
+        oldValue = if (loggedAction is EntityEditionLog) loggedAction.oldValue else "Nan",
+        newValue = if (loggedAction is EntityEditionLog) loggedAction.newValue else "Nan"
     )
+}
+
+private fun LoggedAction.getEntityId(): UUID {
+    return when(this) {
+        is EntityCreationLog -> entityId
+        is EntityDeletionLog -> entityId
+        is EntityEditionLog -> entityId
+    }
 }

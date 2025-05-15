@@ -6,7 +6,7 @@ import logic.repositories.AuthenticationRepository
 class LoginUseCase(
     private val authenticationRepository: AuthenticationRepository,
 ) {
-    operator fun invoke(userName: String, password: String): User {
+    suspend operator fun invoke(userName: String, password: String): User {
         return authenticationRepository.login(userName, password)
     }
 }

@@ -1,9 +1,14 @@
 package di
 
-import com.mongodb.client.MongoDatabase
+import com.mongodb.kotlin.client.coroutine.MongoDatabase
 import data.dataSources.mongoDBDataSource.*
-import data.dataSources.mongoDBDataSource.mongoDBParse.MongoDBParse
-import data.repositories.dataSourceInterfaces.*
+import data.dataSources.mongoDBDataSource.mongoDBHandler.MongoDBParser
+import data.dataSources.mongoDBDataSource.mongoDBHandler.MongoDBQueryHandler
+import data.repositories.dataSources.UsersDataSource
+import logic.repositories.LogsRepository
+import logic.repositories.ProjectsRepository
+import logic.repositories.TaskRepository
+import logic.repositories.TaskStatesRepository
 import org.koin.core.qualifier.named
 import org.koin.dsl.module
 
@@ -11,27 +16,26 @@ val mongoStorageModule = module {
     single { DatabaseConnection }
     single<MongoDatabase> { DatabaseConnection.database }
 
-    single(named("projectsCollection")) {
-        DatabaseConnection.getProjectCollection()
+    single(named("tasksQueryHandler")) {
+        MongoDBQueryHandler(DatabaseConnection.getTasksCollection())
     }
-    single(named("logsCollection")) {
-        DatabaseConnection.getLogsCollection()
+    single(named("projectsQueryHandler")) {
+        MongoDBQueryHandler(DatabaseConnection.getProjectCollection())
     }
-    single(named("tasksCollection")) {
-        DatabaseConnection.getTasksCollection()
+    single(named("taskStatesQueryHandler")) {
+        MongoDBQueryHandler(DatabaseConnection.getTaskStatesCollection())
     }
-    single(named("taskStatesCollection")) {
-        DatabaseConnection.getTaskStatesCollection()
+    single(named("usersQueryHandler")) {
+        MongoDBQueryHandler(DatabaseConnection.getUsersCollection())
     }
-    single(named("usersCollection")) {
-        DatabaseConnection.getUsersCollection()
+    single(named("logsQueryHandler")) {
+        MongoDBQueryHandler(DatabaseConnection.getLogsCollection())
     }
+    single { MongoDBParser() }
 
-    single { MongoDBParse() }
-
-    single<TasksDataSource> { MongoDBTasksDataSource(get(named("tasksCollection")), get()) }
-    single<TaskStatesDataSource> { MongoDBTaskStatesDataSource(get(named("taskStatesCollection")), get()) }
-    single<ProjectsDataSource> { MongoDBProjectsDataSource(get(named("projectsCollection")), get()) }
-    single<LogsDataSource> { MongoDBLogsDataSource(get(named("logsCollection")), get()) }
-    single<UsersDataSource> { MongoDBUsersDataSource(get(named("usersCollection")), get()) }
+    single<TaskRepository> { MongoDBTasksDataSource(get(named("tasksQueryHandler")), get()) }
+    single<TaskStatesRepository> { MongoDBTaskStatesDataSource(get(named("taskStatesQueryHandler")), get()) }
+    single<ProjectsRepository> { MongoDBProjectsDataSource(get(named("projectsQueryHandler")), get()) }
+    single<LogsRepository> { MongoDBLogsDataSource(get(named("logsQueryHandler")), get(), get(), get(), get()) }
+    single<UsersDataSource> { MongoDBUsersDataSource(get(named("usersQueryHandler")), get()) }
 }
