@@ -12,6 +12,7 @@ import java.util.*
 class ManageStateUseCaseTest {
 
     private lateinit var useCase: ManageStateUseCase
+
     private lateinit var taskStatesRepo: TaskStatesRepository
     private lateinit var createLogUseCase: CreateLogUseCase
 
@@ -115,6 +116,7 @@ class ManageStateUseCaseTest {
             }
         }
 
+
     @Test
     fun `deleteState should call taskStatesRepository deleteTaskState when state is found`() = runTest {
         coEvery { taskStatesRepo.getTaskStateById(FakeProjectData.taskStatesList[0].id) } returns FakeProjectData.taskStatesList[0]
@@ -122,6 +124,15 @@ class ManageStateUseCaseTest {
         useCase.deleteState(FakeProjectData.taskStatesList[0].id)
 
         coVerify(exactly = 1) { taskStatesRepo.deleteTaskState(FakeProjectData.taskStatesList[0].id) }
+    }
+
+    @Test
+    fun `deleteState should call createLogUseCase logEntityDeletion when delete the state`() = runTest {
+        val stateId = FakeProjectData.taskStatesList[0].id
+
+        useCase.deleteState(stateId)
+
+        coVerify(exactly = 1) { createLogUseCase.logEntityDeletion(stateId) }
     }
 
     @Test
