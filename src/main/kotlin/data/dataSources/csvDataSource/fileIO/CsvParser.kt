@@ -4,7 +4,7 @@ import data.dto.*
 import logic.exceptions.RetrievingDataFailureException
 
 class CsvParser {
-    fun taskDtoToRecord(taskDto: TaskDto): List<String> {
+    fun taskDtoToRecord(taskDto: TaskCsvDto): List<String> {
         return listOf(
             taskDto.id,
             taskDto.title,
@@ -15,9 +15,9 @@ class CsvParser {
         )
     }
 
-    fun recordToTaskDto(record: List<String>): TaskDto {
+    fun recordToTaskDto(record: List<String>): TaskCsvDto {
         if (record.size != 6) throw RetrievingDataFailureException("Invalid TaskData record size")
-        return TaskDto(
+        return TaskCsvDto(
             id = record[0],
             title = record[1],
             description = record[2],
@@ -27,7 +27,7 @@ class CsvParser {
         )
     }
 
-    fun taskStateDtoToRecord(stateData: TaskStateDto): List<String> {
+    fun taskStateDtoToRecord(stateData: TaskStateCsvDto): List<String> {
         return listOf(
             stateData.id,
             stateData.title,
@@ -37,9 +37,9 @@ class CsvParser {
         )
     }
 
-    fun recordToTaskStateDto(record: List<String>): TaskStateDto {
+    fun recordToTaskStateDto(record: List<String>): TaskStateCsvDto {
         if (record.size != 5) throw RetrievingDataFailureException("Invalid StateData record size")
-        return TaskStateDto(
+        return TaskStateCsvDto(
             id = record[0],
             title = record[1],
             description = record[2],
@@ -48,7 +48,7 @@ class CsvParser {
         )
     }
 
-    fun projectDtoToRecord(projectDto: ProjectDto): List<String> {
+    fun projectDtoToRecord(projectDto: ProjectCsvDto): List<String> {
         return listOf(
             projectDto.id,
             projectDto.title,
@@ -57,9 +57,9 @@ class CsvParser {
         )
     }
 
-    fun recordToProjectDto(record: List<String>): ProjectDto {
+    fun recordToProjectDto(record: List<String>): ProjectCsvDto {
         if (record.size != 4) throw RetrievingDataFailureException("Invalid ProjectData record size")
-        return ProjectDto(
+        return ProjectCsvDto(
             id = record[0],
             title = record[1],
             description = record[2],
@@ -67,7 +67,7 @@ class CsvParser {
         )
     }
 
-    fun userDtoToRecord(userDto: UserDto): List<String> {
+    fun userDtoToRecord(userDto: UserCsvDto): List<String> {
         return listOf(
             userDto.id,
             userDto.userName,
@@ -77,9 +77,9 @@ class CsvParser {
         )
     }
 
-    fun recordToUserDto(record: List<String>): UserDto {
+    fun recordToUserDto(record: List<String>): UserCsvDto {
         if (record.size != 5) throw RetrievingDataFailureException("Invalid UserData record size")
-        return UserDto(
+        return UserCsvDto(
             id = record[0],
             userName = record[1],
             type = record[2],
@@ -88,7 +88,7 @@ class CsvParser {
         )
     }
 
-    fun logDtoToRecord(logDto: LogDto): List<String> {
+    fun logDtoToRecord(logDto: LogCsvDto): List<String> {
         return listOf(
             logDto.id,
             logDto.userId,
@@ -101,9 +101,9 @@ class CsvParser {
         )
     }
 
-    fun recordToLogDto(record: List<String>): LogDto {
+    fun recordToLogDto(record: List<String>): LogCsvDto {
         if (record.size != 8) throw RetrievingDataFailureException("Invalid LogData record size")
-        return LogDto(
+        return LogCsvDto(
             id = record[0],
             userId = record[1],
             time = record[2],

@@ -1,25 +1,28 @@
 package data.repositories
 
 import data.repositories.dataSources.UsersDataSource
-import data.repositories.dtoMappers.toUser
+import data.repositories.dtoMappers.user.UserDtoMapper
 import data.security.hashing.HashingAlgorithm
 import logic.entities.User
 import logic.exceptions.UserNameAlreadyExistsException
 import logic.repositories.UserRepository
 import java.util.*
 
-class UserRepositoryImpl(
-    private val usersDataSource: UsersDataSource,
+class UserRepositoryImpl<DTO>(
+    private val usersDataSource: UsersDataSource<DTO>,
+    private val userDtoMapper: UserDtoMapper<DTO>,
     private val hashingAlgorithm: HashingAlgorithm
 ) : UserRepository {
 
-    override suspend fun getMates(includeDeleted: Boolean): List<User> {
-        return usersDataSource.getMates(includeDeleted)
-            .map { it.toUser() }
+    override suspend fun getUsers(includeDeleted: Boolean): List<User> {
+        return usersDataSource.getUsers(includeDeleted)
+            .map(userDtoMapper::mapToUser)
     }
 
-    override suspend fun getAdmin(): User =
-        usersDataSource.getAdmin().toUser()
+    override suspend fun getMates(includeDeleted: Boolean): List<User> {
+        return usersDataSource.getMates(includeDeleted)
+            .map(userDtoMapper::mapToUser)
+    }
 
     override suspend fun deleteMate(userId: UUID) {
         usersDataSource.deleteUser(userId)

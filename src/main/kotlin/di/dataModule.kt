@@ -23,6 +23,4 @@ val dataModule = module {
     }
 
     single<HashingAlgorithm> { MD5HashingAlgorithm() }
-    single<AuthenticationRepository> { AuthenticationRepositoryImpl(get(), get(), get()) }
-    single<UserRepository> { UserRepositoryImpl(get(), get()) }
 }

@@ -2,11 +2,13 @@ package di
 
 import data.dataSources.csvDataSource.*
 import data.dataSources.csvDataSource.fileIO.CsvFileHandler
+import data.dto.UserCsvDto
+import data.repositories.AuthenticationRepositoryImpl
+import data.repositories.UserRepositoryImpl
 import data.repositories.dataSources.*
-import logic.repositories.LogsRepository
-import logic.repositories.ProjectsRepository
-import logic.repositories.TaskRepository
-import logic.repositories.TaskStatesRepository
+import data.repositories.dtoMappers.user.UserCsvDtoMapper
+import data.repositories.dtoMappers.user.UserDtoMapper
+import logic.repositories.*
 import org.koin.core.qualifier.named
 import org.koin.dsl.module
 import java.io.File
@@ -43,7 +45,11 @@ val csvStorageModule = module {
     single<TaskRepository> { CsvTasksDataSource(get(named("tasksFileHandler")), get()) }
     single<TaskStatesRepository> { CsvTaskStatesDataSource(get(named("taskStatesFileHandler")), get()) }
     single<ProjectsRepository> { CsvProjectsDataSource(get(named("projectsFileHandler")), get()) }
-    single<UsersDataSource> { CsvUsersDataSource(get(named("usersFileHandler")), get()) }
+    single<UsersDataSource<UserCsvDto>> { CsvUsersDataSource(get(named("usersFileHandler")), get()) }
     single<LogsRepository> { CsvLogsDataSource(get(named("LogsFileHandler")), get(), get(), get(), get()) }
+
+    single<UserDtoMapper<UserCsvDto>> { UserCsvDtoMapper() }
+    single<AuthenticationRepository> { AuthenticationRepositoryImpl<UserCsvDto>(get(), get(), get(), get()) }
+    single<UserRepository> { UserRepositoryImpl<UserCsvDto>(get(), get(), get()) }
 
 }

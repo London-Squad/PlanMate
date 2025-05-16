@@ -2,14 +2,16 @@ package data.repositories
 
 import data.repositories.dataSources.LoggedInUserCacheDataSource
 import data.repositories.dataSources.UsersDataSource
-import data.repositories.dtoMappers.toUser
+import data.repositories.dtoMappers.user.UserDtoMapper
+import data.repositories.dtoMappers.user.toUser
 import data.security.hashing.HashingAlgorithm
 import logic.entities.User
 import logic.exceptions.UserNotFoundException
 import logic.repositories.AuthenticationRepository
 
-class AuthenticationRepositoryImpl(
-    private val usersDataSource: UsersDataSource,
+class AuthenticationRepositoryImpl<DTO>(
+    private val usersDataSource: UsersDataSource<DTO>,
+    private val userDtoMapper: UserDtoMapper<DTO>,
     private val loggedInUserCacheDataSource: LoggedInUserCacheDataSource,
     private val hashingAlgorithm: HashingAlgorithm
 ) : AuthenticationRepository {
@@ -17,15 +19,15 @@ class AuthenticationRepositoryImpl(
     override suspend fun login(userName: String, password: String): User {
         val hashedPassword = hashingAlgorithm.hashData(password)
 
-        val admin = usersDataSource.getAdmin()
+        val admin = usersDataSource.getAdmin(userName, hashedPassword)
 
-        if (userName == admin.userName && hashedPassword == admin.hashedPassword)
-            return admin
-                .also(loggedInUserCacheDataSource::setLoggedInUser)
-                .toUser()
+        if (admin != null) return admin
+            .run(userDtoMapper::mapToCachedUser)
+            .also(loggedInUserCacheDataSource::setLoggedInUser)
+            .toUser()
 
-        return usersDataSource.getMates(includeDeleted = false)
-            .firstOrNull { it.userName == userName && it.hashedPassword == hashedPassword }
+        return usersDataSource.getMate(userName, hashedPassword)
+            ?.run(userDtoMapper::mapToCachedUser)
             ?.also(loggedInUserCacheDataSource::setLoggedInUser)
             ?.toUser() ?: throw UserNotFoundException()
     }

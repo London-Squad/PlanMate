@@ -3,11 +3,13 @@ package di
 import com.mongodb.kotlin.client.coroutine.MongoDatabase
 import data.dataSources.mongoDBDataSource.*
 import data.dataSources.mongoDBDataSource.mongoDBParse.MongoDBParse
+import data.dto.UserMongoDto
+import data.repositories.AuthenticationRepositoryImpl
+import data.repositories.UserRepositoryImpl
 import data.repositories.dataSources.*
-import logic.repositories.LogsRepository
-import logic.repositories.ProjectsRepository
-import logic.repositories.TaskRepository
-import logic.repositories.TaskStatesRepository
+import data.repositories.dtoMappers.user.UseMongoDtoMapper
+import data.repositories.dtoMappers.user.UserDtoMapper
+import logic.repositories.*
 import org.koin.core.qualifier.named
 import org.koin.dsl.module
 
@@ -33,10 +35,14 @@ val mongoStorageModule = module {
 
     single { MongoDBParse() }
 
-    single<TaskRepository> { MongoDBTasksDataSource(get(named("tasksCollection")), get()) }
+    single<TaskRepository> { MongoDBTasksDataSource(get(named("tasksCollection"))) }
 
-    single<TaskStatesRepository> { MongoDBTaskStatesDataSource(get(named("taskStatesCollection")), get()) }
-    single<ProjectsRepository> { MongoDBProjectsDataSource(get(named("projectsCollection")), get()) }
-    single<LogsRepository> { MongoDBLogsDataSource(get(named("logsCollection")), get(), get(), get(), get()) }
-    single<UsersDataSource> { MongoDBUsersDataSource(get(named("usersCollection")), get()) }
+    single<TaskStatesRepository> { MongoDBTaskStatesDataSource(get(named("taskStatesCollection"))) }
+    single<ProjectsRepository> { MongoDBProjectsDataSource(get(named("projectsCollection"))) }
+    single<LogsRepository> { MongoDBLogsDataSource(get(named("logsCollection")), get(), get(), get()) }
+    single<UsersDataSource<UserMongoDto>> { MongoDBUsersDataSource(get(named("usersCollection"))) }
+
+    single<UserDtoMapper<UserMongoDto>> { UseMongoDtoMapper() }
+    single<AuthenticationRepository> { AuthenticationRepositoryImpl<UserMongoDto>(get(), get(), get(), get()) }
+    single<UserRepository> { UserRepositoryImpl<UserMongoDto>(get(), get(), get()) }
 }

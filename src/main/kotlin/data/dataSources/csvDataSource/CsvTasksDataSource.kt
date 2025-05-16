@@ -2,7 +2,7 @@ package data.dataSources.csvDataSource
 
 import data.dataSources.csvDataSource.fileIO.CsvFileHandler
 import data.dataSources.csvDataSource.fileIO.CsvParser
-import data.dto.TaskDto
+import data.dto.TaskCsvDto
 import data.repositories.dtoMappers.toTask
 import data.repositories.dtoMappers.toTaskDto
 import logic.entities.Task
@@ -20,10 +20,10 @@ class CsvTasksDataSource(
     override suspend fun getTasksByProjectID(projectId: UUID, includeDeleted: Boolean): List<Task> {
         return getAllTasks(includeDeleted)
             .filter { it.projectId == projectId.toString() }
-            .map(TaskDto::toTask)
+            .map(TaskCsvDto::toTask)
     }
 
-    private fun getAllTasks(includeDeleted: Boolean): List<TaskDto> {
+    private fun getAllTasks(includeDeleted: Boolean): List<TaskCsvDto> {
         return tasksCsvFileHandler.readRecords()
             .map(csvParser::recordToTaskDto)
             .filter { if (includeDeleted) true else !it.isDeleted }

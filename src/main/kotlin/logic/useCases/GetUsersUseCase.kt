@@ -7,6 +7,6 @@ class GetUsersUseCase(
     private val usersRepository: UserRepository
 ) {
     suspend fun getUsers(): List<User> {
-        return usersRepository.getMates() + usersRepository.getAdmin()
+        return usersRepository.getUsers(false)
     }
 }
