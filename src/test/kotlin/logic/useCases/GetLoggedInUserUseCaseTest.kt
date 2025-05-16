@@ -1,7 +1,6 @@
 package logic.useCases
 
 import com.google.common.truth.Truth.assertThat
-import fakeData
 import io.mockk.coEvery
 import io.mockk.mockk
 import kotlinx.coroutines.test.runTest
